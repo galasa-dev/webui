@@ -11,10 +11,12 @@ export class LogComponent implements OnInit {
     var logArray = input.split('\n');
     var i = 0;
     for(let line in logArray){
-      this.lines.push({"num":this.pad(i+1), "content": logArray[line]});
+      this.lines.push({"num":this.pad(i+1), "content": logArray[line].trim()});
       i++
     }
   };
+
+  @Input() ignoreCaps:boolean;
 
   @Input() searchText:string;
 
@@ -34,7 +36,7 @@ export class LogComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges){
-    
+    console.log(this.ignoreCaps);
   }
 
 }
