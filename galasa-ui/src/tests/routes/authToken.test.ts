@@ -77,7 +77,7 @@ describe('POST /auth/token', () => {
     // Then...
     expect(responseJson.url).toEqual('dex-issuer/auth');
     expect(responseJson.error).toBeUndefined();
-    expect(createDexClientSpy).toHaveBeenCalledWith('testToken', 'abc', expect.stringContaining('/auth/token/callback'));
+    expect(createDexClientSpy).toHaveBeenCalledWith('abc', expect.stringContaining('/auth/token/callback'));
   });
 
   it('returns the index page URL if the Dex client failed to get created', async () => {
@@ -106,6 +106,6 @@ describe('POST /auth/token', () => {
     expect(responseJson.url).toEqual('/');
     expect(responseJson.error).toEqual(dummyError.message);
     expect(consoleErrorSpy).toHaveBeenCalledWith(dummyError);
-    expect(createDexClientSpy).toHaveBeenCalledWith('testToken', 'abc', expect.stringContaining('/auth/token/callback'));
+    expect(createDexClientSpy).toHaveBeenCalledWith('abc', expect.stringContaining('/auth/token/callback'));
   });
 });

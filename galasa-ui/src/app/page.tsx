@@ -9,7 +9,11 @@ export default function HomePage() {
   return (
     <div id="content">
       <TokenRequestModal />
-      <TokenResponseModal refreshToken={cookies().get('refresh_token')?.value ?? ''} />
+      <TokenResponseModal
+        refreshToken={cookies().get('refresh_token')?.value ?? ''}
+        clientId={cookies().get('client_id')?.value ?? ''}
+        clientSecret={cookies().get('client_secret')?.value ?? ''}
+      />
     </div>
   );
 };

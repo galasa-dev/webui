@@ -14,10 +14,9 @@ const proto = loadPackageDefinition(packageDefinition) as unknown as ProtoGrpcTy
 const client = new proto.api.Dex(`${process.env.DEX_GRPC_HOSTNAME}`, credentials.createInsecure());
 
 // Creates a new Dex client using Dex's gRPC API, wrapped in a promise to allow for blocking calls.
-export const createDexClient = (name: string, secret: string, callbackUrl: string) => {
+export const createDexClient = (secret: string, callbackUrl: string) => {
   const clientReq: CreateClientReq = {
     client: {
-      name,
       secret,
       redirectUris: [callbackUrl],
     },

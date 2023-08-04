@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic';
 // GET request handler for requests to /auth/token/callback
 export async function GET(request: Request) {
   const callbackUrl = `${process.env.WEBUI_HOST_URL}/auth/token/callback`;
-  const clientId = cookies().get('clientId')?.value;
-  const clientSecret = Buffer.from(`${cookies().get('clientSecret')?.value}`, 'base64').toString();
+  const clientId = cookies().get('client_id')?.value;
+  const clientSecret = Buffer.from(`${cookies().get('client_secret')?.value}`, 'base64').toString();
   const state = cookies().get('state')?.value;
 
   const openIdClient = await getOpenIdClient(`${clientId}`, clientSecret, callbackUrl);
@@ -23,10 +23,8 @@ export async function GET(request: Request) {
     const callbackParams = openIdClient.callbackParams(request.url);
     const tokenSet = await openIdClient.callback(callbackUrl, callbackParams, { state });
 
-    // The state, clientId, and clientSecret cookies are no longer needed, so we can delete them.
+    // The state cookie is no longer needed, so we can delete it
     cookies().delete('state');
-    cookies().delete('clientId');
-    cookies().delete('clientSecret');
 
     // Set the refresh token cookie
     if (tokenSet.refresh_token) {

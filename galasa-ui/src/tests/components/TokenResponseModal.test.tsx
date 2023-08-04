@@ -5,10 +5,10 @@ import TokenResponseModal from '@/components/TokenResponseModal';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 describe('Token response modal', () => {
-  it('renders invisible token response modal', async () => {
+  it('renders invisible token response modal if all properties are empty', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='' />);
+      return render(<TokenResponseModal refreshToken='' clientId='' clientSecret='' />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -17,10 +17,34 @@ describe('Token response modal', () => {
     expect(responseModalElement).not.toHaveClass('is-visible');
   });
 
-  it('becomes visible when a refresh token is provided', async () => {
+  it('renders invisible token response modal if the clientSecret property is empty', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' />);
+      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='' />);
+    });
+    const responseModalElement = screen.getByRole('presentation');
+
+    // Then...
+    expect(responseModalElement).toBeInTheDocument();
+    expect(responseModalElement).not.toHaveClass('is-visible');
+  });
+
+  it('renders invisible token response modal if the clientId property is empty', async () => {
+    // Given...
+    await act(async () => {
+      return render(<TokenResponseModal refreshToken='dummytoken' clientId='' clientSecret='dummysecret' />);
+    });
+    const responseModalElement = screen.getByRole('presentation');
+
+    // Then...
+    expect(responseModalElement).toBeInTheDocument();
+    expect(responseModalElement).not.toHaveClass('is-visible');
+  });
+
+  it('becomes visible when all required properties are provided', async () => {
+    // Given...
+    await act(async () => {
+      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='dummysecret' />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -32,7 +56,7 @@ describe('Token response modal', () => {
   it('becomes invisible when the "Close" button is clicked', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' />);
+      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='dummysecret' />);
     });
     const modalCloseButtonElement = screen.getByLabelText(/close/i);
     const responseModalElement = screen.getByRole('presentation');
