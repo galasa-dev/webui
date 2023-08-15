@@ -6,19 +6,7 @@
 import { Button, Modal } from '@carbon/react';
 import { useRef, useState } from 'react';
 import { TextInput, PasswordInput } from '@carbon/react';
-import { TokenTable } from './Table';
 import { InlineNotification } from '@carbon/react';
-
-const headers = [
-  { key: 'tokenName', header: 'Token' },
-  { key: 'scope', header: 'Scope' },
-  { key: 'expires', header: 'Expires' },
-];
-
-const rows = [
-  { id: '1234', tokenName: 'tkn1Example', scope: 'ALL', expires: '2023-10-22' },
-  { id: '5678', tokenName: 'tkn2Example', scope: 'ALL', expires: '2023-09-31' },
-];
 
 export default function TokenRequestModal() {
   const [open, setOpen] = useState(false);
@@ -58,7 +46,6 @@ export default function TokenRequestModal() {
   return (
     <>
       <Button onClick={() => setOpen(true)}>Request Access Token</Button>
-      <TokenTable headers={headers} rows={rows} />
       <Modal
         modalHeading="Request a new Personal Access Token"
         modalLabel="Access Tokens"
@@ -82,9 +69,8 @@ export default function TokenRequestModal() {
           ref={tokenNameInputRef}
           id="name-txtinput"
           labelText="Token Name"
-          helperText="The name of the Token you will use to access the galasa ecosystem."
+          helperText="The name of your new personal access token."
           onChange={onChangeInputValidation}
-          invalidText="Please check that the Token Name supplied does not contain any special characters (?,.!@#$*&) or whitespace characters"
         />
         <br style={{ marginBottom: '1rem' }} />
         <PasswordInput
@@ -92,9 +78,8 @@ export default function TokenRequestModal() {
           ref={secretInputRef}
           id="secret-txtinput"
           labelText="Galasa Client Secret"
-          helperText="The Client secret that you will use alongside your token to access the galasa ecosystem."
+          helperText="The client secret that you will use alongside your access token to access the galasa ecosystem."
           onChange={onChangeInputValidation}
-          invalidText="Please check that the Secret supplied does not contain any special characters (?,.!@#$*&) or whitespace characters"
         />
         {error && (
           <InlineNotification
