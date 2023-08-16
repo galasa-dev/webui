@@ -3,6 +3,7 @@
  */
 'use client';
 
+import { InlineNotification } from '@carbon/react';
 import { Modal, CodeSnippet } from '@carbon/react';
 import { useEffect, useState } from 'react';
 
@@ -29,6 +30,10 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       setClientId(clientId);
       setSecret(clientSecret);
       setOpen(true);
+
+      deleteCookie('refresh_token');
+      deleteCookie('client_id');
+      deleteCookie('client_secret');
     }
   }, [clientId, clientSecret, refreshToken]);
 
@@ -38,23 +43,30 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       id="token-passiveModal"
       open={isOpen}
       passiveModal
-      modalLabel="Access Tokens"
-      modalHeading="Copy the following YAML code into your galasactl.yaml file"
+      modalLabel="Personal Access Token Details"
+      modalHeading="A new Personal Access Token has been allocated"
+      preventCloseOnClickOutside
       onRequestClose={() => {
         setOpen(false);
-        deleteCookie('refresh_token');
-        deleteCookie('client_id');
-        deleteCookie('client_secret');
       }}
     >
+      <p>Copy the following properties into the galasactl.properties file, so your client tool can then access this Galasa Ecosystem.</p>
       <CodeSnippet type="multi" feedback="Copied to clipboard">
-        {`auth:
-  client-id: ${clientIdState}
-  secret: ${secret}
-  access-token: ${token}`}
+{
+`auth.access.token=${token}
+auth.client.id=${clientIdState}
+auth.secret=${secret}`
+}
       </CodeSnippet>
-      <p>If you do not have a galasactl.yaml file in your $GALASA_HOME directory, run the following galasactl command:</p>
-      <CodeSnippet type="inline">{`galasactl local init`}</CodeSnippet>
+      <p>If you do not have a galasactl.properties file in your GALASA_HOME directory (see the <a href='https://galasa.dev/docs'>Galasa documentation</a> for more information), run the following galasactl command:</p>
+      <CodeSnippet className="margin-y-1" type="inline">{`galasactl local init`}</CodeSnippet>
+      <InlineNotification
+        title="The above information is not stored on the Galasa Ecosystem or within the web user interface."
+        subtitle="When you dismiss this panel, you will be unable to retrieve the above information."
+        kind="warning"
+        lowContrast
+        hideCloseButton
+      />
     </Modal>
   );
 }

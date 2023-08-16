@@ -45,10 +45,10 @@ export default function TokenRequestModal() {
   };
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Request Access Token</Button>
+      <Button onClick={() => setOpen(true)}>Request Personal Access Token</Button>
       <Modal
         modalHeading="Request a new Personal Access Token"
-        modalLabel="Access Tokens"
+        modalLabel="Personal Access Token Details"
         primaryButtonText="Submit"
         primaryButtonDisabled={submitDisabled}
         secondaryButtonText="Cancel"
@@ -69,7 +69,7 @@ export default function TokenRequestModal() {
           ref={tokenNameInputRef}
           id="name-txtinput"
           labelText="Token Name"
-          helperText="The name of your new personal access token."
+          helperText="The name of your new personal access token. Use this to distinguish between your tokens in the future."
           onChange={onChangeInputValidation}
         />
         <br style={{ marginBottom: '1rem' }} />
@@ -78,7 +78,7 @@ export default function TokenRequestModal() {
           ref={secretInputRef}
           id="secret-txtinput"
           labelText="Galasa Client Secret"
-          helperText="The client secret that you will use alongside your access token to access the galasa ecosystem."
+          helperText="The client secret that you will use alongside your access token to access the Galasa Ecosystem."
           onChange={onChangeInputValidation}
         />
         {error && (
