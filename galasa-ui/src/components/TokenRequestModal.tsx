@@ -5,7 +5,7 @@
 
 import { Button, Modal } from '@carbon/react';
 import { useRef, useState } from 'react';
-import { TextInput, PasswordInput } from '@carbon/react';
+import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 
 export default function TokenRequestModal() {
@@ -13,25 +13,17 @@ export default function TokenRequestModal() {
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const tokenNameInputRef = useRef<HTMLInputElement>();
-  const secretInputRef = useRef<HTMLInputElement>();
 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value ?? '';
-    const secret = secretInputRef.current?.value ?? '';
-    setSubmitDisabled(!tokenName || !secret);
+    setSubmitDisabled(!tokenName);
   };
 
   const submitTokenRequest = async () => {
-    const tokenName = tokenNameInputRef.current?.value ?? '';
-    const secret = secretInputRef.current?.value ?? '';
-
-    const codedSecret = Buffer.from(secret).toString('base64');
-
-    // Call out to /auth/token with the payload for the name and secret for dex
+    // Call out to /auth/token
     const tokenUrl = '/auth/token';
     const response = await fetch(tokenUrl, {
       method: 'POST',
-      body: JSON.stringify({ name: tokenName, secret: codedSecret }),
       headers: { 'Content-type': 'application/json; charset=UTF-8' },
     });
 
@@ -70,15 +62,6 @@ export default function TokenRequestModal() {
           id="name-txtinput"
           labelText="Token Name"
           helperText="The name of your new personal access token. Use this to distinguish between your tokens in the future."
-          onChange={onChangeInputValidation}
-        />
-        <br style={{ marginBottom: '1rem' }} />
-        <PasswordInput
-          data-modal-primary-focus
-          ref={secretInputRef}
-          id="secret-txtinput"
-          labelText="Galasa Client Secret"
-          helperText="The client secret that you will use alongside your access token to access the Galasa Ecosystem."
           onChange={onChangeInputValidation}
         />
         {error && (

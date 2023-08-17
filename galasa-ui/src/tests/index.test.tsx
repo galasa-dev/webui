@@ -22,6 +22,6 @@ test('renders Galasa Ecosystem homepage', async () => {
   await act(async () => {
     render(<HomePage />);
   })
-  const requestModalElement = screen.getByText(/request access token/i)
+  const requestModalElement = screen.getByText(/request personal access token/i)
   expect(requestModalElement).toBeInTheDocument();
 });

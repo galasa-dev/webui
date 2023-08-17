@@ -20,7 +20,7 @@ describe('Token request modal', () => {
     await act(async () => {
       return render(<TokenRequestModal />);
     });
-    const buttonElement = screen.getByText(/Request Access Token/i);
+    const buttonElement = screen.getByText(/Request Personal Access Token/i);
     const requestModalElement = screen.getByRole('presentation');
 
     // Then...
@@ -34,7 +34,7 @@ describe('Token request modal', () => {
     await act(async () => {
       return render(<TokenRequestModal />);
     });
-    const buttonElement = screen.getByText(/Request Access Token/i);
+    const buttonElement = screen.getByText(/Request Personal Access Token/i);
     const requestModalElement = screen.getByRole('presentation');
 
     // When...
@@ -49,7 +49,7 @@ describe('Token request modal', () => {
     await act(async () => {
       return render(<TokenRequestModal />);
     });
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalCancelButtonElement = screen.getByText(/Cancel/i);
     const requestModalElement = screen.getByRole('presentation');
 
@@ -75,15 +75,13 @@ describe('Token request modal', () => {
     await act(async () => {
       return render(<TokenRequestModal />);
     });
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalSubmitButtonElement = screen.getByText(/Submit/i);
     const modalNameInputElement = screen.getByLabelText(/Token Name/i);
-    const modalSecretInputElement = screen.getByLabelText(/Secret/i);
 
     // When...
     fireEvent.click(openModalButtonElement);
     fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
-    fireEvent.input(modalSecretInputElement, { target: { value: 'shhh' } });
     fireEvent.click(modalSubmitButtonElement);
 
     // Then...
@@ -103,22 +101,20 @@ describe('Token request modal', () => {
     await act(async () => {
       render(<TokenRequestModal />);
     });
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalSubmitButtonElement = screen.getByText(/Submit/i);
     const modalNameInputElement = screen.getByLabelText(/Token Name/i);
-    const modalSecretInputElement = screen.getByLabelText(/Secret/i);
 
     // The error notification should not exist yet
-    const errorMessage = /error requesting access token/i
+    const errorMessage = /error requesting access token/i;
     expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
 
     // When...
     await act(async () => {
       fireEvent.click(openModalButtonElement);
       fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
-      fireEvent.input(modalSecretInputElement, { target: { value: 'shhh' } });
       fireEvent.click(modalSubmitButtonElement);
-    })
+    });
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
@@ -138,22 +134,20 @@ describe('Token request modal', () => {
     await act(async () => {
       render(<TokenRequestModal />);
     });
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalSubmitButtonElement = screen.getByText(/Submit/i);
     const modalNameInputElement = screen.getByLabelText(/Token Name/i);
-    const modalSecretInputElement = screen.getByLabelText(/Secret/i);
 
     // The error notification should not exist yet
-    const errorMessage = /error requesting access token/i
+    const errorMessage = /error requesting access token/i;
     expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
 
     // When...
     await act(async () => {
       fireEvent.click(openModalButtonElement);
       fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
-      fireEvent.input(modalSecretInputElement, { target: { value: 'shhh' } });
       fireEvent.click(modalSubmitButtonElement);
-    })
+    });
 
     // Then...
     // The error notification should be visible
@@ -180,7 +174,7 @@ describe('Token request modal', () => {
       render(<TokenRequestModal />);
     });
 
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalSubmitButtonElement = screen.getByText(/Submit/i);
 
     // When...
@@ -206,7 +200,7 @@ describe('Token request modal', () => {
       render(<TokenRequestModal />);
     });
 
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalNameInputElement = screen.getByLabelText(/Token Name/i);
 
     // When...
@@ -231,47 +225,17 @@ describe('Token request modal', () => {
     await act(async () => {
       return render(<TokenRequestModal />);
     });
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalNameInputElement = screen.getByLabelText(/Token Name/i);
-    const modalSecretInputElement = screen.getByLabelText(/Secret/i);
 
     // When...
     fireEvent.click(openModalButtonElement);
     fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
-    fireEvent.input(modalSecretInputElement, { target: { value: 'shhh' } });
     fireEvent.keyDown(modalNameInputElement, { key: 'Enter', keyCode: 13 });
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
     expect(window.location.replace).toHaveBeenCalledWith('/auth/token');
-  });
-
-  it('does not submit a request for a token when at the client secret field is empty', async () => {
-    // Given...
-    // Mock out the fetch function and its json() method
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
-      })
-    ) as jest.Mock;
-
-    await act(async () => {
-      render(<TokenRequestModal />);
-    });
-
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
-    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
-    const modalSubmitButtonElement = screen.getByText(/Submit/i);
-
-    // When...
-    await act(async () => {
-      fireEvent.click(openModalButtonElement);
-      fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
-      fireEvent.click(modalSubmitButtonElement);
-    });
-
-    // Then...
-    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('does not submit a request for a token when the token name field is empty', async () => {
@@ -287,16 +251,14 @@ describe('Token request modal', () => {
       render(<TokenRequestModal />);
     });
 
-    const openModalButtonElement = screen.getByText(/Request Access Token/i);
-    const modalSecretInputElement = screen.getByLabelText(/Secret/i);
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
     const modalSubmitButtonElement = screen.getByText(/Submit/i);
 
     // When...
     await act(async () => {
       fireEvent.click(openModalButtonElement);
-      fireEvent.input(modalSecretInputElement, { target: { value: 'jindex' } });
       fireEvent.click(modalSubmitButtonElement);
-    })
+    });
 
     // Then...
     expect(global.fetch).not.toHaveBeenCalled();
