@@ -53,9 +53,9 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       <p>Copy the following properties into the galasactl.properties file, so your client tool can then access this Galasa Ecosystem.</p>
       <CodeSnippet type="multi" feedback="Copied to clipboard">
 {
-`auth.access.token=${token}
-auth.client.id=${clientIdState}
-auth.secret=${secret}`
+`GALASA_ACCESS_TOKEN=${token}
+GALASA_CLIENT_ID=${clientIdState}
+GALASA_SECRET=${secret}`
 }
       </CodeSnippet>
       <p>If you do not have a galasactl.properties file in your GALASA_HOME directory (see the <a href='https://galasa.dev/docs'>Galasa documentation</a> for more information), run the following galasactl command:</p>
