@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 module.exports = {
 	setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 	testEnvironment: "jest-environment-jsdom",

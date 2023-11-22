@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 import { cookies } from "next/headers";
 import { BaseClient, Issuer, generators } from "openid-client";
 

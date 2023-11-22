@@ -1,5 +1,7 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 import PageHeader from '@/components/PageHeader';
 import '../styles/global.scss';

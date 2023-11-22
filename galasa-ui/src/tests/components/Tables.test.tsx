@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 import { headerData, rowData ,CreateTokenTable} from '@/components/Table';
 import { TableRow, TableCell, TableHeader } from '@carbon/react';
 import { render, screen } from '@testing-library/react';

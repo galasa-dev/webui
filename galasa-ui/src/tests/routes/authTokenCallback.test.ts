@@ -1,8 +1,10 @@
-/**
+/*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ * 
  * @jest-environment node
  */
-
 import * as AuthTokenCallbackRoute from '@/app/auth/token/callback/route';
 import * as Auth from '@/utils/auth';
 import * as NextNavigation from 'next/navigation';

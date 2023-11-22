@@ -1,5 +1,7 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';

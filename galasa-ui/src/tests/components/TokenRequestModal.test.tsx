@@ -1,5 +1,7 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 import TokenRequestModal from '@/components/TokenRequestModal';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';

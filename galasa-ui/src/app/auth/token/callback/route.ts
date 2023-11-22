@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 import { getOpenIdClient } from '@/utils/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';

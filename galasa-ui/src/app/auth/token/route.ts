@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 import { getAuthorizationUrl, getOpenIdClient } from '@/utils/auth';
 import { createDexClient } from '@/utils/grpc/client';
 import { cookies } from 'next/headers';

@@ -1,7 +1,8 @@
 /*
  * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 import HomePage from '@/app/page';
 import PageHeader from '@/components/PageHeader';
 import { act, render, screen } from '@testing-library/react';
