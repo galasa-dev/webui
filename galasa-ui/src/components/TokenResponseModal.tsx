@@ -59,7 +59,7 @@ GALASA_SECRET=${secret}`
 }
       </CodeSnippet>
       <p>If you do not have a galasactl.properties file in your GALASA_HOME directory (see the <a href='https://galasa.dev/docs'>Galasa documentation</a> for more information), run the following galasactl command:</p>
-      <CodeSnippet type="inline">{`galasactl local init`}</CodeSnippet>
+      <CodeSnippet className="margin-y-1" type="inline">{`galasactl local init`}</CodeSnippet>
       <InlineNotification
         title="The above information is not stored on the Galasa Ecosystem or within the web user interface."
         subtitle="When you dismiss this panel, you will be unable to retrieve the above information."
