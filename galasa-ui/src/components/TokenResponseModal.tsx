@@ -3,6 +3,7 @@
  */
 'use client';
 
+import AuthCookies from '@/utils/authCookies';
 import { InlineNotification } from '@carbon/react';
 import { Modal, CodeSnippet } from '@carbon/react';
 import { useEffect, useState } from 'react';
@@ -31,9 +32,9 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       setSecret(clientSecret);
       setOpen(true);
 
-      deleteCookie('refresh_token');
-      deleteCookie('client_id');
-      deleteCookie('client_secret');
+      deleteCookie(AuthCookies.REFRESH_TOKEN);
+      deleteCookie(AuthCookies.CLIENT_ID);
+      deleteCookie(AuthCookies.CLIENT_SECRET);
     }
   }, [clientId, clientSecret, refreshToken]);
 

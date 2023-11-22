@@ -5,6 +5,7 @@
  */
 import TokenRequestModal from '@/components/TokenRequestModal';
 import TokenResponseModal from '@/components/TokenResponseModal';
+import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 
 export default function HomePage() {
@@ -12,9 +13,9 @@ export default function HomePage() {
     <div id="content">
       <TokenRequestModal />
       <TokenResponseModal
-        refreshToken={cookies().get('refresh_token')?.value ?? ''}
-        clientId={cookies().get('client_id')?.value ?? ''}
-        clientSecret={cookies().get('client_secret')?.value ?? ''}
+        refreshToken={cookies().get(AuthCookies.REFRESH_TOKEN)?.value ?? ''}
+        clientId={cookies().get(AuthCookies.CLIENT_ID)?.value ?? ''}
+        clientSecret={cookies().get(AuthCookies.CLIENT_SECRET)?.value ?? ''}
       />
     </div>
   );

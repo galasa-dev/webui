@@ -7,10 +7,9 @@
  */
 
 import * as AuthRoute from '@/app/auth/route';
-import * as AuthCallbackRoute from '@/app/auth/callback/route';
 import * as Auth from '@/utils/auth';
 import * as NextNavigation from 'next/navigation';
-import { BaseClient, generators } from 'openid-client';
+import { BaseClient } from 'openid-client';
 import { cookies } from 'next/headers';
 
 // Mock out the redirect() function in the next/navigation module

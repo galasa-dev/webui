@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { getAuthorizationUrl, getOpenIdClient } from '@/utils/auth';
+import AuthCookies from '@/utils/authCookies';
 import { createDexClient } from '@/utils/grpc/client';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -24,8 +25,8 @@ export async function POST() {
       const openIdClient = await getOpenIdClient(dexClient.id, dexClient.secret, callbackUrl);
       const authUrl = getAuthorizationUrl(openIdClient);
 
-      cookies().set('client_id', dexClient.id);
-      cookies().set('client_secret', Buffer.from(dexClient.secret).toString('base64'));
+      cookies().set(AuthCookies.CLIENT_ID, dexClient.id);
+      cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(dexClient.secret).toString('base64'));
       responseJson = { url: authUrl };
     }
   } catch (err) {

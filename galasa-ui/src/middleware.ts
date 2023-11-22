@@ -5,11 +5,12 @@
  */
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { NextResponse, NextRequest } from 'next/server';
+import AuthCookies from './utils/authCookies';
 
 // Checks if a cookie containing a JWT exists, redirecting users to authenticate
 // if a JWT does not exit or if the existing token has expired.
 const isAuthenticated = (request: NextRequest) => {
-  const idToken = request.cookies.get('id_token');
+  const idToken = request.cookies.get(AuthCookies.ID_TOKEN);
   let isAuthenticated = false;
   if (idToken) {
     if (!isTokenExpired(idToken.value)) {

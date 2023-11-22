@@ -7,6 +7,7 @@
 export const dynamic = 'force-dynamic';
 
 import { getOpenIdClient } from '@/utils/auth';
+import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -14,7 +15,7 @@ import { redirect } from 'next/navigation';
 export async function GET(request: Request) {
   const callbackUrl = `${process.env.WEBUI_HOST_URL}/auth/callback`;
   const openIdClient = await getOpenIdClient('galasa-webui', `${process.env.DEX_CLIENT_SECRET}`, callbackUrl);
-  const state = cookies().get('state')?.value;
+  const state = cookies().get(AuthCookies.STATE)?.value;
 
   try {
     // Get the returned token set (which includes a JWT) from Dex
@@ -22,11 +23,11 @@ export async function GET(request: Request) {
     const tokenSet = await openIdClient.callback(callbackUrl, callbackParams, { state });
 
     // The state cookie is no longer needed, so we can delete it.
-    cookies().delete('state');
+    cookies().delete(AuthCookies.STATE);
 
     // Set the ID token cookie
     if (tokenSet.id_token) {
-      cookies().set('id_token', tokenSet.id_token);
+      cookies().set(AuthCookies.ID_TOKEN, tokenSet.id_token);
     }
   } catch (err) {
     console.error(err);
