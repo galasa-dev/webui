@@ -41,7 +41,7 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
   return (
     <Modal
       size="lg"
-      className="padding-x-8"
+      className="padding-x-13"
       id="token-passiveModal"
       open={isOpen}
       passiveModal
@@ -69,7 +69,7 @@ GALASA_SECRET=${secret}`
       <CodeSnippet className="margin-y-1" type="inline" align="right">{`galasactl local init`}</CodeSnippet>
       <InlineNotification
         title="The above information is not stored on the Galasa Ecosystem or within the web user interface."
-        subtitle="When you dismiss this panel, you will be unable to retrieve the above information."
+        subtitle="When you dismiss this dialog, you will not be able to retrieve the above information again."
         kind="warning"
         lowContrast
         hideCloseButton

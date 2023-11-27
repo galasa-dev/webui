@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
- 'use client';
+'use client';
 
 import { Button, Modal } from '@carbon/react';
 import { useRef, useState } from 'react';
@@ -70,7 +70,7 @@ export default function TokenRequestModal() {
           id="name-txtinput"
           labelText="Token Name"
           helperText="The name of your new personal access token. Use this to distinguish between your tokens in the future."
-          placeholder="e.g. galasactl access for my Windows machine"
+          placeholder="galasactl access for my Windows machine"
           onChange={onChangeInputValidation}
         />
         {error && (
