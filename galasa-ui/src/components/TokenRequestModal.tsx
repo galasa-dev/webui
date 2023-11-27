@@ -58,12 +58,19 @@ export default function TokenRequestModal() {
           }
         }}
       >
+        <p>
+          A personal access token is an alternative to using a password for authentication. It can be used to configure the galasactl command line
+          tool and interact with the Galasa Ecosystem API, so that client tools can access this Galasa Ecosystem on your behalf with your permissions.
+          Such a personal access token should be kept secret and never shared with others.
+        </p>
+        <br />
         <TextInput
           data-modal-primary-focus
           ref={tokenNameInputRef}
           id="name-txtinput"
           labelText="Token Name"
           helperText="The name of your new personal access token. Use this to distinguish between your tokens in the future."
+          placeholder="e.g. galasactl access for my Windows machine"
           onChange={onChangeInputValidation}
         />
         {error && (

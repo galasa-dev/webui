@@ -40,7 +40,8 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
 
   return (
     <Modal
-      size="md"
+      size="lg"
+      className="padding-x-8"
       id="token-passiveModal"
       open={isOpen}
       passiveModal
@@ -51,16 +52,21 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
         setOpen(false);
       }}
     >
-      <p>Copy the following properties into the galasactl.properties file, so your client tool can then access this Galasa Ecosystem.</p>
-      <CodeSnippet type="multi" feedback="Copied to clipboard">
+      <p>
+        Copy the following properties into the galasactl.properties file in your Galasa home directory, so that your client tool can then access this Galasa Ecosystem.
+      </p>
+      <CodeSnippet type="multi">
 {
 `GALASA_ACCESS_TOKEN=${token}
 GALASA_CLIENT_ID=${clientIdState}
 GALASA_SECRET=${secret}`
 }
       </CodeSnippet>
-      <p>If you do not have a galasactl.properties file in your GALASA_HOME directory (see the <a href='https://galasa.dev/docs'>Galasa documentation</a> for more information), run the following galasactl command:</p>
-      <CodeSnippet className="margin-y-1" type="inline">{`galasactl local init`}</CodeSnippet>
+      <p>
+        If you do not have a galasactl.properties file in your Galasa home directory (see the <a href='https://galasa.dev/docs/initialising-home-folder' target='_blank'>Galasa documentation</a> for more information),
+        run the following galasactl command:
+      </p>
+      <CodeSnippet className="margin-y-1" type="inline" align="right">{`galasactl local init`}</CodeSnippet>
       <InlineNotification
         title="The above information is not stored on the Galasa Ecosystem or within the web user interface."
         subtitle="When you dismiss this panel, you will be unable to retrieve the above information."

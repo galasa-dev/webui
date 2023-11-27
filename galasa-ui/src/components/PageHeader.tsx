@@ -9,7 +9,7 @@ import { Header, HeaderName , SkipToContent} from '@carbon/react';
 
 export default function PageHeader() {
   return (
-    <Header aria-label="GALASA">
+    <Header aria-label="Galasa Ecosystem">
       <SkipToContent />
       <HeaderName prefix="Galasa Ecosystem">(Experimental)</HeaderName>
     </Header>
