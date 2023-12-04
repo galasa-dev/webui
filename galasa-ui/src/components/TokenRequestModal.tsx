@@ -73,6 +73,7 @@ export default function TokenRequestModal() {
         />
         {error && (
           <InlineNotification
+            className="margin-top-1"
             title="Error requesting access token"
             subtitle={error}
             kind="error"
