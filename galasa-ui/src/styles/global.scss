@@ -42,4 +42,8 @@ $spaceSizes: (1, 2, 3, 5, 8, 13);
     margin-top: #{$space}rem;
     margin-bottom: #{$space}rem;
   }
+
+  .margin-top-#{$space} {
+    margin-top: #{$space}rem;
+  }
 }
