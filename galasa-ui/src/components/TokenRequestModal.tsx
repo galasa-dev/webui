@@ -58,8 +58,8 @@ export default function TokenRequestModal() {
         }}
       >
         <p>
-          A personal access token (PAT) is an alternative to using a password for authentication. You can use a PAT to allow client tools to access the Galasa Ecosystem on your behalf.
-          A PAT should be kept secret and never shared with others.
+          A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf.
+          Keep your personal access tokens secret and treat them like passwords.
         </p>
         <br />
         <TextInput
