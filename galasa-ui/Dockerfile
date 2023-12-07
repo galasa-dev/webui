@@ -45,6 +45,7 @@ USER node
 EXPOSE 8080
 ENV PORT 8080
 
+# Set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 
 CMD ["node", "server.js"]
