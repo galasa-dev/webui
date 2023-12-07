@@ -26,12 +26,12 @@ RUN npm run build
 FROM base AS app
 
 # Some libraries may apply production optimisations when NODE_ENV is set to "production"
-ENV NODE_ENV=production
+ENV NODE_ENV production
 
 WORKDIR /home/galasa
 
-# Set up the filesystem so that it is owned by the non-root node user
-RUN mkdir -p /home/galasa && chown -R node:node /home/galasa
+# Set up the application directory so that it is owned by the non-root node user
+RUN chown -R node:node /home/galasa
 
 # Take advantage of Next.js' automatic file tracing to reduce image size
 # See https://nextjs.org/docs/app/api-reference/next-config-js/output for information.
