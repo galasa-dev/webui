@@ -9,7 +9,7 @@ import { ProtoGrpcType } from '@/generated/grpc/dex';
 import { Client__Output } from '@/generated/grpc/api/Client';
 import { CreateClientReq } from '@/generated/grpc/api/CreateClientReq';
 
-const PROTO_PATH = './src/utils/grpc/dex.proto';
+const PROTO_PATH = './public/dex.proto';
 const packageDefinition = loadSync(PROTO_PATH);
 const proto = loadPackageDefinition(packageDefinition) as unknown as ProtoGrpcType;
 
