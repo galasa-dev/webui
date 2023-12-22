@@ -114,20 +114,60 @@ if [[ "${build_type}" == "clean" ]]; then
     clean
 fi
 
-function generate_grpc_types {
-    cd ${BASEDIR}/galasa-ui
-    npm install
-    NODE_BIN_DIR="${BASEDIR}/galasa-ui/node_modules/.bin"
+# Create a temporary folder which is never checked in.
+function download_dependencies {
+    h2 "Making sure the tools folder is present."
+    mkdir -p build/dependencies
+    rc=$? ; if [[ "${rc}" != "0" ]]; then error "Failed to ensure the tools folder is present. rc=${rc}" ; exit 1 ; fi
+    success "OK"
 
-    ${NODE_BIN_DIR}/proto-loader-gen-types ${BASEDIR}/galasa-ui/public/dex.proto \
-        -O ${BASEDIR}/galasa-ui/src/generated/grpc \
-        --grpcLib=@grpc/grpc-js
-    rc=$?
-    if [[ "${rc}" != "0" ]]; then
-        error "Failed to generate gRPC types."
-        exit 1
+    #--------------------------------------------------------------------------
+    # Download the dependencies we define in gradle into a local folder
+    h2 "Downloading dependencies"
+    gradle --warning-mode all --info --debug downloadDependencies
+    rc=$? ; if [[ "${rc}" != "0" ]]; then  error "Failed to run the gradle build to get our dependencies. rc=${rc}" ; exit 1 ; fi
+    success "OK"
+}
+
+# Invoke the generator.
+function generate_rest_client {
+    h2 "Generate the openapi client go code..."
+
+    # Pick up and use the openapi generator we just downloaded.
+    # We don't know which version it is (dictated by the gradle build), but as there
+    # is only one we can just pick the filename up..
+    # Should end up being something like: ${BASEDIR}/build/dependencies/openapi-generator-cli-6.2.0.jar
+    export OPENAPI_GENERATOR_CLI_JAR=$(ls ${BASEDIR}/build/dependencies/openapi-generator-cli*)
+
+    if [[ "${build_type}" == "clean" ]]; then
+        h2 "Cleaning the generated code out..."
+        rm -fr ${BASEDIR}/galasa-ui/src/generated/*
     fi
-    success "Generated gRPC types OK."
+
+    mkdir -p build
+    ./genapi.sh 2>&1 > build/generate-log.txt
+    rc=$? ; if [[ "${rc}" != "0" ]]; then cat build/generate-log.txt ; error "Failed to generate the code from the yaml file. rc=${rc}" ; exit 1 ; fi
+    rm -f build/generate-log.txt
+    success "Code generation OK"
+
+    h2 "Fixing compilation errors in generated code..."
+    tempDir="${BASEDIR}/temp"
+    rm -fr ${tempDir}
+    mkdir -p ${tempDir}
+
+    # PromiseAPI.ts gets generated with compilation errors due to a clashing constant named "result", so rename "result" to "apiResult"
+    promiseApiFile="${BASEDIR}/galasa-ui/src/generated/galasaapi/types/PromiseAPI.ts"
+    cat ${promiseApiFile} | sed "s/const result =/const apiResult =/g" > ${tempDir}/PromiseAPI-temp.ts
+    cat ${tempDir}/PromiseAPI-temp.ts | sed "s/return result\.toPromise/return apiResult\.toPromise/g" > ${tempDir}/PromiseAPI.ts
+    cp ${tempDir}/PromiseAPI.ts ${promiseApiFile}
+
+    # index.ts gets generated with type errors, so fix them
+    indexFile="${BASEDIR}/galasa-ui/src/generated/galasaapi/index.ts"
+    cat ${indexFile} | sed "s/export { Configuration/export { type Configuration/1" > ${tempDir}/index-temp.ts
+    cat ${tempDir}/index-temp.ts | sed "s/export { PromiseMiddleware/export { type PromiseMiddleware/1" > ${tempDir}/index.ts
+    cp ${tempDir}/index.ts ${indexFile}
+
+    success "OK"
 }
 
 function run_tests {
@@ -152,7 +192,9 @@ function do_build {
     success "Built OK."
 }
 
-generate_grpc_types
+download_dependencies
+generate_rest_client
+
 run_tests
 do_build
 success "Project built OK."

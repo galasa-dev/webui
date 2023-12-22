@@ -3,33 +3,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { cookies } from "next/headers";
-import { BaseClient, Issuer, generators } from "openid-client";
 
-// Get an OpenID client for the WebUI as registered with Dex
-export const getOpenIdClient = async (clientId: string, clientSecret: string, callbackUrl: string) => {
-  const issuerUrl = process.env.DEX_ISSUER_URL ?? 'http://127.0.0.1:5556/dex';
+import { AuthenticationAPIApi } from '@/generated/galasaapi';
+import { createApiConfiguration } from './api';
 
-  return Issuer.discover(issuerUrl).then(
-    (dexIssuer) =>
-      new dexIssuer.Client({
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: [callbackUrl],
-        response_types: ['code'],
-      })
-  );
-};
+const GALASA_API_SERVER_URL = process.env.GALASA_API_SERVER_URL ?? '';
+const GALASA_WEBUI_HOST_URL = process.env.GALASA_WEBUI_HOST_URL ?? '';
 
-// Get the authorization URL for an OpenID client that has been registered with Dex
-export const getAuthorizationUrl = (openIdClient: BaseClient) => {
-  const state = generators.state();
-  const authUrl = openIdClient.authorizationUrl({
-    scope: 'openid offline_access',
-    state,
+export const GALASA_WEBUI_CLIENT_ID = process.env.GALASA_WEBUI_CLIENT_ID ?? 'galasa-webui';
+
+// Initialise an auth API client
+export const authApiClient = new AuthenticationAPIApi(createApiConfiguration(GALASA_API_SERVER_URL));
+
+/**
+ * Sends a request to initiate an authentication flow and returns the response.
+ * Note: The OpenAPI-generated code doesn't support redirects, so this method is being used instead.
+ * @param clientId the ID of the Dex client to authenticate with
+ * @returns the response of the /auth request
+ */
+export const sendAuthRequest = async (clientId: string, callbackUrl=`${GALASA_WEBUI_HOST_URL}/callback`) => {
+  const authRequestUrl = `/auth?clientId=${clientId}&callbackUrl=${callbackUrl}`;
+
+  return await fetch(new URL(authRequestUrl, GALASA_API_SERVER_URL), {
+    redirect: 'manual',
   });
-
-  // Save the state parameter in a cookie so that it can be checked during the callback to the webui.
-  cookies().set('state', state);
-  return authUrl;
 };

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import TokenResponseModal from '@/components/TokenResponseModal';
+import TokenResponseModal from '@/components/TokenResponseModal.1';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 describe('Token response modal', () => {

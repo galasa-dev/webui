@@ -3,7 +3,6 @@
  */
 'use client';
 
-import AuthCookies from '@/utils/authCookies';
 import { InlineNotification } from '@carbon/react';
 import { Modal, CodeSnippet } from '@carbon/react';
 import { useEffect, useState } from 'react';
@@ -12,18 +11,14 @@ interface TokenResponseModalProps {
   refreshToken: string;
   clientId: string;
   clientSecret: string;
+  onLoad: () => Promise<void>;
 }
 
-export default function TokenResponseModal({ refreshToken, clientId, clientSecret }: TokenResponseModalProps) {
+export default function TokenResponseModal({ refreshToken, clientId, clientSecret, onLoad }: TokenResponseModalProps) {
   const [token, setToken] = useState('');
   const [clientIdState, setClientId] = useState('');
   const [secret, setSecret] = useState('');
   const [isOpen, setOpen] = useState(false);
-
-  const deleteCookie = (cookieId: string) => {
-    const expiryDate = new Date().toUTCString();
-    document.cookie = `${cookieId}=; expires=${expiryDate}; path=/;`;
-  };
 
   useEffect(() => {
     if (refreshToken.length > 0 && clientId.length > 0 && clientSecret.length > 0) {
@@ -32,11 +27,9 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       setSecret(clientSecret);
       setOpen(true);
 
-      deleteCookie(AuthCookies.REFRESH_TOKEN);
-      deleteCookie(AuthCookies.CLIENT_ID);
-      deleteCookie(AuthCookies.CLIENT_SECRET);
+      onLoad().catch(console.error);
     }
-  }, [clientId, clientSecret, refreshToken]);
+  }, [clientId, clientSecret, refreshToken, onLoad]);
 
   return (
     <Modal
@@ -68,11 +61,16 @@ GALASA_SECRET=${secret}`}
         hideCloseButton
       />
       <p className="margin-top-1">
-        *If you do not have a galasactl.properties file in your Galasa home directory,
-        run the following command to create one:
+        *If you do not have a galasactl.properties file in your Galasa home directory, run the following command to create one:
       </p>
       <CodeSnippet className="margin-y-1" type="inline" align="right">{`galasactl local init`}</CodeSnippet>
-      <p>See the <a href="https://galasa.dev/docs/initialising-home-folder" target="_blank">Galasa documentation</a> for more information.</p>
+      <p>
+        See the{' '}
+        <a href="https://galasa.dev/docs/initialising-home-folder" target="_blank">
+          Galasa documentation
+        </a>{' '}
+        for more information.
+      </p>
     </Modal>
   );
 }

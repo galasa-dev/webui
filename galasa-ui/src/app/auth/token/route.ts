@@ -3,38 +3,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { getAuthorizationUrl, getOpenIdClient } from '@/utils/auth';
+
+import { authApiClient, sendAuthRequest } from '@/utils/auth';
 import AuthCookies from '@/utils/authCookies';
-import { createDexClient } from '@/utils/grpc/client';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';
 
 // POST request handler for requests to /auth/token
 export async function POST() {
-  const callbackUrl = `${process.env.WEBUI_HOST_URL}/auth/token/callback`;
+  // Call out to /auth/clients
+  const dexClient = await authApiClient.postClients();
 
-  let responseJson: { url: string; error?: string } = { url: '/' };
+  const clientId = dexClient.clientId;
+  const clientSecret = dexClient.clientSecret;
+  if (dexClient && clientId && clientSecret) {
+    // Call out to GET /auth
+    cookies().set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
+    cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(clientSecret).toString('base64'), { httpOnly: true });
 
-  try {
-    const dexClient = await createDexClient(callbackUrl);
-
-    if (dexClient?.id && dexClient?.secret) {
-      const openIdClient = await getOpenIdClient(dexClient.id, dexClient.secret, callbackUrl);
-      const authUrl = getAuthorizationUrl(openIdClient);
-
-      cookies().set(AuthCookies.CLIENT_ID, dexClient.id);
-      cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(dexClient.secret).toString('base64'));
-      responseJson = { url: authUrl };
-    }
-  } catch (err) {
-    if (err instanceof Error) {
-      responseJson.error = err.message;
-    }
-    console.error(err);
+    const authResponse = await sendAuthRequest(clientId);
+    redirect(authResponse.url);
   }
 
-  return NextResponse.json(responseJson);
+  redirect('/');
 }

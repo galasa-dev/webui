@@ -1,0 +1,32 @@
+//
+// Objectives:
+//
+// - The webui needs to talk to the API server via a HTTP client layer,
+//   which is generated from a yaml definition file.
+//   So we need to get hold of a generator tool so we can generate the client.
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+    maven {
+        url "https://development.galasa.dev/main/maven-repo/obr/"
+    }
+    mavenLocal()
+}
+
+apply plugin: 'java'
+
+dependencies {
+    // We need the openapi generator to turn a yaml file into go client stubs,
+    // so we can call the API server's REST services
+    // https://mvnrepository.com/artifact/org.openapitools/openapi-generator
+    implementation 'org.openapitools:openapi-generator-cli:6.6.0'
+}
+
+task downloadDependencies(type: Copy) {
+    // Download the dependencies onto the local disk.
+    from configurations.compileClasspath
+    into 'build/dependencies'
+    dependsOn configurations.compileClasspath
+}
+
+description = 'Galasa Web UI'

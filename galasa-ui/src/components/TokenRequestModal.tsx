@@ -22,20 +22,17 @@ export default function TokenRequestModal() {
   };
 
   const submitTokenRequest = async () => {
-    // Call out to /auth/token
     const tokenUrl = '/auth/token';
-    const response = await fetch(tokenUrl, {
+    await fetch(tokenUrl, {
       method: 'POST',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    });
-
-    const responseJson = await response.json();
-    if (responseJson.error) {
-      setError(responseJson.error);
-    } else {
-      // Redirect to authenticate with Dex
-      window.location.replace(responseJson.url);
-    }
+    })
+      .then((response) => {
+        window.location.href = response.url;
+      })
+      .catch((error) => {
+        setError(error as string);
+        console.error(error);
+      });
   };
   return (
     <>

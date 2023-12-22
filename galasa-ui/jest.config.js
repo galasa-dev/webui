@@ -12,6 +12,11 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/(?!jose)"
   ],
+
+  // Ignore auto-generated code in coverage reports
+  coveragePathIgnorePatterns: [
+    "<rootDir>/src/generated/"
+  ],
   moduleDirectories: ['node_modules', '<rootDir>/src'],
   moduleNameMapper: {
     "@/(.*)": "<rootDir>/src/$1"
