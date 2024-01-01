@@ -13,7 +13,7 @@
     "@carbon/react": "^1.31.3",
     "@grpc/grpc-js": "^1.8.17",
     "@grpc/proto-loader": "^0.7.7",
-    "@types/node": "20.3.1",
+    "@types/node": "20.10.4",
     "@types/react": "18.2.12",
     "@types/react-dom": "18.2.5",
     "eslint": "8.42.0",
