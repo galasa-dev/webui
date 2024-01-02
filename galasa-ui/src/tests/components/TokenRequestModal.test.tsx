@@ -67,10 +67,11 @@ describe('Token request modal', () => {
 
   it('sends request for a new personal access token on submit', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
+    const redirectUrl = 'http://my-connector/auth';
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
+        url: redirectUrl,
       })
     ) as jest.Mock;
 
@@ -88,17 +89,13 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.replace).toHaveBeenCalledWith('/auth/token');
+    expect(window.location.href).toEqual(redirectUrl);
   });
 
   it('renders an error notification when a token request returns an error', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ url: '/', error: 'this is an error!' }),
-      })
-    ) as jest.Mock;
+    const fetchErrorMessage = 'this is an error!';
+    global.fetch = jest.fn(() => Promise.reject(fetchErrorMessage)) as jest.Mock;
 
     await act(async () => {
       render(<TokenRequestModal />);
@@ -121,17 +118,16 @@ describe('Token request modal', () => {
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
     const errorNotificationElement = screen.getByText(errorMessage);
+    const errorMessageElement = screen.getByText(fetchErrorMessage);
+
     expect(errorNotificationElement).toBeInTheDocument();
+    expect(errorMessageElement).toBeInTheDocument();
   });
 
   it('closes the error notification when the user clicks the close icon on the notification', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ url: '/', error: 'this is an error!' }),
-      })
-    ) as jest.Mock;
+    const fetchErrorMessage = 'this is an error!';
+    global.fetch = jest.fn(() => Promise.reject(fetchErrorMessage)) as jest.Mock;
 
     await act(async () => {
       render(<TokenRequestModal />);
@@ -165,10 +161,11 @@ describe('Token request modal', () => {
 
   it('does not submit a request for a token when both input fields are empty', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
+    const redirectUrl = 'http://my-connector/auth';
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
+        url: redirectUrl,
       })
     ) as jest.Mock;
 
@@ -191,10 +188,11 @@ describe('Token request modal', () => {
 
   it('does not submit a request for a token when both input fields are empty', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
+    const redirectUrl = 'http://my-connector/auth';
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
+        url: redirectUrl,
       })
     ) as jest.Mock;
 
@@ -217,10 +215,11 @@ describe('Token request modal', () => {
 
   it('sends request for a new personal access token on pressing enter key', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
+    const redirectUrl = 'http://my-connector/auth';
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
+        url: redirectUrl,
       })
     ) as jest.Mock;
 
@@ -237,15 +236,16 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.replace).toHaveBeenCalledWith('/auth/token');
+    expect(window.location.href).toEqual(redirectUrl);
   });
 
   it('does not submit a request for a token when the token name field is empty', async () => {
     // Given...
-    // Mock out the fetch function and its json() method
+    const redirectUrl = 'http://my-connector/auth';
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ url: '/auth/token' }),
+        url: redirectUrl,
       })
     ) as jest.Mock;
 

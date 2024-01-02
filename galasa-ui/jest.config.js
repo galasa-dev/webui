@@ -3,22 +3,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-module.exports = {
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+// The Jest configuration to use in this project - see https://jestjs.io/docs/configuration for more information
+const config = {
 	setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 	testEnvironment: "jest-environment-jsdom",
-	transform: {
-		"^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
-	},
-  transformIgnorePatterns: [
-    "node_modules/(?!jose)"
-  ],
 
   // Ignore auto-generated code in coverage reports
   coveragePathIgnorePatterns: [
     "<rootDir>/src/generated/"
   ],
-  moduleDirectories: ['node_modules', '<rootDir>/src'],
+
+  // Map module path aliases (i.e. imports starting with '@', like '@/my/ts/file' ) to absolute paths
   moduleNameMapper: {
     "@/(.*)": "<rootDir>/src/$1"
   }
 };
+
+module.exports = createJestConfig(config);

@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import TokenResponseModal from '@/components/TokenResponseModal.1';
+import TokenResponseModal from '@/components/TokenResponseModal';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
 describe('Token response modal', () => {
   it('renders invisible token response modal if all properties are empty', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='' clientId='' clientSecret='' />);
+      return render(<TokenResponseModal refreshToken="" clientId="" clientSecret="" onLoad={async () => {}} />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -22,7 +22,7 @@ describe('Token response modal', () => {
   it('renders invisible token response modal if the clientSecret property is empty', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='' />);
+      return render(<TokenResponseModal refreshToken="dummytoken" clientId="dummyid" clientSecret="" onLoad={async () => {}} />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -34,7 +34,7 @@ describe('Token response modal', () => {
   it('renders invisible token response modal if the clientId property is empty', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' clientId='' clientSecret='dummysecret' />);
+      return render(<TokenResponseModal refreshToken="dummytoken" clientId="" clientSecret="dummysecret" onLoad={async () => {}} />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -46,7 +46,7 @@ describe('Token response modal', () => {
   it('becomes visible when all required properties are provided', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='dummysecret' />);
+      return render(<TokenResponseModal refreshToken="dummytoken" clientId="dummyid" clientSecret="dummysecret" onLoad={async () => {}} />);
     });
     const responseModalElement = screen.getByRole('presentation');
 
@@ -58,7 +58,7 @@ describe('Token response modal', () => {
   it('becomes invisible when the "Close" button is clicked', async () => {
     // Given...
     await act(async () => {
-      return render(<TokenResponseModal refreshToken='dummytoken' clientId='dummyid' clientSecret='dummysecret' />);
+      return render(<TokenResponseModal refreshToken="dummytoken" clientId="dummyid" clientSecret="dummysecret" onLoad={async () => {}} />);
     });
     const modalCloseButtonElement = screen.getByLabelText(/close/i);
     const responseModalElement = screen.getByRole('presentation');

@@ -8,7 +8,7 @@ import TokenResponseModal from '@/components/TokenResponseModal';
 import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 
-export default async function HomePage() {
+export default function HomePage() {
 
   const clientId = cookies().get(AuthCookies.CLIENT_ID)?.value ?? '';
   const clientSecret = cookies().get(AuthCookies.CLIENT_SECRET)?.value ?? '';
