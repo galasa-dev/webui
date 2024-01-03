@@ -4,6 +4,10 @@
 // - The webui needs to talk to the API server via a HTTP client layer,
 //   which is generated from a yaml definition file.
 //   So we need to get hold of a generator tool so we can generate the client.
+plugins {
+    id 'java'
+}
+
 repositories {
     gradlePluginPortal()
     mavenCentral()
@@ -12,8 +16,6 @@ repositories {
     }
     mavenLocal()
 }
-
-apply plugin: 'java'
 
 dependencies {
     // We need the openapi generator to turn a yaml file into go client stubs,

@@ -120,14 +120,6 @@ describe('Middleware', () => {
       })
     ) as jest.Mock;
 
-    const cookiesMock = {
-      set: jest.fn(),
-      get: jest.fn(),
-      getAll: jest.fn(),
-      has: jest.fn(),
-      delete: jest.fn(),
-    };
-
     const mockIdToken = 'mynewjwt';
     const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
       Promise.resolve({

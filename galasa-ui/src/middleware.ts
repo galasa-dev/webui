@@ -13,21 +13,21 @@ import { AuthProperties } from './generated/galasaapi';
 export async function middleware(request: NextRequest) {
   let response = NextResponse.rewrite(new URL('/error', request.url));
 
-  if (request.url.includes('/callback')) {
-    // Handle callback requests
-    const responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
-    response = await handleCallback(request, NextResponse.redirect(responseUrl));
-  } else if (!isAuthenticated(request)) {
-    // Force the user to re-authenticate
-    try {
+  try {
+    if (request.url.includes('/callback')) {
+      // Handle callback requests
+      const responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
+      response = await handleCallback(request, NextResponse.redirect(responseUrl));
+    } else if (!isAuthenticated(request)) {
+      // Force the user to re-authenticate
       const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
       response = NextResponse.redirect(authResponse.url);
-    } catch (err) {
-      console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);
+    } else {
+      // User is authenticated and the request can go through
+      response = NextResponse.next();
     }
-  } else {
-    // User is authenticated and the request can go through
-    response = NextResponse.next();
+  } catch(err) {
+    console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);
   }
 
   return response;
@@ -91,17 +91,13 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
     // Build the request body
     const authProperties = buildAuthProperties(clientId, clientSecret, code);
 
-    try {
-      // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
-      const tokenResponse = await authApiClient.postAuthenticate(authProperties);
+    // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
+    const tokenResponse = await authApiClient.postAuthenticate(authProperties);
 
-      if (tokenResponse.jwt && (!clientIdCookie || !clientSecretCookie)) {
-        response.cookies.set(AuthCookies.ID_TOKEN, tokenResponse.jwt, { httpOnly: true });
-      } else if (tokenResponse.refreshToken && clientIdCookie && clientSecretCookie) {
-        response.cookies.set(AuthCookies.REFRESH_TOKEN, tokenResponse.refreshToken, { httpOnly: true });
-      }
-    } catch (err) {
-      console.error('Failed to get a new ID and refresh token: %s', err);
+    if (tokenResponse.jwt && (!clientIdCookie || !clientSecretCookie)) {
+      response.cookies.set(AuthCookies.ID_TOKEN, tokenResponse.jwt, { httpOnly: true });
+    } else if (tokenResponse.refreshToken && clientIdCookie && clientSecretCookie) {
+      response.cookies.set(AuthCookies.REFRESH_TOKEN, tokenResponse.refreshToken, { httpOnly: true });
     }
   }
   return response;
