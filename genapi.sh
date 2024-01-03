@@ -40,7 +40,6 @@ java -jar ${OPENAPI_GENERATOR_CLI_JAR} generate \
 -g typescript \
 -o galasa-ui/src/generated/galasaapi \
 --additional-properties=packageName=galasaapi \
---additional-properties=supportsES6=true \
 --global-property=apiTests=false
 
 rc=$?
