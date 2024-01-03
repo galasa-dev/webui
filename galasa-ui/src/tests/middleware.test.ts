@@ -16,7 +16,11 @@ jest.mock('jwt-decode', () => ({
 }));
 
 describe('Middleware', () => {
-  const redirectSpy = jest.spyOn(NextResponse, 'redirect');
+  let redirectSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    redirectSpy = jest.spyOn(NextResponse, 'redirect');
+  });
 
   afterEach(() => {
     redirectSpy.mockReset();
@@ -104,6 +108,8 @@ describe('Middleware', () => {
 
   it('should send a POST request to get a JWT during a callback to log in to the web UI', async () => {
     // Given...
+    redirectSpy.mockRestore();
+
     const expectedResponseUrl = 'https://galasa-ecosystem.com';
     const req = new NextRequest(new Request(`${expectedResponseUrl}/callback?code=myauthcode`), {});
     const redirectUrl = 'http://my-connector/auth';
@@ -114,27 +120,36 @@ describe('Middleware', () => {
       })
     ) as jest.Mock;
 
+    const cookiesMock = {
+      set: jest.fn(),
+      get: jest.fn(),
+      getAll: jest.fn(),
+      has: jest.fn(),
+      delete: jest.fn(),
+    };
+
+    const mockIdToken = 'mynewjwt';
     const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
       Promise.resolve({
-        jwt: 'mynewjwt',
+        jwt: mockIdToken,
         refreshToken: 'mynewrefreshtoken',
       })
     );
 
     // When...
-    await middleware(req);
+    const response = await middleware(req);
 
     // Then...
-    expect(redirectSpy).toHaveBeenCalledTimes(1);
     expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
-    expect(redirectSpy).toHaveBeenCalledWith(expectedResponseUrl);
-    // Assert that the ID token cookie has been set
+    expect(response.cookies.get('id_token')?.value).toEqual(mockIdToken);
 
     postAuthenticateSpy.mockReset();
   });
 
   it('should set a refresh token cookie during a callback request with client ID and secret cookies', async () => {
     // Given...
+    redirectSpy.mockRestore();
+
     const expectedResponseUrl = 'https://galasa-ecosystem.com';
     const req = new NextRequest(new Request(`${expectedResponseUrl}/callback?code=myauthcode`), {});
     const redirectUrl = 'http://my-connector/auth';
@@ -157,13 +172,12 @@ describe('Middleware', () => {
     );
 
     // When...
-    await middleware(req);
+    const response = await middleware(req);
 
     // Then...
-    expect(redirectSpy).toHaveBeenCalledTimes(1);
     expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
-    expect(redirectSpy).toHaveBeenCalledWith(expectedResponseUrl);
-    // Assert that the refresh token cookie has been set
+    expect(response.cookies.get('refresh_token')?.value).toEqual(mockRefreshToken);
+    expect(response.cookies.has('id_token')).toEqual(false);
 
     postAuthenticateSpy.mockReset();
   });
