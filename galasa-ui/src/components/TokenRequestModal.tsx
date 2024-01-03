@@ -23,16 +23,28 @@ export default function TokenRequestModal() {
 
   const submitTokenRequest = async () => {
     const tokenUrl = '/auth/token';
-    await fetch(tokenUrl, {
-      method: 'POST',
-    })
-      .then((response) => {
-        window.location.href = response.url;
-      })
-      .catch((error) => {
-        setError(error as string);
-        console.error(error);
+    try {
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
       });
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      window.location.href = response.url;
+    } catch (err) {
+      let errorMessage = '';
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = String(err);
+      }
+
+      setError(errorMessage);
+      console.error('Failed to request a personal access token: %s', err);
+    }
   };
   return (
     <>

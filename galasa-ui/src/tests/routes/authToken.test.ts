@@ -73,4 +73,21 @@ describe('POST /auth/token', () => {
     await expect(AuthTokenRoute.POST()).rejects.toMatch(errorMessage);
     expect(postClientsSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('throws an error if the newly created Dex client does not contain a client ID and secret', async () => {
+    // Given...
+    const redirectUrl = 'http://my-connector/auth';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        url: redirectUrl,
+      })
+    ) as jest.Mock;
+
+    const postClientsSpy = jest.spyOn(authApiClient, 'postClients').mockReturnValue(Promise.resolve({}));
+
+    // When/Then...
+    await expect(AuthTokenRoute.POST()).rejects.toThrow(/failed to create personal access token/i);
+    expect(postClientsSpy).toHaveBeenCalledTimes(1);
+  });
 });

@@ -27,7 +27,7 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       setSecret(clientSecret);
       setOpen(true);
 
-      onLoad().catch(console.error);
+      onLoad().catch((err) => console.error('Failed to load token response dialog: %s', err));
     }
   }, [clientId, clientSecret, refreshToken, onLoad]);
 

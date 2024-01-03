@@ -14,21 +14,20 @@ export const dynamic = 'force-dynamic';
 
 // POST request handler for requests to /auth/token
 export async function POST() {
-  // Call out to /auth/clients
+  // Call out to the API server's /auth/clients endpoint to create a new Dex client
   const dexClient = await authApiClient.postClients();
 
-  if (dexClient) {
-    const clientId = dexClient.clientId;
-    const clientSecret = dexClient.clientSecret;
-    if (clientId && clientSecret) {
-      // Call out to GET /auth
-      cookies().set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
-      cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(clientSecret).toString('base64'), { httpOnly: true });
+  const clientId = dexClient.clientId;
+  const clientSecret = dexClient.clientSecret;
+  if (clientId && clientSecret) {
+    // Store the client ID and secret to be displayed to the user later
+    cookies().set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
+    cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(clientSecret).toString('base64'), { httpOnly: true });
 
-      const authResponse = await sendAuthRequest(clientId);
-      redirect(authResponse.url);
-    } else {
-      redirect('/');
-    }
+    // Authenticate with the created client to get a new refresh token for this client
+    const authResponse = await sendAuthRequest(clientId);
+    redirect(authResponse.url);
+  } else {
+    throw new Error('Failed to create personal access token.');
   }
 }

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { middleware } from '@/middleware';
+import { authApiClient } from '@/utils/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock the jwtDecode method
@@ -11,8 +12,8 @@ jest.mock('jwt-decode', () => ({
   __esModule: true,
   default: jest.fn(() => ({
     exp: 50, // JWT expiry in seconds
-  }),
-)}));
+  })),
+}));
 
 describe('Middleware', () => {
   const redirectSpy = jest.spyOn(NextResponse, 'redirect');
@@ -77,7 +78,7 @@ describe('Middleware', () => {
     ) as jest.Mock;
 
     // Mock JWTs have been set to expire after 50s, so let's set the current time to exactly 50000ms
-    Date.now = jest.fn(() => 50000)
+    Date.now = jest.fn(() => 50000);
 
     // When...
     await middleware(req);
@@ -91,7 +92,7 @@ describe('Middleware', () => {
     // Given...
     const req = new NextRequest(new Request('https://galasa-ecosystem.com/runs'), {});
     req.cookies.set('id_token', 'valid-token');
-    Date.now = jest.fn(() => 4324)
+    Date.now = jest.fn(() => 4324);
 
     // When...
     const response = await middleware(req);
@@ -99,5 +100,91 @@ describe('Middleware', () => {
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(0);
     expect(response.status).toEqual(200);
+  });
+
+  it('should send a POST request to get a JWT during a callback to log in to the web UI', async () => {
+    // Given...
+    const expectedResponseUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(`${expectedResponseUrl}/callback?code=myauthcode`), {});
+    const redirectUrl = 'http://my-connector/auth';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        url: redirectUrl,
+      })
+    ) as jest.Mock;
+
+    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
+      Promise.resolve({
+        jwt: 'mynewjwt',
+        refreshToken: 'mynewrefreshtoken',
+      })
+    );
+
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(redirectSpy).toHaveBeenCalledTimes(1);
+    expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
+    expect(redirectSpy).toHaveBeenCalledWith(expectedResponseUrl);
+    // Assert that the ID token cookie has been set
+
+    postAuthenticateSpy.mockReset();
+  });
+
+  it('should set a refresh token cookie during a callback request with client ID and secret cookies', async () => {
+    // Given...
+    const expectedResponseUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(`${expectedResponseUrl}/callback?code=myauthcode`), {});
+    const redirectUrl = 'http://my-connector/auth';
+
+    req.cookies.set('client_id', 'my-client-id');
+    req.cookies.set('client_secret', 'shhh');
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        url: redirectUrl,
+      })
+    ) as jest.Mock;
+
+    const mockRefreshToken = 'mynewrefreshtoken';
+    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
+      Promise.resolve({
+        jwt: 'mynewjwt',
+        refreshToken: mockRefreshToken,
+      })
+    );
+
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(redirectSpy).toHaveBeenCalledTimes(1);
+    expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
+    expect(redirectSpy).toHaveBeenCalledWith(expectedResponseUrl);
+    // Assert that the refresh token cookie has been set
+
+    postAuthenticateSpy.mockReset();
+  });
+
+  it('should issue a rewrite to the error page if something goes wrong during the authentication process', async () => {
+    // Given...
+    const requestUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(requestUrl), {});
+
+    global.fetch = jest.fn(() => Promise.reject('this is an error!')) as jest.Mock;
+
+    const rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
+
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(rewriteSpy).toHaveBeenCalledTimes(1);
+    expect(rewriteSpy).toHaveBeenCalledWith(new URL('/error', requestUrl));
+    expect(redirectSpy).not.toHaveBeenCalled();
+
+    rewriteSpy.mockReset();
   });
 });

@@ -17,6 +17,10 @@ describe('Token request modal', () => {
     });
   });
 
+  afterEach(() => {
+    window.location.href = '';
+  });
+
   it('renders invisible token request modal', async () => {
     // Given...
     await act(async () => {
@@ -72,6 +76,7 @@ describe('Token request modal', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        ok: true,
       })
     ) as jest.Mock;
 
@@ -220,6 +225,7 @@ describe('Token request modal', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        ok: true,
       })
     ) as jest.Mock;
 

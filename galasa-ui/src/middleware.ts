@@ -11,17 +11,23 @@ import { AuthProperties } from './generated/galasaapi';
 
 // Runs before any request is completed
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next();
+  let response = NextResponse.rewrite(new URL('/error', request.url));
 
   if (request.url.includes('/callback')) {
     // Handle callback requests
     const responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
     response = await handleCallback(request, NextResponse.redirect(responseUrl));
-
   } else if (!isAuthenticated(request)) {
     // Force the user to re-authenticate
-    const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
-    response = NextResponse.redirect(authResponse.url);
+    try {
+      const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
+      response = NextResponse.redirect(authResponse.url);
+    } catch (err) {
+      console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);
+    }
+  } else {
+    // User is authenticated and the request can go through
+    response = NextResponse.next();
   }
 
   return response;
@@ -95,7 +101,7 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
         response.cookies.set(AuthCookies.REFRESH_TOKEN, tokenResponse.refreshToken, { httpOnly: true });
       }
     } catch (err) {
-      console.error(err);
+      console.error('Failed to get a new ID and refresh token: %s', err);
     }
   }
   return response;
@@ -113,7 +119,12 @@ const buildAuthProperties = (clientId: string, clientSecret: string, code: strin
 
 export const config = {
   matcher: [
-    // Match all request paths except for the ones starting with /auth.
-    '/((?!auth).*)',
+    // Match all request paths except for the ones starting with:
+    // 1. /auth
+    // 2. /error
+    // 3. /_next/static (static files)
+    // 4. /_next/image (image optimisations)
+    // 5. /favicon.ico
+    '/((?!auth|error|_next/static|_next/image|favicon.ico).*)',
   ],
 };
