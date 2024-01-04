@@ -26,5 +26,6 @@ export const sendAuthRequest = async (clientId: string, callbackUrl=`${GALASA_WE
 
   return await fetch(new URL(authRequestUrl, GALASA_API_SERVER_URL), {
     redirect: 'manual',
+    credentials: 'include',
   });
 };

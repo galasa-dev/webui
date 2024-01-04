@@ -22,9 +22,8 @@ export default function TokenRequestModal() {
   };
 
   const submitTokenRequest = async () => {
-    const tokenUrl = '/auth/token';
     try {
-      const response = await fetch(tokenUrl, {
+      const response = await fetch('/auth/token', {
         method: 'POST',
       });
 
@@ -32,7 +31,8 @@ export default function TokenRequestModal() {
         throw new Error(response.statusText);
       }
 
-      window.location.href = response.url;
+      const responseJson = await response.json();
+      window.location.replace(responseJson.url);
     } catch (err) {
       let errorMessage = '';
 

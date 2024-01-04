@@ -20,9 +20,8 @@ test('renders Galasa Ecosystem header', () => {
 });
 
 test('renders Galasa Ecosystem homepage', async () => {
-  await act(async () => {
-    render(<HomePage />);
-  })
-  const requestModalElement = screen.getByText(/request personal access token/i)
-  expect(requestModalElement).toBeInTheDocument();
+  const homePage = await act(async () => {
+    return render(<HomePage />);
+  });
+  expect(homePage).toMatchSnapshot();
 });

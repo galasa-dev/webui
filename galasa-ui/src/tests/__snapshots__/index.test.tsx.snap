@@ -1,0 +1,810 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Galasa Ecosystem homepage 1`] = `
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        id="content"
+      >
+        <button
+          class="cds--btn cds--btn--primary"
+          type="button"
+        >
+          Request personal access token
+        </button>
+        <div
+          class="cds--modal cds--modal-tall"
+          role="presentation"
+        >
+          <span
+            class="cds--visually-hidden"
+            role="link"
+            tabindex="0"
+          >
+            Focus sentinel
+          </span>
+          <div
+            aria-label="Personal access token request"
+            aria-modal="true"
+            class="cds--modal-container"
+            role="dialog"
+            tabindex="-1"
+          >
+            <div
+              class="cds--modal-header"
+            >
+              <h3
+                class="cds--modal-header__heading"
+                id="cds--modal-header__heading--modal-1"
+              >
+                Personal access token request
+              </h3>
+              <button
+                aria-label="close"
+                class="cds--modal-close"
+                title="Personal access token request"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="cds--modal-close__icon"
+                  fill="currentColor"
+                  focusable="false"
+                  height="20"
+                  preserveAspectRatio="xMidYMid meet"
+                  viewBox="0 0 32 32"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4 14.6 16 8 22.6 9.4 24 16 17.4 22.6 24 24 22.6 17.4 16 24 9.4z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="cds--modal-content"
+              id="cds--modal-body--modal-1"
+            >
+              <p>
+                A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf. Keep your personal access tokens secret and treat them like passwords.
+              </p>
+              <br />
+              <div
+                class="cds--form-item cds--text-input-wrapper"
+              >
+                <div
+                  class="cds--text-input__label-wrapper"
+                >
+                  <label
+                    class="cds--label"
+                    for="name-txtinput"
+                  >
+                    Token name
+                  </label>
+                </div>
+                <div
+                  class="cds--text-input__field-outer-wrapper"
+                >
+                  <div
+                    class="cds--text-input__field-wrapper"
+                  >
+                    <input
+                      aria-describedby="name-txtinput-helper-text"
+                      class="cds--text-input"
+                      data-modal-primary-focus="true"
+                      id="name-txtinput"
+                      placeholder="e.g. galasactl access for my Windows machine"
+                      title="e.g. galasactl access for my Windows machine"
+                      type="text"
+                    />
+                    <span
+                      class="cds--text-input__counter-alert"
+                      role="alert"
+                    />
+                  </div>
+                  <div
+                    class="cds--form__helper-text"
+                    id="name-txtinput-helper-text"
+                  >
+                    Use this to distinguish between your tokens in the future.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="cds--modal-footer cds--btn-set"
+            >
+              <button
+                class="cds--btn cds--btn--secondary"
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                class="cds--btn cds--btn--primary cds--btn--disabled"
+                disabled=""
+                type="button"
+              >
+                Submit request
+              </button>
+            </div>
+          </div>
+          <span
+            class="cds--visually-hidden"
+            role="link"
+            tabindex="0"
+          >
+            Focus sentinel
+          </span>
+        </div>
+        <div
+          class="cds--modal padding-x-13"
+          id="token-passiveModal"
+          role="presentation"
+        >
+          <span
+            class="cds--visually-hidden"
+            role="link"
+            tabindex="0"
+          >
+            Focus sentinel
+          </span>
+          <div
+            aria-label="Personal access token details"
+            aria-modal="true"
+            class="cds--modal-container cds--modal-container--lg"
+            role="dialog"
+            tabindex="-1"
+          >
+            <div
+              class="cds--modal-header"
+            >
+              <button
+                aria-label="close"
+                class="cds--modal-close"
+                title="Personal access token details"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="cds--modal-close__icon"
+                  fill="currentColor"
+                  focusable="false"
+                  height="20"
+                  preserveAspectRatio="xMidYMid meet"
+                  viewBox="0 0 32 32"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4 14.6 16 8 22.6 9.4 24 16 17.4 22.6 24 24 22.6 17.4 16 24 9.4z"
+                  />
+                </svg>
+              </button>
+              <h3
+                class="cds--modal-header__heading"
+                id="cds--modal-header__heading--modal-2"
+              >
+                Personal access token details
+              </h3>
+            </div>
+            <div
+              class="cds--modal-content"
+              id="cds--modal-body--modal-2"
+            >
+              <p>
+                Copy the following properties into the galasactl.properties file in your Galasa home directory* to allow your client tool to access the Galasa Ecosystem.
+              </p>
+              <div
+                class="cds--snippet cds--snippet--multi"
+              >
+                <div
+                  aria-label="Copy to clipboard"
+                  aria-multiline="true"
+                  aria-readonly="true"
+                  class="cds--snippet-container"
+                  role="textbox"
+                  style="max-height: 240px; min-height: 48px;"
+                  tabindex="0"
+                >
+                  <pre>
+                    <code>
+                      GALASA_ACCESS_TOKEN=
+GALASA_CLIENT_ID=
+GALASA_SECRET=
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  class="cds--layout-constraint--size__default-md cds--layout-constraint--size__max-lg"
+                >
+                  <span
+                    class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--bottom cds--tooltip cds--icon-tooltip"
+                  >
+                    <div
+                      class="cds--tooltip-trigger__wrapper"
+                    >
+                      <button
+                        aria-labelledby="tooltip-:r3:"
+                        class="cds--btn--icon-only cds--copy-btn cds--copy cds--btn cds--btn--sm cds--layout--size-sm cds--btn--primary"
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="cds--snippet__icon"
+                          fill="currentColor"
+                          focusable="false"
+                          height="16"
+                          preserveAspectRatio="xMidYMid meet"
+                          viewBox="0 0 32 32"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z"
+                          />
+                          <path
+                            d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      class="cds--popover"
+                      id="tooltip-:r3:"
+                      role="tooltip"
+                    >
+                      <span
+                        class="cds--popover-content cds--tooltip-content"
+                      >
+                        Copy to clipboard
+                      </span>
+                      <span
+                        class="cds--popover-caret"
+                      />
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="cds--inline-notification cds--inline-notification--low-contrast cds--inline-notification--warning cds--inline-notification--hide-close-button"
+                role="status"
+              >
+                <div
+                  class="cds--inline-notification__details"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="cds--inline-notification__icon"
+                    fill="currentColor"
+                    focusable="false"
+                    height="20"
+                    preserveAspectRatio="xMidYMid meet"
+                    viewBox="0 0 20 20"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10,1c-5,0-9,4-9,9s4,9,9,9s9-4,9-9S15,1,10,1z M9.2,5h1.5v7H9.2V5z M10,16c-0.6,0-1-0.4-1-1s0.4-1,1-1 s1,0.4,1,1S10.6,16,10,16z"
+                    />
+                    <path
+                      d="M9.2,5h1.5v7H9.2V5z M10,16c-0.6,0-1-0.4-1-1s0.4-1,1-1s1,0.4,1,1S10.6,16,10,16z"
+                      data-icon-path="inner-path"
+                      opacity="0"
+                    />
+                    <title>
+                      warning icon
+                    </title>
+                  </svg>
+                  <div
+                    class="cds--inline-notification__text-wrapper"
+                  >
+                    <div
+                      class="cds--inline-notification__title"
+                    >
+                      The personal access token details are not stored and cannot be retrieved when this dialog is closed.
+                    </div>
+                    <div
+                      class="cds--inline-notification__subtitle"
+                    >
+                      Remember to copy the details shown above before closing this dialog.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p
+                class="margin-top-1"
+              >
+                *If you do not have a galasactl.properties file in your Galasa home directory, run the following command to create one:
+              </p>
+              <span
+                class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--right cds--tooltip cds--icon-tooltip"
+              >
+                <div
+                  class="cds--tooltip-trigger__wrapper"
+                >
+                  <button
+                    aria-labelledby="tooltip-:r5:"
+                    class="cds--btn--icon-only margin-y-1 cds--snippet cds--snippet--inline cds--copy cds--btn cds--btn--primary"
+                    type="button"
+                  >
+                    <code
+                      id="id2"
+                    >
+                      galasactl local init
+                    </code>
+                  </button>
+                </div>
+                <span
+                  aria-hidden="true"
+                  class="cds--popover"
+                  id="tooltip-:r5:"
+                  role="tooltip"
+                >
+                  <span
+                    class="cds--popover-content cds--tooltip-content"
+                  >
+                    Copy to clipboard
+                  </span>
+                  <span
+                    class="cds--popover-caret"
+                  />
+                </span>
+              </span>
+              <p>
+                See the
+                 
+                <a
+                  href="https://galasa.dev/docs/initialising-home-folder"
+                  target="_blank"
+                >
+                  Galasa documentation
+                </a>
+                 
+                for more information.
+              </p>
+            </div>
+          </div>
+          <span
+            class="cds--visually-hidden"
+            role="link"
+            tabindex="0"
+          >
+            Focus sentinel
+          </span>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      id="content"
+    >
+      <button
+        class="cds--btn cds--btn--primary"
+        type="button"
+      >
+        Request personal access token
+      </button>
+      <div
+        class="cds--modal cds--modal-tall"
+        role="presentation"
+      >
+        <span
+          class="cds--visually-hidden"
+          role="link"
+          tabindex="0"
+        >
+          Focus sentinel
+        </span>
+        <div
+          aria-label="Personal access token request"
+          aria-modal="true"
+          class="cds--modal-container"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="cds--modal-header"
+          >
+            <h3
+              class="cds--modal-header__heading"
+              id="cds--modal-header__heading--modal-1"
+            >
+              Personal access token request
+            </h3>
+            <button
+              aria-label="close"
+              class="cds--modal-close"
+              title="Personal access token request"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="cds--modal-close__icon"
+                fill="currentColor"
+                focusable="false"
+                height="20"
+                preserveAspectRatio="xMidYMid meet"
+                viewBox="0 0 32 32"
+                width="20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4 14.6 16 8 22.6 9.4 24 16 17.4 22.6 24 24 22.6 17.4 16 24 9.4z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="cds--modal-content"
+            id="cds--modal-body--modal-1"
+          >
+            <p>
+              A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf. Keep your personal access tokens secret and treat them like passwords.
+            </p>
+            <br />
+            <div
+              class="cds--form-item cds--text-input-wrapper"
+            >
+              <div
+                class="cds--text-input__label-wrapper"
+              >
+                <label
+                  class="cds--label"
+                  for="name-txtinput"
+                >
+                  Token name
+                </label>
+              </div>
+              <div
+                class="cds--text-input__field-outer-wrapper"
+              >
+                <div
+                  class="cds--text-input__field-wrapper"
+                >
+                  <input
+                    aria-describedby="name-txtinput-helper-text"
+                    class="cds--text-input"
+                    data-modal-primary-focus="true"
+                    id="name-txtinput"
+                    placeholder="e.g. galasactl access for my Windows machine"
+                    title="e.g. galasactl access for my Windows machine"
+                    type="text"
+                  />
+                  <span
+                    class="cds--text-input__counter-alert"
+                    role="alert"
+                  />
+                </div>
+                <div
+                  class="cds--form__helper-text"
+                  id="name-txtinput-helper-text"
+                >
+                  Use this to distinguish between your tokens in the future.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="cds--modal-footer cds--btn-set"
+          >
+            <button
+              class="cds--btn cds--btn--secondary"
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              class="cds--btn cds--btn--primary cds--btn--disabled"
+              disabled=""
+              type="button"
+            >
+              Submit request
+            </button>
+          </div>
+        </div>
+        <span
+          class="cds--visually-hidden"
+          role="link"
+          tabindex="0"
+        >
+          Focus sentinel
+        </span>
+      </div>
+      <div
+        class="cds--modal padding-x-13"
+        id="token-passiveModal"
+        role="presentation"
+      >
+        <span
+          class="cds--visually-hidden"
+          role="link"
+          tabindex="0"
+        >
+          Focus sentinel
+        </span>
+        <div
+          aria-label="Personal access token details"
+          aria-modal="true"
+          class="cds--modal-container cds--modal-container--lg"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="cds--modal-header"
+          >
+            <button
+              aria-label="close"
+              class="cds--modal-close"
+              title="Personal access token details"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="cds--modal-close__icon"
+                fill="currentColor"
+                focusable="false"
+                height="20"
+                preserveAspectRatio="xMidYMid meet"
+                viewBox="0 0 32 32"
+                width="20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4 14.6 16 8 22.6 9.4 24 16 17.4 22.6 24 24 22.6 17.4 16 24 9.4z"
+                />
+              </svg>
+            </button>
+            <h3
+              class="cds--modal-header__heading"
+              id="cds--modal-header__heading--modal-2"
+            >
+              Personal access token details
+            </h3>
+          </div>
+          <div
+            class="cds--modal-content"
+            id="cds--modal-body--modal-2"
+          >
+            <p>
+              Copy the following properties into the galasactl.properties file in your Galasa home directory* to allow your client tool to access the Galasa Ecosystem.
+            </p>
+            <div
+              class="cds--snippet cds--snippet--multi"
+            >
+              <div
+                aria-label="Copy to clipboard"
+                aria-multiline="true"
+                aria-readonly="true"
+                class="cds--snippet-container"
+                role="textbox"
+                style="max-height: 240px; min-height: 48px;"
+                tabindex="0"
+              >
+                <pre>
+                  <code>
+                    GALASA_ACCESS_TOKEN=
+GALASA_CLIENT_ID=
+GALASA_SECRET=
+                  </code>
+                </pre>
+              </div>
+              <div
+                class="cds--layout-constraint--size__default-md cds--layout-constraint--size__max-lg"
+              >
+                <span
+                  class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--bottom cds--tooltip cds--icon-tooltip"
+                >
+                  <div
+                    class="cds--tooltip-trigger__wrapper"
+                  >
+                    <button
+                      aria-labelledby="tooltip-:r3:"
+                      class="cds--btn--icon-only cds--copy-btn cds--copy cds--btn cds--btn--sm cds--layout--size-sm cds--btn--primary"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="cds--snippet__icon"
+                        fill="currentColor"
+                        focusable="false"
+                        height="16"
+                        preserveAspectRatio="xMidYMid meet"
+                        viewBox="0 0 32 32"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z"
+                        />
+                        <path
+                          d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    class="cds--popover"
+                    id="tooltip-:r3:"
+                    role="tooltip"
+                  >
+                    <span
+                      class="cds--popover-content cds--tooltip-content"
+                    >
+                      Copy to clipboard
+                    </span>
+                    <span
+                      class="cds--popover-caret"
+                    />
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div
+              class="cds--inline-notification cds--inline-notification--low-contrast cds--inline-notification--warning cds--inline-notification--hide-close-button"
+              role="status"
+            >
+              <div
+                class="cds--inline-notification__details"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="cds--inline-notification__icon"
+                  fill="currentColor"
+                  focusable="false"
+                  height="20"
+                  preserveAspectRatio="xMidYMid meet"
+                  viewBox="0 0 20 20"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10,1c-5,0-9,4-9,9s4,9,9,9s9-4,9-9S15,1,10,1z M9.2,5h1.5v7H9.2V5z M10,16c-0.6,0-1-0.4-1-1s0.4-1,1-1 s1,0.4,1,1S10.6,16,10,16z"
+                  />
+                  <path
+                    d="M9.2,5h1.5v7H9.2V5z M10,16c-0.6,0-1-0.4-1-1s0.4-1,1-1s1,0.4,1,1S10.6,16,10,16z"
+                    data-icon-path="inner-path"
+                    opacity="0"
+                  />
+                  <title>
+                    warning icon
+                  </title>
+                </svg>
+                <div
+                  class="cds--inline-notification__text-wrapper"
+                >
+                  <div
+                    class="cds--inline-notification__title"
+                  >
+                    The personal access token details are not stored and cannot be retrieved when this dialog is closed.
+                  </div>
+                  <div
+                    class="cds--inline-notification__subtitle"
+                  >
+                    Remember to copy the details shown above before closing this dialog.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p
+              class="margin-top-1"
+            >
+              *If you do not have a galasactl.properties file in your Galasa home directory, run the following command to create one:
+            </p>
+            <span
+              class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--right cds--tooltip cds--icon-tooltip"
+            >
+              <div
+                class="cds--tooltip-trigger__wrapper"
+              >
+                <button
+                  aria-labelledby="tooltip-:r5:"
+                  class="cds--btn--icon-only margin-y-1 cds--snippet cds--snippet--inline cds--copy cds--btn cds--btn--primary"
+                  type="button"
+                >
+                  <code
+                    id="id2"
+                  >
+                    galasactl local init
+                  </code>
+                </button>
+              </div>
+              <span
+                aria-hidden="true"
+                class="cds--popover"
+                id="tooltip-:r5:"
+                role="tooltip"
+              >
+                <span
+                  class="cds--popover-content cds--tooltip-content"
+                >
+                  Copy to clipboard
+                </span>
+                <span
+                  class="cds--popover-caret"
+                />
+              </span>
+            </span>
+            <p>
+              See the
+               
+              <a
+                href="https://galasa.dev/docs/initialising-home-folder"
+                target="_blank"
+              >
+                Galasa documentation
+              </a>
+               
+              for more information.
+            </p>
+          </div>
+        </div>
+        <span
+          class="cds--visually-hidden"
+          role="link"
+          tabindex="0"
+        >
+          Focus sentinel
+        </span>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

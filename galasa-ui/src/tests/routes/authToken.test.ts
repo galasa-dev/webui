@@ -6,13 +6,6 @@
  */
 import * as AuthTokenRoute from '@/app/auth/token/route';
 import { authApiClient } from '@/utils/auth';
-import { redirect } from 'next/navigation';
-
-// Mock out the redirect() function in the "next/navigation" module
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  redirect: jest.fn(),
-}));
 
 // Mock out the cookies() functions in the "next/headers" module
 jest.mock('next/headers', () => ({
@@ -35,6 +28,9 @@ describe('POST /auth/token', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        headers: {
+          get: jest.fn(),
+        },
       })
     ) as jest.Mock;
 
@@ -48,12 +44,12 @@ describe('POST /auth/token', () => {
     );
 
     // When...
-    await AuthTokenRoute.POST();
+    const response = await AuthTokenRoute.POST();
+    const responseJson = await response.json();
 
     // Then...
     expect(postClientsSpy).toHaveBeenCalledTimes(1);
-    expect(redirect).toHaveBeenCalledTimes(1);
-    expect(redirect).toHaveBeenCalledWith(redirectUrl);
+    expect(responseJson.url).toEqual(redirectUrl);
   });
 
   it('throws an error if the POST request to create a new Dex client returns an error', async () => {

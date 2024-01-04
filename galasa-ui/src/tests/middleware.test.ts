@@ -34,6 +34,9 @@ describe('Middleware', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        headers: {
+          get: jest.fn(),
+        },
       })
     ) as jest.Mock;
 
@@ -54,6 +57,9 @@ describe('Middleware', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        headers: {
+          get: jest.fn(),
+        },
       })
     ) as jest.Mock;
 
@@ -78,6 +84,9 @@ describe('Middleware', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
+        headers: {
+          get: jest.fn(),
+        },
       })
     ) as jest.Mock;
 

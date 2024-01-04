@@ -17,11 +17,14 @@ export async function middleware(request: NextRequest) {
     if (request.url.includes('/callback')) {
       // Handle callback requests
       const responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
-      response = await handleCallback(request, NextResponse.redirect(responseUrl));
+      response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));
     } else if (!isAuthenticated(request)) {
-      // Force the user to re-authenticate
+      // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
       const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
-      response = NextResponse.redirect(authResponse.url);
+
+      response = NextResponse.redirect(authResponse.headers.get('location') ?? authResponse.url, { status: 302 });
+      response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
+
     } else {
       // User is authenticated and the request can go through
       response = NextResponse.next();
@@ -29,7 +32,6 @@ export async function middleware(request: NextRequest) {
   } catch(err) {
     console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);
   }
-
   return response;
 }
 
@@ -116,11 +118,10 @@ const buildAuthProperties = (clientId: string, clientSecret: string, code: strin
 export const config = {
   matcher: [
     // Match all request paths except for the ones starting with:
-    // 1. /auth
-    // 2. /error
-    // 3. /_next/static (static files)
-    // 4. /_next/image (image optimisations)
-    // 5. /favicon.ico
-    '/((?!auth|error|_next/static|_next/image|favicon.ico).*)',
+    // /error
+    // /_next/static (static files)
+    // /_next/image (image optimisations)
+    // /favicon.ico
+    '/((?!error|_next/static|_next/image|favicon.ico).*)',
   ],
 };

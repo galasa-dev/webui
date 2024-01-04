@@ -75,8 +75,8 @@ describe('Token request modal', () => {
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        url: redirectUrl,
         ok: true,
+        json: () => Promise.resolve({ url: redirectUrl }),
       })
     ) as jest.Mock;
 
@@ -94,7 +94,7 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.href).toEqual(redirectUrl);
+    expect(window.location.replace).toHaveBeenCalledWith(redirectUrl);
   });
 
   it('renders an error notification when a token request returns an error', async () => {
@@ -224,8 +224,8 @@ describe('Token request modal', () => {
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        url: redirectUrl,
         ok: true,
+        json: () => Promise.resolve({ url: redirectUrl }),
       })
     ) as jest.Mock;
 
@@ -242,7 +242,7 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.href).toEqual(redirectUrl);
+    expect(window.location.replace).toHaveBeenCalledWith(redirectUrl);
   });
 
   it('does not submit a request for a token when the token name field is empty', async () => {

@@ -7,7 +7,7 @@
 import { authApiClient, sendAuthRequest } from '@/utils/auth';
 import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,11 @@ export async function POST() {
 
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);
-    redirect(authResponse.url);
+
+    const response = NextResponse.json({ url: authResponse.headers.get('location') ?? authResponse.url });
+    response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
+
+    return response;
   } else {
     throw new Error('Failed to create personal access token.');
   }
