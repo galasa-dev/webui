@@ -45,7 +45,7 @@ describe('Middleware', () => {
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(1);
-    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl);
+    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl, { status: 302 });
   });
 
   it('should redirect to authenticate if the issued JWT has expired in the past', async () => {
@@ -71,7 +71,7 @@ describe('Middleware', () => {
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(1);
-    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl);
+    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl, { status: 302 });
   });
 
   it('should redirect to authenticate if the issued JWT has expired exactly now', async () => {
@@ -98,7 +98,7 @@ describe('Middleware', () => {
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(1);
-    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl);
+    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl, { status: 302 });
   });
 
   it('should not redirect a user to authenticate if they are authenticated with a valid JWT', async () => {

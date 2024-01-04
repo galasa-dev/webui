@@ -147,7 +147,6 @@ function generate_rest_client {
     mkdir -p build
     ./genapi.sh 2>&1 > build/generate-log.txt
     rc=$? ; if [[ "${rc}" != "0" ]]; then cat build/generate-log.txt ; error "Failed to generate the code from the yaml file. rc=${rc}" ; exit 1 ; fi
-    rm -f build/generate-log.txt
     success "Code generation OK"
 
     h2 "Fixing compilation errors in generated code..."

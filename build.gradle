@@ -4,31 +4,47 @@
 // - The webui needs to talk to the API server via a HTTP client layer,
 //   which is generated from a yaml definition file.
 //   So we need to get hold of a generator tool so we can generate the client.
-plugins {
-    id 'java'
-}
+
+// Right now, the REST interface spec is always the same version as the galasa framework bundles.
+def galasaFrameworkVersion = '0.31.0'
+def galasaOpenApiYamlVersion = galasaFrameworkVersion
 
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    mavenLocal()
     maven {
         url "https://development.galasa.dev/main/maven-repo/obr/"
     }
-    mavenLocal()
+}
+
+configurations {
+    download
 }
 
 dependencies {
     // We need the openapi generator to turn a yaml file into go client stubs,
     // so we can call the API server's REST services
     // https://mvnrepository.com/artifact/org.openapitools/openapi-generator
-    implementation 'org.openapitools:openapi-generator-cli:6.6.0'
+    download 'org.openapitools:openapi-generator-cli:6.6.0'
+
+    download group: "dev.galasa", name: "dev.galasa.framework.api.openapi", version: "$galasaOpenApiYamlVersion", ext: "yaml"
+}
+
+task downloadRawDependencies(type: Copy) {
+    // Download the dependencies onto the local disk.
+    from configurations.download
+    into 'build/dependencies'
+    dependsOn configurations.download
 }
 
 task downloadDependencies(type: Copy) {
-    // Download the dependencies onto the local disk.
-    from configurations.compileClasspath
-    into 'build/dependencies'
-    dependsOn configurations.compileClasspath
+    // Rename the complex openapi.yaml file into something easier to use elsewhere.
+    // So the path to the new file is build/dependencies/openapi.yaml
+    from "build/dependencies/dev.galasa.framework.api.openapi-${galasaOpenApiYamlVersion}.yaml"
+    into "build/dependencies"
+    rename { fileName -> "openapi.yaml" }
+    dependsOn downloadRawDependencies
 }
 
 description = 'Galasa Web UI'

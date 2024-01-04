@@ -27,7 +27,7 @@ if [[ ! -e ${OPENAPI_GENERATOR_CLI_JAR} ]]; then
     exit 1
 fi
 
-export OPENAPI_YAML_FILE="../framework/openapi.yaml"
+export OPENAPI_YAML_FILE="${BASEDIR}/build/dependencies/openapi.yaml"
 
 if [[ ! -e ${OPENAPI_YAML_FILE} ]]; then
     echo "This build requires that the galasa.dev/framework repository is checked-out to ${BASEDIR}"
