@@ -4,6 +4,9 @@
 // - The webui needs to talk to the API server via a HTTP client layer,
 //   which is generated from a yaml definition file.
 //   So we need to get hold of a generator tool so we can generate the client.
+plugins {
+  id "org.openapi.generator" version "6.6.0"
+}
 
 // Right now, the REST interface spec is always the same version as the galasa framework bundles.
 def galasaFrameworkVersion = '0.31.0'
@@ -23,11 +26,6 @@ configurations {
 }
 
 dependencies {
-    // We need the openapi generator to turn a yaml file into go client stubs,
-    // so we can call the API server's REST services
-    // https://mvnrepository.com/artifact/org.openapitools/openapi-generator
-    download 'org.openapitools:openapi-generator-cli:6.6.0'
-
     download group: "dev.galasa", name: "dev.galasa.framework.api.openapi", version: "$galasaOpenApiYamlVersion", ext: "yaml"
 }
 
@@ -45,6 +43,19 @@ task downloadDependencies(type: Copy) {
     into "build/dependencies"
     rename { fileName -> "openapi.yaml" }
     dependsOn downloadRawDependencies
+}
+
+task generateTypeScriptClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    // Generate a TypeScript client using our openapi.yaml file
+    generatorName.set("typescript")
+    inputSpec.set("$rootDir/build/dependencies/openapi.yaml")
+    outputDir.set("$rootDir/galasa-ui/src/generated/galasaapi")
+    globalProperties.set([
+        apiTests: "false"
+    ])
+
+    // Make sure we download the openapi.yaml file before generating the client code
+    dependsOn downloadDependencies
 }
 
 description = 'Galasa Web UI'
