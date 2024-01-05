@@ -114,6 +114,15 @@ if [[ "${build_type}" == "clean" ]]; then
     clean
 fi
 
+function download_node_dependencies {
+    h2 "Running npm install to download node.js dependencies..."
+    cd ${BASEDIR}/galasa-ui
+
+    npm clean-install
+    rc=$? ; if [[ "${rc}" != "0" ]]; then error "Failed to download node.js dependencies. rc=${rc}" ; exit 1 ; fi
+    success "OK"
+}
+
 # Invoke the generator.
 function generate_rest_client {
     h2 "Generate the openapi client TypeScript code..."
@@ -170,6 +179,7 @@ function do_build {
 }
 
 generate_rest_client
+download_node_dependencies
 run_tests
 do_build
 success "Project built OK."
