@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server';
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';
 
-// POST request handler for requests to /auth/token
+// POST request handler for requests to /auth/tokens
 export async function POST() {
   // Call out to the API server's /auth/clients endpoint to create a new Dex client
   const dexClient = await authApiClient.postClients();

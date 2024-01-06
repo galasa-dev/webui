@@ -17,7 +17,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url "https://development.galasa.dev/main/maven-repo/obr/"
+        url "$sourceMaven"
     }
 }
 

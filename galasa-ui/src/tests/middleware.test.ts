@@ -19,7 +19,7 @@ describe('Middleware', () => {
   let redirectSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    redirectSpy = jest.spyOn(NextResponse, 'redirect');
+    redirectSpy = jest.spyOn(NextResponse, 'redirect').mockReturnValue(new NextResponse());
   });
 
   afterEach(() => {

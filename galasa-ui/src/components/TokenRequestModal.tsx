@@ -23,7 +23,7 @@ export default function TokenRequestModal() {
 
   const submitTokenRequest = async () => {
     try {
-      const response = await fetch('/auth/token', {
+      const response = await fetch('/auth/tokens', {
         method: 'POST',
       });
 

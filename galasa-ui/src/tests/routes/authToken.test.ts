@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  * @jest-environment node
  */
-import * as AuthTokenRoute from '@/app/auth/token/route';
+import * as AuthTokenRoute from '@/app/auth/tokens/route';
 import { authApiClient } from '@/utils/auth';
 
 // Mock out the cookies() functions in the "next/headers" module
@@ -20,7 +20,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe('POST /auth/token', () => {
+describe('POST /auth/tokens', () => {
   it('redirects to authenticate with the newly created Dex client', async () => {
     // Given...
     const redirectUrl = 'http://my-connector/auth';

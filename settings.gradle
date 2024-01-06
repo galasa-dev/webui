@@ -10,11 +10,9 @@
 pluginManagement {
     repositories {
         maven {
-            url = "$sourceMaven"
+            url "$sourceMaven"
         }
-        maven {
-            url "$centralMaven"
-        }
+        mavenCentral()
         gradlePluginPortal()
     }
 }
