@@ -19,12 +19,14 @@ export async function middleware(request: NextRequest) {
       const responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
       response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));
     } else if (!isAuthenticated(request)) {
+
       // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
       const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
-
-      response = NextResponse.redirect(authResponse.headers.get('location') ?? authResponse.url, { status: 302 });
-      response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
-
+      const locationHeader = authResponse.headers.get('Location');
+      if (locationHeader) {
+        response = NextResponse.redirect(locationHeader, { status: 302 });
+        response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
+      }
     } else {
       // User is authenticated and the request can go through
       response = NextResponse.next();

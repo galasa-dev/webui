@@ -97,6 +97,44 @@ describe('Token request modal', () => {
     expect(window.location.replace).toHaveBeenCalledWith(redirectUrl);
   });
 
+  it('renders an error notification when the token POST request returns an error response', async () => {
+    // Given...
+    const fetchErrorMessage = 'this is an error!';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        statusText: fetchErrorMessage,
+      })
+    ) as jest.Mock;
+
+    await act(async () => {
+      return render(<TokenRequestModal />);
+    });
+    const openModalButtonElement = screen.getByText(/Request Personal Access Token/i);
+    const modalSubmitButtonElement = screen.getByText(/Submit/i);
+    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
+
+    // The error notification should not exist yet
+    const errorMessage = /error requesting access token/i;
+    expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
+
+    // When...
+    await act(async () => {
+      fireEvent.click(openModalButtonElement);
+      fireEvent.input(modalNameInputElement, { target: { value: 'dummy' } });
+      fireEvent.click(modalSubmitButtonElement);
+    });
+
+    // Then...
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    const errorNotificationElement = screen.getByText(errorMessage);
+    const errorMessageElement = screen.getByText(fetchErrorMessage);
+
+    expect(errorNotificationElement).toBeInTheDocument();
+    expect(errorMessageElement).toBeInTheDocument();
+  });
+
   it('renders an error notification when a token request returns an error', async () => {
     // Given...
     const fetchErrorMessage = 'this is an error!';

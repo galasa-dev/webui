@@ -27,7 +27,7 @@ export async function POST() {
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);
 
-    const response = NextResponse.json({ url: authResponse.headers.get('location') ?? authResponse.url });
+    const response = NextResponse.json({ url: authResponse.headers.get('Location') ?? authResponse.url });
     response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
 
     return response;

@@ -21,11 +21,10 @@ export const authApiClient = new AuthenticationAPIApi(createApiConfiguration(GAL
  * @param clientId the ID of the Dex client to authenticate with
  * @returns the response of the /auth request
  */
-export const sendAuthRequest = async (clientId: string, callbackUrl=`${GALASA_WEBUI_HOST_URL}/callback`) => {
-  const authRequestUrl = `/auth?clientId=${clientId}&callbackUrl=${callbackUrl}`;
+export const sendAuthRequest = async (clientId: string, clientCallbackUrl = `${GALASA_WEBUI_HOST_URL}/callback`) => {
+  const authRequestUrl = `/auth?client_id=${clientId}&callback_url=${clientCallbackUrl}`;
 
   return await fetch(new URL(authRequestUrl, GALASA_API_SERVER_URL), {
     redirect: 'manual',
-    credentials: 'include',
   });
 };

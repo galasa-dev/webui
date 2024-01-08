@@ -35,7 +35,7 @@ describe('Middleware', () => {
       Promise.resolve({
         url: redirectUrl,
         headers: {
-          get: jest.fn(),
+          get: jest.fn().mockReturnValue(redirectUrl),
         },
       })
     ) as jest.Mock;
@@ -58,7 +58,7 @@ describe('Middleware', () => {
       Promise.resolve({
         url: redirectUrl,
         headers: {
-          get: jest.fn(),
+          get: jest.fn().mockReturnValue(redirectUrl),
         },
       })
     ) as jest.Mock;
@@ -85,7 +85,7 @@ describe('Middleware', () => {
       Promise.resolve({
         url: redirectUrl,
         headers: {
-          get: jest.fn(),
+          get: jest.fn().mockReturnValue(redirectUrl),
         },
       })
     ) as jest.Mock;
@@ -189,6 +189,32 @@ describe('Middleware', () => {
     const req = new NextRequest(new Request(requestUrl), {});
 
     global.fetch = jest.fn(() => Promise.reject('this is an error!')) as jest.Mock;
+
+    const rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
+
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(rewriteSpy).toHaveBeenCalledTimes(1);
+    expect(rewriteSpy).toHaveBeenCalledWith(new URL('/error', requestUrl));
+    expect(redirectSpy).not.toHaveBeenCalled();
+
+    rewriteSpy.mockReset();
+  });
+
+  it('should issue a rewrite to the error page if the authentication request does not contain a location header', async () => {
+    // Given...
+    const requestUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(requestUrl), {});
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        headers: {
+          get: jest.fn(),
+        },
+      })
+    ) as jest.Mock;
 
     const rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
 
