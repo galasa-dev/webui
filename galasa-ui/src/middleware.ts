@@ -63,7 +63,7 @@ const isTokenExpired = (jwt: string) => {
 
       // A JWT's expiry time is a Unix timestamp (number of seconds since the Unix Epoch),
       // so the format of the current time must match to calculate the correct difference.
-      isExpired = jwtExpiry * 1000 - currentTimeEpochMilliseconds <= 0;
+      isExpired = ((jwtExpiry * 1000) - currentTimeEpochMilliseconds) <= 0;
     }
   } catch (err) {
     // Do nothing - the JWT is invalid, so it will be marked as expired to force re-authentication.
