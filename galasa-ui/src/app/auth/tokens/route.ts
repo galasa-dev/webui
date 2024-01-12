@@ -3,8 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import { authApiClient, sendAuthRequest } from '@/utils/auth';
+import { getAuthApiClientWithAuthHeader, sendAuthRequest } from '@/utils/auth';
 import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -15,7 +14,7 @@ export const dynamic = 'force-dynamic';
 // POST request handler for requests to /auth/tokens
 export async function POST() {
   // Call out to the API server's /auth/clients endpoint to create a new Dex client
-  const dexClient = await authApiClient.postClients();
+  const dexClient = await getAuthApiClientWithAuthHeader().postClients();
 
   const clientId = dexClient.clientId;
   const clientSecret = dexClient.clientSecret;

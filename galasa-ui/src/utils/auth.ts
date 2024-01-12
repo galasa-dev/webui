@@ -5,7 +5,9 @@
  */
 
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
-import { createApiConfiguration } from './api';
+import { createApiConfiguration, createAuthenticatedApiConfiguration } from './api';
+import { cookies } from 'next/headers';
+import AuthCookies from './authCookies';
 
 const GALASA_API_SERVER_URL = process.env.GALASA_API_SERVER_URL ?? '';
 const GALASA_WEBUI_HOST_URL = process.env.GALASA_WEBUI_HOST_URL ?? '';
@@ -14,6 +16,18 @@ export const GALASA_WEBUI_CLIENT_ID = process.env.GALASA_WEBUI_CLIENT_ID ?? 'gal
 
 // Initialise an auth API client
 export const authApiClient = new AuthenticationAPIApi(createApiConfiguration(GALASA_API_SERVER_URL));
+
+/**
+ * Initialise an auth API client that includes an "Authorization" header in requests.
+ * @returns an auth API client that includes an "Authorization" header in requests
+ */
+export const getAuthApiClientWithAuthHeader = () => {
+  const bearerTokenCookie = cookies().get(AuthCookies.ID_TOKEN);
+  if (!bearerTokenCookie) {
+    throw new Error('Unable to get bearer token, please re-authenticate');
+  }
+  return new AuthenticationAPIApi(createAuthenticatedApiConfiguration(GALASA_API_SERVER_URL, bearerTokenCookie.value));
+};
 
 /**
  * Sends a request to initiate an authentication flow and returns the response.

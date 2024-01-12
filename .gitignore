@@ -37,7 +37,7 @@ next-env.d.ts
 .gradle
 
 # Ignore Gradle build output directory
-build
+build/
 
 # Ignore temp directories
 **/temp/

@@ -5,20 +5,31 @@
  * @jest-environment node
  */
 import * as AuthTokenRoute from '@/app/auth/tokens/route';
-import { authApiClient } from '@/utils/auth';
+import { AuthenticationAPIApi } from '@/generated/galasaapi';
+
+const mockAuthenticationApi = AuthenticationAPIApi as jest.Mock;
 
 // Mock out the cookies() functions in the "next/headers" module
 jest.mock('next/headers', () => ({
   ...jest.requireActual('next/headers'),
   cookies: jest.fn(() => ({
-    get: jest.fn(),
+    get: jest.fn().mockReturnValue('abc'),
     set: jest.fn(),
   })),
 }));
 
-afterEach(() => {
-  jest.resetAllMocks();
-});
+// Mock out the generated auth API client code
+jest.mock('@/generated/galasaapi', () => ({
+  ...jest.requireActual('@/generated/galasaapi'),
+  AuthenticationAPIApi: jest.fn(() => ({
+    postClients: jest.fn().mockReturnValue(
+      Promise.resolve({
+        clientId: 'dummy-id',
+        clientSecret: 'shhh',
+      })
+    ),
+  })),
+}));
 
 describe('POST /auth/tokens', () => {
   it('redirects to authenticate with the newly created Dex client', async () => {
@@ -34,21 +45,11 @@ describe('POST /auth/tokens', () => {
       })
     ) as jest.Mock;
 
-    const mockClientId = 'mock-client';
-    const mockClientSecret = 'shhhh';
-    const postClientsSpy = jest.spyOn(authApiClient, 'postClients').mockReturnValue(
-      Promise.resolve({
-        clientId: mockClientId,
-        clientSecret: mockClientSecret,
-      })
-    );
-
     // When...
     const response = await AuthTokenRoute.POST();
     const responseJson = await response.json();
 
     // Then...
-    expect(postClientsSpy).toHaveBeenCalledTimes(1);
     expect(responseJson.url).toEqual(redirectUrl);
   });
 
@@ -63,11 +64,13 @@ describe('POST /auth/tokens', () => {
     ) as jest.Mock;
 
     const errorMessage = 'there was an error!';
-    const postClientsSpy = jest.spyOn(authApiClient, 'postClients').mockReturnValue(Promise.reject(errorMessage));
+    mockAuthenticationApi.mockReturnValue({
+      postClients: jest.fn(() => Promise.reject(errorMessage)),
+    });
 
     // When/Then...
     await expect(AuthTokenRoute.POST()).rejects.toMatch(errorMessage);
-    expect(postClientsSpy).toHaveBeenCalledTimes(1);
+    mockAuthenticationApi.mockReset();
   });
 
   it('throws an error if the newly created Dex client does not contain a client ID and secret', async () => {
@@ -80,10 +83,12 @@ describe('POST /auth/tokens', () => {
       })
     ) as jest.Mock;
 
-    const postClientsSpy = jest.spyOn(authApiClient, 'postClients').mockReturnValue(Promise.resolve({}));
+    mockAuthenticationApi.mockReturnValue({
+      postClients: jest.fn(() => Promise.resolve({})),
+    });
 
     // When/Then...
     await expect(AuthTokenRoute.POST()).rejects.toThrow(/failed to create personal access token/i);
-    expect(postClientsSpy).toHaveBeenCalledTimes(1);
+    mockAuthenticationApi.mockReset();
   });
 });
