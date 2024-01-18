@@ -196,7 +196,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
               id="cds--modal-body--modal-2"
             >
               <p>
-                Copy the following properties into the galasactl.properties file in your Galasa home directory* to allow your client tool to access the Galasa Ecosystem.
+                Copy the following properties into the galasactl.properties file in your Galasa home directory* or set them as environment variables in your terminal to allow your client tool to access the Galasa Ecosystem.
               </p>
               <div
                 class="cds--snippet cds--snippet--multi"
@@ -572,7 +572,7 @@ GALASA_SECRET=
             id="cds--modal-body--modal-2"
           >
             <p>
-              Copy the following properties into the galasactl.properties file in your Galasa home directory* to allow your client tool to access the Galasa Ecosystem.
+              Copy the following properties into the galasactl.properties file in your Galasa home directory* or set them as environment variables in your terminal to allow your client tool to access the Galasa Ecosystem.
             </p>
             <div
               class="cds--snippet cds--snippet--multi"

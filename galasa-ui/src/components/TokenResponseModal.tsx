@@ -45,8 +45,8 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       }}
     >
       <p>
-        Copy the following properties into the galasactl.properties file in your Galasa home directory* to allow your client tool to access the Galasa
-        Ecosystem.
+        Copy the following properties into the galasactl.properties file in your Galasa home directory* or set them as environment variables in your
+        terminal to allow your client tool to access the Galasa Ecosystem.
       </p>
       <CodeSnippet type="multi">
         {`GALASA_ACCESS_TOKEN=${token}
