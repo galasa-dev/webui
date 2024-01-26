@@ -11,7 +11,7 @@ export default function PageHeader() {
   return (
     <Header aria-label="Galasa Ecosystem">
       <SkipToContent />
-      <HeaderName prefix="Galasa Ecosystem">(Experimental)</HeaderName>
+      <HeaderName prefix="">Galasa Ecosystem</HeaderName>
     </Header>
   );
 };
