@@ -10,26 +10,23 @@ import { useEffect, useState } from 'react';
 interface TokenResponseModalProps {
   refreshToken: string;
   clientId: string;
-  clientSecret: string;
   onLoad: () => Promise<void>;
 }
 
-export default function TokenResponseModal({ refreshToken, clientId, clientSecret, onLoad }: TokenResponseModalProps) {
+export default function TokenResponseModal({ refreshToken, clientId, onLoad }: TokenResponseModalProps) {
   const [token, setToken] = useState('');
   const [clientIdState, setClientId] = useState('');
-  const [secret, setSecret] = useState('');
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
-    if (refreshToken.length > 0 && clientId.length > 0 && clientSecret.length > 0) {
+    if (refreshToken.length > 0 && clientId.length > 0) {
       setToken(refreshToken);
       setClientId(clientId);
-      setSecret(clientSecret);
       setOpen(true);
 
       onLoad().catch((err) => console.error('Failed to load token response dialog: %s', err));
     }
-  }, [clientId, clientSecret, refreshToken, onLoad]);
+  }, [clientId, refreshToken, onLoad]);
 
   return (
     <Modal
@@ -45,14 +42,10 @@ export default function TokenResponseModal({ refreshToken, clientId, clientSecre
       }}
     >
       <p>
-        Copy the following properties into the galasactl.properties file in your Galasa home directory* or set them as environment variables in your
+        Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your
         terminal to allow your client tool to access the Galasa Ecosystem.
       </p>
-      <CodeSnippet type="multi">
-        {`GALASA_ACCESS_TOKEN=${token}
-GALASA_CLIENT_ID=${clientIdState}
-GALASA_SECRET=${secret}`}
-      </CodeSnippet>
+      <CodeSnippet type="multi">{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
       <InlineNotification
         title="The personal access token details are not stored and cannot be retrieved when this dialog is closed."
         subtitle="Remember to copy the details shown above before closing this dialog."

@@ -25,7 +25,6 @@ jest.mock('@/generated/galasaapi', () => ({
     postClients: jest.fn().mockReturnValue(
       Promise.resolve({
         clientId: 'dummy-id',
-        clientSecret: 'shhh',
       })
     ),
   })),
@@ -73,7 +72,7 @@ describe('POST /auth/tokens', () => {
     mockAuthenticationApi.mockReset();
   });
 
-  it('throws an error if the newly created Dex client does not contain a client ID and secret', async () => {
+  it('throws an error if the newly created Dex client does not contain a client ID', async () => {
     // Given...
     const redirectUrl = 'http://my-connector/auth';
 

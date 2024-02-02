@@ -5,11 +5,9 @@
  */
 
 const AuthCookies = {
-  CLIENT_ID: "client_id",
-  CLIENT_SECRET: "client_secret",
-  REFRESH_TOKEN: "refresh_token",
-  ID_TOKEN: "id_token",
-  STATE: "state",
+  CLIENT_ID: 'client_id',
+  REFRESH_TOKEN: 'refresh_token',
+  ID_TOKEN: 'id_token',
 };
 
 export default AuthCookies;

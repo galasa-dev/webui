@@ -17,11 +17,9 @@ export async function POST() {
   const dexClient = await getAuthApiClientWithAuthHeader().postClients();
 
   const clientId = dexClient.clientId;
-  const clientSecret = dexClient.clientSecret;
-  if (clientId && clientSecret) {
-    // Store the client ID and secret to be displayed to the user later
+  if (clientId) {
+    // Store the client ID to be displayed to the user later
     cookies().set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
-    cookies().set(AuthCookies.CLIENT_SECRET, Buffer.from(clientSecret).toString('base64'), { httpOnly: true });
 
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);

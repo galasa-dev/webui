@@ -147,7 +147,7 @@ describe('Middleware', () => {
     postAuthenticateSpy.mockReset();
   });
 
-  it('should set a refresh token cookie during a callback request with client ID and secret cookies', async () => {
+  it('should set a refresh token cookie during a callback request with client ID cookie', async () => {
     // Given...
     redirectSpy.mockRestore();
 
@@ -156,7 +156,6 @@ describe('Middleware', () => {
     const redirectUrl = 'http://my-connector/auth';
 
     req.cookies.set('client_id', 'my-client-id');
-    req.cookies.set('client_secret', 'shhh');
 
     global.fetch = jest.fn(() =>
       Promise.resolve({

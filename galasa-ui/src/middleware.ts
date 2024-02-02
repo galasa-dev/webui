@@ -80,38 +80,33 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
 
   if (code) {
     let clientId = '';
-    let clientSecret = '';
     const clientIdCookie = request.cookies.get(AuthCookies.CLIENT_ID);
-    const clientSecretCookie = request.cookies.get(AuthCookies.CLIENT_SECRET);
 
-    if (!clientIdCookie || !clientSecretCookie) {
+    if (!clientIdCookie) {
       clientId = process.env.GALASA_WEBUI_CLIENT_ID ?? '';
-      clientSecret = Buffer.from(process.env.GALASA_WEBUI_CLIENT_SECRET ?? '').toString('base64');
     } else {
       clientId = clientIdCookie.value;
-      clientSecret = clientSecretCookie.value;
     }
 
     // Build the request body
-    const authProperties = buildAuthProperties(clientId, clientSecret, code);
+    const authProperties = buildAuthProperties(clientId, code);
 
     // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
     const tokenResponse = await authApiClient.postAuthenticate(authProperties);
 
-    if (tokenResponse.jwt && (!clientIdCookie || !clientSecretCookie)) {
+    if (tokenResponse.jwt && !clientIdCookie) {
       response.cookies.set(AuthCookies.ID_TOKEN, tokenResponse.jwt, { httpOnly: true });
-    } else if (tokenResponse.refreshToken && clientIdCookie && clientSecretCookie) {
+    } else if (tokenResponse.refreshToken && clientIdCookie) {
       response.cookies.set(AuthCookies.REFRESH_TOKEN, tokenResponse.refreshToken, { httpOnly: true });
     }
   }
   return response;
 };
 
-const buildAuthProperties = (clientId: string, clientSecret: string, code: string) => {
+const buildAuthProperties = (clientId: string, code: string) => {
   const authProperties = new AuthProperties();
 
   authProperties.clientId = clientId;
-  authProperties.secret = clientSecret;
   authProperties.code = code;
 
   return authProperties;
