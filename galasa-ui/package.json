@@ -13,7 +13,7 @@
     "@carbon/react": "^1.31.3",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
-    "@types/react-dom": "18.2.5",
+    "@types/react-dom": "18.2.18",
     "eslint": "8.42.0",
     "eslint-config-next": "^14.0.3",
     "jwt-decode": "^3.1.2",
