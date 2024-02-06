@@ -125,6 +125,8 @@ function download_node_dependencies {
 
 # Invoke the generator.
 function generate_rest_client {
+    cd ${BASEDIR}
+
     h2 "Generate the openapi client TypeScript code..."
 
     if [[ "${build_type}" == "clean" ]]; then
@@ -178,6 +180,22 @@ function do_build {
     success "Built OK."
 }
 
+function set_up_env {
+    cd ${BASEDIR}/galasa-ui
+    h2 "Setting up .env file..."
+
+    # Make sure we have a .env file in the project
+    if [ ! -f .env ]; then
+        cp .env.example .env
+        rc=$?; if [[ "${rc}" != "0" ]]; then error "Failed to create .env file. rc=${rc}"; exit 1; fi
+
+        success ".env file created from .env.example template OK."
+    else
+        success ".env file already exists. Continuing."
+    fi
+}
+
+set_up_env
 generate_rest_client
 download_node_dependencies
 run_tests

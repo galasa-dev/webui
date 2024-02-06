@@ -52,7 +52,46 @@ bold() { printf "${bold}%s${reset}\n" "$@"
 note() { printf "\n${underline}${bold}${blue}Note:${reset} ${blue}%s${reset}\n" "$@"
 }
 
-${BASEDIR}/build-locally.sh --delta
+function build_locally {
+    ${BASEDIR}/build-locally.sh --delta
+}
 
-cd ${BASEDIR}/galasa-ui
-npm start
+function set_up_env {
+    cd ${BASEDIR}/galasa-ui
+    h2 "Setting up .env file..."
+
+    cp .env.example .env
+    rc=$?; if [[ "${rc}" != "0" ]]; then error "Failed to create .env file. rc=${rc}"; exit 1; fi
+
+    success ".env file created from .env.example template OK."
+}
+
+function check_env_variables {
+    cd ${BASEDIR}/galasa-ui
+
+    h2 "Checking that the required environment variables have been set..."
+
+    # Find any environment variables within the .env file that have not been set
+    envVarPattern="\w*=\"\""
+    envVarsWithMissingValues=$(grep "${envVarPattern}" .env)
+
+    if [ ! -z "${envVarsWithMissingValues}" ]; then
+        error "One or more required environment variables in .env have not been set. Please set values for the following environment variables:
+${envVarsWithMissingValues}"
+        exit 1
+    fi
+
+    success "Required environment variables are set OK."
+}
+
+function run_webui {
+    cd ${BASEDIR}/galasa-ui/.next
+
+    h2 "Starting web UI server..."
+    cp -r static standalone/.next
+    node standalone/server.js
+}
+
+build_locally
+check_env_variables
+run_webui

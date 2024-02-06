@@ -41,3 +41,6 @@ build/
 
 # Ignore temp directories
 **/temp/
+
+# Don't check in .env files
+.env
