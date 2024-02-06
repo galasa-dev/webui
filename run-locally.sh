@@ -56,16 +56,6 @@ function build_locally {
     ${BASEDIR}/build-locally.sh --delta
 }
 
-function set_up_env {
-    cd ${BASEDIR}/galasa-ui
-    h2 "Setting up .env file..."
-
-    cp .env.example .env
-    rc=$?; if [[ "${rc}" != "0" ]]; then error "Failed to create .env file. rc=${rc}"; exit 1; fi
-
-    success ".env file created from .env.example template OK."
-}
-
 function check_env_variables {
     cd ${BASEDIR}/galasa-ui
 
