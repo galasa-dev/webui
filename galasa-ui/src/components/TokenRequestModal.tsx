@@ -25,6 +25,9 @@ export default function TokenRequestModal() {
     try {
       const response = await fetch('/auth/tokens', {
         method: 'POST',
+        body: JSON.stringify({
+            tokenDescription: tokenNameInputRef.current?.value
+          }),
       });
 
       if (!response.ok) {

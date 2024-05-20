@@ -45,7 +45,7 @@ export default function TokenResponseModal({ refreshToken, clientId, onLoad }: T
         Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your
         terminal to allow your client tool to access the Galasa Ecosystem.
       </p>
-      <CodeSnippet type="multi">{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
+      <CodeSnippet type="multi" wrapText>{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
       <InlineNotification
         title="The personal access token details are not stored and cannot be retrieved when this dialog is closed."
         subtitle="Remember to copy the details shown above before closing this dialog."

@@ -199,7 +199,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
                 Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your terminal to allow your client tool to access the Galasa Ecosystem.
               </p>
               <div
-                class="cds--snippet cds--snippet--multi"
+                class="cds--snippet cds--snippet--multi cds--snippet--wraptext"
               >
                 <div
                   aria-label="Copy to clipboard"
@@ -573,7 +573,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
               Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your terminal to allow your client tool to access the Galasa Ecosystem.
             </p>
             <div
-              class="cds--snippet cds--snippet--multi"
+              class="cds--snippet cds--snippet--multi cds--snippet--wraptext"
             >
               <div
                 aria-label="Copy to clipboard"

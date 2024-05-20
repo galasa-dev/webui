@@ -88,8 +88,11 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
       clientId = clientIdCookie.value;
     }
 
+    const tokenDescription = request.cookies.get(AuthCookies.TOKEN_DESCRIPTION)?.value;
+    response.cookies.delete(AuthCookies.TOKEN_DESCRIPTION);
+
     // Build the request body
-    const authProperties = buildAuthProperties(clientId, code);
+    const authProperties = buildAuthProperties(clientId, code, tokenDescription);
 
     // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
     const tokenResponse = await authApiClient.postAuthenticate(authProperties);
@@ -103,11 +106,12 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
   return response;
 };
 
-const buildAuthProperties = (clientId: string, code: string) => {
+const buildAuthProperties = (clientId: string, code: string, tokenDescription?: string) => {
   const authProperties = new AuthProperties();
 
   authProperties.clientId = clientId;
   authProperties.code = code;
+  authProperties.description = tokenDescription;
 
   return authProperties;
 };

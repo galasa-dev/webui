@@ -6,6 +6,7 @@
  */
 import * as AuthTokenRoute from '@/app/auth/tokens/route';
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
+import { NextRequest } from 'next/server';
 
 const mockAuthenticationApi = AuthenticationAPIApi as jest.Mock;
 
@@ -35,6 +36,12 @@ describe('POST /auth/tokens', () => {
     // Given...
     const redirectUrl = 'http://my-connector/auth';
 
+    const requestBody = JSON.stringify({
+      tokenDescription: "my-token"
+    })
+
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
         url: redirectUrl,
@@ -45,7 +52,7 @@ describe('POST /auth/tokens', () => {
     ) as jest.Mock;
 
     // When...
-    const response = await AuthTokenRoute.POST();
+    const response = await AuthTokenRoute.POST(request);
     const responseJson = await response.json();
 
     // Then...
@@ -55,6 +62,12 @@ describe('POST /auth/tokens', () => {
   it('throws an error if the POST request to create a new Dex client returns an error', async () => {
     // Given...
     const redirectUrl = 'http://my-connector/auth';
+
+    const requestBody = JSON.stringify({
+      tokenDescription: "my-token"
+    })
+
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -68,13 +81,19 @@ describe('POST /auth/tokens', () => {
     });
 
     // When/Then...
-    await expect(AuthTokenRoute.POST()).rejects.toMatch(errorMessage);
+    await expect(AuthTokenRoute.POST(request)).rejects.toMatch(errorMessage);
     mockAuthenticationApi.mockReset();
   });
 
   it('throws an error if the newly created Dex client does not contain a client ID', async () => {
     // Given...
     const redirectUrl = 'http://my-connector/auth';
+
+    const requestBody = JSON.stringify({
+      tokenDescription: "my-token"
+    })
+
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -87,7 +106,7 @@ describe('POST /auth/tokens', () => {
     });
 
     // When/Then...
-    await expect(AuthTokenRoute.POST()).rejects.toThrow(/failed to create personal access token/i);
+    await expect(AuthTokenRoute.POST(request)).rejects.toThrow(/failed to create personal access token/i);
     mockAuthenticationApi.mockReset();
   });
 });
