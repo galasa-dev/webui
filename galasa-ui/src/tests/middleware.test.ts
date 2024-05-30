@@ -130,7 +130,7 @@ describe('Middleware', () => {
     ) as jest.Mock;
 
     const mockIdToken = 'mynewjwt';
-    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
+    const createTokenSpy = jest.spyOn(authApiClient, 'createToken').mockReturnValue(
       Promise.resolve({
         jwt: mockIdToken,
         refreshToken: 'mynewrefreshtoken',
@@ -141,10 +141,10 @@ describe('Middleware', () => {
     const response = await middleware(req);
 
     // Then...
-    expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
+    expect(createTokenSpy).toHaveBeenCalledTimes(1);
     expect(response.cookies.get('id_token')?.value).toEqual(mockIdToken);
 
-    postAuthenticateSpy.mockReset();
+    createTokenSpy.mockReset();
   });
 
   it('should set a refresh token cookie during a callback request with client ID cookie', async () => {
@@ -164,7 +164,7 @@ describe('Middleware', () => {
     ) as jest.Mock;
 
     const mockRefreshToken = 'mynewrefreshtoken';
-    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
+    const createTokenSpy = jest.spyOn(authApiClient, 'createToken').mockReturnValue(
       Promise.resolve({
         jwt: 'mynewjwt',
         refreshToken: mockRefreshToken,
@@ -175,11 +175,11 @@ describe('Middleware', () => {
     const response = await middleware(req);
 
     // Then...
-    expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
+    expect(createTokenSpy).toHaveBeenCalledTimes(1);
     expect(response.cookies.get('refresh_token')?.value).toEqual(mockRefreshToken);
     expect(response.cookies.has('id_token')).toEqual(false);
 
-    postAuthenticateSpy.mockReset();
+    createTokenSpy.mockReset();
   });
 
   it('should issue a rewrite to the error page if something goes wrong during the authentication process', async () => {

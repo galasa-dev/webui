@@ -95,7 +95,7 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
     const authProperties = buildAuthProperties(clientId, code, tokenDescription);
 
     // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
-    const tokenResponse = await authApiClient.postAuthenticate(authProperties);
+    const tokenResponse = await authApiClient.createToken(authProperties);
 
     if (tokenResponse.jwt && !clientIdCookie) {
       response.cookies.set(AuthCookies.ID_TOKEN, tokenResponse.jwt, { httpOnly: true });
