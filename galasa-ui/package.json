@@ -10,7 +10,7 @@
     "test": "jest --coverage --collectCoverageFrom='src/**/*.{ts,tsx}'"
   },
   "dependencies": {
-    "@carbon/react": "^1.31.3",
+    "@carbon/react": "^1.47.0",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
     "@types/react-dom": "18.2.5",
