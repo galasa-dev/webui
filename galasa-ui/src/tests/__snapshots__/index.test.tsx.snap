@@ -364,6 +364,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
                  
                 <a
                   href="https://galasa.dev/docs/initialising-home-folder"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   Galasa documentation
@@ -778,6 +779,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
                
               <a
                 href="https://galasa.dev/docs/initialising-home-folder"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 Galasa documentation
