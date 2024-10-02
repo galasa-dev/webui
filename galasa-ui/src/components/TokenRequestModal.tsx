@@ -28,8 +28,8 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
       const response = await fetch('/auth/tokens', {
         method: 'POST',
         body: JSON.stringify({
-            tokenDescription: tokenNameInputRef.current?.value
-          }),
+          tokenDescription: tokenNameInputRef.current?.value
+        }),
       });
 
       if (!response.ok) {
@@ -55,7 +55,7 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
   return (
     <>
       <Button iconDescription={"Create new access token"} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
-          <Add/>
+        <Add/>
       </Button>
       <Modal
         modalHeading="Personal access token request"

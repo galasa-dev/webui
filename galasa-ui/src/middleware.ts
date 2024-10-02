@@ -18,10 +18,10 @@ export async function middleware(request: NextRequest) {
     if (request.url.includes('/callback')) {
       let responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
 
-      const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS)
+      const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
     
       if(shouldReturnToMySettingsPage?.value === 'true'){
-        responseUrl = responseUrl + "/mysettings"
+        responseUrl = responseUrl + "/mysettings";
       }
       
       response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));

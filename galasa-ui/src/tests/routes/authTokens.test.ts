@@ -63,9 +63,9 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: "my-token"
-    })
+    });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -90,9 +90,9 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: "my-token"
-    })
+    });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -116,9 +116,9 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: "my-token"
-    })
+    });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -148,7 +148,7 @@ describe('GET /auth/tokens', () => {
       owner: {
         loginId: "admin"
       }
-    }]
+    }];
 
     mockAuthenticationApi.mockReturnValue({
       getTokens: jest.fn(() => Promise.resolve({
@@ -163,14 +163,14 @@ describe('GET /auth/tokens', () => {
       }))
     });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "GET" })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "GET" });
 
-    const response = await AuthTokenRoute.GET(request)
+    const response = await AuthTokenRoute.GET(request);
 
-    const serializedTokens = await response.json()
+    const serializedTokens = await response.json();
 
-    expect(response.status).toEqual(200)
-    expect(serializedTokens).toEqual(mockResponseData)
+    expect(response.status).toEqual(200);
+    expect(serializedTokens).toEqual(mockResponseData);
   });
 
   it('should return 400 if no loginId is provided', async () => {
@@ -210,11 +210,11 @@ describe('DELETE /auth/tokens', () => {
 
     const testBody = JSON.stringify({ tokenId });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "DELETE", body: testBody })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "DELETE", body: testBody });
 
-    const response = await AuthTokenRoute.DELETE(request)
+    const response = await AuthTokenRoute.DELETE(request);
 
-    expect(response.status).toEqual(204)
+    expect(response.status).toEqual(204);
     
   });
 
@@ -230,13 +230,13 @@ describe('DELETE /auth/tokens', () => {
 
     const testBody = JSON.stringify({ tokenId });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "DELETE", body: testBody })
+    const request = new NextRequest("https://my-server/auth/tokens", { method: "DELETE", body: testBody });
 
-    const response = await AuthTokenRoute.DELETE(request)
+    const response = await AuthTokenRoute.DELETE(request);
     const responseText = await response.text();
 
-    expect(response.status).toEqual(400)
-    expect(responseText).toEqual("Token ID is required")
+    expect(response.status).toEqual(400);
+    expect(responseText).toEqual("Token ID is required");
     
   });
 

@@ -9,136 +9,136 @@ import PageHeaderMenu from '@/components/PageHeaderMenu';
 import PageHeader from '@/components/PageHeader';
 import React from 'react';
 
-const fetchMock = jest.spyOn(global, 'fetch')
+const fetchMock = jest.spyOn(global, 'fetch');
 
 const mockRouter = {
-    push: jest.fn(() => useRouter().push),
-    refresh: jest.fn(() => useRouter().refresh)
+  push: jest.fn(() => useRouter().push),
+  refresh: jest.fn(() => useRouter().refresh)
 };
 
 jest.mock('next/navigation', () => ({
 
-    useRouter: jest.fn(() => mockRouter),
+  useRouter: jest.fn(() => mockRouter),
 
-}))
+}));
 
 afterEach(() => {
-    jest.clearAllMocks()
-})
+  jest.clearAllMocks();
+});
 
 
 test('renders the header containing the header menu', () => {
 
-    render(<PageHeader galasaServiceName='Galasa Service' />)
+  render(<PageHeader galasaServiceName='Galasa Service' />);
 
-    const headerMenu = screen.getByTestId('header-menu')
-    expect(headerMenu).toBeInTheDocument()
+  const headerMenu = screen.getByTestId('header-menu');
+  expect(headerMenu).toBeInTheDocument();
 
-})
+});
 
 test('checking if the menu btn exists', () => {
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    const menuBtn = screen.getByTestId('menu-btn')
-    expect(menuBtn).toBeInTheDocument()
-})
+  const menuBtn = screen.getByTestId('menu-btn');
+  expect(menuBtn).toBeInTheDocument();
+});
 
 test('renders logout btn when menu btn is pressed', async () => {
 
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('menu-btn'))
+  fireEvent.click(screen.getByTestId('menu-btn'));
 
-    const logoutBtn = screen.getByTestId('logout-btn')
+  const logoutBtn = screen.getByTestId('logout-btn');
 
-    expect(logoutBtn).toBeInTheDocument();
-})
+  expect(logoutBtn).toBeInTheDocument();
+});
 
 test('renders my profile btn when menu btn is pressed', async () => {
 
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('menu-btn'))
+  fireEvent.click(screen.getByTestId('menu-btn'));
 
-    const myProfileBtn = screen.getByTestId('my-profile-btn')
+  const myProfileBtn = screen.getByTestId('my-profile-btn');
 
-    expect(myProfileBtn).toBeInTheDocument();
-})
+  expect(myProfileBtn).toBeInTheDocument();
+});
 
 
 test('clicking my profile btn redirects me to My Profle Page', async () => {
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('menu-btn'))
+  fireEvent.click(screen.getByTestId('menu-btn'));
 
-    const myProfileBtn = screen.getByTestId('my-profile-btn')
+  const myProfileBtn = screen.getByTestId('my-profile-btn');
 
-    expect(myProfileBtn).toBeInTheDocument();
+  expect(myProfileBtn).toBeInTheDocument();
 
-    fireEvent.click(myProfileBtn)
+  fireEvent.click(myProfileBtn);
 
-    await waitFor(() => {
+  await waitFor(() => {
 
-        expect(mockRouter.push).toHaveBeenCalled()
-        expect(mockRouter.push).toHaveBeenCalledTimes(1)
+    expect(mockRouter.push).toHaveBeenCalled();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
 
-    })
+  });
 
-})
+});
 
 test('clicking my settings btn redirects me to My Settings Page', async () => {
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('menu-btn'))
+  fireEvent.click(screen.getByTestId('menu-btn'));
 
-    const myProfileBtn = screen.getByTestId('my-settings-btn')
+  const myProfileBtn = screen.getByTestId('my-settings-btn');
 
-    expect(myProfileBtn).toBeInTheDocument();
+  expect(myProfileBtn).toBeInTheDocument();
 
-    fireEvent.click(myProfileBtn)
+  fireEvent.click(myProfileBtn);
 
-    await waitFor(() => {
+  await waitFor(() => {
 
-        expect(mockRouter.push).toHaveBeenCalled()
-        expect(mockRouter.push).toHaveBeenCalledTimes(1)
+    expect(mockRouter.push).toHaveBeenCalled();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
 
-    })
+  });
 
-})
+});
 
 test('clicking log out button calls handleDeleteCookieApiOperation, RESPONSE OK', async () => {
 
-    render(<PageHeaderMenu />)
+  render(<PageHeaderMenu />);
 
-    const response = new Response(null, {
-        status: 204,
-        statusText: 'OK',
-        headers: {
-            'Content-type': 'application/json',
-        },
-    });
+  const response = new Response(null, {
+    status: 204,
+    statusText: 'OK',
+    headers: {
+      'Content-type': 'application/json',
+    },
+  });
 
-    fetchMock.mockResolvedValueOnce(response)
+  fetchMock.mockResolvedValueOnce(response);
 
-    fireEvent.click(screen.getByTestId('menu-btn'))  //expanding the menu items
+  fireEvent.click(screen.getByTestId('menu-btn'));  //expanding the menu items
 
-    const logoutBtn = screen.getByTestId('logout-btn')
+  const logoutBtn = screen.getByTestId('logout-btn');
 
-    expect(logoutBtn).toBeInTheDocument();
+  expect(logoutBtn).toBeInTheDocument();
 
-    fireEvent.click(logoutBtn)
+  fireEvent.click(logoutBtn);
 
-    await waitFor(() => {
-
-
-        expect(fetchMock).toBeCalledTimes(1)
-
-        expect(mockRouter.refresh).toHaveBeenCalled()
-        expect(mockRouter.refresh).toHaveBeenCalledTimes(1)
-
-    })
+  await waitFor(() => {
 
 
-})
+    expect(fetchMock).toBeCalledTimes(1);
+
+    expect(mockRouter.refresh).toHaveBeenCalled();
+    expect(mockRouter.refresh).toHaveBeenCalledTimes(1);
+
+  });
+
+
+});
 
 

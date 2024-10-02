@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { User } from "@carbon/icons-react"
+import { User } from "@carbon/icons-react";
 import { useRouter } from 'next/navigation';
 
 function PageHeaderMenu() {
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleDeleteCookieApiOperation = async () => {
 
@@ -21,18 +21,18 @@ function PageHeaderMenu() {
     if (response.status === 204) {
 
       //auto redirect to render dex login page
-      router.refresh()
+      router.refresh();
 
     }
-  }
+  };
 
   const handleRedirectToMyProfilePage = () => {
-    router.push("/myprofile")
-  }
+    router.push("/myprofile");
+  };
 
   const handleRedirectToMySettingsPage = () => {
-    router.push("/mysettings")
-  }
+    router.push("/mysettings");
+  };
 
   return (
     <HeaderGlobalBar data-testid="header-menu">
@@ -64,7 +64,7 @@ function PageHeaderMenu() {
       </OverflowMenu>
 
     </HeaderGlobalBar>
-  )
+  );
 }
 
-export default PageHeaderMenu
+export default PageHeaderMenu;

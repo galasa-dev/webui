@@ -15,8 +15,8 @@ describe('Layout', () => {
 });
 
 afterEach(() => {
-  delete process.env.GALASA_SERVICE_NAME
-})
+  delete process.env.GALASA_SERVICE_NAME;
+});
 
 const mockRouter = {
   refresh: jest.fn(() => useRouter().refresh),
@@ -26,7 +26,7 @@ jest.mock('next/navigation', () => ({
 
   useRouter: jest.fn(() => mockRouter),
 
-}))
+}));
 
 test('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank string', () => {
 
@@ -36,8 +36,8 @@ test('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank
     Hello, world!
   </RootLayout>);
 
-  const titleElement = document.querySelector('title')?.textContent
-  expect(titleElement).toBe("Galasa Service")
+  const titleElement = document.querySelector('title')?.textContent;
+  expect(titleElement).toBe("Galasa Service");
 
 
 });
@@ -47,10 +47,10 @@ test('renders custom title when env GALASA_SERVICE_NAME is not present (not null
   process.env.GALASA_SERVICE_NAME = 'Managers'; //mocking environment variable
   render(<RootLayout>Hello, world!</RootLayout>);
 
-  const titleElement = document.querySelector('title')?.textContent
+  const titleElement = document.querySelector('title')?.textContent;
 
 
-  expect(titleElement).not.toBe("Galasa Service")
-  expect(titleElement).toBe("Managers")
+  expect(titleElement).not.toBe("Galasa Service");
+  expect(titleElement).toBe("Managers");
 
 });

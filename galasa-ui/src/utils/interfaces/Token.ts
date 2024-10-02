@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-export default interface Token {
+interface Token {
     tokenId: string;
     description: string;
     creationTime: string;
@@ -12,3 +12,5 @@ export default interface Token {
         loginId: string;
     };
 }
+
+export default Token;

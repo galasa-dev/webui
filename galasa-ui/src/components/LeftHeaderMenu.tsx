@@ -3,36 +3,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use client'
+'use client';
 
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { Menu } from "@carbon/icons-react"
-import { useRouter } from "next/navigation"
+import { Menu } from "@carbon/icons-react";
+import { useRouter } from "next/navigation";
 
 export default function LeftHeaderMenu() {
 
-    const router = useRouter()
+  const router = useRouter();
 
-    const handleRedirectToHome = () => {
-        router.push("/")
-    }
+  const handleRedirectToHome = () => {
+    router.push("/");
+  };
 
-    return (
+  return (
 
-        <OverflowMenu
-            data-floating-menu-container
-            selectorPrimaryFocus={'.optionOne'}
-            renderIcon={Menu}
-            data-testid='left-menu-btn'
-            size='lg'
-            flipped={false}
-        >
-            <OverflowMenuItem
-                itemText="Home"
-                data-testid='home-btn'
-                onClick={handleRedirectToHome}
-            />
-        </OverflowMenu>
+    <OverflowMenu
+      data-floating-menu-container
+      selectorPrimaryFocus={'.optionOne'}
+      renderIcon={Menu}
+      data-testid='left-menu-btn'
+      size='lg'
+      flipped={false}
+    >
+      <OverflowMenuItem
+        itemText="Home"
+        data-testid='home-btn'
+        onClick={handleRedirectToHome}
+      />
+    </OverflowMenu>
 
-    )
+  );
 }

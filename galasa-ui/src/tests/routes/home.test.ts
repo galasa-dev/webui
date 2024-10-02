@@ -14,36 +14,36 @@ jest.mock("@/utils/api");
 
 describe("GET function", () => {
 
-    let mockGetCpsProperty: jest.Mock<Promise<{ data: { value: string } }[]>, [string, string]>;
+  let mockGetCpsProperty: jest.Mock<Promise<{ data: { value: string } }[]>, [string, string]>;
 
-    beforeEach(() => {
+  beforeEach(() => {
 
-        jest.clearAllMocks();
+    jest.clearAllMocks();
 
-        mockGetCpsProperty = jest.fn();
+    mockGetCpsProperty = jest.fn();
 
-        (ConfigurationPropertyStoreAPIApi as jest.Mock).mockImplementation(() => {
-            return {
-                getCpsProperty: mockGetCpsProperty,
-            };
-        });
-
-        (createAuthenticatedApiConfiguration as jest.Mock).mockReturnValue({});
+    (ConfigurationPropertyStoreAPIApi as jest.Mock).mockImplementation(() => {
+      return {
+        getCpsProperty: mockGetCpsProperty,
+      };
     });
 
-    it("should return a 200 response with data when the API call is successful", async () => {
+    (createAuthenticatedApiConfiguration as jest.Mock).mockReturnValue({});
+  });
 
-        const mockResponse = [
-            { data: { value: "Mocked welcome markdown content" } }
-        ];
-        mockGetCpsProperty.mockResolvedValue(mockResponse);
+  it("should return a 200 response with data when the API call is successful", async () => {
 
-        const result = await GET();
+    const mockResponse = [
+      { data: { value: "Mocked welcome markdown content" } }
+    ];
+    mockGetCpsProperty.mockResolvedValue(mockResponse);
 
-        expect(mockGetCpsProperty).toHaveBeenCalledWith("service", "welcome.markdown");
-        expect(result).toBeInstanceOf(NextResponse);
-        expect(result.status).toBe(200);
-        const bodyText = await result.text(); // Extract text from the response
-        expect(bodyText).toBe("Mocked welcome markdown content");
-    });
+    const result = await GET();
+
+    expect(mockGetCpsProperty).toHaveBeenCalledWith("service", "welcome.markdown");
+    expect(result).toBeInstanceOf(NextResponse);
+    expect(result.status).toBe(200);
+    const bodyText = await result.text(); // Extract text from the response
+    expect(bodyText).toBe("Mocked welcome markdown content");
+  });
 });

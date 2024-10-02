@@ -10,57 +10,57 @@ import LeftHeaderMenu from '@/components/LeftHeaderMenu';
 
 
 const mockRouter = {
-    push: jest.fn(() => useRouter().push),
+  push: jest.fn(() => useRouter().push),
 };
 
 jest.mock('next/navigation', () => ({
 
-    useRouter: jest.fn(() => mockRouter),
+  useRouter: jest.fn(() => mockRouter),
 
-}))
+}));
 
 afterEach(() => {
-    jest.clearAllMocks()
-})
+  jest.clearAllMocks();
+});
 
 
 test('checking if the left menu btn exists', () => {
-    render(<LeftHeaderMenu />)
+  render(<LeftHeaderMenu />);
 
-    const menuBtn = screen.getByTestId('left-menu-btn')
-    expect(menuBtn).toBeInTheDocument()
-})
+  const menuBtn = screen.getByTestId('left-menu-btn');
+  expect(menuBtn).toBeInTheDocument();
+});
 
 
 test('renders home btn when menu btn is pressed', async () => {
 
-    render(<LeftHeaderMenu />)
+  render(<LeftHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('left-menu-btn'))
+  fireEvent.click(screen.getByTestId('left-menu-btn'));
 
-    const homeBtn = screen.getByTestId('home-btn')
+  const homeBtn = screen.getByTestId('home-btn');
 
-    expect(homeBtn).toBeInTheDocument();
-})
+  expect(homeBtn).toBeInTheDocument();
+});
 
 test('clicking my profile btn redirects me to home page', async () => {
-    render(<LeftHeaderMenu />)
+  render(<LeftHeaderMenu />);
 
-    fireEvent.click(screen.getByTestId('left-menu-btn'))
+  fireEvent.click(screen.getByTestId('left-menu-btn'));
 
-    const homeBtn = screen.getByTestId('home-btn')
+  const homeBtn = screen.getByTestId('home-btn');
 
-    expect(homeBtn).toBeInTheDocument();
+  expect(homeBtn).toBeInTheDocument();
 
-    fireEvent.click(homeBtn)
+  fireEvent.click(homeBtn);
 
-    await waitFor(() => {
+  await waitFor(() => {
 
-        expect(mockRouter.push).toHaveBeenCalled()
-        expect(mockRouter.push).toHaveBeenCalledWith("/")
-        expect(mockRouter.push).toHaveBeenCalledTimes(1)
+    expect(mockRouter.push).toHaveBeenCalled();
+    expect(mockRouter.push).toHaveBeenCalledWith("/");
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
 
-    })
+  });
 
-})
+});
 

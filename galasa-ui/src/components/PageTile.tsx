@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-'use client'
+'use client';
 
 import { Tile } from '@carbon/react';
-import "../styles/global.scss"
+import "../styles/global.scss";
 
 export default function PageTile({ title }: { title: String }) {
 
-    return (
-        <Tile id="tile">
-            {title}
-        </Tile>
-    )
+  return (
+    <Tile id="tile">
+      {title}
+    </Tile>
+  );
 
 }

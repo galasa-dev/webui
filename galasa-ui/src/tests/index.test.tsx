@@ -12,7 +12,7 @@ jest.mock('next/headers', () => ({
   cookies: jest.fn(() => ({
     get: jest.fn().mockReturnValue('')
   }))
-}))
+}));
 
 const mockRouter = {
   refresh : jest.fn(() => useRouter().refresh),
@@ -22,7 +22,7 @@ jest.mock('next/navigation', () => ({
 
   useRouter: jest.fn(() => mockRouter),
 
-}))
+}));
 
 test('renders Galasa header', () => {
   render(<PageHeader galasaServiceName='Galasa Service'/>);

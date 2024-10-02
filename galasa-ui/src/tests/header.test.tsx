@@ -9,34 +9,34 @@ import { render, screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
 const mockRouter = {
-    refresh: jest.fn(() => useRouter().refresh),
+  refresh: jest.fn(() => useRouter().refresh),
 };
 
 jest.mock('next/navigation', () => ({
 
-    useRouter: jest.fn(() => mockRouter),
+  useRouter: jest.fn(() => mockRouter),
 
-}))
+}));
 
 
 test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null or blank string', () => {
 
-    render(<PageHeader galasaServiceName="Galasa Service" />);
+  render(<PageHeader galasaServiceName="Galasa Service" />);
 
-    const titleElement = screen.getByText("Galasa Service");
-    expect(titleElement.textContent).toBe("Galasa Service")
-    expect(titleElement).toBeInTheDocument();
+  const titleElement = screen.getByText("Galasa Service");
+  expect(titleElement.textContent).toBe("Galasa Service");
+  expect(titleElement).toBeInTheDocument();
 
 });
 
 
 test('renders custom header when title when env GALASA_SERVICE_NAME is present', () => {
 
-    render(<PageHeader galasaServiceName='Managers' />);
+  render(<PageHeader galasaServiceName='Managers' />);
 
-    const titleElement = screen.getByText("Managers");
-    expect(titleElement.textContent).not.toBe("Galasa Service")
-    expect(titleElement.textContent).toBe("Managers")
-    expect(titleElement).toBeInTheDocument();
+  const titleElement = screen.getByText("Managers");
+  expect(titleElement.textContent).not.toBe("Galasa Service");
+  expect(titleElement.textContent).toBe("Managers");
+  expect(titleElement).toBeInTheDocument();
 
 });

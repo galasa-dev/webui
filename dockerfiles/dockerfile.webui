@@ -13,6 +13,7 @@ RUN chown -R node:node /galasa
 # Take advantage of Next.js' automatic file tracing to reduce image size
 # See https://nextjs.org/docs/app/api-reference/next-config-js/output for information.
 COPY --chown=node:node ./galasa-ui/.next/standalone ./
+COPY --chown=node:node ./galasa-ui/public ./public
 COPY --chown=node:node ./galasa-ui/.next/static ./.next/static
 
 # Never run anything in a docker container as the root user if you can help it.

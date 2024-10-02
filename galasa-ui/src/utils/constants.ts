@@ -7,4 +7,4 @@
 const CLIENT_API_VERSION = "0.38.0";
 
 
-export {CLIENT_API_VERSION}
+export {CLIENT_API_VERSION};

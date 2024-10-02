@@ -14,27 +14,27 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
 
-    try {
+  try {
         
-        const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration())
+    const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration());
 
-        const response = await userApiClientWithAuthHeader.getUserByLoginId("me")
+    const response = await userApiClientWithAuthHeader.getUserByLoginId("me");
 
-        return (new NextResponse(response[0].loginId, { status: 200 }))
-    } catch (err) {
-        throw new Error("Failed to get login id of user")
-    }
+    return (new NextResponse(response[0].loginId, { status: 200 }));
+  } catch (err) {
+    throw new Error("Failed to get login id of user");
+  }
 
 }
 
 export async function DELETE() {
 
-    // an api route is made because, cookies are server side props and cannot be access directly on components
-    // that use 'use client' keyword.
+  // an api route is made because, cookies are server side props and cannot be access directly on components
+  // that use 'use client' keyword.
 
-    cookies().delete(AuthCookies.ID_TOKEN)
-    cookies().delete(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS)
+  cookies().delete(AuthCookies.ID_TOKEN);
+  cookies().delete(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
   
-    return (new NextResponse(null, { status: 204 }))
+  return (new NextResponse(null, { status: 204 }));
   
-  }
+}

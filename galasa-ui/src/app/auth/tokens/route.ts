@@ -9,7 +9,7 @@ import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthenticationAPIApi, UsersAPIApi } from '@/generated/galasaapi';
-import * as Constants from "@/utils/constants"
+import * as Constants from "@/utils/constants";
 
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';
@@ -23,7 +23,7 @@ interface TokenDetails {
 export async function POST(request: NextRequest) {
   // Call out to the API server's /auth/clients endpoint to create a new Dex client
 
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration())
+  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
   const dexClient = await authApiClientWithAuthHeader.postClients();
 
   const clientId = dexClient.clientId;
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ url: authResponse.headers.get('Location') ?? authResponse.url });
     response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
 
-    cookies().set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', {httpOnly: false})
+    cookies().set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', {httpOnly: false});
 
     return response;
   } else {
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   // Call out to the API server's /auth/tokens endpoint to retrieve all tokens for a user
 
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration())
-  const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration())
+  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
+  const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration());
 
   const response = await userApiClientWithAuthHeader.getUserByLoginId("me");
 
@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
 
   if (loginId) {
 
-    const tokens = await authApiClientWithAuthHeader.getTokens(Constants.CLIENT_API_VERSION, loginId)
+    const tokens = await authApiClientWithAuthHeader.getTokens(Constants.CLIENT_API_VERSION, loginId);
     
     const serializedTokens = JSON.stringify(tokens.tokens);
-    return (new NextResponse(serializedTokens, {status: 200}))
+    return (new NextResponse(serializedTokens, {status: 200}));
 
   } else {
     return (new NextResponse("No login ID provided", {status : 400}));
@@ -79,10 +79,10 @@ export async function DELETE(request: NextRequest){
     return new NextResponse('Token ID is required', { status: 400 });
   }
 
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration())
+  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
 
-  await authApiClientWithAuthHeader.deleteToken(tokenId)  
+  await authApiClientWithAuthHeader.deleteToken(tokenId);  
 
-  return (new NextResponse(null, {status: 204}))
+  return (new NextResponse(null, {status: 204}));
 
 }
