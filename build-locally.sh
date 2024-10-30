@@ -189,10 +189,11 @@ function do_build {
     fi
     success "Built OK."
 }
+
 function check_secrets {
     h2 "updating secrets baseline"
     cd ${BASEDIR}
-    detect-secrets scan --exclude-files galasa-ui/package-lock.json --update .secrets.baseline
+    detect-secrets scan --update .secrets.baseline
     rc=$? 
     check_exit_code $rc "Failed to run detect-secrets. Please check it is installed properly" 
     success "updated secrets file"
@@ -209,8 +210,19 @@ function check_secrets {
         error "Not all secrets found have been audited"
         exit 1  
     fi
-    sed -i '' '/[ ]*"generated_at": ".*",/d' .secrets.baseline
     success "secrets audit complete"
+
+    h2 "Removing the timestamp from the secrets baseline file so it doesn't always cause a git change."
+    mkdir -p temp
+    rc=$? 
+    check_exit_code $rc "Failed to create a temporary folder"
+    cat .secrets.baseline | grep -v "generated_at" > temp/.secrets.baseline.temp
+    rc=$? 
+    check_exit_code $rc "Failed to create a temporary file with no timestamp inside"
+    mv temp/.secrets.baseline.temp .secrets.baseline
+    rc=$? 
+    check_exit_code $rc "Failed to overwrite the secrets baseline with one containing no timestamp inside."
+    success "secrets baseline timestamp content has been removed ok"
 }
 
 generate_rest_client
