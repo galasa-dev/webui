@@ -20,8 +20,10 @@ export async function GET() {
     const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration());
 
     const response = await userApiClientWithAuthHeader.getUserByLoginId(Constants.CLIENT_API_VERSION,"me");
+    const userData = response[0];
 
-    return (new NextResponse(response[0].loginId, { status: 200 }));
+    return NextResponse.json({ userData: userData }, { status: 200 });
+
   } catch (err) {
     throw new Error("Failed to get login id of user");
   }
