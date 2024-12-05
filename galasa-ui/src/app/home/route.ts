@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
+"use server";
 import { ConfigurationPropertyStoreAPIApi } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { NextResponse } from "next/server";

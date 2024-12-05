@@ -15,7 +15,7 @@ describe('Layout', () => {
 });
 
 afterEach(() => {
-  delete process.env.GALASA_SERVICE_NAME;
+  delete process.env.NEXT_PUBLIC_GALASA_SERVICE_NAME;
 });
 
 const mockRouter = {
@@ -28,9 +28,9 @@ jest.mock('next/navigation', () => ({
 
 }));
 
-test('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank string', () => {
+test('renders Galasa Service title when env NEXT_PUBLIC_GALASA_SERVICE_NAME is null or blank string', () => {
 
-  process.env.GALASA_SERVICE_NAME = "";  //mocking environment variable
+  process.env.NEXT_PUBLIC_GALASA_SERVICE_NAME = "";  //mocking environment variable
 
   render(<RootLayout>
     Hello, world!
@@ -42,9 +42,9 @@ test('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank
 
 });
 
-test('renders custom title when env GALASA_SERVICE_NAME is not present (not null or blank)', () => {
+test('renders custom title when env NEXT_PUBLIC_GALASA_SERVICE_NAME is not present (not null or blank)', () => {
 
-  process.env.GALASA_SERVICE_NAME = 'Managers'; //mocking environment variable
+  process.env.NEXT_PUBLIC_GALASA_SERVICE_NAME = 'Managers'; //mocking environment variable
   render(<RootLayout>Hello, world!</RootLayout>);
 
   const titleElement = document.querySelector('title')?.textContent;
