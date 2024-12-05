@@ -15,6 +15,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
 
+  "use server";
+
   try {
         
     const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration());
@@ -31,6 +33,8 @@ export async function GET() {
 }
 
 export async function DELETE() {
+
+  "use server";
 
   // an api route is made because, cookies are server side props and cannot be access directly on components
   // that use 'use client' keyword.

@@ -19,7 +19,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 
-test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null or blank string', () => {
+test('renders Galasa Service header title when env NEXT_PUBLIC_GALASA_SERVICE_NAME is null or blank string', () => {
 
   render(<PageHeader galasaServiceName="Galasa Service" />);
 
@@ -30,7 +30,7 @@ test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null o
 });
 
 
-test('renders custom header when title when env GALASA_SERVICE_NAME is present', () => {
+test('renders custom header when title when env NEXT_PUBLIC_GALASA_SERVICE_NAME is present', () => {
 
   render(<PageHeader galasaServiceName='Managers' />);
 
