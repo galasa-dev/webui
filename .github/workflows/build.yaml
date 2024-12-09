@@ -104,6 +104,19 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
 
+  trigger-workflow:
+    name: Trigger Helm workflow to recycle ecosystem1
+    needs: build-webui
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+    - name: Trigger Helm workflow using GitHub CLI call
+      run: |
+        gh workflow run build-helm.yaml --repo https://github.com/galasa-dev/automation
+      env:
+        GH_TOKEN: ${{ secrets.GALASA_TEAM_GITHUB_TOKEN }}
+
   report-failure:
     name: Report failure in workflow
     runs-on: ubuntu-latest
