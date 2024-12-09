@@ -144,7 +144,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GALASA_TEAM_GITHUB_TOKEN }}
         run: |
-          gh workflow run build-helm.yaml --repo https://github.com/galasa-dev/automation
+          gh workflow run build.yaml --repo https://github.com/galasa-dev/helm
 
   report-failure:
     # Skip this job for forks
