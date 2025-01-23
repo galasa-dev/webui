@@ -6,7 +6,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import LeftHeaderMenu from '@/components/LeftHeaderMenu';
+import LeftHeaderMenu from '@/components/headers/LeftHeaderMenu';
 
 
 const mockRouter = {

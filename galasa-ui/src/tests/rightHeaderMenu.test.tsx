@@ -5,8 +5,8 @@
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
-import PageHeaderMenu from '@/components/PageHeaderMenu';
-import PageHeader from '@/components/PageHeader';
+import PageHeaderMenu from '@/components/headers/PageHeaderMenu';
+import PageHeader from '@/components/headers/PageHeader';
 import React from 'react';
 
 const fetchMock = jest.spyOn(global, 'fetch');

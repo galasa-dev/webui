@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import PageHeader from '@/components/PageHeader';
+import PageHeader from '@/components/headers/PageHeader';
 import { render, screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 

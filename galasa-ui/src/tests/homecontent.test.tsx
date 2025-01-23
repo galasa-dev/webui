@@ -3,60 +3,65 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import React from 'react';
 import HomeContent from '@/components/HomeContent';
 
-beforeEach(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      status: 200,
-      statusText: "OK",
-      headers: new Headers(), // Mock Headers
-      redirected: false,
-      type: "basic",
-      url: "",
-      text: jest.fn().mockResolvedValue('# Mocked Markdown Content This is a test'),
-      json: jest.fn(), // Optional mock if needed for other tests
-    } as unknown as Response)
-  );
-});
+// Mock out the native time functions to so that we can control time as needed
+jest.useFakeTimers();
 
 afterEach(() => {
   jest.resetAllMocks();
 });
 
 test('renders markdown content', async () => {
-  render(<HomeContent />);
+  // Given...
+  const mockMarkdownContent = Promise.resolve("# Mocked Markdown Content This is a test");
+
+  // When...
+  render(<HomeContent markdownContentPromise={mockMarkdownContent} />);
+
+  // Then...
   const content = await screen.findByText('Mocked Markdown Content This is a test');
   expect(content).toBeInTheDocument();
 });
 
 test("render home content title", async () => {
-
-  render(<HomeContent />);
-
+  // Given...
+  const mockMarkdownContent = Promise.resolve("# Mocked Markdown Content This is a test");
+  
+  // When...
+  render(<HomeContent markdownContentPromise={mockMarkdownContent} />);
   await act(async () => {
-    // Simulate the useEffect hook
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    jest.advanceTimersByTime(1000);
   });
 
+  // Then...
   const title = screen.getByText("Mocked Markdown Content This is a test");
 
   expect(title).toBeInTheDocument();
+  expect(title).toBeInstanceOf(HTMLHeadingElement);
+  expect(title.tagName).toBe("H1");
 });
 
 test("render home content sub-title", async () => {
+  // Given...
+  const mockMarkdownContent = Promise.resolve(`
+# This is a title
+## This is a subtitle
+  `);
 
-  render(<HomeContent />);
+  // When...
+  render(<HomeContent markdownContentPromise={mockMarkdownContent} />);
 
   await act(async () => {
-    // Simulate the useEffect the useEffect hook
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    jest.advanceTimersByTime(1000);
   });
 
-  const subTitle = screen.getByText("Mocked Markdown Content This is a test");
+  // Then...
+  const subtitle = screen.getByText("This is a subtitle");
 
-  expect(subTitle).toBeInTheDocument();
+  expect(subtitle).toBeInTheDocument();
+  expect(subtitle).toBeInstanceOf(HTMLHeadingElement);
+  expect(subtitle.tagName).toBe("H2");
 });

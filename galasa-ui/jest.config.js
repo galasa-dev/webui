@@ -12,7 +12,7 @@ const createJestConfig = nextJest({
 // The Jest configuration to use in this project - see https://jestjs.io/docs/configuration for more information
 const config = {
 	setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
-	testEnvironment: "jest-environment-jsdom",
+	testEnvironment: "./extendedJsdomEnvironment.ts",
 
   // Ignore auto-generated code in coverage reports
   coveragePathIgnorePatterns: [

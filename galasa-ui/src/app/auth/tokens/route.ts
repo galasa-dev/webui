@@ -8,8 +8,7 @@ import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthenticationAPIApi, UsersAPIApi } from '@/generated/galasaapi';
-import * as Constants from "@/utils/constants";
+import { AuthenticationAPIApi } from '@/generated/galasaapi';
 
 // Stop this route from being pre-rendered
 export const dynamic = 'force-dynamic';
@@ -46,29 +45,6 @@ export async function POST(request: NextRequest) {
   } else {
     throw new Error('Failed to create personal access token.');
   }
-}
-
-export async function GET(request: NextRequest) {
-  // Call out to the API server's /auth/tokens endpoint to retrieve all tokens for a user
-
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
-  const userApiClientWithAuthHeader = new UsersAPIApi(createAuthenticatedApiConfiguration());
-
-  const response = await userApiClientWithAuthHeader.getUserByLoginId(Constants.CLIENT_API_VERSION,"me");
-
-  const loginId = response.length > 0 && response[0].loginId;
-
-  if (loginId) {
-
-    const tokens = await authApiClientWithAuthHeader.getTokens(Constants.CLIENT_API_VERSION, loginId);
-    
-    const serializedTokens = JSON.stringify(tokens.tokens);
-    return (new NextResponse(serializedTokens, {status: 200}));
-
-  } else {
-    return (new NextResponse("No login ID provided", {status : 400}));
-  }
-
 }
 
 export async function DELETE(request: NextRequest){

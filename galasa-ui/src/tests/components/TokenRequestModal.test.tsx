@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import TokenRequestModal from '@/components/TokenRequestModal';
+import TokenRequestModal from '@/components/tokens/TokenRequestModal';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 afterEach(() => {

@@ -60,58 +60,6 @@ jest.mock('next/headers', () => ({
   })),
 }));
 
-describe('GET function', () => {
-  const mockBearerToken = 'mocked_bearer_token';
-  const mockApiConfiguration = {
-    baseServer: { url: 'http://mock-server-url' }, // Mock the baseServer property
-    httpApi: {}, // Mock the httpApi property (could be more detailed)
-    middleware: [], // Mock the middleware array
-    authMethods: {}, // Mock the authMethods object
-  };
-
-  const mockUserResponse = {
-    url: 'http://mock-user-url',
-    loginId: 'mock_login_id',
-    clients: [
-      { clientName: 'client1', lastLogin: 'Client 1' },
-      { clientName: 'client2', lastLogin: 'Client 2' },
-    ],
-    id: 'mock_user_id',
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    // Mock the API configuration creation
-    mockedCreateAuthenticatedApiConfiguration.mockReturnValue(mockApiConfiguration as any);
-
-    // Mock the getUserByLoginId method to return the mockUserResponse
-    mockedUsersAPIApi.prototype.getUserByLoginId = jest.fn().mockResolvedValue([
-      mockUserResponse,
-    ]);
-  });
-
-  it('should return the loginId with a 200 status code when successful', async () => {
-    // Invoke the GET function without any arguments
-    const result = await GET();
-
-    const data = await result.json();
-
-    // Assertions
-    expect(mockedCreateAuthenticatedApiConfiguration).toHaveBeenCalled();
-    expect(mockedUsersAPIApi.prototype.getUserByLoginId).toHaveBeenCalledWith(Constants.CLIENT_API_VERSION, 'me');
-    expect(mockedUsersAPIApi.prototype.getUserByLoginId).toHaveBeenCalledTimes(1); // Verify internal call
-    expect(result.status).toBe(200); // Verify status code
-    expect(data.userData).toEqual(mockUserResponse); // Verify response body
-  });
-
-  it('should throw an error if getUserByLoginId fails', async () => {
-    mockedUsersAPIApi.prototype.getUserByLoginId = jest.fn().mockRejectedValue(new Error('API Error'));
-
-    await expect(GET()).rejects.toThrow('Failed to get login id of user');
-  });
-});
-
 describe('DELETE /auth/tokens', () => {
   beforeEach(() => {
     jest.clearAllMocks();

@@ -7,7 +7,7 @@
 'use client';
 
 import { Tile } from '@carbon/react';
-import "../styles/global.scss";
+import "@/styles/global.scss";
 
 export default function PageTile({ title }: { title: String }) {
 

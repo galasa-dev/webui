@@ -5,7 +5,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <div
+      <main
         id="content"
       >
         <div
@@ -21,11 +21,11 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
             <div />
           </div>
         </section>
-      </div>
+      </main>
     </div>
   </body>,
   "container": <div>
-    <div
+    <main
       id="content"
     >
       <div
@@ -41,7 +41,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
           <div />
         </div>
       </section>
-    </div>
+    </main>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],

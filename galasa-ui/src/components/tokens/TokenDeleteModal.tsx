@@ -5,14 +5,19 @@
  */
 'use client';
 
-import { useRef, useState } from 'react';
-import { TextInput } from '@carbon/react';
+import { useState } from 'react';
 import { InlineNotification } from '@carbon/react';
 import { Loading, Modal } from "@carbon/react";
-import Token from '@/utils/interfaces/Token';
-import TokenRequestModalProps from '@/utils/interfaces/TokenRequestModalProps';
+import { AuthToken } from '@/generated/galasaapi';
 
-export default function TokenRequestModal({ tokens, selectedTokens, deleteTokenFromSet, updateDeleteModalState }: TokenRequestModalProps) {
+interface TokenDeleteModalProps {
+  tokens: Set<AuthToken>;
+  selectedTokens: Set<string>;
+  deleteTokenFromSet: Function;
+  updateDeleteModalState: Function;
+}
+
+export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFromSet, updateDeleteModalState }: TokenDeleteModalProps) {
 
   const [open, setOpen] = useState(true);
   const [error, setError] = useState('');
@@ -21,13 +26,12 @@ export default function TokenRequestModal({ tokens, selectedTokens, deleteTokenF
   const deleteTokensById = async () => {
 
     try {
-
       setIsLoading(true);
       //Convert set to array so we can iterate for it
-      const tokensArray: Token[] = Array.from(tokens);
+      const tokensArray: AuthToken[] = Array.from(tokens);
 
       for (const token of tokensArray) {  //using loop to handle multiple token deletion at once
-        if (selectedTokens.has(token.tokenId)) {
+        if (selectedTokens.has(token.tokenId!)) {
 
           const response = await fetch(`/auth/tokens`, {
             method: 'DELETE',

@@ -23,6 +23,7 @@ code {
   display: inline-block;
   position: relative;
   margin-top: 3rem;
+
   // Temporarily removed left margin since the sidebar is not implemented yet
   // margin-left: 16rem;
 }
@@ -31,12 +32,12 @@ code {
 // Utility classes
 //--------------------------------------------------------------------------
 .center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  padding: 10px;
 }
 
 #tile{
