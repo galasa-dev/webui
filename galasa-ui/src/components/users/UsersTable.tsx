@@ -6,19 +6,24 @@
 "use client";
 import { UserData } from '@/generated/galasaapi';
 import React, { useEffect, useState } from 'react';
-import { Loading } from "@carbon/react";
+import { Loading, Button, DataTable } from "@carbon/react";
 import { Table, TableHead, TableRow, TableBody, TableCell, TableHeader, TableContainer, TableToolbarSearch, TableToolbarContent } from '@carbon/react';
-import styles from "@/styles/UsersList.module.css";
-import { DataTable } from '@carbon/react';
 import ErrorPage from '@/app/error/page';
 import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
+import { Edit } from '@carbon/icons-react';
+import styles from "@/styles/UsersList.module.css";
+import Link from 'next/link';
 
 export const dynamic = "force-dynamic";
 
-interface UsersListSectionProps {
-  usersListPromise: Promise<UserData[]>;
+type UsersListPromiseType = Promise<UserData[]>;
+type CurrentUserPromiseType = Promise<UserData>;
+
+interface UsersTableProps {
+  usersListPromise: UsersListPromiseType;
+  currentUserPromise: CurrentUserPromiseType;
 }
 
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
@@ -47,11 +52,14 @@ interface DataTableRow {
   isSelected?: boolean;
 }
 
-function UsersTable({ usersListPromise }: UsersListSectionProps) {
+export default function UsersTable({ usersListPromise, currentUserPromise }: UsersTableProps) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [users, setUsers] = useState<UserData[]>([]);
+  const [hasEditUserPermission, setHasEditUserPermission] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserData>({});
+  const EDIT_OTHER_USERS_PERMISSION = "USER_EDIT_OTHER";
 
   const headers = [
 
@@ -119,6 +127,20 @@ function UsersTable({ usersListPromise }: UsersListSectionProps) {
     });
   };
 
+  const checkForEditUsersPermission = async () => {
+
+    const user = await currentUserPromise;
+    const userPermissions = user.synthetic?.role?.data?.actions;
+    setCurrentUser(user);
+
+    if (userPermissions && userPermissions.length > 0) {
+
+      const isAllowed = userPermissions.includes(EDIT_OTHER_USERS_PERMISSION);
+      setHasEditUserPermission(isAllowed);
+
+    }
+
+  };
 
   useEffect(() => {
 
@@ -143,6 +165,7 @@ function UsersTable({ usersListPromise }: UsersListSectionProps) {
     };
 
     loadUsers();
+    checkForEditUsersPermission();
 
   }, [usersListPromise]);
 
@@ -151,7 +174,7 @@ function UsersTable({ usersListPromise }: UsersListSectionProps) {
   }
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading small={false} active={isLoading}/>;
   }
 
   return (
@@ -185,17 +208,27 @@ function UsersTable({ usersListPromise }: UsersListSectionProps) {
                       {header.header}
                     </TableHeader>
                   ))}
+                  {hasEditUserPermission && <TableHeader aria-label="user actions" />}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
                   return (
                     <TableRow key={row.id} {...getRowProps({ row })}>
-                      {row.cells.map((cell : DataTableCell) => (
+                      {row.cells.map((cell: DataTableCell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))
                       }
-                    </TableRow> 
+                      {
+                        // Only display edit button if user has the relevant action / permission
+                        hasEditUserPermission &&
+                        <TableCell className="cds--table-column-menu">
+                          <Link href={{pathname: currentUser.loginId === row.cells[0].value ? "/mysettings" : "/users/edit", query: {loginId: row.cells[0].value}}}>
+                            <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription="Edit User" />
+                          </Link>
+                        </TableCell>
+                      }
+                    </TableRow>
                   );
                 })}
               </TableBody>
@@ -207,5 +240,3 @@ function UsersTable({ usersListPromise }: UsersListSectionProps) {
     </div>
   );
 }
-
-export default UsersTable;

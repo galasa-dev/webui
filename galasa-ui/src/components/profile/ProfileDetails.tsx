@@ -8,12 +8,10 @@
 import ErrorPage from "@/app/error/page";
 import { UserData } from "@/generated/galasaapi";
 import styles from "@/styles/MyProfile.module.css";
+import { ProfileDetailsProps } from "@/utils/interfaces";
 import { Loading } from "@carbon/react";
 import { useEffect, useState } from "react";
 
-interface ProfileDetailsProps {
-  userProfilePromise: Promise<UserData>;
-}
 
 export default function ProfileDetails({ userProfilePromise }: ProfileDetailsProps) {
   const WEB_UI_CLIENT_NAME = "web-ui";

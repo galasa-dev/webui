@@ -30,9 +30,10 @@ jest.mock('@carbon/react', () => {
 describe('UsersTable component', () => {
   test('displays loading spinner while fetching data', async () => {
     // Create a promise that never resolves to simulate the loading state.
-    const pendingPromise: Promise<UserData[]> = new Promise(() => {});
-    render(<UsersTable usersListPromise={pendingPromise} />);
-    
+    const pendingPromise: Promise<UserData[]> = new Promise(() => { });
+    const currentUserPendingPromise: Promise<UserData> = new Promise(() => { });
+    render(<UsersTable usersListPromise={pendingPromise} currentUserPromise={currentUserPendingPromise} />);
+
     // The Loading component should be rendered.
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
@@ -61,8 +62,30 @@ describe('UsersTable component', () => {
       }
     ];
 
+    const currentUser: UserData = {
+      id: '1',
+      loginId: 'user1',
+      synthetic: {
+        role: {
+          metadata: { name: 'admin' }
+        }
+      },
+      clients: [
+        {
+          clientName: 'web-ui',
+          lastLogin: new Date('2020-01-02T00:00:00Z')
+        },
+        {
+          clientName: 'rest-api',
+          lastLogin: new Date('2020-01-03T00:00:00Z')
+        }
+      ]
+    };
+
     const resolvedPromise: Promise<UserData[]> = Promise.resolve(userData);
-    render(<UsersTable usersListPromise={resolvedPromise} />);
+    const currentUserResolvedPromise: Promise<UserData> = Promise.resolve(currentUser);
+
+    render(<UsersTable usersListPromise={resolvedPromise} currentUserPromise={currentUserResolvedPromise}/>);
 
     // Wait until the table header appears, indicating data has been loaded.
     await waitFor(() => {
@@ -91,8 +114,29 @@ describe('UsersTable component', () => {
       }
     ];
 
+    const currentUser: UserData = {
+      id: '1',
+      loginId: 'user1',
+      synthetic: {
+        role: {
+          metadata: { name: 'admin' }
+        }
+      },
+      clients: [
+        {
+          clientName: 'web-ui',
+          lastLogin: new Date('2020-01-02T00:00:00Z')
+        },
+        {
+          clientName: 'rest-api',
+          lastLogin: new Date('2020-01-03T00:00:00Z')
+        }
+      ]
+    };
+
     const resolvedPromise: Promise<UserData[]> = Promise.resolve(userData);
-    render(<UsersTable usersListPromise={resolvedPromise} />);
+    const currentUserResolvedPromise: Promise<UserData> = Promise.resolve(currentUser);
+    render(<UsersTable usersListPromise={resolvedPromise} currentUserPromise={currentUserResolvedPromise}/>);
 
     // Wait for the table header to appear.
     await waitFor(() => {
@@ -112,8 +156,10 @@ describe('UsersTable component', () => {
     const rejectedPromise: Promise<UserData[]> = new Promise((resolve, reject) => {
       reject(new Error('Failed to fetch'));
     });
-    
-    render(<UsersTable usersListPromise={rejectedPromise} />);
+
+    const currentUserResolvedPromise: Promise<UserData> = Promise.resolve({});
+
+    render(<UsersTable usersListPromise={rejectedPromise} currentUserPromise={currentUserResolvedPromise}/>);
 
     // Check if the Error page was rendered
     await waitFor(() => {

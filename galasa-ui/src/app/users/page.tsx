@@ -10,21 +10,21 @@ import React from 'react';
 import * as Constants from "@/utils/constants";
 import BreadCrumb from '@/components/common/BreadCrumb';
 import PageTile from '@/components/PageTile';
-import UsersList from '@/components/users/UsersTable';
+import UsersTable from '@/components/users/UsersTable';
 
 export const dynamic = 'force-dynamic';
 
-function UsersPage() {
+export default function UsersPage() {
 
   const apiConfig = createAuthenticatedApiConfiguration();
   const fetchAllUsersFromApiServer = async () => {
 
-    let users : UserData[] = [];
+    let users: UserData[] = [];
 
     const usersApiClient = new UsersAPIApi(apiConfig);
     const usersReponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION);
 
-    if(usersReponse && usersReponse.length >= 1){
+    if (usersReponse && usersReponse.length >= 1) {
       users = structuredClone(usersReponse);
     }
 
@@ -32,13 +32,24 @@ function UsersPage() {
 
   };
 
+  const fetchCurrentUserFromApiServer = async () => {
+
+    let user: UserData= {};
+    const usersApiClient = new UsersAPIApi(apiConfig);
+    const usersReponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION, "me");
+  
+    if(usersReponse && usersReponse.length > 0){
+      user = structuredClone(usersReponse[0]);
+    }
+  
+    return user;
+  };
+
   return (
     <main id="content">
       <BreadCrumb />
       <PageTile title={"Users"} />
-      <UsersList usersListPromise={fetchAllUsersFromApiServer()}/>
+      <UsersTable usersListPromise={fetchAllUsersFromApiServer()} currentUserPromise={fetchCurrentUserFromApiServer()}/>
     </main>
   );
 }
-
-export default UsersPage;
