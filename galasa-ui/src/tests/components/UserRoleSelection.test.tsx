@@ -60,6 +60,7 @@ const dummyProfile: UserData = {
         id: '1',
         name: 'tester',
         description: 'Test developer and runner',
+        assignable: true
       },
     },
   },
@@ -67,14 +68,17 @@ const dummyProfile: UserData = {
 
 const dummyRoles: RBACRole[] = [
   {
-    metadata: { id: '1', name: 'tester', description: 'Test developer and runner' },
+    metadata: { id: '1', name: 'tester', description: 'Test developer and runner', assignable:true },
   },
   {
-    metadata: { id: '2', name: 'admin', description: 'Administrator' },
+    metadata: { id: '2', name: 'admin', description: 'Administrator', assignable:true },
   },
   {
-    metadata: { id: '0', name: 'deactivated', description: 'User has no access' },
+    metadata: { id: '0', name: 'deactivated', description: 'User has no access', assignable:true },
   },
+  {
+    metadata: { id: '3', name: 'owner', description: 'Owner of Galasa service', assignable:false },
+  }
 ];
 
 describe('UserRoleSection', () => {
@@ -184,7 +188,7 @@ describe('UserRoleSection', () => {
     await waitFor(() => {
       const dropdown = screen.getByTestId('dropdown') as HTMLSelectElement;
       const options = dropdown.querySelectorAll('option');
-      expect(options.length).toBe(dummyRoles.length);
+      expect(options.length).toBe(3);
     });
 
     const dropdown = screen.getByTestId('dropdown') as HTMLSelectElement;

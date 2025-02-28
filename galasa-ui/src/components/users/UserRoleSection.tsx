@@ -34,7 +34,7 @@ interface UserRoleMetadata {
 }
 
 interface RoleDetailsProps {
-  roleDetailsPromise : Promise<RBACRole[]>;
+  roleDetailsPromise: Promise<RBACRole[]>;
 }
 
 export default function UserRoleSection({ userProfilePromise, roleDetailsPromise }: ProfileDetailsProps & RoleDetailsProps) {
@@ -73,14 +73,14 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
     };
 
     const loadRoles = async () => {
-      try{
+      try {
         const loadedRoles = await roleDetailsPromise;
-        
-        if(loadedRoles) {
+
+        if (loadedRoles) {
           const flattenedRoles = flattenUserRoleApi(loadedRoles);
           setUserRoles(flattenedRoles);
         }
- 
+
       } catch (err) {
         console.log(err);
         setIsError(true);
@@ -94,16 +94,18 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
     loadRoles();
   }, [userProfilePromise, roleDetailsPromise]);
 
-  const flattenUserRoleApi = (rawRoles : RBACRole[]) => {
+  const flattenUserRoleApi = (rawRoles: RBACRole[]) => {
 
     const flattenedRoles = [];
 
-    if(rawRoles.length >= 1){
-      for(let i=0; i<rawRoles.length; i++) {
+    if (rawRoles.length >= 1) {
+      for (let i = 0; i < rawRoles.length; i++) {
 
-        const {id, name, description} = rawRoles[i].metadata!;
-        const extractedInfo = {id, name, description};
-        flattenedRoles.push(extractedInfo);
+        if (rawRoles[i].metadata?.assignable) {
+          const { id, name, description } = rawRoles[i].metadata!;
+          const extractedInfo = { id, name, description };
+          flattenedRoles.push(extractedInfo);
+        }
 
       }
     }
