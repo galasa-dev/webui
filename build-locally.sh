@@ -61,6 +61,7 @@ function usage {
 Options are:
 -c | --clean : Do a clean build. One of the --clean or --delta flags are mandatory.
 -d | --delta : Do a delta build. One of the --clean or --delta flags are mandatory.
+--docker : Optional. Builds the webui Docker image as webui:latest.
 
 Environment variables used:
 None
@@ -77,23 +78,20 @@ function check_exit_code () {
     fi
 }
 
-#--------------------------------------------------------------------------
-#
-# Main script logic
-#
-#--------------------------------------------------------------------------
-
 #-----------------------------------------------------------------------------------------
 # Process parameters
 #-----------------------------------------------------------------------------------------
 function process_parameters {
     export build_type=""
+    export is_docker_build_requested=""
 
     while [ "$1" != "" ]; do
         case $1 in
             -c | --clean )          build_type="clean"
                                     ;;
             -d | --delta )          build_type="delta"
+                                    ;;
+            --docker )              is_docker_build_requested="true"
                                     ;;
             -h | --help )           usage
                                     exit
@@ -189,6 +187,7 @@ function do_build {
     fi
     success "Built OK."
 }
+
 function check_secrets {
     h2 "updating secrets baseline"
     cd ${BASEDIR}
@@ -213,10 +212,44 @@ function check_secrets {
     success "secrets audit complete"
 }
 
+function check_docker_installed {
+    which docker
+    rc=$?
+    if [[ "${rc}" != "0" ]]; then
+        error "The docker CLI tool is not available on your path. Install docker and try again."
+        exit 1
+    fi
+    success "docker is installed. OK"
+}
+
+function build_docker_image {
+    h2 "Building webui:latest Docker image..."
+
+    docker build -f "${BASEDIR}/dockerfiles/dockerfile.webui" \
+    -t webui:latest \
+    ${BASEDIR}
+
+    rc=$?
+    check_exit_code ${rc} "Failed to build the webui Docker image."
+
+    success "webui:latest Docker image built OK"
+}
+
+#--------------------------------------------------------------------------
+#
+# Main script logic
+#
+#--------------------------------------------------------------------------
+
 generate_rest_client
 download_node_dependencies
 run_tests
 do_build
+
+if [[ "${is_docker_build_requested}" == "true" ]]; then
+    check_docker_installed
+    build_docker_image
+fi
 
 ${BASEDIR}/detect-secrets.sh
 
