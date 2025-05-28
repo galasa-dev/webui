@@ -154,11 +154,11 @@ exports[`Layout renders the web UI layout 1`] = `
               <p
                 class="serviceHealthTitle"
               >
-                Service health 
-                <div
-                  class="healthy"
-                />
+                Service health
               </p>
+              <div
+                class="healthy"
+              />
             </footer>
           </div>
         </body>
@@ -315,11 +315,11 @@ exports[`Layout renders the web UI layout 1`] = `
             <p
               class="serviceHealthTitle"
             >
-              Service health 
-              <div
-                class="healthy"
-              />
+              Service health
             </p>
+            <div
+              class="healthy"
+            />
           </footer>
         </div>
       </body>
