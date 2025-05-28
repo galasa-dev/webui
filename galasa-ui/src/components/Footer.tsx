@@ -20,19 +20,19 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
   const [isHealthOk, setIsHealthOk] = useState(true);
   const [apiVersion, setApiVersion] = useState("");
 
-  const checkServiceHealth = async () => {
-    const isPingSuccessful = await serviceHealthyPromise;
-    setIsHealthOk(isPingSuccessful);
-  };
-
-  const getApiVersion = async () => {
-    const apiVersion = await clientVersionPromise;
-    if(apiVersion) {
-      setApiVersion(apiVersion);
-    }
-  };
 
   useEffect(() => {
+    const checkServiceHealth = async () => {
+      const isPingSuccessful = await serviceHealthyPromise;
+      setIsHealthOk(isPingSuccessful);
+    };
+
+    const getApiVersion = async () => {
+      const apiVersion = await clientVersionPromise;
+      if (apiVersion) {
+        setApiVersion(apiVersion);
+      }
+    };
 
     checkServiceHealth();
     getApiVersion();
@@ -45,7 +45,8 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
         {
           isHealthOk && <p>Galasa version {apiVersion}</p>
         }
-        <p className={styles.serviceHealthTitle}>Service health {isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} />}</p> 
+        <p className={styles.serviceHealthTitle}>Service health</p>
+        { isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} /> }
       </footer>
     </Theme>
   );

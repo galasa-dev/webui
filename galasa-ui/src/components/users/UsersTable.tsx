@@ -136,21 +136,6 @@ If the user logs in to the Galasa service after this point, they will be challen
     });
   };
 
-  const checkForEditUsersPermission = async () => {
-
-    const user = await currentUserPromise;
-    const userPermissions = user.synthetic?.role?.data?.actions;
-    setCurrentUser(user);
-
-    if (userPermissions && userPermissions.length > 0) {
-
-      const isAllowed = userPermissions.includes(EDIT_OTHER_USERS_PERMISSION);
-      setHasEditUserPermission(isAllowed);
-
-    }
-
-  };
-
   const selectRowForDeletion = (row: DataTableRow) => {
     setSelectedRow(row);
     setIsDeleteModalOpen(true);
@@ -170,6 +155,16 @@ If the user logs in to the Galasa service after this point, they will be challen
 
 
   useEffect(() => {
+    const checkForEditUsersPermission = async () => {
+      const user = await currentUserPromise;
+      const userPermissions = user.synthetic?.role?.data?.actions;
+      setCurrentUser(user);
+
+      if (userPermissions && userPermissions.length > 0) {
+        const isAllowed = userPermissions.includes(EDIT_OTHER_USERS_PERMISSION);
+        setHasEditUserPermission(isAllowed);
+      }
+    };
 
     const loadUsers = async () => {
 
@@ -179,7 +174,7 @@ If the user logs in to the Galasa service after this point, they will be challen
 
         const users = await usersListPromise;
         if (users) {
-          let flattenedUsers = await flattenUserDataForTable(users);
+          let flattenedUsers = flattenUserDataForTable(users);
           setUsers(flattenedUsers);
         }
 
@@ -194,7 +189,7 @@ If the user logs in to the Galasa service after this point, they will be challen
     loadUsers();
     checkForEditUsersPermission();
 
-  }, [usersListPromise]);
+  }, [currentUserPromise, usersListPromise]);
 
   if (isError) {
     return <ErrorPage />;
