@@ -1,4 +1,3 @@
-
 # Don't ever check-in node modules..
 **/node_modules/
 
@@ -41,3 +40,6 @@ build/
 
 # Ignore temp directories
 **/temp/
+
+# Ignore local env files
+.env*.local
