@@ -9,35 +9,64 @@ import AuthCookies from './utils/authCookies';
 import { GALASA_WEBUI_CLIENT_ID, authApiClient, sendAuthRequest } from './utils/auth';
 import { AuthProperties } from './generated/galasaapi';
 import { cookies } from 'next/headers';
+import { CLIENT_API_VERSION } from './utils/constants';
+
+const authenticateWithDevToken = async (devToken: string) => {
+  let response = NextResponse.next();
+  const authProperties = new AuthProperties();
+
+  // Access tokens are expected to be in the form "<refresh-token>:<client-id>"
+  const devTokenParts = devToken.split(":");
+  if (devTokenParts.length == 2) {
+    const refreshToken = devTokenParts[0];
+    const clientId = devTokenParts[1];
+
+    authProperties.refreshToken = refreshToken;
+    authProperties.clientId = clientId;
+
+    const { jwt } = await authApiClient.postAuthenticate(authProperties, CLIENT_API_VERSION);
+    if (jwt && !isTokenExpired(jwt)) {
+      response.headers.set('Set-Cookie', `${AuthCookies.ID_TOKEN}=${jwt}`);
+    }
+  } else {
+    throw new Error("Invalid Galasa token provided.");
+  } 
+  return response;
+};
 
 // Runs before any request is completed
 export async function middleware(request: NextRequest) {
   let response = NextResponse.rewrite(new URL('/error', request.url));
 
   try {
-    if (request.url.includes('/callback')) {
-      let responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
-
-      const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
-    
-      if(shouldReturnToMySettingsPage?.value === 'true'){
-        responseUrl = responseUrl + "/mysettings";
-      }
-      
-      response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));
-      
-    } else if (!isAuthenticated(request)) {
-
-      // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
-      const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
-      const locationHeader = authResponse.headers.get('Location');
-      if (locationHeader) {
-        response = NextResponse.redirect(locationHeader, { status: 302 });
-        response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
-      }
+    if (process.env.NODE_ENV === "development" && process.env.GALASA_DEV_TOKEN && !isAuthenticated(request)) {
+      response = await authenticateWithDevToken(process.env.GALASA_DEV_TOKEN);
     } else {
-      // User is authenticated and the request can go through
-      response = NextResponse.next();
+
+      if (request.url.includes('/callback')) {
+        let responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
+  
+        const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+      
+        if(shouldReturnToMySettingsPage?.value === 'true'){
+          responseUrl = responseUrl + "/mysettings";
+        }
+        
+        response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));
+        
+      } else if (!isAuthenticated(request)) {
+  
+        // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
+        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
+        const locationHeader = authResponse.headers.get('Location');
+        if (locationHeader) {
+          response = NextResponse.redirect(locationHeader, { status: 302 });
+          response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
+        }
+      } else {
+        // User is authenticated and the request can go through
+        response = NextResponse.next();
+      }
     }
   } catch(err) {
     console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);

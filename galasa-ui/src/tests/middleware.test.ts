@@ -7,6 +7,8 @@ import { middleware } from '@/middleware';
 import { authApiClient } from '@/utils/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
+const originalEnv = process.env;
+
 // Mock the jwtDecode method
 jest.mock('jwt-decode', () => ({
   __esModule: true,
@@ -24,13 +26,17 @@ jest.mock('next/headers', () => ({
 
 describe('Middleware', () => {
   let redirectSpy: jest.SpyInstance;
+  let rewriteSpy: jest.SpyInstance;
 
   beforeEach(() => {
     redirectSpy = jest.spyOn(NextResponse, 'redirect').mockReturnValue(new NextResponse());
+    rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
+    process.env = originalEnv;
   });
 
   afterEach(() => {
     redirectSpy.mockReset();
+    rewriteSpy.mockReset();
   });
 
   it('should redirect to authenticate if the user does not have a JWT', async () => {
@@ -196,8 +202,6 @@ describe('Middleware', () => {
 
     global.fetch = jest.fn(() => Promise.reject('this is an error!')) as jest.Mock;
 
-    const rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
-
     // When...
     await middleware(req);
 
@@ -205,8 +209,6 @@ describe('Middleware', () => {
     expect(rewriteSpy).toHaveBeenCalledTimes(1);
     expect(rewriteSpy).toHaveBeenCalledWith(new URL('/error', requestUrl));
     expect(redirectSpy).not.toHaveBeenCalled();
-
-    rewriteSpy.mockReset();
   });
 
   it('should issue a rewrite to the error page if the authentication request does not contain a location header', async () => {
@@ -222,7 +224,55 @@ describe('Middleware', () => {
       })
     ) as jest.Mock;
 
-    const rewriteSpy = jest.spyOn(NextResponse, 'rewrite');
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(rewriteSpy).toHaveBeenCalledTimes(1);
+    expect(rewriteSpy).toHaveBeenCalledWith(new URL('/error', requestUrl));
+    expect(redirectSpy).not.toHaveBeenCalled();
+  });
+
+  it('should authenticate with the provided dev token when the webui is running in development mode', async () => {
+    // Given...
+    const requestUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(requestUrl), {});
+
+    process.env = {
+      ...originalEnv,
+      GALASA_DEV_TOKEN: "galasa:token",
+      NODE_ENV: "development"
+    };
+
+    const mockIdToken = 'mynewjwt';
+    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate').mockReturnValue(
+      Promise.resolve({
+        jwt: mockIdToken,
+        refreshToken: 'myrefreshtoken',
+      }));
+
+    // When...
+    const response = await middleware(req);
+
+    // Then...
+    expect(redirectSpy).toHaveBeenCalledTimes(0);
+    expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
+    expect(response.status).toEqual(200);
+    expect(response.headers.get("Set-Cookie")).toEqual(`id_token=${mockIdToken}`);
+
+    postAuthenticateSpy.mockReset();
+  });
+
+  it('should issue a rewrite to the error page when the provided dev token is invalid', async () => {
+    // Given...
+    const requestUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(requestUrl), {});
+
+    process.env = {
+      ...originalEnv,
+      GALASA_DEV_TOKEN: "invalidtoken",
+      NODE_ENV: "development"
+    };
 
     // When...
     await middleware(req);
@@ -231,7 +281,29 @@ describe('Middleware', () => {
     expect(rewriteSpy).toHaveBeenCalledTimes(1);
     expect(rewriteSpy).toHaveBeenCalledWith(new URL('/error', requestUrl));
     expect(redirectSpy).not.toHaveBeenCalled();
+  });
 
-    rewriteSpy.mockReset();
+  it('should not reauthenticate a user in development mode if they have a valid JWT', async () => {
+    // Given...
+    const req = new NextRequest(new Request('https://galasa-ecosystem.com/runs'), {});
+    req.cookies.set('id_token', 'valid-token');
+    Date.now = jest.fn(() => 4324);
+
+    process.env = {
+      ...originalEnv,
+      GALASA_DEV_TOKEN: "galasa:token",
+      NODE_ENV: "development"
+    };
+
+    const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate');
+
+    // When...
+    const response = await middleware(req);
+
+    // Then...
+    expect(postAuthenticateSpy).not.toHaveBeenCalled();
+    expect(response.status).toEqual(200);
+
+    postAuthenticateSpy.mockReset();
   });
 });
