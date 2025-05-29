@@ -30,7 +30,7 @@ export default function PageHeader({ galasaServiceName }: { galasaServiceName: s
 
         <HeaderName href="/" prefix="">Galasa</HeaderName>
 
-        <HeaderNavigation>
+        <HeaderNavigation aria-label="Galasa menu bar navigation">
           <HeaderMenuItem href="/users">Users</HeaderMenuItem>
         </HeaderNavigation>
 

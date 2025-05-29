@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import MyProfilePage from '../app/myprofile/page';
 import { RBACRole, UsersAPIApi } from '@/generated/galasaapi';
 
@@ -17,7 +17,7 @@ describe('MyProfilePage', () => {
     jest.clearAllMocks();
   });
 
-  test('renders loading spinner initially', () => {
+  test('renders loading spinner initially', async () => {
     // When...
     render(<MyProfilePage />);
 
@@ -52,7 +52,9 @@ describe('MyProfilePage', () => {
     });
 
     // When...
-    render(<MyProfilePage />);
+    await act(async () => {
+      return render(<MyProfilePage />);
+    });
 
     // Wait for the data to be fetched and the loading spinner to disappear
     await waitFor(() => expect(screen.queryByTestId('loader')).not.toBeInTheDocument());
@@ -70,7 +72,9 @@ describe('MyProfilePage', () => {
     });
 
     // When...
-    render(<MyProfilePage />);
+    await act(async () => {
+      return render(<MyProfilePage />);
+    });
 
     // Wait for the fetch operation to complete
     await waitFor(() => expect(screen.queryByTestId('loader')).not.toBeInTheDocument());

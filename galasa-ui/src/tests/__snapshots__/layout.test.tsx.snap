@@ -55,6 +55,7 @@ exports[`Layout renders the web UI layout 1`] = `
                 Galasa
               </a>
               <nav
+                aria-label="Galasa menu bar navigation"
                 class="cds--header__nav"
               >
                 <ul
@@ -150,6 +151,7 @@ exports[`Layout renders the web UI layout 1`] = `
             >
               <p>
                 Galasa version 
+                my-galasa-version
               </p>
               <p
                 class="serviceHealthTitle"
@@ -216,6 +218,7 @@ exports[`Layout renders the web UI layout 1`] = `
               Galasa
             </a>
             <nav
+              aria-label="Galasa menu bar navigation"
               class="cds--header__nav"
             >
               <ul
@@ -311,6 +314,7 @@ exports[`Layout renders the web UI layout 1`] = `
           >
             <p>
               Galasa version 
+              my-galasa-version
             </p>
             <p
               class="serviceHealthTitle"
