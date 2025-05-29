@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { UsersAPIApi } from '@/generated/galasaapi';
 import { DELETE } from '../../app/logout/route';
-import { createAuthenticatedApiConfiguration } from '../../utils/api';
 import AuthCookies from '@/utils/authCookies';
 
 // Mock modules and dependencies
@@ -42,10 +40,6 @@ jest.mock('next/server', () => {
     NextResponse: MockNextResponse,
   };
 });
-
-// Define the type for the mocked function
-const mockedCreateAuthenticatedApiConfiguration = createAuthenticatedApiConfiguration as jest.MockedFunction<typeof createAuthenticatedApiConfiguration>;
-const mockedUsersAPIApi = UsersAPIApi as jest.MockedClass<typeof UsersAPIApi>;
 
 const deleteMock = jest.fn();
 

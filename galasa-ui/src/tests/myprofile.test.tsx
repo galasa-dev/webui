@@ -6,7 +6,7 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import MyProfilePage from '../app/myprofile/page';
-import { RBACRole, RoleBasedAccessControlAPIApi, UsersAPIApi } from '@/generated/galasaapi';
+import { RBACRole, UsersAPIApi } from '@/generated/galasaapi';
 
 const mockUsersApi = UsersAPIApi as jest.Mock;
 

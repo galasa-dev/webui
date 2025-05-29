@@ -5,7 +5,7 @@
  * @jest-environment node
  */
 import * as AuthTokenRoute from '@/app/auth/tokens/route';
-import { AuthenticationAPIApi, UsersAPIApi } from '@/generated/galasaapi';
+import { AuthenticationAPIApi } from '@/generated/galasaapi';
 import { NextRequest} from 'next/server';
 
 const mockAuthenticationApi = AuthenticationAPIApi as jest.Mock;
