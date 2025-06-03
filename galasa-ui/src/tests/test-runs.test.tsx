@@ -9,8 +9,8 @@ import TestRunsPage from '@/app/test-runs/page';
 
 // Mock component dependencies
 jest.mock('@/components/PageTile', () => ({
-    __esModule: true,
-     default: ({ title }: { title: string }) => <div data-testid="page-tile">{title}</div>,
+  __esModule: true,
+  default: ({ title }: { title: string }) => <div data-testid="page-tile">{title}</div>,
 }));
 
 jest.mock('@/components/common/BreadCrumb', () => ({
@@ -19,8 +19,8 @@ jest.mock('@/components/common/BreadCrumb', () => ({
 }));
 
 jest.mock('@/components/test-runs/TestRunsContent', () => ({
-    __esModule: true,
-    default: () => <div data-testid="test-runs-content">Test Runs Content</div>,
+  __esModule: true,
+  default: () => <div data-testid="test-runs-content">Test Runs Content</div>,
 }));
 
 // Mock router
@@ -33,24 +33,24 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('TestRunsPage', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    test('renders the Test Runs page with correct components', () => {
-        render(<TestRunsPage />);
+  test('renders the Test Runs page with correct components', () => {
+    render(<TestRunsPage />);
 
-        // Check for the main content continer
-        expect(screen.getByRole('main')).toBeInTheDocument();
+    // Check for the main content container
+    expect(screen.getByRole('main')).toBeInTheDocument();
 
-        // Check for the page title
-        expect(screen.getByTestId('page-tile')).toBeInTheDocument();
-        expect(screen.getByText('Test Runs')).toBeInTheDocument();
+    // Check for the page title
+    expect(screen.getByTestId('page-tile')).toBeInTheDocument();
+    expect(screen.getByText('Test Runs')).toBeInTheDocument();
 
-        // Check for the breadcrumb component
-        expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
+    // Check for the breadcrumb component
+    expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
 
-        // Check for the content component
-        expect(screen.getByTestId('test-runs-content')).toBeInTheDocument();
-    })
-})
+    // Check for the content component
+    expect(screen.getByTestId('test-runs-content')).toBeInTheDocument();
+  });
+});
