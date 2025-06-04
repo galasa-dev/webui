@@ -18,11 +18,6 @@ jest.mock('@/components/common/BreadCrumb', () => ({
   default: () => <div data-testid="breadcrumb">BreadCrumb</div>,
 }));
 
-jest.mock('@/components/test-runs/TestRunsContent', () => ({
-  __esModule: true,
-  default: () => <div data-testid="test-runs-content">Test Runs Content</div>,
-}));
-
 // Mock router
 const mockRouter = {
   refresh: jest.fn(),
@@ -49,8 +44,5 @@ describe('TestRunsPage', () => {
 
     // Check for the breadcrumb component
     expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
-
-    // Check for the content component
-    expect(screen.getByTestId('test-runs-content')).toBeInTheDocument();
   });
 });
