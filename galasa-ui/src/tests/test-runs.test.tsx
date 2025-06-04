@@ -18,15 +18,6 @@ jest.mock('@/components/common/BreadCrumb', () => ({
   default: () => <div data-testid="breadcrumb">BreadCrumb</div>,
 }));
 
-// Mock router
-const mockRouter = {
-  refresh: jest.fn(),
-};
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => mockRouter),
-}));
-
 describe('TestRunsPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,5 +35,8 @@ describe('TestRunsPage', () => {
 
     // Check for the breadcrumb component
     expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
+
+    // Check for the under construction message
+    expect(screen.getByText(/under construction/i)).toBeInTheDocument();
   });
 });
