@@ -16,9 +16,9 @@ export default function TestRunsPage() {
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
         <p className={styles.underConstruction}>
-          This page is under construction. Please come back later to query a list of test runs.
+            This page is under construction. Please come back later to query a list of test runs.
         </p>
       </div>
-    </main>
+    </main>   
   );
 };
