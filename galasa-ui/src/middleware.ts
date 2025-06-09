@@ -57,7 +57,7 @@ export async function middleware(request: NextRequest) {
       } else if (!isAuthenticated(request)) {
   
         // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
-        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID);
+        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID, `${request.url}/callback`);
         const locationHeader = authResponse.headers.get('Location');
         if (locationHeader) {
           response = NextResponse.redirect(locationHeader, { status: 302 });
