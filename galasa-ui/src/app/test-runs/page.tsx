@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+'use client';
 
 import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
+import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
 
 
@@ -15,9 +17,7 @@ export default function TestRunsPage() {
       <BreadCrumb />
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
-        <p className={styles.underConstruction}>
-            This page is under construction. Please come back later to query a list of test runs.
-        </p>
+        <TestRunsTabs />
       </div>
     </main>   
   );

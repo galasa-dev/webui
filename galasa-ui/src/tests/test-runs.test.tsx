@@ -18,6 +18,11 @@ jest.mock('@/components/common/BreadCrumb', () => ({
   default: () => <div data-testid="breadcrumb">BreadCrumb</div>,
 }));
 
+jest.mock('@/components/test-runs/TestRunsTabs', () => ({
+  __esModule: true,
+  default: () => <div data-testid="test-runs-tabs">TestRunsTabs</div>,
+}));
+
 describe('TestRunsPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -36,7 +41,6 @@ describe('TestRunsPage', () => {
     // Check for the breadcrumb component
     expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
 
-    // Check for the under construction message
-    expect(screen.getByText(/under construction/i)).toBeInTheDocument();
+    expect(screen.getByTestId('test-runs-tabs')).toBeInTheDocument();
   });
 });

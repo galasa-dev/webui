@@ -8,11 +8,8 @@
     width: 90%;
     height: 100%;
     margin: 4rem auto;
-    display: grid;
-    place-items: center;
-    flex-direction: column;
 }
 
-.underConstruction {
-    font-size: 2rem;
+.tabContent {
+    font-size: 1.2rem; 
 }
