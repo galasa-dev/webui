@@ -66,16 +66,16 @@ export const useFeatureFlags = (): FeatureFlagContextType => {
 export const FeatureFlagProvider = ({ children, initialFlags }: ProviderProps) => {
   // Initialize feature flags state with default values or from the initialFlags prop
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>(() => {
+    let currentFeatureFlags: FeatureFlags = DEFAULT_FEATURE_FLAGS;
     if (initialFlags) {
       try {
         const parsedFlags = JSON.parse(initialFlags);
-        return { ...DEFAULT_FEATURE_FLAGS, ...parsedFlags };
+        currentFeatureFlags = { ...DEFAULT_FEATURE_FLAGS, ...parsedFlags };
       } catch (error) {
         console.error('Error parsing initial feature flags:', error);
-        return DEFAULT_FEATURE_FLAGS;
       }
     }
-    return DEFAULT_FEATURE_FLAGS;
+    return currentFeatureFlags;
   });
 
 
