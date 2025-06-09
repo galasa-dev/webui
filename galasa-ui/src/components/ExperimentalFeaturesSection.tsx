@@ -7,6 +7,7 @@
 
 import { FeatureFlagProvider, useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import styles from "@/styles/MySettings.module.css";
+import { FEATURE_FLAGS } from "@/utils/featureFlags";
 
 export default function ExperimentalFeaturesSection() { 
   const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
@@ -14,7 +15,7 @@ export default function ExperimentalFeaturesSection() {
   // Feature configuration for easier management and display
   const featureConfig = [
     {
-      key: 'testRuns' as const,
+      key: FEATURE_FLAGS.TEST_RUNS,
       label: 'Test Run searching and viewing',
     },
     // Add more features here when they are added to DEFAULT_FEATURE_FLAGS

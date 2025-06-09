@@ -7,11 +7,7 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
-
-const DEFAULT_FEATURE_FLAGS = {
-  testRuns: false, 
-  // Add other feature flags here
-} as const;
+import { DEFAULT_FEATURE_FLAGS } from '@/utils/featureFlags';
 
 type FeatureFlags = {
   [K in keyof typeof DEFAULT_FEATURE_FLAGS]: boolean;

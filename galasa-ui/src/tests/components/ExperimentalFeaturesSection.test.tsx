@@ -7,13 +7,14 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
 import { FeatureFlagContext } from '@/contexts/FeatureFlagContext';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 describe('ExperimentalFeaturesSection', () => {
 
   test('Renders correctly when a "testRuns" flag disabled: Checkbox is unchecked', () => {
     // Mock a function to disable test runs feature 
     const mockIsFeatureEnabled = (key:string) => {
-      if (key == 'testRuns') {
+      if (key == FEATURE_FLAGS.TEST_RUNS) {
         return false;
       }
       return true;
@@ -31,7 +32,7 @@ describe('ExperimentalFeaturesSection', () => {
 
   test('Renders correctly when a "testRuns" enabled: Checkbox is checked', () => {
     const mockIsFeatureEnabled = (key:string) => {
-      return key === 'testRuns';
+      return key === FEATURE_FLAGS.TEST_RUNS;
     };
 
     render(
@@ -58,7 +59,7 @@ describe('ExperimentalFeaturesSection', () => {
 
 
     expect(mockToggle).toHaveBeenCalledTimes(1);
-    expect(mockToggle).toHaveBeenCalledWith('testRuns');
+    expect(mockToggle).toHaveBeenCalledWith(FEATURE_FLAGS.TEST_RUNS);
 
   });
 });

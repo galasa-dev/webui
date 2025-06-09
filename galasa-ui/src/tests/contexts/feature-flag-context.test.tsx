@@ -8,14 +8,15 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { FeatureFlagProvider, useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 // Mock a simple component to display the hook's state for our tests
 const TestComponent = () => {
   const {isFeatureEnabled, toggleFeatureFlag} = useFeatureFlags();
 
   return (<div>
-    <p>Test Runs Enabled: {isFeatureEnabled("testRuns").toString()}</p>
-    <button onClick={() => toggleFeatureFlag("testRuns")}>Toggle Test Runs</button>
+    <p>Test Runs Enabled: {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS).toString()}</p>
+    <button onClick={() => toggleFeatureFlag(FEATURE_FLAGS.TEST_RUNS)}>Toggle Test Runs</button>
   </div>);
 };
 
@@ -41,7 +42,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   });
 
   test('initializes with provided props from the server', () => {
-    const initialFlags = JSON.stringify({ testRuns: true});
+    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true});
     render(
       <FeatureFlagProvider initialFlags={initialFlags}>
         <TestComponent />
@@ -52,7 +53,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   });
 
   test('verifies feature flag toggling and updates cookie correctly', () => {
-    const initialFlags = JSON.stringify({ testRuns: false });
+    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: false });
     render(
       <FeatureFlagProvider initialFlags={initialFlags}>
         <TestComponent />
@@ -70,7 +71,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
 
     expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
 
-    const expectedCookieVal = JSON.stringify({testRuns: true});
+    const expectedCookieVal = JSON.stringify({[FEATURE_FLAGS.TEST_RUNS]: true});
     expect(cookieSpy).toHaveBeenCalledTimes(1);
     expect(cookieSpy).toHaveBeenCalledWith(expect.stringContaining(`${FeatureFlagCookies.FEATURE_FLAGS}=${expectedCookieVal}`));
 

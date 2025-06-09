@@ -8,6 +8,7 @@ import PageHeader from '@/components/headers/PageHeader';
 import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { useRouter } from 'next/navigation';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 
 const mockRouter = {
@@ -50,7 +51,7 @@ test('does NOT render the "Test runs" link by default', () => {
 });
 
 test('renders the "Test runs" link when the feature flag is enabled via prop', () => {
-  const initialFlags = JSON.stringify({testRuns: true});
+  const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
 
   render(
     <FeatureFlagProvider initialFlags={initialFlags}>
