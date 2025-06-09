@@ -8,12 +8,15 @@
  
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
 import styles from '@/styles/TestRunsPage.module.css';
-import { useState } from 'react';
 
 type TabLabel = 'Timeframe' | 'Table Design' | 'Search Criteria' | 'Results';
 interface TabConfig {
     label: TabLabel;
     component: React.ReactNode;
+}
+
+interface TestRunsTabsProps {
+    resultsContent: React.ReactNode; // Content for the Results tab
 }
 
 // Currently, the content for each tab is static and under construction.
@@ -29,22 +32,18 @@ const SearchCriteriaContent = () => <p>
     This page is under construction. Define specific search criteria to filter the results below.
 </p>;
 
-const ResultsContent = () => <p>
-    Results will be displayed here based on the selected timeframe and search criteria.
-</p>;
 
-// Define the tabs with their corresponding content.
-const TABS_CONFIG: TabConfig[] = [
-  {label: 'Timeframe', component: <TimeframeContent />},
-  {label: 'Table Design', component: <TableDesignContent />},
-  {label: 'Search Criteria', component: <SearchCriteriaContent />},
-  {label: 'Results', component: <ResultsContent />},
-];
+export default function TestRunsTabs({resultsContent}: TestRunsTabsProps) {
+  // Define the tabs with their corresponding content.
+  const TABS_CONFIG: TabConfig[] = [
+    {label: 'Timeframe', component: <TimeframeContent />},
+    {label: 'Table Design', component: <TableDesignContent />},
+    {label: 'Search Criteria', component: <SearchCriteriaContent />},
+    {label: 'Results', component: resultsContent},
+  ];
 
-export default function TestRunsTabs() {
-  const [selectedIndex, setSelectedIndex] = useState(0);
   return (
-    <Tabs selectedIndex={selectedIndex} onSelectionChange={(index: number) => setSelectedIndex(index)}>
+    <Tabs className={styles.tabs}>
       <TabList scrollDebounceWait={200}>
         {TABS_CONFIG.map((tab) => (
           <Tab key={tab.label}>{tab.label}</Tab>
@@ -54,7 +53,7 @@ export default function TestRunsTabs() {
         {TABS_CONFIG.map((tab) => (
           <TabPanel key={tab.label}>
             <div className={styles.tabContent}>
-                {tab.component}
+              {tab.component}
             </div>
           </TabPanel>
         ))}

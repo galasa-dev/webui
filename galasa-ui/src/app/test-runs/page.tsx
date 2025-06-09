@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use client';
-
 import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
+import ServerResultsContent from "@/components/test-runs/ServerResultsContent";
 
 
 export default function TestRunsPage() {
@@ -17,7 +16,7 @@ export default function TestRunsPage() {
       <BreadCrumb />
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
-        <TestRunsTabs />
+        <TestRunsTabs resultsContent={<ServerResultsContent />}/>
       </div>
     </main>   
   );

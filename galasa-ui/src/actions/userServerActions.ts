@@ -82,3 +82,18 @@ export const deleteUserFromService = async (userNumber: string) => {
     throw new Error('Internal Server Error');
   }
 };
+
+export const fetchUserLoginId = async () => {
+  const apiConfig = createAuthenticatedApiConfiguration();
+  const usersApiClient = new UsersAPIApi(apiConfig);
+  const userResponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION, "me");
+
+  let loginId: string | undefined;
+  if (userResponse.length > 0) {
+    loginId = userResponse[0].loginId;
+    if (!loginId) {
+      throw new Error("Unable to get current user ID from the Galasa API server");
+    }
+  }
+  return loginId;
+};
