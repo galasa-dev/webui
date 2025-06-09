@@ -26,6 +26,20 @@ type ProviderProps = {
 
 export const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(undefined);
 
+
+/**
+ * Custom React hook to access feature flag utilities.
+ * 
+ * This hook provides access to the current feature flag state and toggle function
+ * from anywhere within the component tree wrapped by FeatureFlagProvider.
+ * 
+ * Usage:
+ *   const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
+ * 
+ * - isFeatureEnabled(feature): Returns true if the given feature is enabled.
+ * - toggleFeatureFlag(feature): Toggles the enabled/disabled state of the feature.
+ * 
+ */
 export const useFeatureFlags = (): FeatureFlagContextType => {
   const context = useContext(FeatureFlagContext);
   if (!context) {
@@ -34,6 +48,21 @@ export const useFeatureFlags = (): FeatureFlagContextType => {
   return context;
 };
 
+
+/**
+ * Provider component for managing feature flags.
+ * 
+ * This component initializes feature flags from cookies or initial props,
+ * provides a context for accessing feature flag utilities, and updates cookies
+ * whenever feature flags change.
+ * 
+ * Usage:
+ *   <FeatureFlagProvider initialFlags={JSON.stringify({ featureKey: true })}>
+ *     <YourComponent />
+ *   </FeatureFlagProvider>
+ * 
+ * - initialFlags: Optional JSON string to initialize feature flags.
+ */
 export const FeatureFlagProvider = ({ children, initialFlags }: ProviderProps) => {
   // Initialize feature flags state with default values or from the initialFlags prop
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>(() => {
