@@ -85,23 +85,23 @@ const CustomCell = ({cell}: CustomCellProbs) => {
     );
   }
 
-  return <TableCell key={cell.id}>{cell.value}</TableCell>
-}
+  return <TableCell key={cell.id}>{cell.value}</TableCell>;
+};
 
 export default function TestRunsTable({runs}: ResultsTableProps) {
   const tableRows = transformRunsforTable(runs);
 
   return (
-   <div className={styles.resultsPageContainer}>
-    <p>Showing results of the last 24 hours</p>
-    <div className={styles.testRunsTableContainer}>
-      <DataTable rows={tableRows} headers={headers}>
-      {({ 
-        rows,
-        headers,
-        getTableProps, 
-        getHeaderProps, 
-        getRowProps }: {
+    <div className={styles.resultsPageContainer}>
+      <p>Showing results of the last 24 hours</p>
+      <div className={styles.testRunsTableContainer}>
+        <DataTable rows={tableRows} headers={headers}>
+          {({ 
+            rows,
+            headers,
+            getTableProps, 
+            getHeaderProps, 
+            getRowProps }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
           getHeaderProps: (options: any) => TableHeadProps;
@@ -109,29 +109,29 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
           getTableProps: () => TableBodyProps;
         }) => (
             <TableContainer>
-                <Table {...getTableProps()}>
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                          {header.header}
-                        </TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow {...getRowProps({ row })}>
-                        {row.cells.map((cell) => 
-                          <CustomCell key={cell.id} cell={cell} />)}
-                      </TableRow>
+              <Table {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                        {header.header}
+                      </TableHeader>
                     ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) => 
+                        <CustomCell key={cell.id} cell={cell} />)}
+                    </TableRow>
+                  ))}
                 </TableBody>
-                </Table>
+              </Table>
             </TableContainer>
           )}
         </DataTable>
+      </div>
     </div>
-   </div>
   );
 }

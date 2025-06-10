@@ -6,10 +6,10 @@
 'use client';
 
 import {
-    CheckmarkFilled,
-    ErrorFilled,
-    Help,
-  } from '@carbon/icons-react';
+  CheckmarkFilled,
+  ErrorFilled,
+  Help,
+} from '@carbon/icons-react';
 
 import styles from '@/styles/StatusIndicator.module.css';
 import React from 'react';
@@ -25,35 +25,35 @@ interface StatusIndicatorProps {
  * @returns A component with a status icon and formatted text, aligned and spaced correctly.
  */
 export default function StatusIndicator({ status }: StatusIndicatorProps) {
-    if (!status) {
-        return null;
-    }
+  if (!status) {
+    return null;
+  }
 
-    let IconComponent: React.ElementType = Help;
-    let iconClassName = styles.statusOther;
+  let IconComponent: React.ElementType = Help;
+  let iconClassName = styles.statusOther;
     
-    // Determine the correct icon and class based on the status
-    switch (status.toLowerCase()) {
-        case 'passed':
-            IconComponent = CheckmarkFilled;
-            iconClassName = styles.statusPassed;
-            break;
+  // Determine the correct icon and class based on the status
+  switch (status.toLowerCase()) {
+  case 'passed':
+    IconComponent = CheckmarkFilled;
+    iconClassName = styles.statusPassed;
+    break;
       
-        case 'failed':
-        case 'envfail':
-            IconComponent = ErrorFilled;
-            iconClassName = styles.statusFailed;
-            break;
-    }
+  case 'failed':
+  case 'envfail':
+    IconComponent = ErrorFilled;
+    iconClassName = styles.statusFailed;
+    break;
+  }
 
-    // Capitalize the first letter for display
-    const displayText = status.charAt(0).toUpperCase() + status.slice(1);
+  // Capitalize the first letter for display
+  const displayText = status.charAt(0).toUpperCase() + status.slice(1);
 
-    // Render a container with the icon and text inside
-    return (
-        <div className={styles.statusContainer}>
-            <IconComponent className={iconClassName} aria-label={displayText} />
-            <span>{displayText}</span>
-        </div>
-    );
+  // Render a container with the icon and text inside
+  return (
+    <div className={styles.statusContainer}>
+      <IconComponent className={iconClassName} aria-label={displayText} />
+      <span>{displayText}</span>
+    </div>
+  );
 }
