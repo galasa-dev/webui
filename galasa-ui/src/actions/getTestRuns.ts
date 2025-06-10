@@ -15,7 +15,7 @@ import * as Constants from "@/utils/constants";
  * @param {string} loginId - The login ID of the user.
  * @returns {Promise<Run[]>} - A promise that resolves to an array of Run objects.
  */
-export const fetchMyTestRunsForLastDay  = async (loginId: string): Promise<Run[]> => {
+export const fetchMyTestRunsForLastDay  = async (): Promise<Run[]> => {
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
@@ -31,7 +31,7 @@ export const fetchMyTestRunsForLastDay  = async (loginId: string): Promise<Run[]
       undefined,
       undefined,
       undefined,
-      loginId,
+      undefined,
       fromDate,        
     );
       

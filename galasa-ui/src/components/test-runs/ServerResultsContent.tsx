@@ -3,18 +3,19 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 */
-
-import { fetchUserLoginId } from '@/actions/userServerActions';
 import { fetchMyTestRunsForLastDay  } from '@/actions/getTestRuns';
 import TestRunsTable from './TestRunsTable';
 
 export default async function ServerResultsContent() {
- const loginId = await fetchUserLoginId();
- const runs = loginId ? await fetchMyTestRunsForLastDay (loginId) : [];
+ const runs = await fetchMyTestRunsForLastDay ();
 
  if (runs.length === 0) {
    return <p>No test runs found for your user in the last 24 hours.</p>;
  }
 
- return <TestRunsTable runs={runs} />;
+ // Create a serializable version of the runs data
+ const plainRuns = JSON.parse(JSON.stringify(runs));
+ console.log("ServerResultsContent runs:", plainRuns);
+
+ return <TestRunsTable runs={plainRuns} />;
 }
