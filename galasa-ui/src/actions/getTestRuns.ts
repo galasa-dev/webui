@@ -35,10 +35,9 @@ export const fetchMyTestRunsForLastDay  = async (): Promise<Run[]> => {
       fromDate,        
     );
       
-    console.log("Response from RAS API:", response);
-
     if(response && response.runs) {
-      return response.runs as Run[];
+      const plainRuns = JSON.parse(JSON.stringify(response.runs));
+      return plainRuns as Run[];
     }
  
     return [];

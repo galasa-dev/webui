@@ -15,7 +15,7 @@ import {  DataTable,
   TableBody,
   TableCell,
   TableContainer,
-  Pagination
+  Pagination, Loading
 } from '@carbon/react';
 import { DataTableHeader, DataTableRow, DataTableCell as IDataTableCell } from "@/utils/interfaces";
 import styles from "@/styles/TestRunsPage.module.css";
@@ -23,15 +23,14 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from "../common/StatusIndicator";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from 'next/navigation'; 
+import { fetchMyTestRunsForLastDay } from "@/actions/getTestRuns";
+import ErrorPage from "@/app/error/page";
 
-interface ResultsTableProps {
-  runs: Run[];
-}
-
-interface CustomCellProbs  {
-  cell: IDataTableCell;
+interface CustomCellProps  {
+  header: string;
+  value: any;
 }
 
 const headers = [
@@ -79,23 +78,46 @@ const transformRunsforTable = (runs: Run[]) => {
  * This component encapsulates the logic for rendering a cell.
  * It renders a special layout for the 'result' column and a default for all others.
  */
-const CustomCell = ({cell}: CustomCellProbs) => {
-  if (cell.info.header === 'result') {
+const CustomCell = ({ header, value }: CustomCellProps) => {
+  if (header === 'result') {
     return (
-      <TableCell key={cell.id}>
-        <StatusIndicator status={cell.value} />
+      <TableCell>
+        <StatusIndicator status={value as string} />
       </TableCell>
     );
   }
 
-  return <TableCell key={cell.id}>{cell.value}</TableCell>;
+  return <TableCell>{value}</TableCell>;
 };
 
-export default function TestRunsTable({runs}: ResultsTableProps) {
+export default function TestRunsTable() {
   const router = useRouter();
-  const tableRows = useMemo(() => transformRunsforTable(runs), [runs]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [rawRuns, setRawRuns] = useState<Run[]>([]);
+
+  // Fetch all runs data on component mount
+  useEffect(() => {
+    const loadRuns = async() => {
+      setIsLoading(true);
+      try {
+        const runsData = await fetchMyTestRunsForLastDay();
+        setRawRuns(runsData);
+      } catch (error) {
+        console.error('Error fetching runs:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRuns();
+  }, []);
+
+  // Transform the raw runs data into a format suitable for the DataTable
+  const tableRows = useMemo(() => transformRunsforTable(rawRuns), [rawRuns]);
 
   // Calculate the paginated rows based on the current page and page size
   const paginatedRows = useMemo(() => {
@@ -104,19 +126,14 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
     return tableRows.slice(startIndex, endIndex);
   }, [tableRows, currentPage, pageSize]);
 
-  const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
-    setCurrentPage(page);
-    setPageSize(pageSize);
-  }
-
-  // Navigate to the test run details page using the runId
-  const handleRowClick = (runId: string) => {
-    router.push(`/test-runs/${runId}`);
-  };
-
+  // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
+    if (!rawRuns || rawRuns.length === 0) {
+      return 'No test runs found in the last 24 hours.';
+    }
+
     let text = 'Showing test runs submitted in the last 24 hours';
-    const dates = runs.map(run => new Date(run.testStructure?.queued || 0).getTime());
+    const dates = rawRuns.map(run => new Date(run.testStructure?.queued || 0).getTime());
     const earliestDate = new Date(Math.min(...dates));
     const latestDate = new Date(Math.max(...dates));
 
@@ -124,7 +141,29 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
       text = `Showing test runs submitted between ${earliestDate.toLocaleString().replace(',', '')} and ${latestDate.toLocaleString().replace(',', '')}`;
     }
     return text;
-  }, runs);
+  }, [rawRuns]);
+
+  const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
+  // Navigate to the test run details page using the runId
+  const handleRowClick = (runId: string) => {
+    router.push(`/test-runs/${runId}`);
+  };
+
+  if(isError) {
+    return <ErrorPage />;
+  }
+
+  if (isLoading) {
+    return <Loading description="Loading test runs..." withOverlay={false}/>;
+  }
+
+  if( !tableRows || tableRows.length === 0) {
+    return <p>No test runs found in the last 24 hours.</p>;
+  }
 
   return (
     <div className={styles.resultsPageContainer}>
@@ -158,7 +197,7 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
                   {rows.map((row) => (
                     <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
                       {row.cells.map((cell) => 
-                        <CustomCell key={cell.id} cell={cell} />)}
+                        <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
                     </TableRow>
                   ))}
                 </TableBody>

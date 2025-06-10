@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-
- 
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
 import styles from '@/styles/TestRunsPage.module.css';
+import TestRunsTable from './TestRunsTable';
 
 type TabLabel = 'Timeframe' | 'Table Design' | 'Search Criteria' | 'Results';
 interface TabConfig {
@@ -33,13 +32,13 @@ const SearchCriteriaContent = () => <p>
 </p>;
 
 
-export default function TestRunsTabs({resultsContent}: TestRunsTabsProps) {
+export default function TestRunsTabs() {
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
     {label: 'Timeframe', component: <TimeframeContent />},
     {label: 'Table Design', component: <TableDesignContent />},
     {label: 'Search Criteria', component: <SearchCriteriaContent />},
-    {label: 'Results', component: resultsContent},
+    {label: 'Results', component: <TestRunsTable />},
   ];
 
   return (

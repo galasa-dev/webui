@@ -7,8 +7,6 @@ import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
-import ServerResultsContent from "@/components/test-runs/ServerResultsContent";
-
 
 export default function TestRunsPage() {
   return (
@@ -16,7 +14,7 @@ export default function TestRunsPage() {
       <BreadCrumb />
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
-        <TestRunsTabs resultsContent={<ServerResultsContent />}/>
+        <TestRunsTabs />
       </div>
     </main>   
   );
