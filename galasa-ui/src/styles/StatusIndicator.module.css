@@ -1,0 +1,27 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+.statusPassed {
+    fill: #24a148;
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+}
+  
+.statusFailed {
+    fill: #da1e28; 
+}
+  
+.statusOther {
+    fill: #8d8d8d; 
+}
+
+.statusContainer {
+    display: flex;     
+    align-items: center;   
+    gap: 0.3rem;        
+}
+  

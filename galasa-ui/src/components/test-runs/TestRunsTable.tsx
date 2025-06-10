@@ -7,14 +7,131 @@
 'use client';
 
 import { Run } from "@/generated/galasaapi";
+import {  DataTable,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeader,
+  TableBody,
+  TableCell,
+  TableContainer,
+} from '@carbon/react';
+import { DataTableHeader, DataTableRow, DataTableCell as IDataTableCell } from "@/utils/interfaces";
+import styles from "@/styles/TestRunsPage.module.css";
+import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
+import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
+import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
+import StatusIndicator from "../common/StatusIndicator";
 
 interface ResultsTableProps {
   runs: Run[];
 }
 
+interface CustomCellProbs  {
+  cell: IDataTableCell;
+}
+
+const headers = [
+  { key: 'submittedAt', header: 'Submitted at' }, 
+  { key: 'testRunName', header: 'Test Run Name' }, 
+  { key: 'requestor', header: 'Requestor' }, 
+  { key: 'group', header: 'Group' }, 
+  { key: 'bundle', header: 'Bundle' }, 
+  { key: 'package', header: 'Package' }, 
+  { key: 'testName', header: 'Test Name' },
+  { key: 'status', header: 'Status' },
+  { key: 'result', header: 'Result'}
+];
+
+
+/**
+ * Transforms and flattens the raw API data for Carbon DataTable.
+ * @param runs - The array of run objects from the API.
+ * @returns A new array of flat objects, each with a unique `id` and properties matching the headers.
+ */
+const transformRunsforTable = (runs: Run[]) => {
+  if(!runs) {
+    return [];
+  }
+
+  return runs.map((run) => {
+    const structure = run.testStructure || {};
+
+    return {
+      id: run.runId,
+      submittedAt: structure.queued ? new Date(structure.queued).toLocaleString() : 'N/A',
+      testRunName: structure.runName,
+      requestor: structure.requestor,
+      group: structure.group,
+      bundle: structure.bundle,
+      package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
+      testName: structure.testShortName,
+      status: structure.status,
+      result: structure.result || 'N/A',
+    };
+  });
+};
+
+/**
+ * This component encapsulates the logic for rendering a cell.
+ * It renders a special layout for the 'result' column and a default for all others.
+ */
+const CustomCell = ({cell}: CustomCellProbs) => {
+  if (cell.info.header === 'result') {
+    return (
+      <TableCell key={cell.id}>
+        <StatusIndicator status={cell.value} />
+      </TableCell>
+    );
+  }
+
+  return <TableCell key={cell.id}>{cell.value}</TableCell>
+}
+
 export default function TestRunsTable({runs}: ResultsTableProps) {
-    console.log("ResultsTable runs:", runs);
+  const tableRows = transformRunsforTable(runs);
+
   return (
-   <div>This is the results table</div>
+   <div className={styles.resultsPageContainer}>
+    <p>Showing results of the last 24 hours</p>
+    <div className={styles.testRunsTableContainer}>
+      <DataTable rows={tableRows} headers={headers}>
+      {({ 
+        rows,
+        headers,
+        getTableProps, 
+        getHeaderProps, 
+        getRowProps }: {
+          rows: DataTableRow[];
+          headers: DataTableHeader[];
+          getHeaderProps: (options: any) => TableHeadProps;
+          getRowProps: (options: any) => TableRowProps;
+          getTableProps: () => TableBodyProps;
+        }) => (
+            <TableContainer>
+                <Table {...getTableProps()}>
+                  <TableHead>
+                    <TableRow>
+                      {headers.map((header) => (
+                        <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                          {header.header}
+                        </TableHeader>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <TableRow {...getRowProps({ row })}>
+                        {row.cells.map((cell) => 
+                          <CustomCell key={cell.id} cell={cell} />)}
+                      </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            </TableContainer>
+          )}
+        </DataTable>
+    </div>
+   </div>
   );
 }
