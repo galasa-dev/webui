@@ -24,6 +24,7 @@ import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from "../common/StatusIndicator";
 import { useMemo, useState } from "react";
+import { useRouter } from 'next/navigation'; 
 
 interface ResultsTableProps {
   runs: Run[];
@@ -61,7 +62,7 @@ const transformRunsforTable = (runs: Run[]) => {
 
     return {
       id: run.runId,
-      submittedAt: structure.queued ? new Date(structure.queued).toLocaleString() : 'N/A',
+      submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
       testRunName: structure.runName,
       requestor: structure.requestor,
       group: structure.group,
@@ -91,6 +92,7 @@ const CustomCell = ({cell}: CustomCellProbs) => {
 };
 
 export default function TestRunsTable({runs}: ResultsTableProps) {
+  const router = useRouter();
   const tableRows = useMemo(() => transformRunsforTable(runs), [runs]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -107,9 +109,26 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
     setPageSize(pageSize);
   }
 
+  // Navigate to the test run details page using the runId
+  const handleRowClick = (runId: string) => {
+    router.push(`/test-runs/${runId}`);
+  };
+
+  const timeFrameText = useMemo(() => {
+    let text = 'Showing test runs submitted in the last 24 hours';
+    const dates = runs.map(run => new Date(run.testStructure?.queued || 0).getTime());
+    const earliestDate = new Date(Math.min(...dates));
+    const latestDate = new Date(Math.max(...dates));
+
+    if(earliestDate && latestDate) {
+      text = `Showing test runs submitted between ${earliestDate.toLocaleString().replace(',', '')} and ${latestDate.toLocaleString().replace(',', '')}`;
+    }
+    return text;
+  }, runs);
+
   return (
     <div className={styles.resultsPageContainer}>
-      <p>Showing results of the last 24 hours</p>
+      <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable rows={paginatedRows} headers={headers}>
           {({ 
@@ -137,7 +156,7 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
                 </TableHead>
                 <TableBody>
                   {rows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })}>
+                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
                       {row.cells.map((cell) => 
                         <CustomCell key={cell.id} cell={cell} />)}
                     </TableRow>
