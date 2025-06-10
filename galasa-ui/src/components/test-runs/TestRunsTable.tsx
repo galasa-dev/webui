@@ -15,6 +15,7 @@ import {  DataTable,
   TableBody,
   TableCell,
   TableContainer,
+  Pagination
 } from '@carbon/react';
 import { DataTableHeader, DataTableRow, DataTableCell as IDataTableCell } from "@/utils/interfaces";
 import styles from "@/styles/TestRunsPage.module.css";
@@ -22,6 +23,7 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from "../common/StatusIndicator";
+import { useMemo, useState } from "react";
 
 interface ResultsTableProps {
   runs: Run[];
@@ -89,13 +91,27 @@ const CustomCell = ({cell}: CustomCellProbs) => {
 };
 
 export default function TestRunsTable({runs}: ResultsTableProps) {
-  const tableRows = transformRunsforTable(runs);
+  const tableRows = useMemo(() => transformRunsforTable(runs), [runs]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Calculate the paginated rows based on the current page and page size
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return tableRows.slice(startIndex, endIndex);
+  }, [tableRows, currentPage, pageSize]);
+
+  const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  }
 
   return (
     <div className={styles.resultsPageContainer}>
       <p>Showing results of the last 24 hours</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable rows={tableRows} headers={headers}>
+        <DataTable rows={paginatedRows} headers={headers}>
           {({ 
             rows,
             headers,
@@ -131,6 +147,23 @@ export default function TestRunsTable({runs}: ResultsTableProps) {
             </TableContainer>
           )}
         </DataTable>
+        <Pagination
+          backwardText="Previous page"
+          forwardText="Next page"
+          itemsPerPageText="Items per page:"
+          page={currentPage}
+          pageNumberText="Page Number"
+          pageSize={pageSize}
+          pageSizes={[
+            10,
+            20,
+            30,
+            40,
+            50
+          ]}
+          totalItems={tableRows.length}
+          onChange={handlePaginationChange}
+        />
       </div>
     </div>
   );
