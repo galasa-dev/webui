@@ -14,10 +14,6 @@ interface TabConfig {
     component: React.ReactNode;
 }
 
-interface TestRunsTabsProps {
-    resultsContent: React.ReactNode; // Content for the Results tab
-}
-
 // Currently, the content for each tab is static and under construction.
 const TimeframeContent = () => <p>
     This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.
