@@ -13,6 +13,7 @@ import * as Constants from "@/utils/constants";
  * @returns {Promise<Run[]>} - A promise that resolves to an array of Run objects.
  */
 export const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
+  let result = [] as Run[];
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
@@ -34,12 +35,11 @@ export const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
       
     if(response && response.runs) {
       const plainRuns = JSON.parse(JSON.stringify(response.runs));
-      return plainRuns as Run[];
+      result = plainRuns as Run[];
     }
- 
-    return [];
   } catch (error: any) {
     console.error("Error fetching test runs:", error);
-    return [];
   }
+
+  return result;
 };
