@@ -62,13 +62,13 @@ const transformRunsforTable = (runs: Run[]) => {
     return {
       id: run.runId,
       submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
-      testRunName: structure.runName,
-      requestor: structure.requestor,
-      group: structure.group,
-      bundle: structure.bundle,
+      testRunName: structure.runName || 'N/A',
+      requestor: structure.requestor || 'N/A',
+      group: structure.group || 'N/A',
+      bundle: structure.bundle || 'N/A',
       package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
-      testName: structure.testShortName,
-      status: structure.status,
+      testName: structure.testShortName || structure.testName || 'N/A',
+      status: structure.status || 'N/A',
       result: structure.result || 'N/A',
     };
   });
