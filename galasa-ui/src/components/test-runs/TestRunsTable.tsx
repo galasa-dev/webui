@@ -169,7 +169,7 @@ export default function TestRunsTable() {
     <div className={styles.resultsPageContainer}>
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable rows={paginatedRows} headers={headers}>
+        <DataTable isSortable rows={paginatedRows} headers={headers}>
           {({ 
             rows,
             headers,
@@ -183,7 +183,7 @@ export default function TestRunsTable() {
           getTableProps: () => TableBodyProps;
         }) => (
             <TableContainer>
-              <Table {...getTableProps()}>
+              <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
                   <TableRow>
                     {headers.map((header) => (
