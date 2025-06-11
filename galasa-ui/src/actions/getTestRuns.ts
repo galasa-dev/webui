@@ -34,7 +34,7 @@ export const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
     );
       
     if(response && response.runs) {
-      const plainRuns = JSON.parse(JSON.stringify(response.runs));
+      const plainRuns = structuredClone(response.runs);
       result = plainRuns as Run[];
     }
   } catch (error: any) {
