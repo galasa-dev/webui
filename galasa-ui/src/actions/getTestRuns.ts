@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use server';
-
 import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import * as Constants from "@/utils/constants";
@@ -12,10 +10,9 @@ import * as Constants from "@/utils/constants";
 /**
  * Fetches test runs from the Result Archive Store (RAS) for the last 24 hours.
  * 
- * @param {string} loginId - The login ID of the user.
  * @returns {Promise<Run[]>} - A promise that resolves to an array of Run objects.
  */
-export const fetchMyTestRunsForLastDay  = async (): Promise<Run[]> => {
+export const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);

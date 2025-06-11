@@ -7,6 +7,7 @@
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
 import styles from '@/styles/TestRunsPage.module.css';
 import TestRunsTable from './TestRunsTable';
+import { Run } from '@/generated/galasaapi';
 
 type TabLabel = 'Timeframe' | 'Table Design' | 'Search Criteria' | 'Results';
 interface TabConfig {
@@ -28,13 +29,13 @@ const SearchCriteriaContent = () => <p>
 </p>;
 
 
-export default function TestRunsTabs() {
+export default function TestRunsTabs({runs}: {runs: Run[]}) {
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
     {label: 'Timeframe', component: <TimeframeContent />},
     {label: 'Table Design', component: <TableDesignContent />},
     {label: 'Search Criteria', component: <SearchCriteriaContent />},
-    {label: 'Results', component: <TestRunsTable />},
+    {label: 'Results', component: <TestRunsTable rawRuns={runs}/>},
   ];
 
   return (

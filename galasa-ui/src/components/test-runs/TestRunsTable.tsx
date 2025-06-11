@@ -23,10 +23,8 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from "../common/StatusIndicator";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from 'next/navigation'; 
-import { fetchMyTestRunsForLastDay } from "@/actions/getTestRuns";
-import ErrorPage from "@/app/error/page";
 
 interface CustomCellProps  {
   header: string;
@@ -90,31 +88,10 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
   return <TableCell>{value}</TableCell>;
 };
 
-export default function TestRunsTable() {
+export default function TestRunsTable({rawRuns}: {rawRuns: Run[]}) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [rawRuns, setRawRuns] = useState<Run[]>([]);
-
-  // Fetch all runs data on component mount
-  useEffect(() => {
-    const loadRuns = async() => {
-      setIsLoading(true);
-      try {
-        const runsData = await fetchMyTestRunsForLastDay();
-        setRawRuns(runsData);
-      } catch (error) {
-        console.error('Error fetching runs:', error);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadRuns();
-  }, []);
 
   // Transform the raw runs data into a format suitable for the DataTable
   const tableRows = useMemo(() => transformRunsforTable(rawRuns), [rawRuns]);
@@ -152,14 +129,6 @@ export default function TestRunsTable() {
   const handleRowClick = (runId: string) => {
     router.push(`/test-runs/${runId}`);
   };
-
-  if(isError) {
-    return <ErrorPage />;
-  }
-
-  if (isLoading) {
-    return <Loading description="Loading test runs..." withOverlay={false}/>;
-  }
 
   if( !tableRows || tableRows.length === 0) {
     return <p>No test runs found in the last 24 hours.</p>;
