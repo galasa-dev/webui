@@ -9,6 +9,9 @@ import {
   CheckmarkFilled,
   ErrorFilled,
   Help,
+  Renew,
+  StopFilled,
+  WarningFilled,
 } from '@carbon/icons-react';
 
 import styles from '@/styles/StatusIndicator.module.css';
@@ -43,6 +46,21 @@ export default function StatusIndicator({ status }: StatusIndicatorProps) {
   case 'envfail':
     IconComponent = ErrorFilled;
     iconClassName = styles.statusFailed;
+    break;
+
+  case 'requeued':
+    IconComponent = Renew;
+    iconClassName = styles.statusRequeued;
+    break;
+
+  case 'cancelled':
+    IconComponent = StopFilled;
+    iconClassName = styles.statusCancelled;
+    break;
+
+  case 'hung':
+    IconComponent = WarningFilled;
+    iconClassName = styles.statusHung;
     break;
   }
 
