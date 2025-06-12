@@ -5,6 +5,7 @@
 
 import { InlineNotification } from '@carbon/react';
 import { Modal, CodeSnippet } from '@carbon/react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface TokenResponseModalProps {
@@ -14,6 +15,8 @@ interface TokenResponseModalProps {
 }
 
 export default function TokenResponseModal({ refreshToken, clientId, onLoad }: TokenResponseModalProps) {
+  const t = useTranslations('TokenResponseModal');
+
   const [token, setToken] = useState('');
   const [clientIdState, setClientId] = useState('');
   const [isOpen, setOpen] = useState(false);
@@ -35,34 +38,33 @@ export default function TokenResponseModal({ refreshToken, clientId, onLoad }: T
       id="token-passiveModal"
       open={isOpen}
       passiveModal
-      modalHeading="Personal access token details"
+      modalHeading={t('modalHeading')}
       preventCloseOnClickOutside
       onRequestClose={() => {
         setOpen(false);
       }}
     >
       <p>
-        Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your
-        terminal to allow your client tool to access the Galasa Ecosystem.
+        {t('description1')}
       </p>
       <CodeSnippet type="multi" wrapText>{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
       <InlineNotification
-        title="The personal access token details are not stored and cannot be retrieved when this dialog is closed."
-        subtitle="Remember to copy the details shown above before closing this dialog."
+        title={t('warningTitle')}
+        subtitle={t('warningSubtitle')}
         kind="warning"
         lowContrast
         hideCloseButton
       />
       <p className="margin-top-1">
-        *If you do not have a galasactl.properties file in your Galasa home directory, run the following command in a terminal to create one:
+        {t('description2')}
       </p>
-      <CodeSnippet className="margin-y-1" type="multi" align="right">{`galasactl local init`}</CodeSnippet>
+      <CodeSnippet className="margin-y-1" type="multi" align="right">{t('commandExample')}</CodeSnippet>
       <p>
-        See the{' '}
+        {t('seeDocsIntro')}{' '}
         <a href="https://galasa.dev/docs/initialising-home-folder" target="_blank" rel="noopener noreferrer">
-          Galasa documentation
+          {t('seeDocsLinkText')}
         </a>{' '}
-        for more information.
+        {t('seeDocsOutro')}
       </p>
     </Modal>
   );

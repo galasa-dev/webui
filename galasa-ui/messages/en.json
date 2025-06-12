@@ -1,0 +1,136 @@
+{
+  "Home":{
+    "title":"Home"
+  },
+  "PageHeaderMenu": {
+      "profile": "My Profile",
+      "settings": "My Settings",
+      "logout": "Log out"
+    },
+  "PageHeader": {
+    "users": "Users",
+    "testRuns": "Test runs"
+  },
+  "Footer": {
+    "versionText": "Galasa version {version}",
+    "health": "Service health"
+  },
+  "ExperimentalFeatures": {
+    "title": "Experimental Features",
+    "description": "Early access to new features. These are experimental and subject to change or removal.",
+    "features": {
+      "testRunSearch": "Test Run searching and viewing",
+      "Internationalization": "Internationalization/Multiple language support for Galasa UI"
+    }
+  },
+  "AccessTokensSection": {
+    "title": "Access Tokens",
+    "descriptionline1": "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.",
+    "descriptionline2": "A token has the same access rights as the user who allocated it.",
+    "deleteButtontext": "Delete {count} selected access token",
+    "error": "Failed to fetch tokens from the Galasa API server"
+},
+"userRole": {
+    "heading": "User Role",
+    "description": "The actions a user can or cannot perform on this Galasa service is controlled by their user role.",
+    "dropdownLabel": "User Role",
+    "resetButton": "Reset",
+    "saveButton": "Save",
+    "toastTitle": "Success",
+    "toastSubtitle": "User role was updated successfully."
+  },
+    "usersTable": {
+      "searchPlaceholder": "Search",
+      "ariaLabel": "Users table",
+      "headers_loginId": "Login ID",
+      "headers_role": "Role",
+      "headers_lastLogin": "Last login",
+      "headers_lastAccessTokenUse": "Last access token use",
+      "headers_actions": "Actions",
+      "editIconDescription": "Edit User",
+      "deleteIconDescription": "Delete User",
+      "modal_label": "Delete User",
+      "modal_heading": "Are you sure you want to delete '{user}'?",
+      "modal_primaryButton": "Delete",
+      "modal_secondaryButton": "Cancel",
+      "modal_notificationTitle": "Deleting a user will remove any memory the Galasa service has of this user.",
+      "modal_notificationSubtitle": "Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.\n\nTests run by this user will remain untouched and available for queries.\n\nIf the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point."
+    },
+    "TokenResponseModal": {
+      "modalHeading": "Personal access token details",
+      "description1": "Copy the following property into the galasactl.properties file in your Galasa home directory* or set it as an environment variable in your terminal to allow your client tool to access the Galasa Ecosystem.",
+      "warningTitle": "The personal access token details are not stored and cannot be retrieved when this dialog is closed.",
+      "warningSubtitle": "Remember to copy the details shown above before closing this dialog.",
+      "description2": "*If you do not have a galasactl.properties file in your Galasa home directory, run the following command in a terminal to create one:",
+      "commandExample": "galasactl local init",
+      "seeDocsIntro": "See the",
+      "seeDocsLinkText": "Galasa documentation",
+      "seeDocsOutro": "for more information.",
+      "loadError": "Failed to load token response dialog:"
+    },
+    "TokenRequestModal": {
+      "new_access_token": "Create new access token",
+      "modal_heading": "Create Galasa Personal Access Token",
+      "create": "Create",
+      "cancel": "Cancel",
+      "token_description": "A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf. Keep your personal access tokens secret and treat them like passwords.",
+      "token_name_description": "You are about to allocate a new token, please give the token a name",
+      "token_name": "Token name",
+      "token_name_helper_text": "Use this to distinguish between your tokens in the future.",
+      "token_name_placeholder": "e.g. galasactl access for my Windows machine",
+      "error_requesting_token": "Error requesting access token"
+    },"TokenCard": {
+    "createdAt": "Created at:",
+    "owner": "Owner"
+  },"TokenDeleteModal": {
+    "modalHeading": "Delete Access Tokens",
+    "primaryButtonText": "Delete",
+    "secondaryButtonText": "Cancel",
+    "tokensToDeleteCount": "Number of access tokens to delete: {count}",
+    "notificationTitle": "Client programs using these access tokens will no longer have access to this Galasa Service.",
+    "notificationSubtitle": "This operation is irreversible, though new access tokens can be created to replace the ones being deleted. Whichever client program used this token will need to be re-configured to use a replacement.",
+    "errorTitle": "Error deleting access token"
+  },
+  "ProfileDetails": {
+    "title": "User Details",
+    "loggedInAs": "Currently logged in as:",
+    "role": "Role",
+    "recentActivity": "Recent Login Activity",
+    "noLastLogin": "No last login date",
+    "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
+    "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}"
+  },
+  "EditUserBreadCrumb": {
+    "home": "Home",
+    "users": "Users"
+  },
+  "BreadCrumb": {
+    "home": "Home"
+  },
+  "AccessDeniedModal": {
+    "modalHeading": "Insufficient Permissions",
+    "logoutButton": "Log out",
+    "notificationSubtitle": "You have access to the Galasa service, but your user role does not have sufficient permissions to perform this operation.",
+    "helpText": "If this is a problem, contact your Galasa service administrator and ask to be assigned a role with the required permissions."
+},
+"UsersPage":{
+  "title":"Users"
+},
+"UserEditPage":{
+  "title":"Edit User"
+},
+"TestRun": {
+  "title": "Access Denied",
+  "underConstruction": "This page is under construction. Please come back later to query a list of test runs."
+},
+"MySettings": {
+  "title": "My Settings"
+},
+"MyProfilePage": {
+      "title": "My Profile"
+    },
+ "ErrorPage": {
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+      }
+}

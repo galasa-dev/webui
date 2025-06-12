@@ -11,8 +11,8 @@ const createJestConfig = nextJest({
 
 // The Jest configuration to use in this project - see https://jestjs.io/docs/configuration for more information
 const config = {
-	setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
-	testEnvironment: "./extendedJsdomEnvironment.ts",
+  setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
+  testEnvironment: "./extendedJsdomEnvironment.ts",
 
   // Ignore auto-generated code in coverage reports
   coveragePathIgnorePatterns: [
@@ -22,7 +22,9 @@ const config = {
   // Map module path aliases (i.e. imports starting with '@', like '@/my/ts/file' ) to absolute paths
   moduleNameMapper: {
     "@/(.*)": "<rootDir>/src/$1"
-  }
+  },
+  transformIgnorePatterns: ['node_modules/(?!next-intl)/']
+
 };
 
 module.exports = createJestConfig(config);

@@ -7,23 +7,45 @@ import HomePage from '@/app/page';
 import PageHeader from '@/components/headers/PageHeader';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { act, render, screen } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
 
-jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({
-    get: jest.fn().mockReturnValue('')
-  }))
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const mockTranslations: Record<string, string> = {
+      "title": "Home",
+     
+    };
+    return mockTranslations[key] || key;
+  }
 }));
 
-const mockRouter = {
-  refresh : jest.fn(() => useRouter().refresh),
-};
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "title": "Home",
+  };
+    return translations[key] || key;
+  }
+}));
 
+
+jest.mock('fs/promises', () => ({
+  readFile: jest.fn(() => Promise.resolve('Dummy markdown content'))
+}));
+
+jest.mock('path', () => ({
+  join: jest.fn(() => '/mocked/path/to/home-contents.md')
+}));
 jest.mock('next/navigation', () => ({
-
-  useRouter: jest.fn(() => mockRouter),
-
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    prefetch: jest.fn(),
+  }),
 }));
+
 
 test('renders Galasa header', () => {
   render(

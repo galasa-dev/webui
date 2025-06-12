@@ -14,6 +14,16 @@ import ErrorPage from "@/app/error/page";
 jest.mock('@/utils/api');
 jest.mock('@/generated/galasaapi');
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+    };
+    return translations[key] || key;
+  }
+}));
+
 const mockGetById = jest.fn();
 const mockGetArtifactList = jest.fn();
 const mockGetLog = jest.fn();

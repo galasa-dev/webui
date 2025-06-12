@@ -10,10 +10,11 @@ import { ConfigurationPropertyStoreAPIApi } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { MarkdownResponse } from "@/utils/interfaces";
 import { readFile } from "fs/promises";
+import { useTranslations } from "next-intl";
 import path from "path";
 
 export default function HomePage() {
-
+  const t= useTranslations('Home');
   // Fetches the content contained in the service.welcome.markdown CPS property from the API server
   // Overrides the default markdown content present in /public/static/markdown/home-contents.md
   const fetchHomePageContentFromCps = async (): Promise<MarkdownResponse> => {
@@ -81,7 +82,7 @@ export default function HomePage() {
 
   return (
     <main id="content">
-      <PageTile data-testid="page-tile" title={"Home"} />
+      <PageTile data-testid="page-tile" title={t('title')} />
       <HomeContent markdownContentPromise={markdownContentPromise} />
     </main>
   );

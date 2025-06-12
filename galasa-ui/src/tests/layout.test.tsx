@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import RootLayout from '@/app/layout';
+import RootLayoutInner from '@/app/layout-inner';
 import { act, render } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
@@ -26,6 +26,22 @@ jest.mock('next/headers', () => ({
     get: jest.fn(),
   }),
 }));
+
+jest.mock('next-intl', () => ({
+  useTranslations: jest.fn(() => (key: string, vars?: Record<string, any>) => {
+    switch (key) {
+    case 'profile': return 'My Profile';
+    case 'settings': return 'My Settings';
+    case 'logout': return 'Log out';
+    case 'users': return 'Users';
+    case 'testRuns': return 'Test runs';
+    case 'versionText': return `Galasa version ${vars?.version ?? ''}`;
+    case 'health': return 'Service health';
+    default: return `Translated ${key}`;
+    }
+  }),
+}));
+
 
 jest.mock('next/navigation', () => ({
 
@@ -52,7 +68,9 @@ describe('Layout', () => {
 
   it('renders the web UI layout', async () => {
     const layout = await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
+      return render(<RootLayoutInner galasaServiceName="Galasa Service" featureFlagsCookie="">
+        Hello, world!
+      </RootLayoutInner>);
     });
     expect(layout).toMatchSnapshot();
   });
@@ -62,7 +80,9 @@ describe('Layout', () => {
     process.env.GALASA_SERVICE_NAME = "";
 
     await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
+      return render(<RootLayoutInner galasaServiceName="Galasa Service" featureFlagsCookie="">
+        Hello, world!
+      </RootLayoutInner>);
     });
 
     const titleElement = document.querySelector('title')?.textContent;
@@ -73,7 +93,9 @@ describe('Layout', () => {
 
     process.env.GALASA_SERVICE_NAME = 'Managers';
     await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
+      return render(<RootLayoutInner galasaServiceName="Managers" featureFlagsCookie="">
+        Hello, world!
+      </RootLayoutInner>);
     });
 
     const titleElement = document.querySelector('title')?.textContent;

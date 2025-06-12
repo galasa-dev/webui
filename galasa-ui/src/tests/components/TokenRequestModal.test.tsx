@@ -6,6 +6,24 @@
 import TokenRequestModal from '@/components/tokens/TokenRequestModal';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "new_access_token": "Create new access token",
+      "modal_heading": "Create Galasa Personal Access Token",
+      "create": "Create",
+      "cancel": "Cancel",
+      "token_description": "A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf. Keep your personal access tokens secret and treat them like passwords.",
+      "token_name_description": "You are about to allocate a new token, please give the token a name",
+      "token_name": "Token name",
+      "token_name_helper_text": "Use this to distinguish between your tokens in the future.",
+      "token_name_placeholder": "e.g. galasactl access for my Windows machine",
+      "error_requesting_token": "Error requesting access token"
+    };
+    return translations[key] || key;
+  }
+}));
+
 afterEach(() => {
   jest.clearAllMocks();
 });

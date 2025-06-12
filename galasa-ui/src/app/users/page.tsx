@@ -13,6 +13,7 @@ import PageTile from '@/components/PageTile';
 import UsersTable from '@/components/users/UsersTable';
 import { fetchUserFromApiServer } from '../../actions/userServerActions';
 import { HOME } from '@/utils/constants/breadcrumb';
+import { useTranslations } from 'next-intl';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,11 +34,12 @@ export default function UsersPage() {
     return users;
 
   };
-
+  const t=useTranslations("UsersPage");
   return (
+    
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]}/>
-      <PageTile title={"Users"} />
+      <PageTile title={t('title')} />
       <UsersTable usersListPromise={fetchAllUsersFromApiServer()} currentUserPromise={fetchUserFromApiServer("me")} />
     </main>
   );

@@ -10,8 +10,11 @@ import { useRef, useState } from 'react';
 import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
+import { useTranslations } from 'next-intl';
 
 export default function TokenRequestModal({isDisabled} : {isDisabled : boolean}) {
+
+  const t = useTranslations('TokenRequestModal');
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
@@ -54,14 +57,14 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
     
   return (
     <>
-      <Button iconDescription={"Create new access token"} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
+      <Button iconDescription={t('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
         <Add/>
       </Button>
       <Modal
-        modalHeading="Create Galasa Personal Access Token"
-        primaryButtonText="Create"
+        modalHeading={t('modal_heading')}
+        primaryButtonText={t('create')}
         primaryButtonDisabled={submitDisabled}
-        secondaryButtonText="Cancel"
+        secondaryButtonText={t('cancel')}
         shouldSubmitOnEnter={true}
         open={open}
         onRequestClose={() => {
@@ -75,14 +78,13 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
         }}
       >
         <p>
-          A personal access token is an alternative to using a password for authentication and can be used to allow client tools to access the Galasa Ecosystem on your behalf.
-          Keep your personal access tokens secret and treat them like passwords.
+          {t('token_description')}
         </p>
 
         <br />
 
         <p>
-        You are about to allocate a new token, please give the token a name
+          {t('token_name_description')}
         </p>
 
         <br />
@@ -91,15 +93,15 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
           data-modal-primary-focus
           ref={tokenNameInputRef}
           id="name-txtinput"
-          labelText="Token name"
-          helperText="Use this to distinguish between your tokens in the future."
-          placeholder="e.g. galasactl access for my Windows machine"
+          labelText={t('token_name')}
+          helperText={t('token_name_helper_text')}
+          placeholder={t('token_name_placeholder')}
           onChange={onChangeInputValidation}
         />
         {error && (
           <InlineNotification
             className="margin-top-1"
-            title="Error requesting access token"
+            title={t('error_requesting_token')}
             subtitle={error}
             kind="error"
             onCloseButtonClick={() => setError('')}

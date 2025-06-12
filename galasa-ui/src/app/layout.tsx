@@ -3,36 +3,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import { getClientApiVersion, getServiceHealthStatus } from '@/utils/health';
-import Footer from '@/components/Footer';
-import PageHeader from '@/components/headers/PageHeader';
+import React from 'react';
 import '@/styles/global.scss';
-import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { cookies } from 'next/headers';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
+import RootLayoutInner from './layout-inner';
+import { getLocale, getMessages } from 'next-intl/server';
+import {NextIntlClientProvider} from 'next-intl';
+
 
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || "Galasa Service";
   const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
-
+  const locale = await getLocale();
+  const messages = await getMessages(); // or getMessages({ locale })
+  
   return (
-    <html lang="en">
-      <head>
-        <title>{galasaServiceName}</title>
-        <meta name="description" content="Galasa Ecosystem Web UI" />
-      </head>
-      <body>
-        <FeatureFlagProvider initialFlags={featureFlagsCookie}>
-          <PageHeader galasaServiceName={galasaServiceName} />
-          {children}
-          <Footer serviceHealthyPromise={getServiceHealthStatus()} clientVersionPromise={getClientApiVersion()}/>
-        </FeatureFlagProvider>
-      
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages} >
+      <RootLayoutInner
+        galasaServiceName={galasaServiceName}
+        featureFlagsCookie={featureFlagsCookie}
+        locale={locale}
+      > 
+        {children}
+      </RootLayoutInner>
+
+
+    </NextIntlClientProvider>
   );
 }

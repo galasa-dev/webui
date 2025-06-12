@@ -70,10 +70,13 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
     fireEvent.click(toggleButton);
 
     expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
-
-    const expectedCookieVal = JSON.stringify({[FEATURE_FLAGS.TEST_RUNS]: true});
+  
+    const expectedCookieVal = JSON.stringify({
+      [FEATURE_FLAGS.TEST_RUNS]: true,
+      [FEATURE_FLAGS.INTERNATIONALIZATION]: false
+    });
+  
     expect(cookieSpy).toHaveBeenCalledTimes(1);
     expect(cookieSpy).toHaveBeenCalledWith(expect.stringContaining(`${FeatureFlagCookies.FEATURE_FLAGS}=${expectedCookieVal}`));
-
   });
 });

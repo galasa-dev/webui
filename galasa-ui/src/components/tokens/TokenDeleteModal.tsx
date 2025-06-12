@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { InlineNotification } from '@carbon/react';
 import { Loading, Modal } from "@carbon/react";
 import { AuthToken } from '@/generated/galasaapi';
+import { useTranslations } from 'next-intl';
 
 interface TokenDeleteModalProps {
   tokens: Set<AuthToken>;
@@ -19,6 +20,7 @@ interface TokenDeleteModalProps {
 
 export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFromSet, updateDeleteModalState }: TokenDeleteModalProps) {
 
+  const t = useTranslations('TokenDeleteModal');
   const [open, setOpen] = useState(true);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -77,9 +79,9 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
   return (
     <>
       <Modal
-        modalHeading="Delete Access Tokens"
-        primaryButtonText="Delete"
-        secondaryButtonText="Cancel"
+        modalHeading={t('modalHeading')}
+        primaryButtonText={t('primaryButtonText')}
+        secondaryButtonText={t('secondaryButtonText')}
         danger
         shouldSubmitOnEnter={true}
         open={open}
@@ -93,13 +95,13 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
         }}
       >
         <h6 className='margin-top-1'>
-          Number of access tokens to delete: {selectedTokens.size}
+          {t('tokensToDeleteCount', { count: selectedTokens.size })}
         </h6>
 
         <div className='margin-top-2'>
           <InlineNotification
-            title="Client programs using these access tokens will no longer have access to this Galasa Service."
-            subtitle="This operation is irreversible, though new access tokens can be created to replace the ones being deleted. Whichever client program used this token will need to be re-configured to use a replacement."
+            title={t('notificationTitle')}
+            subtitle={t('notificationSubtitle')}
             kind="warning"
             lowContrast
             hideCloseButton
@@ -110,7 +112,7 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
         {error && (
           <InlineNotification
             className="margin-top-1"
-            title="Error deleting access token"
+            title={t('errorTitle')}
             subtitle={error}
             kind="error"
             onCloseButtonClick={() => setError('')}
