@@ -148,12 +148,14 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   }
 
   if (isLoading) {
-    return <DataTableSkeleton
-      data-testid="loading-table-skeleton"
-      columnCount={headers.length}
-      rowCount={pageSize}
-      showHeader
-      showToolbar={true}/>;
+    return (
+      <div>
+        <p className={styles.timeFrameText}>Loading test results...</p>
+        <DataTableSkeleton
+          columnCount={headers.length}
+          rowCount={pageSize}/>;
+      </div>
+    );
   }
 
   const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
@@ -172,7 +174,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
 
   return (
     <div className={styles.resultsPageContainer}>
-      <p className={styles.timeFrameText}>{isLoading ? 'Loading test runs..' : timeFrameText}</p>
+      <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>
           {({ 
