@@ -22,7 +22,7 @@ jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       "title": "Home",
-  };
+    };
     return translations[key] || key;
   }
 }));
