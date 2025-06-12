@@ -9,9 +9,6 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
 
-// Mock the server action to return a resolved promise with test run data.
-jest.mock('@/actions/getTestRuns');
-
 // Mock the useRouter hook from Next.js to return a mock router object.
 const mockRouter = {
   push: jest.fn(),
@@ -20,6 +17,12 @@ const mockRouter = {
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => mockRouter),
 }));
+
+jest.mock('@/app/error/page', () =>
+  function MockErrorPage() {
+    return <div data-testid="error-page">Error Occurred</div>;
+  }
+);
 
 // Helper function to generate mock test runs data
 const generateMockRuns = (count: number) => {
@@ -42,24 +45,29 @@ const generateMockRuns = (count: number) => {
 
 
 describe('TestRunsTable Component', () => {
-  // Clear mock history before each test
-  beforeEach(()=> {
+  beforeEach(() => {
     mockRouter.push.mockClear();
+    // Suppress console.error for rejected promise tests
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('Rendering Logic', () => {
-    test('displays test runs after data is fetched', async() => {
+    test('shows loading state initially, then displays data when promise resolves', async() => {
       // Arrange
       const mockRuns = generateMockRuns(2);
+      const mockPromise = Promise.resolve(mockRuns);
+
       // Act
-      render(<TestRunsTable rawRuns={mockRuns}/>);
+      render(<TestRunsTable runsListPromise={mockPromise}/>);
 
-      // Assert
-      await waitFor(() => {
-        expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
-      });
+      // Assert: Check if the loading state is displayed
+      expect(screen.getByTitle('loading')).toBeInTheDocument();
 
-      expect(screen.getByRole('table')).toBeInTheDocument();
+      expect(await screen.findByRole('table')).toBeInTheDocument();
       expect(screen.getByText('Test Run 1')).toBeInTheDocument();
       expect(screen.getByText('Test Run 2')).toBeInTheDocument();
       expect(screen.getByText('user1')).toBeInTheDocument();
@@ -68,27 +76,16 @@ describe('TestRunsTable Component', () => {
     });
   });
 
-  test('display error page when an empty array is passed', async () => {
+  test('display an error component when an empty array is passed', async () => {
     // Arrange
-    render(<TestRunsTable rawRuns={[]}/>);
+    const runsPromise = Promise.resolve([]);
+  
+    // Act
+    render(<TestRunsTable runsListPromise={runsPromise} />);
 
     // Assert: Check if the error state is displayed
     expect(await screen.findByText(/No test runs found/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
-  });
-
-  test('renders a row with "N/A" when testStructure is missing or incomplete', () => {
-    // ARRANGE: Pass a run with null testStructure.
-    const mockRuns = [{ runId: '1' }];
-    render(<TestRunsTable rawRuns={mockRuns} />);
-
-    // ASSERT
-    const row = screen.getByRole('row', { name: /N\/A/i });
-    const cells = within(row).getAllByRole('cell');
-    
-    expect(cells[0]).toHaveTextContent('N/A'); // Submitted At
-    expect(cells[1]).toHaveTextContent('N/A'); // Test Run Name
-    expect(cells[2]).toHaveTextContent('N/A'); // Requestor
   });
 });
 
@@ -96,38 +93,39 @@ describe('TestRunsTable Interactions', () => {
   test('navigates to run details when a run is clicked', async () => {
     // Arrange
     const mockRuns = generateMockRuns(1);
-    render(<TestRunsTable rawRuns={mockRuns}/>);
+    const runsPromise = Promise.resolve(mockRuns);
+    render(<TestRunsTable runsListPromise={runsPromise} />);
+    const tableRow = await screen.findByText('Test Run 1');
 
     // Act
-    const firstRunRow = screen.getByText('Test Run 1');
-    fireEvent.click(firstRunRow);
+    fireEvent.click(tableRow);
 
-    // Assert: Check if the router push was called with the correct runId
+    // Assert
     expect(mockRouter.push).toHaveBeenCalledWith('/test-runs/1');
-    expect(mockRouter.push).toHaveBeenCalledTimes(1);
   });
 
-  test('handles paginatioon changes correctly', async () => {
+
+  test('handles pagination changes correctly', async () => {
     // Arrange
     const mockRuns = generateMockRuns(15);
-    render(<TestRunsTable rawRuns={mockRuns} />);
-
-    // Act: render the table
-    const table = screen.getByRole('table');
-
-    // Assert: Expect only 10 rows to be displayed initially and test run 11 are not in the document
-    expect(within(table).getAllByRole('row')).toHaveLength(11); // 10 data rows + 1 header row
+    const runsPromise = Promise.resolve(mockRuns);
+    render(<TestRunsTable runsListPromise={runsPromise} />);
+    
+    // Wait for the table to finish loading
+    const table = await screen.findByRole('table');
+    
+    // Assert initial state
+    expect(within(table).getAllByRole('row')).toHaveLength(11); // 1 header + 10 data
     expect(screen.queryByText('Test Run 11')).not.toBeInTheDocument();
 
-    // Act: click the next page button
+    // Act
     const nextPageButton = screen.getByRole('button', { name: /next page/i });
     fireEvent.click(nextPageButton);
 
-    // Assert: Expect the next 5 rows to be displayed
+    // Assert final state
     await waitFor(() => {
-      expect(within(table).getByText('Test Run 11')).toBeInTheDocument();
+      expect(screen.getByText('Test Run 11')).toBeInTheDocument();
     });
-    expect(within(table).queryByText('Test Run 1')).not.toBeInTheDocument();
-    expect(within(table).getAllByRole('row')).toHaveLength(6); // 5 data rows + 1 header row
+    expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
   });
 });

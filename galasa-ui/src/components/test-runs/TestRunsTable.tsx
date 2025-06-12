@@ -23,8 +23,9 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from "../common/StatusIndicator";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from 'next/navigation'; 
+import ErrorPage from "@/app/error/page";
 
 interface CustomCellProps  {
   header: string;
@@ -88,10 +89,32 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
   return <TableCell>{value}</TableCell>;
 };
 
-export default function TestRunsTable({rawRuns}: {rawRuns: Run[]}) {
+export default function TestRunsTable({runsListPromise}: {runsListPromise: Promise<Run[]>}) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [rawRuns, setRawRuns] = useState<Run[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  // Load the raw runs data from the promise
+  useEffect(() => {
+    const loadRuns = async () => {
+      setIsLoading(true);
+
+      try {
+        const runs = await runsListPromise;
+        setRawRuns(runs || []);
+      } catch (error) {
+        console.error("Error fetching test runs:", error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRuns();
+  }, [runsListPromise]);
 
   // Transform the raw runs data into a format suitable for the DataTable
   const tableRows = useMemo(() => transformRunsforTable(rawRuns), [rawRuns]);
@@ -119,6 +142,14 @@ export default function TestRunsTable({rawRuns}: {rawRuns: Run[]}) {
     }
     return text;
   }, [rawRuns]);
+
+  if (isError) {
+    return <ErrorPage />;
+  }
+
+  if (isLoading) {
+    return <Loading small={false} active={isLoading}/>;
+  }
 
   const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
     setCurrentPage(page);

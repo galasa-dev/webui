@@ -29,13 +29,13 @@ const SearchCriteriaContent = () => <p>
 </p>;
 
 
-export default function TestRunsTabs({runs}: {runs: Run[]}) {
+export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<Run[]>}) {
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
     {label: 'Timeframe', component: <TimeframeContent />},
     {label: 'Table Design', component: <TableDesignContent />},
     {label: 'Search Criteria', component: <SearchCriteriaContent />},
-    {label: 'Results', component: <TestRunsTable rawRuns={runs}/>},
+    {label: 'Results', component: <TestRunsTable runsListPromise={runsListPromise}/>},
   ];
 
   return (

@@ -30,8 +30,10 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 describe('TestRunsTabs Component', () => {
+  const mockPromise = Promise.resolve([]);
+
   test('renders all tabs correctly', () => {
-    render(<TestRunsTabs />);
+    render(<TestRunsTabs runsListPromise={mockPromise}/>);
 
     const tabLabels = ['Timeframe', 'Table Design', 'Search Criteria', 'Results'];
     tabLabels.forEach(label => {
@@ -40,7 +42,7 @@ describe('TestRunsTabs Component', () => {
   });
 
   test('displays the content of the Timeframe tab', () => {
-    render(<TestRunsTabs />);
+    render(<TestRunsTabs runsListPromise={mockPromise}/>);
 
     fireEvent.click(screen.getByText('Timeframe'));
     expect(screen.getByText(/Currently, all results for the last 24 hours/i)).toBeInTheDocument();
@@ -48,7 +50,7 @@ describe('TestRunsTabs Component', () => {
 
   test('switches to the "Results" tab and displays its content on click', async () => {
     // Arrange
-    render(<TestRunsTabs />);
+    render(<TestRunsTabs runsListPromise={mockPromise}/>);
 
     // Act: Click on the 'Results' tab
     const resultsTab = screen.getByRole('tab', { name: 'Results' });
