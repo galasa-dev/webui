@@ -152,6 +152,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       <div>
         <p className={styles.timeFrameText}>Loading test results...</p>
         <DataTableSkeleton
+          data-testid="loading-table-skeleton"
           columnCount={headers.length}
           rowCount={pageSize}/>;
       </div>
