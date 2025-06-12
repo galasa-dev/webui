@@ -15,7 +15,7 @@ import {  DataTable,
   TableBody,
   TableCell,
   TableContainer,
-  Pagination, Loading
+  Pagination, DataTableSkeleton
 } from '@carbon/react';
 import { DataTableHeader, DataTableRow, DataTableCell as IDataTableCell } from "@/utils/interfaces";
 import styles from "@/styles/TestRunsPage.module.css";
@@ -148,7 +148,12 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   }
 
   if (isLoading) {
-    return <Loading small={false} active={isLoading}/>;
+    return <DataTableSkeleton
+      data-testid="loading-table-skeleton"
+      columnCount={headers.length}
+      rowCount={pageSize}
+      showHeader
+      showToolbar={true}/>;
   }
 
   const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
@@ -167,7 +172,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
 
   return (
     <div className={styles.resultsPageContainer}>
-      <p className={styles.timeFrameText}>{timeFrameText}</p>
+      <p className={styles.timeFrameText}>{isLoading ? 'Loading test runs..' : timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>
           {({ 

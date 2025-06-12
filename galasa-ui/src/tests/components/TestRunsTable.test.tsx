@@ -65,10 +65,11 @@ describe('TestRunsTable Component', () => {
       render(<TestRunsTable runsListPromise={mockPromise}/>);
 
       // Assert: Check if the loading state is displayed
-      expect(screen.getByTitle('loading')).toBeInTheDocument();
+      expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
+      expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
 
-      expect(await screen.findByRole('table')).toBeInTheDocument();
-      expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+      expect(await screen.findByText('Test Run 1')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-table-skeleton')).not.toBeInTheDocument();
       expect(screen.getByText('Test Run 2')).toBeInTheDocument();
       expect(screen.getByText('user1')).toBeInTheDocument();
       expect(screen.getByText('user2')).toBeInTheDocument();
