@@ -12,6 +12,23 @@ const mockUsersApi = UsersAPIApi as jest.Mock;
 
 jest.mock('@/generated/galasaapi');
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "title": "User Details",
+      "loggedInAs": "Currently logged in as:",
+      "role": "Role",
+      "recentActivity": "Recent Login Activity",
+      "noLastLogin": "No last login date",
+      "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
+      "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}",
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+    };
+    return translations[key] || key;
+  }
+}));
+
 describe('MyProfilePage', () => {
   afterEach(() => {
     jest.clearAllMocks();

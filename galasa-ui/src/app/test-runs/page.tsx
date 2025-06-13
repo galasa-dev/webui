@@ -7,16 +7,18 @@
 import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import styles from "@/styles/TestRunsPage.module.css";
+import { useTranslations } from "next-intl";
 
 
 export default function TestRunsPage() {
+  const t=useTranslations('TestRun');
   return (
     <main id="content">
       <BreadCrumb />
-      <PageTile title={"Test Runs"} />
+      <PageTile title={t("title")} />
       <div className={styles.testRunsContentWrapper}>
         <p className={styles.underConstruction}>
-            This page is under construction. Please come back later to query a list of test runs.
+          {t("underConstruction")}
         </p>
       </div>
     </main>   

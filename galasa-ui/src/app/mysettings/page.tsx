@@ -15,6 +15,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
+import PageTileClient from '@/components/PageTileClient';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -54,7 +55,7 @@ export default async function MySettings() {
   return (
     <main id="content">
       <BreadCrumb />
-      <PageTile title={"My Settings"} />
+      <PageTileClient translationKey="MySettings.title" />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <ExperimentalFeaturesSection />

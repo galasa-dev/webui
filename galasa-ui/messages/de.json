@@ -1,0 +1,139 @@
+{
+
+  "Home": {
+    "title": "Startseite"
+  },
+  "PageHeaderMenu": {
+    "profile": "Mein Profil",
+    "settings": "Meine Einstellungen",
+    "logout": "Abmelden"
+  },
+  "PageHeader": {
+    "users": "Benutzer",
+    "testRuns": "Testläufe"
+  },
+  "Footer": {
+    "versionText": "Galasa Version {version}",
+    "health": "Dienstzustand"
+  },
+  "ExperimentalFeatures": {
+    "title": "Experimentelle Funktionen",
+    "description": "Früher Zugriff auf neue Funktionen. Diese sind experimentell und können sich ändern oder entfernt werden.",
+    "features": {
+      "testRunSearch": "Testlauf-Suche und -Anzeige",
+      "Internationalization": "Internationalisierung/Mehrsprachige Unterstützung für die Galasa UI"
+    }
+  },
+  "AccessTokensSection": {
+    "title": "Zugriffstoken",
+    "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, den ein Client-Programm besitzt und der Berechtigung für den Zugriff auf den Galasa-Dienst gewährt.",
+    "descriptionline2": "Ein Token hat die gleichen Zugriffsrechte wie der Benutzer, der es erstellt hat.",
+    "deleteButtontext": "Lösche {count} ausgewähltes Zugriffstoken",
+    "error": "Fehler beim Abrufen der Tokens vom Galasa API-Server"
+  },
+  "userRole": {
+    "heading": "Benutzerrolle",
+    "description": "Die Aktionen, die ein Benutzer in diesem Galasa-Dienst ausführen kann oder nicht, werden durch seine Benutzerrolle gesteuert.",
+    "dropdownLabel": "Benutzerrolle",
+    "resetButton": "Zurücksetzen",
+    "saveButton": "Speichern",
+    "toastTitle": "Erfolg",
+    "toastSubtitle": "Die Benutzerrolle wurde erfolgreich aktualisiert."
+  },
+  "usersTable": {
+    "searchPlaceholder": "Suche",
+    "ariaLabel": "Benutzertabelle",
+    "headers_loginId": "Login-ID",
+    "headers_role": "Rolle",
+    "headers_lastLogin": "Letzter Login",
+    "headers_lastAccessTokenUse": "Letzte Nutzung des Zugriffstokens",
+    "headers_actions": "Aktionen",
+    "editIconDescription": "Benutzer bearbeiten",
+    "deleteIconDescription": "Benutzer löschen",
+    "modal_label": "Benutzer löschen",
+    "modal_heading": "Möchten Sie wirklich '{user}' löschen?",
+    "modal_primaryButton": "Löschen",
+    "modal_secondaryButton": "Abbrechen",
+    "modal_notificationTitle": "Durch das Löschen dieses Benutzers werden alle Daten entfernt, die der Galasa-Dienst über diesen Benutzer gespeichert hat.",
+    "modal_notificationSubtitle": "Alle Zugriffstoken, die diesem Benutzer zugeordnet wurden, verlieren den Zugriff auf diesen Galasa-Dienst.\n\nDies ist nicht rückgängig machbar, aber neue Zugangstokens können erstellt werden. Clients, die das alte Token verwendeten, müssen neu konfiguriert werden."
+  },
+  "TokenResponseModal": {
+    "modalHeading": "Details zum persönlichen Zugriffstoken",
+    "description1": "Kopieren Sie diese Eigenschaft in die Datei galasactl.properties in Ihrem Galasa-Home-Verzeichnis* oder setzen Sie sie als Umgebungsvariable in Ihrem Terminal, damit Ihr Client-Tool auf das Galasa-Ökosystem zugreifen kann.",
+    "warningTitle": "Die Details zum persönlichen Zugriffstoken werden nicht gespeichert und können nach dem Schließen dieses Dialogs nicht wiederhergestellt werden.",
+    "warningSubtitle": "Denken Sie daran, die oben angezeigten Daten zu kopieren, bevor Sie diesen Dialog schließen.",
+    "description2": "*Wenn Sie keine Datei galasactl.properties in Ihrem Galasa-Home-Verzeichnis haben, führen Sie diesen Befehl im Terminal aus, um eine zu erstellen:",
+    "commandExample": "galasactl local init",
+    "seeDocsIntro": "Siehe die",
+    "seeDocsLinkText": "Galasa-Dokumentation",
+    "seeDocsOutro": "für weitere Informationen.",
+    "loadError": "Fehler beim Laden des Token-Antwortdialogs:"
+  },
+  "TokenRequestModal": {
+    "new_access_token": "Neues Zugriffstoken erstellen",
+    "modal_heading": "Galasa Persönliches Zugriffstoken erstellen",
+    "create": "Erstellen",
+    "cancel": "Abbrechen",
+    "token_description": "Ein persönliches Zugriffstoken ist eine Alternative dazu, ein Passwort zur Authentifizierung zu verwenden, und kann Client-Tools im Namen des Benutzers Zugriff auf das Galasa-Ökosystem gewähren. Behandeln Sie persönliche Zugriffstoken wie Passwörter und halten Sie sie geheim.",
+    "token_name_description": "Sie sind dabei, ein neues Token zu erzeugen – bitte geben Sie einen Namen dafür ein.",
+    "token_name": "Token-Name",
+    "token_name_helper_text": "Verwenden Sie diesen Namen, um Ihre Tokens später unterscheiden zu können.",
+    "token_name_placeholder": "z. B. galasactl Zugang für meinen Windows‑PC",
+    "error_requesting_token": "Fehler beim Anfordern des Zugriffstokens"
+  },
+  "TokenCard": {
+    "createdAt": "Erstellt am:",
+    "owner": "Eigentümer"
+  },
+  "TokenDeleteModal": {
+    "modalHeading": "Zugriffstoken löschen",
+    "primaryButtonText": "Löschen",
+    "secondaryButtonText": "Abbrechen",
+    "tokensToDeleteCount": "Anzahl der zu löschenden Zugriffstoken: {count}",
+    "notificationTitle": "Clientprogramme mit diesen Zugriffstoken verlieren den Zugriff auf diesen Galasa-Dienst.",
+    "notificationSubtitle": "Dieser Vorgang ist irreversibel. Neue Zugriffstoken können jedoch als Ersatz erstellt werden. Clients, die das alte Token verwendet haben, müssen neu konfiguriert werden.",
+    "errorTitle": "Fehler beim Löschen des Zugriffstokens"
+  },
+  "ProfileDetails": {
+    "title": "Benutzerdetails",
+    "loggedInAs": "Derzeit angemeldet als:",
+    "role": "Rolle",
+    "recentActivity": "Letzte Anmeldeaktivität",
+    "noLastLogin": "Kein letztes Login-Datum",
+    "lastLoginWeb": "Zuletzt angemeldet in dieser Webanwendung (UTC): {date}",
+    "lastLoginToken": "Zuletzt angemeldet mit einem Galasa Zugriffstoken (UTC): {date}"
+  },
+  "EditUserBreadCrumb": {
+    "home": "Startseite",
+    "users": "Benutzer"
+  },
+  "BreadCrumb": {
+    "home": "Startseite"
+  },
+  "AccessDeniedModal": {
+    "modalHeading": "Unzureichende Berechtigungen",
+    "logoutButton": "Abmelden",
+    "notificationSubtitle": "Sie haben Zugriff auf den Galasa-Dienst, aber Ihre Benutzerrolle verfügt nicht über die erforderlichen Berechtigungen für diese Aktion.",
+    "helpText": "Wenn dies ein Problem ist, wenden Sie sich an den Galasa‑Administrator und bitten Sie um eine Rolle mit den benötigten Berechtigungen."
+  },
+  "UsersPage": {
+    "title": "Benutzer"
+  },
+  "UserEditPage": {
+    "title": "Benutzer bearbeiten"
+  },
+  "TestRun": {
+    "title": "Zugriff verweigert",
+    "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte kommen Sie später zurück, um eine Liste der Testläufe abzurufen."
+  },
+  "MySettings": {
+    "title": "Meine Einstellungen"
+  },
+  "MyProfilePage": {
+    "title": "Mein Profil"
+  },
+  "ErrorPage": {
+    "errorTitle": "Etwas ist schiefgelaufen!",
+    "errorDescription": "Bitte melden Sie das Problem Ihrem Galasa‑Administrator."
+  }
+}

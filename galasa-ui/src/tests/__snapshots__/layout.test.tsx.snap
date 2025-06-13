@@ -150,8 +150,7 @@ exports[`Layout renders the web UI layout 1`] = `
               role="footer"
             >
               <p>
-                Galasa version 
-                my-galasa-version
+                Galasa version my-galasa-version
               </p>
               <p
                 class="serviceHealthTitle"
@@ -313,8 +312,7 @@ exports[`Layout renders the web UI layout 1`] = `
             role="footer"
           >
             <p>
-              Galasa version 
-              my-galasa-version
+              Galasa version my-galasa-version
             </p>
             <p
               class="serviceHealthTitle"

@@ -17,6 +17,7 @@ import styles from "@/styles/UsersList.module.css";
 import Link from 'next/link';
 import { InlineNotification } from '@carbon/react';
 import { deleteUserFromService } from '@/actions/userServerActions';
+import { useTranslations } from 'next-intl';
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ interface DataTableRow {
 }
 
 export default function UsersTable({ usersListPromise, currentUserPromise }: UsersTableProps) {
+  const t = useTranslations('usersTable');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -77,19 +79,19 @@ If the user logs in to the Galasa service after this point, they will be challen
 
     {
       key: "loginId",
-      header: "Login ID"
+      header: t('headers_loginId')
     },
     {
       key: "role",
-      header: "Role"
+      header: t('headers_role')
     },
     {
       key: "lastLogin",
-      header: "Last login"
+      header: t('headers_lastLogin')
     },
     {
       key: "lastAccessTokenUse",
-      header: "Last access token use"
+      header: t('headers_lastAccessTokenUse')
     },
   ];
 
@@ -167,7 +169,6 @@ If the user logs in to the Galasa service after this point, they will be challen
     };
 
     const loadUsers = async () => {
-
       setIsLoading(true);
 
       try {
@@ -183,12 +184,10 @@ If the user logs in to the Galasa service after this point, they will be challen
       } finally {
         setIsLoading(false);
       }
-
     };
 
     loadUsers();
     checkForEditUsersPermission();
-
   }, [currentUserPromise, usersListPromise]);
 
   if (isError) {
@@ -220,9 +219,9 @@ If the user logs in to the Galasa service after this point, they will be challen
         }) => (
           <TableContainer>
             <TableToolbarContent>
-              <TableToolbarSearch placeholder="Search" persistent onChange={onInputChange} />
+              <TableToolbarSearch placeholder={t('searchPlaceholder')} persistent onChange={onInputChange} />
             </TableToolbarContent>
-            <Table {...getTableProps()} aria-label="users table" size="lg">
+            <Table {...getTableProps()} aria-label={t('ariaLabel')} size="lg">
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
@@ -230,7 +229,7 @@ If the user logs in to the Galasa service after this point, they will be challen
                       {header.header}
                     </TableHeader>
                   ))}
-                  {hasEditUserPermission && <TableHeader aria-label="user actions" />}
+                  {hasEditUserPermission && <TableHeader aria-label={t('headers_actions')} />}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -246,25 +245,30 @@ If the user logs in to the Galasa service after this point, they will be challen
                         hasEditUserPermission &&
                         <TableCell className="cds--table-column-menu">
                           <Link href={{ pathname: currentUser.loginId === row.cells[0].value ? "/mysettings" : "/users/edit", query: { loginId: row.cells[0].value } }}>
-                            <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription="Edit User" />
+                            <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription={t('editIconDescription')} />
                           </Link>
-                          {
-                            // Owner cannot be deleted. Moreover, a user cannot delete themselves.
-                            (currentUser.id !== row.id && row.cells[1].value !== OWNER_ROLE_NAME) && <Button onClick={() => selectRowForDeletion(row)} renderIcon={TrashCan} hasIconOnly kind="ghost" iconDescription="Delete User" />
+                          {(currentUser.id !== row.id && row.cells[1].value !== OWNER_ROLE_NAME) && 
+                            <Button onClick={() => selectRowForDeletion(row)} renderIcon={TrashCan} hasIconOnly kind="ghost" iconDescription={t('deleteIconDescription')} />
                           }
                         </TableCell>
                       }
-
-                      {
-                        isDeleteModalOpen &&
-                        <Modal onRequestSubmit={() => deleteUser(selectedRow!.id)} open={isDeleteModalOpen} onRequestClose={() => setIsDeleteModalOpen(false)} danger modalHeading={`Are you sure you want to delete '${selectedRow!.cells[0].value}'?`} modalLabel="Delete User" primaryButtonText="Delete" secondaryButtonText="Cancel">
+                      {isDeleteModalOpen &&
+                        <Modal 
+                          onRequestSubmit={() => deleteUser(selectedRow!.id)} 
+                          open={isDeleteModalOpen} 
+                          onRequestClose={() => setIsDeleteModalOpen(false)} 
+                          danger 
+                          modalHeading={t('modal_heading', { user: selectedRow!.cells[0].value })} 
+                          modalLabel={t('modal_label')} 
+                          primaryButtonText={t('modal_primaryButton')} 
+                          secondaryButtonText={t('modal_secondaryButton')}
+                        >
                           <InlineNotification
-                            title="Deleting a user will remove any memory the Galasa service has of this user."
+                            title={t('modal_notificationTitle')}
                             kind="warning"
                             subtitle={
-                              // Wrap the warning string in a div to ensure that the text has line breaks between them
                               <div style={{ whiteSpace: 'pre-wrap' }}>
-                                {warningString}
+                                {t('modal_notificationSubtitle')}
                               </div>
                             }
                             lowContrast

@@ -36,6 +36,20 @@ jest.mock('@/actions/getUserAccessTokens', () => ({
   fetchAccessTokens: jest.fn().mockResolvedValue({ tokens: [] }),
 }));
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "title": "Experimental Features",
+      "description": "Early access to new features. These are experimental and subject to change or removal.",
+      "features.testRunSearch": "Test Run searching and viewing",
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+    };
+    return translations[key] || key;
+  }
+}));
+
+
 describe('MySettings Component', () => {
   afterEach(() => {
     jest.clearAllMocks();

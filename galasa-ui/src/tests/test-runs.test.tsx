@@ -6,6 +6,8 @@
 
 import { render, screen } from '@testing-library/react';
 import TestRunsPage from '@/app/test-runs/page';
+import '@testing-library/jest-dom';
+
 
 // Mock component dependencies
 jest.mock('@/components/PageTile', () => ({
@@ -18,6 +20,16 @@ jest.mock('@/components/common/BreadCrumb', () => ({
   default: () => <div data-testid="breadcrumb">BreadCrumb</div>,
 }));
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "title": "Test Runs",
+      "underConstruction": "This page is under construction. Please come back later to query a list of test runs."
+    };
+    return translations[key] || key;
+  }
+}));
+  
 describe('TestRunsPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();

@@ -10,11 +10,13 @@ import { UserData } from "@/generated/galasaapi";
 import styles from "@/styles/MyProfile.module.css";
 import { ProfileDetailsProps } from "@/utils/interfaces";
 import { Loading } from "@carbon/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 
 export default function ProfileDetails({ userProfilePromise }: ProfileDetailsProps) {
   const WEB_UI_CLIENT_NAME = "web-ui";
+  const t = useTranslations("ProfileDetails");
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -48,13 +50,13 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
         : !isError &&
         <>
           <div className={styles.userDetailsContainer}>
-            <h3>User Details</h3>
-            <p>Currently logged in as: {userProfile?.loginId}</p>
-            <p>Role: {roleName}</p>
+            <h3>{t("title")}</h3>
+            <p>{t("loggedInAs")} {userProfile?.loginId}</p>
+            <p>{t("role")}: {roleName}</p>
           </div>
 
           <div className={styles.loginActivityContainer}>
-            <h3>Recent Login Activity</h3>
+            <h3>{t("recentActivity")}</h3>
             {
               userProfile?.clients?.map((client, index) => {
                 let lastLoginDateStr: string;
@@ -62,16 +64,16 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
                   const clientLastLoginDate = new Date(client.lastLogin);
                   lastLoginDateStr = `${clientLastLoginDate.toUTCString()}`;
                 } else {
-                  lastLoginDateStr = "No last login date";
+                  lastLoginDateStr = t("noLastLogin");
                 }
 
                 return (
                   <p key={index}>
                     {
                       client.clientName === WEB_UI_CLIENT_NAME
-                        ? `Last logged in to this web application (UTC): ${lastLoginDateStr}`
-                        : `Last logged in using a Galasa personal access token (UTC): ${lastLoginDateStr}`
-                    }
+                        ? t("lastLoginWeb", { date: lastLoginDateStr })
+                        : t("lastLoginToken", { date: lastLoginDateStr })}
+
                   </p>
                 );
               })

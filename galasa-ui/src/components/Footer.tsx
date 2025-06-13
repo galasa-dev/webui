@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from "@/styles/Footer.module.css";
 import { Theme } from '@carbon/react';
+import { useTranslations } from 'next-intl';
 
 interface FooterProps {
   serviceHealthyPromise: Promise<boolean>;
@@ -19,7 +20,7 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
 
   const [isHealthOk, setIsHealthOk] = useState(true);
   const [apiVersion, setApiVersion] = useState("");
-
+  const t = useTranslations('Footer');
 
   useEffect(() => {
     const checkServiceHealth = async () => {
@@ -43,9 +44,9 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
     <Theme theme="g90">
       <footer className={styles.footer} role="footer">
         {
-          isHealthOk && <p>Galasa version {apiVersion}</p>
+          isHealthOk && <p>{t('versionText', { version: apiVersion })}</p>
         }
-        <p className={styles.serviceHealthTitle}>Service health</p>
+        <p className={styles.serviceHealthTitle}>{t("health")}</p>
         { isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} /> }
       </footer>
     </Theme>

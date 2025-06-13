@@ -35,6 +35,24 @@ jest.mock('@carbon/react', () => ({
   ),
 }));
 
+
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "heading": "User Role",
+      "description": "The actions a user can or cannot perform on this Galasa service is controlled by their user role.",
+      "dropdownLabel": "User Role",
+      "resetButton": "Reset",
+      "saveButton": "Save",
+      "toastTitle": "Success",
+      "toastSubtitle": "User role was updated successfully.",
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+    };
+    return translations[key] || key;
+  }
+}));
+
 // --- Mock updateUserRoleAction --- //
 jest.mock('@/actions/userServerActions', () => ({
   updateUserRoleAction: jest.fn(),

@@ -12,6 +12,22 @@ jest.mock('@/utils/health', () => ({
   getClientApiVersion:     jest.fn(),
 }));
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string, vars?: { version?: string }) => {
+    const translations: Record<string, string | ((vars?: { version?: string }) => string)> = {
+      versionText: (vars) => `Galasa version ${vars?.version ?? ''}`,
+      health: "Service health"
+    };
+
+    const value = translations[key];
+    if (typeof value === "function") {
+      return value(vars);
+    }
+    return value || key;
+  }
+}));
+
+
 test('renders the footer', async () => {
 
   const isGalasaServiceHealthy: boolean = true;

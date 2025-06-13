@@ -13,6 +13,7 @@ import ErrorPage from "@/app/error/page";
 import TokenRequestModal from "@/components/tokens/TokenRequestModal";
 import TokenDeleteModal from "@/components/tokens/TokenDeleteModal";
 import { AuthToken, AuthTokens } from "@/generated/galasaapi";
+import { useTranslations } from "next-intl";
 
 interface AccessTokensSectionProps {
   accessTokensPromise: Promise<AuthTokens | undefined>
@@ -76,7 +77,7 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
         if (accessTokens && accessTokens.tokens) {
           setTokens(new Set(accessTokens.tokens));
         } else {
-          throw new Error("Failed to fetch tokens from the Galasa API server");
+          throw new Error(t("error"));
         }
       } catch (err) {
         setIsError(true);
@@ -89,18 +90,19 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
     loadAccessTokens();
   }, [accessTokensPromise]);
 
+  const t = useTranslations('AccessTokensSection');
   return (
     <section className={styles.tokenContainer}>
       { isLoading ?
         <Loading />
         : !isError &&
         <>
-          <h3 className={styles.title}>Access Tokens</h3>
+          <h3 className={styles.title}>{t('title')}</h3>
 
           <div className={styles.pageHeaderContainer}>
             <div>
-              <p className={styles.heading}>An access token is a unique secret key held by a client program so it has permission to use the Galasa service</p>
-              <p className={styles.heading}>A token has the same access rights as the user who allocated it.</p>
+              <p className={styles.heading}>{t('descriptionline1')}</p>
+              <p className={styles.heading}>{t('descriptionline2')}</p>
             </div>
           </div>
 
@@ -111,7 +113,7 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
             {isAddBtnVisible && <TokenRequestModal isDisabled={selectedTokens.size > 0} />}
 
             <Button onClick={() => setIsDeleteModalOpen(true)} className={styles.deleteBtn} disabled={selectedTokens.size === 0} kind="danger">
-              Delete {selectedTokens.size} selected access tokens
+              {t('deleteButtontext', { count: selectedTokens.size })}
             </Button>
           </div>
 

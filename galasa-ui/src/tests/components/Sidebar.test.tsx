@@ -6,6 +6,18 @@
 import Sidebar from '@/components/Sidebar';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "tokenManagement": 'Token Management',
+      "loggedInAs": 'You are logged in as:',
+      "previousLogin": 'Previous login',
+      "accessRoles": 'Your access roles:'
+    };
+    return translations[key] || key;
+  }
+}));
+
 beforeEach (()=>{
   render(<Sidebar />);
 });

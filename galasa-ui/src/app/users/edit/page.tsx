@@ -12,6 +12,7 @@ import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AccessTokensSection from '@/components/AccessTokensSection';
 import { fetchAccessTokens } from '@/actions/getUserAccessTokens';
 import { fetchUserFromApiServer } from '@/actions/userServerActions';
+import { useTranslations } from 'next-intl';
 
 // In order to extract query param on server-side
 type UsersPageProps = {
@@ -39,11 +40,11 @@ export default function EditUserPage({ searchParams }: UsersPageProps) {
     return roles;
 
   };
-
+  const t=useTranslations("UserEditPage");
   return (
     <main id="content">
       <EditUserBreadCrumb />
-      <PageTile title={"Edit User"} />
+      <PageTile title={t('title')} />
       <UserRoleSection userProfilePromise={fetchUserFromApiServer(loginIdFromQueryParam)} roleDetailsPromise={fetchRBACRolesFromApiServer()}/>
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(loginIdFromQueryParam)} isAddBtnVisible={false}/>
     </main>

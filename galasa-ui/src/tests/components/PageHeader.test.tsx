@@ -22,6 +22,20 @@ jest.mock('next/navigation', () => ({
 
 }));
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      profile: 'My Profile',
+      settings: 'My Settings',
+      logout: 'Log out',
+      users: 'Users',
+      testRuns: 'Test runs',
+    };
+    return translations[key] || `Translated ${key}`;
+  }
+}));
+
+
 afterEach(() => {
   jest.clearAllMocks();
 });
