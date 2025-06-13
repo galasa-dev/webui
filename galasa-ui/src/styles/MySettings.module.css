@@ -18,7 +18,7 @@
     justify-content: space-between;
 }
 
-.tokenContainer {
+.tokenContainer, .experimentalFeaturesContainer {
     width: 90%;
     margin: 5rem auto;
 }
@@ -41,4 +41,36 @@
 
 .title{
     margin: 1rem 0;
+}
+
+.experimentalFeaturesHeaderContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.featureFlagsContainer {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 1rem;
+}
+
+.featureFlagLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+
+.featureFlagLabel input[type="checkbox"] {
+    accent-color: #0f62fe;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.featureFlag {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0.5rem 0;
 }
