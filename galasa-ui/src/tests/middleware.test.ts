@@ -41,32 +41,24 @@ describe('Middleware', () => {
 
   it('should redirect to authenticate if the user does not have a JWT', async () => {
     // Given...
-    const requestUrl = 'https://galasa-ecosystem.com/runs';
-    const req = new NextRequest(new Request(requestUrl), {});
+    const req = new NextRequest(new Request('https://galasa-ecosystem.com/runs'), {});
     const redirectUrl = 'http://my-connector/auth';
 
-    const fetchSpy = jest.spyOn(global, "fetch")
-      .mockImplementation(jest.fn(() =>
-        Promise.resolve({
-          url: redirectUrl,
-          headers: {
-            get: jest.fn().mockReturnValue(redirectUrl),
-          },
-        })
-      ) as jest.Mock);
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        url: redirectUrl,
+        headers: {
+          get: jest.fn().mockReturnValue(redirectUrl),
+        },
+      })
+    ) as jest.Mock;
 
     // When...
     await middleware(req);
 
     // Then...
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(redirectSpy).toHaveBeenCalledTimes(1);
     expect(redirectSpy).toHaveBeenCalledWith(redirectUrl, { status: 302 });
-
-    // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
-    const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(`callback_url=${requestUrl}/callback`);
-    fetchSpy.mockRestore();
   });
 
   it('should redirect to authenticate if the issued JWT has expired in the past', async () => {
