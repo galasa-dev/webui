@@ -75,17 +75,22 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// Returns a string representing the URL to return back to after authenticating.
 const getRequestCallbackUrl = (requestedPath: string) => {
+  // Remove the trailing '/' from the host URL and requested path if there is one
   let hostUrl = GALASA_WEBUI_HOST_URL;
   if (hostUrl.endsWith('/')) {
-    hostUrl = hostUrl.slice(0, hostUrl.length);
+    hostUrl = hostUrl.substring(0, hostUrl.length - 1);
   }
 
   let pathName = requestedPath;
-  if (pathName !== '/' && pathName.endsWith('/')) {
-    pathName = pathName.slice(0, pathName.length);
+  if (pathName === '/') {
+    pathName = "";
+  } else if (pathName.endsWith('/')) {
+    pathName = pathName.substring(0, pathName.length - 1);
   }
 
+  // The request path is expected to start with a '/' if a non-root path is requested
   const callbackUrl = `${hostUrl}${pathName}/callback`;
   return callbackUrl;
 };

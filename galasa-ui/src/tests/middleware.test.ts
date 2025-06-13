@@ -74,6 +74,36 @@ describe('Middleware', () => {
     fetchSpy.mockRestore();
   });
 
+  it('should send a callback URL to return to the correct page after authenticating', async () => {
+    // Given...
+    const requestUrl = 'https://galasa-ecosystem.com';
+    const req = new NextRequest(new Request(requestUrl), {});
+    const redirectUrl = 'http://my-connector/auth';
+
+    const fetchSpy = jest.spyOn(global, "fetch")
+      .mockImplementation(jest.fn(() =>
+        Promise.resolve({
+          url: redirectUrl,
+          headers: {
+            get: jest.fn().mockReturnValue(redirectUrl),
+          },
+        })
+      ) as jest.Mock);
+
+    // When...
+    await middleware(req);
+
+    // Then...
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(redirectSpy).toHaveBeenCalledTimes(1);
+    expect(redirectSpy).toHaveBeenCalledWith(redirectUrl, { status: 302 });
+
+    // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
+    const fetchedUrl = fetchSpy.mock.calls[0][0];
+    expect(fetchedUrl.toString()).toContain(`callback_url=http://mock-webui-host-url/callback`);
+    fetchSpy.mockRestore();
+  });
+
   it('should redirect to authenticate if the issued JWT has expired in the past', async () => {
     // Given...
     const req = new NextRequest(new Request('https://galasa-ecosystem.com/runs'), {});
