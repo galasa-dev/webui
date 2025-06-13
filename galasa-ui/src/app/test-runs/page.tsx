@@ -7,18 +7,20 @@
 import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import styles from "@/styles/TestRunsPage.module.css";
+import { BREADCRUMB_ITEMS } from "@/utils/constants";
 
 
 export default function TestRunsPage() {
+
   return (
     <main id="content">
-      <BreadCrumb />
+      <BreadCrumb breadCrumbItems={BREADCRUMB_ITEMS.HOME} />
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
         <p className={styles.underConstruction}>
-            This page is under construction. Please come back later to query a list of test runs.
+          This page is under construction. Please come back later to query a list of test runs.
         </p>
       </div>
-    </main>   
+    </main>
   );
 };

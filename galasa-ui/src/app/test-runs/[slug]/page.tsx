@@ -7,6 +7,7 @@ import React from 'react';
 import TestRunDetails from '@/components/runs/TestRunDetails';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { ArtifactIndexEntry, ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
+import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';
 
 // Define an interface for the component's props
@@ -16,42 +17,59 @@ interface TestRunProps {
   };
 }
 
-export default async function TestRunsPage ({ params: { slug } }: TestRunProps) {
+// Type the props directly on the function's parameter
+export default async function TestRunPage ({ params: { slug } }: TestRunProps) {
 
   const apiConfig = createAuthenticatedApiConfiguration();
 
-  let runDetails: Run | null = null;
-  let runArtifacts: ArtifactIndexEntry[] = [];
-  let runLogs: any = null;
-  let error: string | null = null;
+  const fetchRunDetailsFromApiServer = async () => {
+    try {
+      const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+      const rasRunsResponse = await rasApiClient.getRasRunById(slug);
+      return structuredClone(rasRunsResponse);
+    } catch (error: any) {
+      console.error("Error fetching run details:", error);
+      throw error;
+    }
+  };
 
-  try {
+  const fetchRunDetailLogs = async () => {
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+    const rasRunLogsResponse = await rasApiClient.getRasRunLog(slug);
+    return rasRunLogsResponse;
+  };
 
-    // Fetch all data in parallel
-    const [details, artifacts, logs] = await Promise.all([
-      rasApiClient.getRasRunById(slug),
-      rasApiClient.getRasRunArtifactList(slug),
-      rasApiClient.getRasRunLog(slug),
-    ]);
+  const fetchTestArtifacts = async (): Promise<ArtifactIndexEntry[]> => {
+    let runArtifacts: ArtifactIndexEntry[] = [];
 
-    runDetails = details ? structuredClone(details) : null;
-    runArtifacts = artifacts ? structuredClone(Array.from(artifacts)) : [];
-    runLogs = logs;
-  } catch (err: any) {
-    error = err?.message || "Failed to load test run data.";
-  }
+    const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+    const rasArtifactResponse = await rasApiClient.getRasRunArtifactList(slug);
 
-  if (error) {
-    return <ErrorPage />;
+    if (rasArtifactResponse) {
+      runArtifacts = structuredClone(Array.from(rasArtifactResponse)); //Convert the set into array
+    }
+
+    return runArtifacts;
+  };
+
+  // Check if run exists first
+  try {
+    await fetchRunDetailsFromApiServer();
+  } catch (error: any) {
+    if (error?.code === 404) {
+      return <NotFound title='Run not found' description={`Unable to find a run with id: ${slug}`}/>;
+    } else{
+      return <ErrorPage />;
+    }
+    throw error; // Re-throw other errors
   }
 
   return (
     <TestRunDetails 
       runId={slug} 
-      runDetails={runDetails!}
-      runArtifacts={runArtifacts} 
-      runLog={runLogs}
+      runDetailsPromise={fetchRunDetailsFromApiServer()} 
+      runArtifactsPromise={fetchTestArtifacts()} 
+      runLogPromise={fetchRunDetailLogs()} 
     />
   );
 };

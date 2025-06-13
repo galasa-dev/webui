@@ -12,6 +12,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import PageTile from '@/components/PageTile';
 import UsersTable from '@/components/users/UsersTable';
 import { fetchUserFromApiServer } from '../../actions/userServerActions';
+import { BREADCRUMB_ITEMS } from '@/utils/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,9 +36,9 @@ export default function UsersPage() {
 
   return (
     <main id="content">
-      <BreadCrumb />
+      <BreadCrumb breadCrumbItems={BREADCRUMB_ITEMS.HOME}/>
       <PageTile title={"Users"} />
-      <UsersTable usersListPromise={fetchAllUsersFromApiServer()} currentUserPromise={fetchUserFromApiServer("me")}/>
+      <UsersTable usersListPromise={fetchAllUsersFromApiServer()} currentUserPromise={fetchUserFromApiServer("me")} />
     </main>
   );
 }

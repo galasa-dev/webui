@@ -16,5 +16,40 @@ const COLORS = {
 
 };
 
+const BREADCRUMB_ITEMS = {
 
-export { CLIENT_API_VERSION, COLORS };
+  HOME: [
+
+    {
+      title: "Home",
+      route: "/"
+    }
+
+  ],
+  EDIT_USER: [
+
+    {
+      title: "Home",
+      route: "/"
+    },
+    {
+      title: "Users",
+      route: "/users"
+    }
+
+  ],
+  TEST_RUNS: [
+    {
+      title: "Home",
+      route: "/"
+    },
+    {
+      title: "Test Runs",
+      route: "/test-runs"
+    }
+  ]
+
+};
+
+
+export { CLIENT_API_VERSION, COLORS, BREADCRUMB_ITEMS };

@@ -15,6 +15,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
+import { BREADCRUMB_ITEMS } from '@/utils/constants';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -46,14 +47,14 @@ export default async function MySettings() {
 
   // Await the login ID before using it
   const userLoginId = await fetchUserLoginId();
-  
+
   if (!userLoginId) {
     return <ErrorPage />;
   }
 
   return (
     <main id="content">
-      <BreadCrumb />
+      <BreadCrumb breadCrumbItems={BREADCRUMB_ITEMS.HOME}/>
       <PageTile title={"My Settings"} />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />

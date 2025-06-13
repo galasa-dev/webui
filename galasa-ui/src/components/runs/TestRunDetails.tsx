@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-import TestRunBreadCrumb from '@/components/common/TestRunBreadCrumb';
+import BreadCrumb from '@/components/common/BreadCrumb';
 import PageTile from '@/components/PageTile';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useEffect, useState } from 'react';
@@ -20,16 +20,17 @@ import MethodsTab from './MethodsTab';
 import StatusCheck from '../common/StatusCheck';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
+import { BREADCRUMB_ITEMS } from '@/utils/constants';
 
 interface TestRunDetailsProps {
   runId: string;
-  runDetails: Run;
-  runLog: string;
-  runArtifacts: ArtifactIndexEntry[];
+  runDetailsPromise: Promise<Run>;
+  runLogPromise: Promise<string>;
+  runArtifactsPromise: Promise<ArtifactIndexEntry[]>;
 }
 
 // Type the props directly on the function's parameter
-const TestRunDetails = ({ runId, runDetails, runLog, runArtifacts }: TestRunDetailsProps) => {
+const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -71,21 +72,29 @@ const TestRunDetails = ({ runId, runDetails, runLog, runArtifacts }: TestRunDeta
 
     setIsLoading(true);
 
-    try {
+    const loadUser = async () => {
+      try {
 
-      if (runDetails) {
-        extractRunDetails(runDetails);
-        setArtifacts(runArtifacts);
-        setLogs(runLog);
+        const runDetails = await runDetailsPromise;
+        const runArtifacts = await runArtifactsPromise;
+        const runLog = await runLogPromise;
+  
+        if (runDetails) {
+          extractRunDetails(runDetails);
+          setArtifacts(runArtifacts);
+          setLogs(runLog);
+        }
+  
+      } catch (err) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-    } catch (err) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
+    loadUser();
 
-  }, [runDetails, runArtifacts, runLog]);
+  }, [runDetailsPromise, runArtifactsPromise, runLogPromise]);
 
   if (isError) {
     return <ErrorPage />;
@@ -98,7 +107,7 @@ const TestRunDetails = ({ runId, runDetails, runLog, runArtifacts }: TestRunDeta
   return (
     <main id="content">
 
-      <TestRunBreadCrumb />
+      <BreadCrumb breadCrumbItems={BREADCRUMB_ITEMS.TEST_RUNS} />
       <PageTile title={`Test Run: ${run?.runName}`} />
 
       <div className={styles.testRunContainer}>

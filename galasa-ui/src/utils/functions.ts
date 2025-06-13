@@ -110,3 +110,15 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
 
   return parts;
 };
+
+export const handleDownload = (content: string | ArrayBuffer, fileName: string) => {
+  const blob = new Blob([content]);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};

@@ -9,9 +9,10 @@ import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
 import React, { useEffect, useState } from 'react';
 import styles from '@/styles/Artifacts.module.css';
-import { CloudDownload, Document, Folder, Zip } from '@carbon/icons-react';
+import { CarbonIconType, CloudDownload, Document, Folder, Image, Json, Zip } from '@carbon/icons-react';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
+import { handleDownload } from '@/utils/functions';
 
 interface FileNode {
   name: string;
@@ -84,24 +85,11 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       bytes[i] = binaryString.charCodeAt(i);
     }
 
-    // (c) Create a Blob from that Uint8Array with the correct MIME type
-    const blob = new Blob([bytes]);
-
-    // (d) Create a temporary URL and “click” a hidden <a> to download it
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-
     const cleanFileName = artifactDetails.fileName.startsWith('/') ? artifactDetails.fileName.slice(1) : artifactDetails.fileName; //strip any leading slashes
-    a.download = cleanFileName; // name (e.g. “myfile.json” or “notes.txt”)
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 
-    // (e) Revoke the object URL to avoid memory leaks
-    URL.revokeObjectURL(url);
+    handleDownload(bytes , cleanFileName);
+    
   };
-
 
   const downloadArtifact = async (runId: string, artifactUrl: string) => {
 
@@ -254,6 +242,23 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     });
   };
 
+  const renderFileIcon = (path : string) => {
+
+    const pathSplit = path.split(".");
+    const extension = pathSplit[pathSplit.length - 1]; // get the last split e.g some.file.ts -> we need the extension (ts)
+    let icon: CarbonIconType = Document;
+
+    if(extension == "gz" || extension == "zip" || extension == "jar" || extension == "rar" || extension == "7z") {
+      icon = Zip;
+    } else if (extension == "json") {
+      icon = Json;
+    } else if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "gif" || extension == "svg") {
+      icon = Image;
+    }
+
+    return icon;
+  };
+
   // Recursive renderer: emits a <TreeNode> for each TreeNodeData
   const renderNode = (node: TreeNodeData, path: string) => {
 
@@ -264,7 +269,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       treeNode = <TreeNode
         key={path}
         id={path}
-        renderIcon={path.endsWith(".gz") ? Zip : Document}
+        renderIcon={renderFileIcon(path)}
         label={node.name}
         value={node.name}
         onSelect={() => downloadArtifact(runId, node.url)}
@@ -286,7 +291,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     <>
       <div className={styles.titleContainer}>
         <h3>Artifacts</h3>
-        <p>An artifact is some captured state left behind once a Run has completed. Artifacts can be downloaded and viewed.</p>
+        <p>An artifact is a piece of captured state left behind once a Run has completed. Artifacts can also be downloaded and viewed.</p>
       </div>
       <div className={styles.artifact}>
 
