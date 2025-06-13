@@ -9,6 +9,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const originalEnv = process.env;
 
+jest.mock('@/utils/auth', () => ({
+  ...jest.requireActual('@/utils/auth'),
+  GALASA_WEBUI_HOST_URL: "http://mock-webui-host-url",
+}));
+
 // Mock the jwtDecode method
 jest.mock('jwt-decode', () => ({
   __esModule: true,
@@ -65,7 +70,7 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(`callback_url=${requestUrl}/callback`);
+    expect(fetchedUrl.toString()).toContain(`callback_url=http://mock-webui-host-url/runs/callback`);
     fetchSpy.mockRestore();
   });
 

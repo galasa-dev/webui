@@ -6,7 +6,7 @@
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { NextResponse, NextRequest } from 'next/server';
 import AuthCookies from './utils/authCookies';
-import { GALASA_WEBUI_CLIENT_ID, authApiClient, sendAuthRequest } from './utils/auth';
+import { GALASA_WEBUI_CLIENT_ID, GALASA_WEBUI_HOST_URL, authApiClient, sendAuthRequest } from './utils/auth';
 import { AuthProperties } from './generated/galasaapi';
 import { cookies } from 'next/headers';
 import { CLIENT_API_VERSION } from './utils/constants';
@@ -55,9 +55,10 @@ export async function middleware(request: NextRequest) {
         response = await handleCallback(request, NextResponse.redirect(responseUrl, { status: 302 }));
         
       } else if (!isAuthenticated(request)) {
-  
+
         // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
-        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID, `${request.url}/callback`);
+        const callbackUrl = getRequestCallbackUrl(request.nextUrl.pathname);
+        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID, callbackUrl);
         const locationHeader = authResponse.headers.get('Location');
         if (locationHeader) {
           response = NextResponse.redirect(locationHeader, { status: 302 });
@@ -73,6 +74,21 @@ export async function middleware(request: NextRequest) {
   }
   return response;
 }
+
+const getRequestCallbackUrl = (requestedPath: string) => {
+  let hostUrl = GALASA_WEBUI_HOST_URL;
+  if (hostUrl.endsWith('/')) {
+    hostUrl = hostUrl.slice(0, hostUrl.length);
+  }
+
+  let pathName = requestedPath;
+  if (pathName !== '/' && pathName.endsWith('/')) {
+    pathName = pathName.slice(0, pathName.length);
+  }
+
+  const callbackUrl = `${hostUrl}${pathName}/callback`;
+  return callbackUrl;
+};
 
 // Checks if a cookie containing a JWT exists, redirecting users to authenticate
 // if a JWT does not exit or if the existing token has expired.
