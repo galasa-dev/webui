@@ -3,40 +3,73 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+import { render, screen, waitFor } from '@testing-library/react';
+import { Run } from '@/generated/galasaapi';
+import TestRunsPage, { fetchAllTestRunsForLastDay } from '@/app/test-runs/page';
 
-import { render, screen } from '@testing-library/react';
-import TestRunsPage from '@/app/test-runs/page';
+jest.mock('@/app/test-runs/page', () => {
+  const originalModule = jest.requireActual('@/app/test-runs/page');
+  return {
+    __esModule: true,
+    default: originalModule.default,
+    fetchAllTestRunsForLastDay: jest.fn(),
+  };
+});
 
-// Mock component dependencies
-jest.mock('@/components/PageTile', () => ({
-  __esModule: true,
-  default: ({ title }: { title: string }) => <div data-testid="page-tile">{title}</div>,
-}));
+// Mock the child components.
+jest.mock('@/components/test-runs/TestRunsTabs', () =>
+  function MockTestRunsTabs() {
+    return <div data-testid="mock-test-runs-tabs" />;
+  }
+);
 
-jest.mock('@/components/common/BreadCrumb', () => ({
-  __esModule: true,
-  default: () => <div data-testid="breadcrumb">BreadCrumb</div>,
-}));
+jest.mock('@/components/PageTile', () =>
+  function MockPageTile() {
+    return <div data-testid="page-tile" />;
+  }
+);
+
+jest.mock('@/components/common/BreadCrumb', () =>
+  function MockBreadCrumb() {
+    return <div data-testid="breadcrumb" />;
+  }
+);
+
+const mockedFetch = fetchAllTestRunsForLastDay as jest.Mock;
 
 describe('TestRunsPage', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    // Clear the mock before each test.
+    mockedFetch.mockClear();
   });
 
-  test('renders the Test Runs page with correct components', () => {
-    render(<TestRunsPage />);
+  test('renders the final content after data is successfully fetched', async () => {
+    // Arrange
+    const mockRuns = [{ runId: '1' }, { runId: '2' }] as Run[];
+    mockedFetch.mockResolvedValue(mockRuns);
 
-    // Check for the main content container
+    // Act
+    const page = await TestRunsPage();
+    render(page);
+
+    // Assert
+    await waitFor(() => {
+      expect(screen.getByRole('main')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-test-runs-tabs')).toBeInTheDocument();
+    });
+  });
+
+  test('renders the main content structure', async () => {
+    // Arrange
+    mockedFetch.mockResolvedValue([]);
+
+    // Act
+    const Page = await TestRunsPage();
+    render(Page);
+
+    // Assert
     expect(screen.getByRole('main')).toBeInTheDocument();
-
-    // Check for the page title
     expect(screen.getByTestId('page-tile')).toBeInTheDocument();
-    expect(screen.getByText('Test Runs')).toBeInTheDocument();
-
-    // Check for the breadcrumb component
     expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
-
-    // Check for the under construction message
-    expect(screen.getByText(/under construction/i)).toBeInTheDocument();
   });
 });

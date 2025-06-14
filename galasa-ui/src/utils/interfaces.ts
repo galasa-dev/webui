@@ -43,7 +43,6 @@ export interface RunMetadata {
 }
 
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
-
 export interface DataTableHeader {
   key: string,
   header: string
