@@ -1,0 +1,49 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+
+.warn{
+  color: #ffb74d;
+}
+
+.error{
+  color: #f44336;
+}
+
+.logContainer {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logEntry {
+  line-height: 1.5;
+  margin-bottom: 0.25rem;
+}
+
+.tabContent {
+  background-color: white;
+  border: 1px solid var(--galasa-border);
+  border-top: none;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+
+.runLog {
+  border: 1px solid var(--galasa-border);
+  border-radius: var(--border-radius);
+  background-color: #0a0a0a;
+  padding: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  height: 500px;
+  overflow-y: auto;
+  color: #f4f4f4;
+}
+
+.runLogContent {
+  width: 100%;
+}

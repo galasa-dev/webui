@@ -1,0 +1,46 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+ .infoContainer {
+  margin: 2rem 0;
+}
+
+/* CSS Grid approach for perfect alignment */
+.info {
+  display: grid;
+  grid-template-columns: 125px 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: baseline;
+}
+
+.info h5 {
+  margin: 0;
+  font-weight: 600;
+  justify-self: start;
+}
+
+.info .infoValue {
+  margin: 0;
+  justify-self: start;
+}
+
+/* Tags section styling */
+.tagsSection {
+  margin-top: 20px;
+}
+
+.tagsSection h5 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+

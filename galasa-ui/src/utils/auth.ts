@@ -7,7 +7,7 @@
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
 import { createApiConfiguration, GALASA_API_SERVER_URL} from './api';
 
-const GALASA_WEBUI_HOST_URL = process.env.GALASA_WEBUI_HOST_URL ?? '';
+export const GALASA_WEBUI_HOST_URL = process.env.GALASA_WEBUI_HOST_URL ?? '';
 
 export const GALASA_WEBUI_CLIENT_ID = process.env.GALASA_WEBUI_CLIENT_ID ?? 'galasa-webui';
 

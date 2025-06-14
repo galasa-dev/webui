@@ -23,6 +23,25 @@ export interface UpdateUserRolePayload {
   };
 }
 
+export interface RunMetadata {
+
+  runId: string;
+  result: string;
+  status: string;
+  testName: string;
+  runName: string;
+  bundle: string;
+  submissionId: string;
+  group: string;
+  requestor: string;
+  submitted: string;
+  startedAt: string;
+  finishedAt: string;
+  duration : string;
+  tags: string[]
+
+}
+
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
 export interface DataTableHeader {
   key: string,
