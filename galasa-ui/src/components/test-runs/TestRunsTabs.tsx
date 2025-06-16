@@ -6,6 +6,7 @@
 'use client';
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
 import styles from '@/styles/TestRunsPage.module.css';
+import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
 import { Run } from '@/generated/galasaapi';
 
@@ -14,11 +15,6 @@ interface TabConfig {
     label: TabLabel;
     component: React.ReactNode;
 }
-
-// Currently, the content for each tab is static and under construction.
-const TimeframeContent = () => <p>
-    This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.
-</p>;
 
 const TableDesignContent = () => <p>
     This page is under construction. In future, you will be able to choose which columns are visible and their order.

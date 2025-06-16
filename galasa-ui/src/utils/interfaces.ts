@@ -67,3 +67,18 @@ export interface DataTableRow {
   isExpanded?: boolean;
   isSelected?: boolean;
 }
+
+
+export interface TimeFrameValues {
+    fromDate: Date | null;
+    fromTime: string;
+    fromAmPm: 'AM' | 'PM';
+    fromTimeZone: 'PDT' | 'GMT';
+    toDate: Date | null;
+    toTime: string;
+    toAmPm: 'AM' | 'PM';
+    toTimeZone: 'PDT' | 'GMT';
+    durationDays: number;
+    durationHours: number;
+    durationMinutes: number;
+}

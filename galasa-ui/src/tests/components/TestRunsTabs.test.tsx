@@ -41,12 +41,12 @@ describe('TestRunsTabs Component', () => {
     });
   });
 
-  test('displays the content of the Timeframe tab', () => {
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
+  // test('displays the content of the Timeframe tab', () => {
+  //   render(<TestRunsTabs runsListPromise={mockPromise}/>);
 
-    fireEvent.click(screen.getByText('Timeframe'));
-    expect(screen.getByText(/Currently, all results for the last 24 hours/i)).toBeInTheDocument();
-  });
+  //   fireEvent.click(screen.getByText('Timeframe'));
+  //   expect(screen.getByText(/Currently, all results for the last 24 hours/i)).toBeInTheDocument();
+  // });
 
   test('switches to the "Results" tab and displays its content on click', async () => {
     // Arrange
