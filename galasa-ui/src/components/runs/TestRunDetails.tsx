@@ -17,7 +17,7 @@ import ErrorPage from '@/app/error/page';
 import { RunMetadata } from '@/utils/interfaces';
 import { getIsoTimeDifference, parseIsoDateTime } from '@/utils/functions';
 import MethodsTab from './MethodsTab';
-import StatusCheck from '../common/StatusCheck';
+import StatusIndicator from '../common/StatusIndicator';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
 
@@ -110,7 +110,7 @@ const TestRunDetails = ({ runId, runDetails, runLog, runArtifacts }: TestRunDeta
               Status: {run?.status}
             </span>
             <span className={styles.summaryStatus}>
-              Result: <StatusCheck status={run?.result!}></StatusCheck>
+              Result: <StatusIndicator status={run?.result!} />
             </span>
           </div>
 

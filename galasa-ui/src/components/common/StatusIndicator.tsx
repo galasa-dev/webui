@@ -28,15 +28,11 @@ interface StatusIndicatorProps {
  * @returns A component with a status icon and formatted text, aligned and spaced correctly.
  */
 export default function StatusIndicator({ status }: StatusIndicatorProps) {
-  if (!status) {
-    return null;
-  }
-
   let IconComponent: React.ElementType = Help;
   let iconClassName = styles.statusOther;
-    
+
   // Determine the correct icon and class based on the status
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase().trim()) {
   case 'passed':
     IconComponent = CheckmarkFilled;
     iconClassName = styles.statusPassed;
@@ -54,6 +50,7 @@ export default function StatusIndicator({ status }: StatusIndicatorProps) {
     break;
 
   case 'cancelled':
+  case 'ignored':
     IconComponent = StopFilled;
     iconClassName = styles.statusCancelled;
     break;
@@ -65,7 +62,8 @@ export default function StatusIndicator({ status }: StatusIndicatorProps) {
   }
 
   // Capitalize the first letter for display
-  const displayText = status.charAt(0).toUpperCase() + status.slice(1);
+  let displayText = status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+  displayText = displayText.trim(); 
 
   // Render a container with the icon and text inside
   return (

@@ -10,7 +10,7 @@ import MethodsTab, { MethodDetails } from '@/components/runs/MethodsTab';
 import { TestMethod } from '@/generated/galasaapi';
 
 // Mock the StatusCheck component
-jest.mock('@/components/common/StatusCheck', () => {
+jest.mock('@/components/common/StatusIndicator', () => {
   return function MockStatusCheck({ status }: { status: string }) {
     return <div data-testid="status-check">{status}</div>;
   };

@@ -14,7 +14,7 @@ import TableRow, { TableRowProps } from '@carbon/react/lib/components/DataTable/
 import React, { useEffect, useState } from 'react';
 import { TableToolbarContent } from '@carbon/react';
 import { TableToolbarSearch } from '@carbon/react';
-import StatusCheck from '../common/StatusCheck';
+import StatusIndicator from '../common/StatusIndicator';
 import styles from "@/styles/MethodsTab.module.css";
 
 
@@ -133,7 +133,7 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
                       </TableCell>
                       {/* Result */}
                       <TableCell key={row.cells[2].id}>
-                        <StatusCheck status={row.cells[2].value} />
+                        <StatusIndicator status={row.cells[2].value} />
                       </TableCell>
                       {/* Elapsed Time */}
                       <TableCell key={row.cells[3].id}>
