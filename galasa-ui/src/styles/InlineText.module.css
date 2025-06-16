@@ -3,8 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+.info{
+    display: flex;
+    align-items: center;
+}
 
-const CLIENT_API_VERSION = "0.43.0";
-
-
-export { CLIENT_API_VERSION };
+.infoValue{
+    margin-left: 0.5rem;
+}

@@ -17,38 +17,13 @@ import styles from "@/styles/UsersList.module.css";
 import Link from 'next/link';
 import { InlineNotification } from '@carbon/react';
 import { deleteUserFromService } from '@/actions/userServerActions';
+import { DataTableCell, DataTableHeader, DataTableRow } from '@/utils/interfaces';
 
 export const dynamic = "force-dynamic";
 
 interface UsersTableProps {
   usersListPromise: Promise<UserData[]>;
   currentUserPromise: Promise<UserData>;
-}
-
-// DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
-interface DataTableHeader {
-  key: string,
-  header: string
-}
-
-interface DataTableCell {
-  id: string;
-  value: string;
-  isEditable: boolean;
-  isEditing: boolean;
-  isValid: boolean;
-  errors: null | Array<Error>;
-  info: {
-    header: string;
-  };
-}
-
-interface DataTableRow {
-  id: string;
-  cells: DataTableCell[];
-  disabled?: boolean;
-  isExpanded?: boolean;
-  isSelected?: boolean;
 }
 
 export default function UsersTable({ usersListPromise, currentUserPromise }: UsersTableProps) {

@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-const CLIENT_API_VERSION = "0.43.0";
+.titleContainer {
 
+  margin-bottom: 1rem;
 
-export { CLIENT_API_VERSION };
+}
