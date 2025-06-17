@@ -140,7 +140,7 @@ const TIMEZONE_OFFSETS: { [key: string]: string } = {
  * 
  * @return A Date object representing the combined date and time in the specified timezone.
  */
-const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', timezone: string): Date => {
+export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', timezone: string): Date => {
   // Get the UTC offsets for the specified timezone
   const offset = TIMEZONE_OFFSETS[timezone] || '+00:00';
 
@@ -163,4 +163,26 @@ const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', timezone: 
 
   const isoString = `${year}-${month}-${day}T${hoursStr}:${minutesStr}:00${offset}`;
   return new Date(isoString);
+}
+
+/**
+ * Extracts the time, AM/PM, and timezone from a Date object for populating UI fields.
+ * 
+ * @param date - A Date object to extract date and time from.
+ * @returns An object with `time`, `amPm`, and `timezone` properties.
+ */
+export const extractDateTimeForUI = (date: Date) => {
+  const timezone = 'GMT'; // Default timezone
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+  const amPm = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 is displayed as 12
+
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  return {
+    time: `${pad(hours12)}:${pad(minutes)}`,
+    amPm: amPm as 'AM' | 'PM',
+    timezone: timezone
+  };
 }

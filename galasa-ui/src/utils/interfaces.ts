@@ -70,14 +70,14 @@ export interface DataTableRow {
 
 
 export interface TimeFrameValues {
-    fromDate: Date | null;
+    fromDate: Date;
     fromTime: string;
     fromAmPm: 'AM' | 'PM';
-    fromTimeZone: 'PDT' | 'GMT';
-    toDate: Date | null;
+    fromTimeZone: string;
+    toDate: Date;
     toTime: string;
     toAmPm: 'AM' | 'PM';
-    toTimeZone: 'PDT' | 'GMT';
+    toTimeZone: string;
     durationDays: number;
     durationHours: number;
     durationMinutes: number;

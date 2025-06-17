@@ -11,23 +11,20 @@ import { Suspense } from "react";
 import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import * as Constants from "@/utils/constants";
+import { getYesterday } from "@/utils/functions";
 
 /**
  * Fetches test runs from the Result Archive Store (RAS) for the last 24 hours.
  * 
  * @returns {Promise<Run[]>} - A promise that resolves to an array of Run objects.
  */
-const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
+const fetchAllTestRuns  = async ({fromDate, toDate}: {fromDate: Date, toDate: Date}): Promise<Run[]> => {
   let result = [] as Run[];
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
       
-    // Calculate the date for 24 hours ago
-    const fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - 1);
-      
-    // Fetch runs from the last 24 hours
+    // Fetch runs based on the provided date range
     const response: RunResults = await rasApiClient.getRasSearchRuns(
       'from:desc',
       Constants.CLIENT_API_VERSION,
@@ -35,7 +32,8 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
       undefined,
       undefined,
       undefined,
-      fromDate,        
+      fromDate, 
+      toDate,       
     );
       
     if(response && response.runs) {
@@ -49,14 +47,17 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
   return result;
 };
 
-export default async function TestRunsPage() {
+export default async function TestRunsPage({searchParams}: {searchParams: {[key: string]: string | undefined}} ) {
+  const fromDate = searchParams?.from ? new Date(searchParams.from) : getYesterday();
+  const toDate = searchParams?.to ? new Date(searchParams.to) : new Date();
+
   return (
     <main id="content">
       <BreadCrumb />
       <PageTile title={"Test Runs"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsForLastDay()}/>
+          <TestRunsTabs runsListPromise={fetchAllTestRuns({fromDate, toDate})}/>
         </Suspense>
       </div>
     </main>   
