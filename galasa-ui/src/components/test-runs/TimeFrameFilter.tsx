@@ -10,8 +10,11 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import {FormGroup } from '@carbon/react';
 import { DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem , NumberInput} from '@carbon/react';
 
-export default function TimeFrameFilter({values, handleValueChange}: {values: TimeFrameValues, handleValueChange: (field: keyof TimeFrameValues, value: any) => void}) {
-  const timePattern = '(d{1,2}:d{2})';
+export default function TimeFrameFilter({values, handleValueChange}: 
+  {values: TimeFrameValues, handleValueChange: (field: keyof TimeFrameValues, value: any) => void}) {
+  
+  const invalidTimeText = "Please enter a valid time in HH:MM format.";
+
   return (
     <div className={styles.TimeFrameFilterContainer}>
       <FormGroup legendText="From" className={styles.TimeFrameFilterItem}>
@@ -30,9 +33,8 @@ export default function TimeFrameFilter({values, handleValueChange}: {values: Ti
           id="from-time-picker"
           labelText="Time"
           value={values.fromTime}
-          pattern={timePattern}
-          onChange={(event:any) => handleValueChange('fromTime', event.target.value)}
-        >
+          invalidText={invalidTimeText}
+          onChange={(event:any) => handleValueChange('fromTime', event.target.value)}>
           <TimePickerSelect id="from-time-picker-ampm"
             value={values.fromAmPm}
             onChange={(event:any) => handleValueChange('fromAmPm', event.target.value)}
@@ -56,7 +58,7 @@ export default function TimeFrameFilter({values, handleValueChange}: {values: Ti
             id="duration-days" 
             label='Days' 
             min={0} 
-            max={365}
+            max={999}
             value={values.durationDays}
             onChange={(_event:any, {value} : {value: number}) => handleValueChange('durationDays', value)}/>
           <NumberInput 
@@ -91,9 +93,8 @@ export default function TimeFrameFilter({values, handleValueChange}: {values: Ti
           id="to-time-picker"
           labelText="Time"
           value={values.toTime}
-          pattern={timePattern}
-          onChange={(event:any) => handleValueChange('toTime', event.target.value)}
-        >
+          invalidText={invalidTimeText}
+          onChange={(event:any) => handleValueChange('toTime', event.target.value)}>
           <TimePickerSelect id="to-time-picker-ampm"
             value={values.toAmPm}
             onChange={(event:any) => handleValueChange('toAmPm', event.target.value)}

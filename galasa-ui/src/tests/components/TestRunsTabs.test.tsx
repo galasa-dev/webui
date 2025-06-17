@@ -16,6 +16,16 @@ jest.mock('@/components/test-runs/TestRunsTable', () => {
   };
 });
 
+// Mock navigation hooks
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => '/',
+}));
+
 // Mock window.matchMedia to prevent errors in the JSDOM test environment
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

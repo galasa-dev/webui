@@ -163,7 +163,7 @@ export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', tim
 
   const isoString = `${year}-${month}-${day}T${hoursStr}:${minutesStr}:00${offset}`;
   return new Date(isoString);
-}
+};
 
 /**
  * Extracts the time, AM/PM, and timezone from a Date object for populating UI fields.
@@ -185,4 +185,4 @@ export const extractDateTimeForUI = (date: Date) => {
     amPm: amPm as 'AM' | 'PM',
     timezone: timezone
   };
-}
+};

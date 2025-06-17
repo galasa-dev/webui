@@ -11,6 +11,10 @@ import TimeFrameFilter from './TimeFrameFilter';
 import { combineDateTime, extractDateTimeForUI, getYesterday } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+// Milliseconds constants for cleaner calculations
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
 
 export default function TimeFrameContent() {
   const searchParams = useSearchParams();
@@ -40,11 +44,11 @@ export default function TimeFrameContent() {
 
     // Calculate duration
     let difference = toParam ? new Date(toParam).getTime() - (fromParam ? new Date(fromParam).getTime() : getYesterday().getTime()) : 0;
-    const durationDays = Math.floor(difference / (1000 * 60 * 60 * 24));
-    difference -= durationDays * (1000 * 60 * 60 * 24);
-    const durationHours = Math.floor(difference / (1000 * 60 * 60));
-    difference -= durationHours * (1000 * 60 * 60);
-    const durationMinutes = Math.floor(difference / (1000 * 60));
+    const durationDays = Math.floor(difference / DAY_MS);
+    difference %= DAY_MS;
+    const durationHours = Math.floor(difference / HOUR_MS);
+    difference %= HOUR_MS;
+    const durationMinutes = Math.floor(difference / MINUTE_MS);
 
     return {
       fromDate: fromParam ? new Date(fromParam) : getYesterday(),
@@ -58,42 +62,75 @@ export default function TimeFrameContent() {
       durationDays: durationDays,
       durationHours: durationHours,
       durationMinutes: durationMinutes,
-    }
-  }
+    };
+  };
 
   const [values, setValues] = useState<TimeFrameValues>(initializeState);
 
   // State to hold the values for the time frame selection
   function handleValueChange(field: keyof TimeFrameValues, value: any) {
-    setValues((prevValues) => ({
-      ...prevValues,
-      [field]: value,
-    }));
+    // Check validity of the time input 
+    if (field === 'fromTime' || field === 'toTime') {
+      const timeParts = value.split(':');
+      console.log("Time parts:", timeParts);
+      if (timeParts.length !== 2 || isNaN(Number(timeParts[0])) || isNaN(Number(timeParts[1]))) {
+        console.log("Invalid time format. Please use HH:MM format.");
+        return; 
+      }
+      
+      // Ensure the time is in valid range
+      const hours = Number(timeParts[0]);
+      const minutes = Number(timeParts[1]);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return; 
+      }
+    }
 
-    console.log('Current values:', values);
-
-    // TODO: Logic to handle the duration - right now we just get the intervals from the date and time fields.
-
-    // Combine the date and time values into a single Date object
+    // Create a new values object with the updated field
+    let newValues: TimeFrameValues = { ...values, [field]: value };
+    
     const fromDateTime = combineDateTime(
-      values.fromDate,
-      values.fromTime,
-      values.fromAmPm,
-      values.fromTimeZone
+      newValues.fromDate,
+      newValues.fromTime,
+      newValues.fromAmPm,
+      newValues.fromTimeZone
     );
 
     const toDateTime = combineDateTime(
-      values.toDate,
-      values.toTime,
-      values.toAmPm,
-      values.toTimeZone
+      newValues.toDate,
+      newValues.toTime,
+      newValues.toAmPm,
+      newValues.toTimeZone
     );
+    
+    if (field.startsWith('duration')) {
+      // Anchor is 'Duration'. Recalculate 'To'
+      const durationInMs = (newValues.durationDays * DAY_MS) +
+      (newValues.durationHours * HOUR_MS) +
+      (newValues.durationMinutes * MINUTE_MS);
 
-    // Ensure the 'from' date is before the 'to' date
-    if (fromDateTime >= toDateTime) {
-      console.error('From date must be before To date');
-      return;
+      const newToDate = new Date(fromDateTime.getTime() + durationInMs);
+
+      const toUiParts = extractDateTimeForUI(newToDate);
+      newValues.toDate = newToDate;
+      newValues.toTime = toUiParts.time;
+      newValues.toAmPm = toUiParts.amPm;
+    } else {
+      // Anchor is 'From' or 'To', Recalculate 'Duration'
+      let difference = toDateTime.getTime() - fromDateTime.getTime();
+      if(difference < 0) difference = 0; // Ensure non-negative duration
+
+      newValues.durationDays = Math.floor(difference / DAY_MS);
+      difference %= DAY_MS;
+      newValues.durationHours = Math.floor(difference / HOUR_MS);
+      difference %= HOUR_MS;
+      newValues.durationMinutes = Math.floor(difference / MINUTE_MS);
+      
     }
+
+    setValues(newValues);
+
+    console.log("Updated values:", newValues);
 
     // Set the SearchParams in the URL
     const params = new URLSearchParams(searchParams);
@@ -101,6 +138,7 @@ export default function TimeFrameContent() {
     params.set('to', toDateTime.toISOString());
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
+
   
   return (
     <div className={styles.TimeFrameContainer}>
