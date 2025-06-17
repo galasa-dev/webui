@@ -102,8 +102,6 @@ export default function TimeFrameContent() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
   
-
-  
   return (
     <div className={styles.TimeFrameContainer}>
       <div>
