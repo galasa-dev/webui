@@ -8,12 +8,8 @@ import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
+import { getYesterday } from '@/utils/functions';
 
-const getYesterday = () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday;
-}
 
 export default function TimeFrameContent() {
   // State to hold the values for the time frame selection
