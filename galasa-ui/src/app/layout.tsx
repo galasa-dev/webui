@@ -3,36 +3,43 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
+
+import { getClientApiVersion, getServiceHealthStatus } from '@/utils/health';
+import {NextIntlClientProvider, hasLocale} from 'next-intl';
+import Footer from '@/components/Footer';
+import PageHeader from '@/components/headers/PageHeader';
 import '@/styles/global.scss';
+import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { cookies } from 'next/headers';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
-import RootLayoutInner from './layout-inner';
-import { getLocale, getMessages } from 'next-intl/server';
-import {NextIntlClientProvider} from 'next-intl';
-
+import { getLocale } from 'next-intl/server';
 
 export const dynamic = "force-dynamic";
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({children,}: {children: React.ReactNode}) {
+  // Ensure that the incoming `locale` is valid
+  const locale = await getLocale();
 
+ 
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || "Galasa Service";
   const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
-  const locale = await getLocale();
-  const messages = await getMessages();
-  
+
   return (
-    <html lang={locale || "en"}>
-      <NextIntlClientProvider locale={locale} messages={messages} >
-        <RootLayoutInner
-          galasaServiceName={galasaServiceName}
-          featureFlagsCookie={featureFlagsCookie}
-        > 
-          {children}
-        </RootLayoutInner>
-
-
-      </NextIntlClientProvider>
+    <html lang={locale}>
+      <head>
+        <title>{galasaServiceName}</title>
+        <meta name="description" content="Galasa Ecosystem Web UI" />
+      </head>
+      <body>
+        <NextIntlClientProvider>
+          <FeatureFlagProvider initialFlags={featureFlagsCookie}>
+            <PageHeader galasaServiceName={galasaServiceName} />
+            {children}
+            <Footer serviceHealthyPromise={getServiceHealthStatus()} clientVersionPromise={getClientApiVersion()}/>
+          </FeatureFlagProvider>
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }
+
