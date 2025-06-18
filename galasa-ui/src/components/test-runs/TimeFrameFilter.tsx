@@ -21,6 +21,7 @@ export default function TimeFrameFilter({values, handleValueChange}:
         <DatePicker 
           datePickerType="single" 
           value={values.fromDate}
+          maxDate={values.toDate}
           onChange={(dates: Date[]) => handleValueChange('fromDate', dates[0])}
         >
           <DatePickerInput
@@ -53,12 +54,12 @@ export default function TimeFrameFilter({values, handleValueChange}:
         </TimePicker>
       </FormGroup>
       <FormGroup legendText="Duration" className={styles.TimeFrameFilterItem}>
-        <div className={styles.DurationInputsContainer}>
+        <div className={styles.DurationInputsContainer} key={values.toDate.getTime()}>
           <NumberInput 
             id="duration-days" 
             label='Days' 
             min={0} 
-            max={999}
+            max={355}
             value={values.durationDays}
             onChange={(_event:any, {value} : {value: number}) => handleValueChange('durationDays', value)}/>
           <NumberInput 
@@ -81,10 +82,12 @@ export default function TimeFrameFilter({values, handleValueChange}:
         <DatePicker
           datePickerType="single" 
           value={values.toDate}
+          maxDate={new Date()} 
+          minDate={values.fromDate}
           onChange={(dates: Date[]) => handleValueChange('toDate', dates[0])}
         >
           <DatePickerInput
-            id="date-picker-single"
+            id="to-date-picker"
             labelText="Date"
             placeholder="mm/dd/yyyy"
           />

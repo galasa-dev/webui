@@ -23,7 +23,7 @@ export default function TimeFrameContent() {
 
   /**
    * State initializer function. This runs only once when the component is mounted.
-   * It reads the URL search params to set the initial stater
+   * It reads the URL search params to set the initial states
    * or falls back to default values if not present.
    */
   const initializeState = (): TimeFrameValues => {
@@ -65,30 +65,25 @@ export default function TimeFrameContent() {
     };
   };
 
+  // State to hold the values for the time frame selection
   const [values, setValues] = useState<TimeFrameValues>(initializeState);
 
-  // State to hold the values for the time frame selection
   function handleValueChange(field: keyof TimeFrameValues, value: any) {
     // Check validity of the time input 
     if (field === 'fromTime' || field === 'toTime') {
       const timeParts = value.split(':');
-      console.log("Time parts:", timeParts);
-      if (timeParts.length !== 2 || isNaN(Number(timeParts[0])) || isNaN(Number(timeParts[1]))) {
-        console.log("Invalid time format. Please use HH:MM format.");
-        return; 
-      }
+      if (timeParts.length !== 2 || isNaN(Number(timeParts[0])) || isNaN(Number(timeParts[1])))  return; 
       
       // Ensure the time is in valid range
       const hours = Number(timeParts[0]);
       const minutes = Number(timeParts[1]);
-      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        return; 
-      }
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return; 
     }
 
     // Create a new values object with the updated field
     let newValues: TimeFrameValues = { ...values, [field]: value };
     
+    // Establish the 'From' anchor point
     const fromDateTime = combineDateTime(
       newValues.fromDate,
       newValues.fromTime,
@@ -96,46 +91,65 @@ export default function TimeFrameContent() {
       newValues.fromTimeZone
     );
 
-    const toDateTime = combineDateTime(
-      newValues.toDate,
-      newValues.toTime,
-      newValues.toAmPm,
-      newValues.toTimeZone
-    );
+    let finalToDateTime: Date;
+    const now = new Date();
     
+    // Establish the 'To' anchor point based on the field being updated
     if (field.startsWith('duration')) {
-      // Anchor is 'Duration'. Recalculate 'To'
+      // Anchor is 'Duration'. Recalculate 'To' date
       const durationInMs = (newValues.durationDays * DAY_MS) +
       (newValues.durationHours * HOUR_MS) +
       (newValues.durationMinutes * MINUTE_MS);
 
-      const newToDate = new Date(fromDateTime.getTime() + durationInMs);
+      let proposedToDate = new Date(fromDateTime.getTime() + durationInMs);
 
-      const toUiParts = extractDateTimeForUI(newToDate);
-      newValues.toDate = newToDate;
-      newValues.toTime = toUiParts.time;
-      newValues.toAmPm = toUiParts.amPm;
+       // If proposedToDate is in the future, use now
+      finalToDateTime = proposedToDate > now ? now : proposedToDate;
+
     } else {
-      // Anchor is 'From' or 'To', Recalculate 'Duration'
-      let difference = toDateTime.getTime() - fromDateTime.getTime();
-      if(difference < 0) difference = 0; // Ensure non-negative duration
-
-      newValues.durationDays = Math.floor(difference / DAY_MS);
-      difference %= DAY_MS;
-      newValues.durationHours = Math.floor(difference / HOUR_MS);
-      difference %= HOUR_MS;
-      newValues.durationMinutes = Math.floor(difference / MINUTE_MS);
-      
+      // Anchor is 'From' or 'To'
+      finalToDateTime = combineDateTime(
+        newValues.toDate,
+        newValues.toTime,
+        newValues.toAmPm,
+        newValues.toTimeZone
+      );     
     }
 
+    // Re-synchronize the entire UI to be consistent with the final dates
+
+    // Update the 'To' date and time
+    const toUiParts = extractDateTimeForUI(finalToDateTime);
+    newValues.toDate = finalToDateTime;
+    newValues.toTime = toUiParts.time;
+    newValues.toAmPm = toUiParts.amPm;
+    newValues.toTimeZone = toUiParts.timezone;
+
+    // Recalculate the duration based on the final 'From' and 'To' dates
+    console.log('Final To DateTime:', finalToDateTime);
+    let durationDifference = finalToDateTime.getTime() - fromDateTime.getTime();
+
+    console.log('Duration Days:', Math.floor(durationDifference / DAY_MS));
+    console.log('Duration Hours:', Math.floor((durationDifference % DAY_MS) / HOUR_MS));
+    console.log('Duration Minutes:', Math.floor((durationDifference % HOUR_MS) / MINUTE_MS));
+
+    newValues.durationDays = Math.floor(durationDifference / DAY_MS);
+    durationDifference %= DAY_MS;
+    newValues.durationHours = Math.floor(durationDifference / HOUR_MS);
+    durationDifference %= HOUR_MS;
+    newValues.durationMinutes = Math.floor(durationDifference / MINUTE_MS);
+
+    console.log('New values days:', newValues.durationDays);
+    console.log('New values hours:', newValues.durationHours);
+    console.log('New values minutes:', newValues.durationMinutes);
+
+    // Set the fully consistent state and update the URL
     setValues(newValues);
-
-    console.log("Updated values:", newValues);
-
+    
     // Set the SearchParams in the URL
     const params = new URLSearchParams(searchParams);
     params.set('from', fromDateTime.toISOString());
-    params.set('to', toDateTime.toISOString());
+    params.set('to', finalToDateTime.toISOString());
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
