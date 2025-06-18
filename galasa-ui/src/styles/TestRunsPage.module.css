@@ -26,6 +26,13 @@
     gap: 1rem;
 }
 
+.ErrorNotification {
+    position: fixed;
+    top: 5.5rem;
+    right: 1rem;
+    z-index: 9999;
+}
+
 @media (max-width: 1055px) {
     .TimeFrameFilterContainer {
         flex-direction: column; 

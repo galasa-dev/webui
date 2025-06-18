@@ -8,8 +8,9 @@ import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
-import { combineDateTime, extractDateTimeForUI, getYesterday } from '@/utils/functions';
+import { addMonths, combineDateTime, extractDateTimeForUI, getYesterday, subtractMonths } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ToastNotification } from '@carbon/react';
 
 // Milliseconds constants for cleaner calculations
 const MINUTE_MS = 60 * 1000;
@@ -67,8 +68,11 @@ export default function TimeFrameContent() {
 
   // State to hold the values for the time frame selection
   const [values, setValues] = useState<TimeFrameValues>(initializeState);
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   function handleValueChange(field: keyof TimeFrameValues, value: any) {
+    setErrorText(null); // Reset error text on any change
+
     // Check validity of the time input 
     if (field === 'fromTime' || field === 'toTime') {
       const timeParts = value.split(':');
@@ -83,15 +87,38 @@ export default function TimeFrameContent() {
     // Create a new values object with the updated field
     let newValues: TimeFrameValues = { ...values, [field]: value };
     
-    // Establish the 'From' anchor point
-    const fromDateTime = combineDateTime(
+    // Construct initial dates from user input
+    let fromDateTime = combineDateTime(
       newValues.fromDate,
       newValues.fromTime,
       newValues.fromAmPm,
       newValues.fromTimeZone
     );
 
-    let finalToDateTime: Date;
+    let toDateTime = combineDateTime(
+      newValues.toDate,
+      newValues.toTime,
+      newValues.toAmPm,
+      newValues.toTimeZone
+    );
+
+    // Enforce the 3-month maximum rule
+    const maxToDate = addMonths(fromDateTime, 3);
+
+    if (toDateTime > maxToDate) {
+      setErrorText("Date range cannot exceed 3 months. A date has been automatically adjusted.");
+      if (field.startsWith('to')) {
+        fromDateTime = subtractMonths(toDateTime, 3);
+        newValues.fromDate = fromDateTime;
+        newValues.fromTime = extractDateTimeForUI(fromDateTime).time;
+        newValues.fromAmPm = extractDateTimeForUI(fromDateTime).amPm;
+        newValues.fromTimeZone = extractDateTimeForUI(fromDateTime).timezone;
+      } else {
+        toDateTime = maxToDate;
+      }
+    }
+
+    let finalToDateTime = toDateTime;
     const now = new Date();
     
     // Establish the 'To' anchor point based on the field being updated
@@ -104,34 +131,20 @@ export default function TimeFrameContent() {
       let proposedToDate = new Date(fromDateTime.getTime() + durationInMs);
 
        // If proposedToDate is in the future, use now
-      finalToDateTime = proposedToDate > now ? now : proposedToDate;
+       if (proposedToDate > now) {
+        setErrorText("Duration extends beyond the current time. Adjusting to now.");
+        finalToDateTime = now;
+      } else {
+        finalToDateTime = proposedToDate;
+      }
 
-    } else {
-      // Anchor is 'From' or 'To'
-      finalToDateTime = combineDateTime(
-        newValues.toDate,
-        newValues.toTime,
-        newValues.toAmPm,
-        newValues.toTimeZone
-      );     
-    }
+    };
 
     // Re-synchronize the entire UI to be consistent with the final dates
 
-    // Update the 'To' date and time
-    const toUiParts = extractDateTimeForUI(finalToDateTime);
-    newValues.toDate = finalToDateTime;
-    newValues.toTime = toUiParts.time;
-    newValues.toAmPm = toUiParts.amPm;
-    newValues.toTimeZone = toUiParts.timezone;
 
     // Recalculate the duration based on the final 'From' and 'To' dates
-    console.log('Final To DateTime:', finalToDateTime);
     let durationDifference = finalToDateTime.getTime() - fromDateTime.getTime();
-
-    console.log('Duration Days:', Math.floor(durationDifference / DAY_MS));
-    console.log('Duration Hours:', Math.floor((durationDifference % DAY_MS) / HOUR_MS));
-    console.log('Duration Minutes:', Math.floor((durationDifference % HOUR_MS) / MINUTE_MS));
 
     newValues.durationDays = Math.floor(durationDifference / DAY_MS);
     durationDifference %= DAY_MS;
@@ -139,9 +152,12 @@ export default function TimeFrameContent() {
     durationDifference %= HOUR_MS;
     newValues.durationMinutes = Math.floor(durationDifference / MINUTE_MS);
 
-    console.log('New values days:', newValues.durationDays);
-    console.log('New values hours:', newValues.durationHours);
-    console.log('New values minutes:', newValues.durationMinutes);
+    // Update the 'To' date and time
+    const toUiParts = extractDateTimeForUI(finalToDateTime);
+    newValues.toDate = finalToDateTime;
+    newValues.toTime = toUiParts.time;
+    newValues.toAmPm = toUiParts.amPm;
+    newValues.toTimeZone = toUiParts.timezone;
 
     // Set the fully consistent state and update the URL
     setValues(newValues);
@@ -156,12 +172,19 @@ export default function TimeFrameContent() {
   
   return (
     <div className={styles.TimeFrameContainer}>
+      {errorText && <ToastNotification 
+      className={styles.ErrorNotification}
+      kind="warning"
+      title="Auto-Correction"
+      subtitle={errorText}
+      onClose={() => setErrorText(null)}
+      timeout={5000}
+       />}
       <div>
         <p>Select the time envelope against which the submission time of each test run will be compared.</p>
         <p>Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.</p>
       </div>
       <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
-     
     </div>
   );
 }

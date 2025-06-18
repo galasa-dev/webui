@@ -186,3 +186,39 @@ export const extractDateTimeForUI = (date: Date) => {
     timezone: timezone
   };
 };
+
+/**
+ * Accurately adds a number of months to a date, handling end-of-month edge cases.
+ * If the original day doesn't exist in the target month, it will use the last valid day.
+ * 
+ * @param date The starting date.
+ * @param months The number of months to add.
+ * @returns A new Date object.
+ */
+export function addMonths(date: Date, months: number): Date {
+  const newDate = new Date(date);
+  const originalDay = newDate.getDate();
+  newDate.setMonth(newDate.getMonth() + months);
+
+  if (newDate.getDate() !== originalDay) {
+    newDate.setDate(0);
+  }
+  return newDate;
+}
+
+/**
+ * Accurately subtracts a number of months from a date, handling end-of-month edge cases.
+ * @param date The starting date.
+ * @param months The number of months to subtract.
+ * @returns A new Date object.
+ */
+export function subtractMonths(date: Date, months: number): Date {
+  const newDate = new Date(date);
+  const originalDay = newDate.getDate();
+  newDate.setMonth(newDate.getMonth() - months);
+
+  if (newDate.getDate() !== originalDay) {
+    newDate.setDate(0);
+  }
+  return newDate;
+}
