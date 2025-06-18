@@ -1,13 +1,18 @@
-import { getClientApiVersion, getServiceHealthStatus } from '@/utils/health';
-import Footer from '@/components/Footer';
-import PageHeader from '@/components/headers/PageHeader';
-import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+import { getClientApiVersion, getServiceHealthStatus } from "@/utils/health";
+import Footer from "@/components/Footer";
+import PageHeader from "@/components/headers/PageHeader";
+import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 
 export default function RootLayoutInner({
   children,
   galasaServiceName,
   featureFlagsCookie,
-  locale
+  locale,
 }: {
   children: React.ReactNode;
   galasaServiceName: string;
@@ -15,7 +20,7 @@ export default function RootLayoutInner({
   locale?: string;
 }) {
   return (
-    <html lang={locale || 'en'}>
+    <html lang={locale || "en"}>
       <head>
         <title>{galasaServiceName}</title>
         <meta name="description" content="Galasa Ecosystem Web UI" />

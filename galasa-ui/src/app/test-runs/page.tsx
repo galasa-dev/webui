@@ -23,7 +23,7 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
-      
+
     // Calculate the date for 24 hours ago
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 1);
@@ -54,10 +54,10 @@ export default async function TestRunsPage() {
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
-      <PageTile title={"Test Runs"} />
+      <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsForLastDay()}/>
+        <Suspense fallback={<p>loading ...</p>}>
+          <TestRunsTabs runsListPromise={fetchAllTestRunsForLastDay()} />
         </Suspense>
       </div>
     </main>

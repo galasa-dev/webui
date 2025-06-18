@@ -1,0 +1,16 @@
+.container {
+  margin-right: 1rem;
+  display: flex; /* Removed the extra comma */
+  align-items: center;
+}
+
+.language {
+  margin-right: 0.5rem;
+  fill: white;
+}
+
+.dropdown {
+  background-color: transparent; /* Corrected to background-color */
+  color: white;
+  width: 120px;
+}

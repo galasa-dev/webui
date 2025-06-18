@@ -14,7 +14,7 @@ import { useTranslations } from 'next-intl';
 
 export default function TokenRequestModal({isDisabled} : {isDisabled : boolean}) {
 
-  const t = useTranslations('TokenRequestModal');
+  const translations = useTranslations('TokenRequestModal');
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
@@ -57,14 +57,14 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
     
   return (
     <>
-      <Button iconDescription={t('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
+      <Button iconDescription={translations('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
         <Add/>
       </Button>
       <Modal
-        modalHeading={t('modal_heading')}
-        primaryButtonText={t('create')}
+        modalHeading={translations('modal_heading')}
+        primaryButtonText={translations('create')}
         primaryButtonDisabled={submitDisabled}
-        secondaryButtonText={t('cancel')}
+        secondaryButtonText={translations('cancel')}
         shouldSubmitOnEnter={true}
         open={open}
         onRequestClose={() => {
@@ -78,13 +78,13 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
         }}
       >
         <p>
-          {t('token_description')}
+          {translations('token_description')}
         </p>
 
         <br />
 
         <p>
-          {t('token_name_description')}
+          {translations('token_name_description')}
         </p>
 
         <br />
@@ -93,15 +93,15 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
           data-modal-primary-focus
           ref={tokenNameInputRef}
           id="name-txtinput"
-          labelText={t('token_name')}
-          helperText={t('token_name_helper_text')}
-          placeholder={t('token_name_placeholder')}
+          labelText={translations('token_name')}
+          helperText={translations('token_name_helper_text')}
+          placeholder={translations('token_name_placeholder')}
           onChange={onChangeInputValidation}
         />
         {error && (
           <InlineNotification
             className="margin-top-1"
-            title={t('error_requesting_token')}
+            title={translations('error_requesting_token')}
             subtitle={error}
             kind="error"
             onCloseButtonClick={() => setError('')}

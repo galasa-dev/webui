@@ -14,7 +14,27 @@ const mockRouter = {
   push: jest.fn(),
 };
 
-jest.mock('next/navigation', () => ({
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string, vars?: Record<string, any>) => {
+    const translations: Record<string, string> = {
+      "timeFrameText.range": "Showing test runs submitted between Jan 1 and Jan 10",
+      "pagination.forwardText": "Next page",
+    };
+
+    let text = translations[key] || key;
+
+    if (vars) {
+      Object.entries(vars).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, String(v));
+      });
+    }
+
+    return text;
+  },
+}));
+
+
+jest.mock("next/navigation", () => ({
   useRouter: jest.fn(() => mockRouter),
 }));
 
@@ -36,9 +56,9 @@ const generateMockRuns = (count: number) => {
       package: `package${index + 1}`,
       testName: `test${index + 1}`,
       testShortName: `testShort${index + 1}`,
-      status: 'finished',
-      result: index % 2 === 0 ? 'Passed' : 'Failed',
-      submittedAt: new Date(Date.now() - (index * 1000 * 60 * 60)).toISOString()
+      status: "finished",
+      result: index % 2 === 0 ? "Passed" : "Failed",
+      submittedAt: new Date(Date.now() - index * 1000 * 60 * 60).toISOString(),
     },
   }));
 };

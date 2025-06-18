@@ -15,7 +15,7 @@ interface TokenResponseModalProps {
 }
 
 export default function TokenResponseModal({ refreshToken, clientId, onLoad }: TokenResponseModalProps) {
-  const t = useTranslations('TokenResponseModal');
+  const translations = useTranslations('TokenResponseModal');
 
   const [token, setToken] = useState('');
   const [clientIdState, setClientId] = useState('');
@@ -38,33 +38,33 @@ export default function TokenResponseModal({ refreshToken, clientId, onLoad }: T
       id="token-passiveModal"
       open={isOpen}
       passiveModal
-      modalHeading={t('modalHeading')}
+      modalHeading={translations('modalHeading')}
       preventCloseOnClickOutside
       onRequestClose={() => {
         setOpen(false);
       }}
     >
       <p>
-        {t('description1')}
+        {translations('description1')}
       </p>
       <CodeSnippet type="multi" wrapText>{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
       <InlineNotification
-        title={t('warningTitle')}
-        subtitle={t('warningSubtitle')}
+        title={translations('warningTitle')}
+        subtitle={translations('warningSubtitle')}
         kind="warning"
         lowContrast
         hideCloseButton
       />
       <p className="margin-top-1">
-        {t('description2')}
+        {translations('description2')}
       </p>
-      <CodeSnippet className="margin-y-1" type="multi" align="right">{t('commandExample')}</CodeSnippet>
+      <CodeSnippet className="margin-y-1" type="multi" align="right">{translations('commandExample')}</CodeSnippet>
       <p>
-        {t('seeDocsIntro')}{' '}
+        {translations('seeDocsIntro')}{' '}
         <a href="https://galasa.dev/docs/initialising-home-folder" target="_blank" rel="noopener noreferrer">
-          {t('seeDocsLinkText')}
+          {translations('seeDocsLinkText')}
         </a>{' '}
-        {t('seeDocsOutro')}
+        {translations('seeDocsOutro')}
       </p>
     </Modal>
   );

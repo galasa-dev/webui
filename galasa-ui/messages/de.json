@@ -1,7 +1,11 @@
 {
-
   "Home": {
     "title": "Startseite"
+  },
+  "Breadcrumb": {
+    "home": "Startseite",
+    "users": "Benutzer",
+    "testRuns": "Testläufe"
   },
   "PageHeaderMenu": {
     "profile": "Mein Profil",
@@ -13,108 +17,105 @@
     "testRuns": "Testläufe"
   },
   "Footer": {
-    "versionText": "Galasa Version {version}",
-    "health": "Dienstzustand"
+    "versionText": "Galasa-Version {version}",
+    "health": "Dienststatus"
   },
   "ExperimentalFeatures": {
     "title": "Experimentelle Funktionen",
-    "description": "Früher Zugriff auf neue Funktionen. Diese sind experimentell und können sich ändern oder entfernt werden.",
+    "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
-      "testRunSearch": "Testlauf-Suche und -Anzeige",
-      "Internationalization": "Internationalisierung/Mehrsprachige Unterstützung für die Galasa UI"
+      "testRunSearch": "Testlauf-Suche und Anzeige",
+      "Internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
     }
   },
   "AccessTokensSection": {
     "title": "Zugriffstoken",
-    "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, den ein Client-Programm besitzt und der Berechtigung für den Zugriff auf den Galasa-Dienst gewährt.",
+    "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, der von einem Client-Programm gehalten wird, um Zugriff auf den Galasa-Dienst zu erhalten.",
     "descriptionline2": "Ein Token hat die gleichen Zugriffsrechte wie der Benutzer, der es erstellt hat.",
-    "deleteButtontext": "Lösche {count} ausgewähltes Zugriffstoken",
-    "error": "Fehler beim Abrufen der Tokens vom Galasa API-Server"
+    "deleteButtontext": "{count} ausgewählte Zugriffstoken löschen",
+    "error": "Fehler beim Abrufen der Token vom Galasa API-Server"
   },
   "userRole": {
     "heading": "Benutzerrolle",
-    "description": "Die Aktionen, die ein Benutzer in diesem Galasa-Dienst ausführen kann oder nicht, werden durch seine Benutzerrolle gesteuert.",
+    "description": "Welche Aktionen ein Benutzer im Galasa-Dienst ausführen darf, wird durch seine Benutzerrolle bestimmt.",
     "dropdownLabel": "Benutzerrolle",
     "resetButton": "Zurücksetzen",
     "saveButton": "Speichern",
     "toastTitle": "Erfolg",
-    "toastSubtitle": "Die Benutzerrolle wurde erfolgreich aktualisiert."
+    "toastSubtitle": "Benutzerrolle wurde erfolgreich aktualisiert."
   },
   "usersTable": {
-    "searchPlaceholder": "Suche",
+    "searchPlaceholder": "Suchen",
     "ariaLabel": "Benutzertabelle",
     "headers_loginId": "Login-ID",
     "headers_role": "Rolle",
-    "headers_lastLogin": "Letzter Login",
-    "headers_lastAccessTokenUse": "Letzte Nutzung des Zugriffstokens",
+    "headers_lastLogin": "Letzte Anmeldung",
+    "headers_lastAccessTokenUse": "Letzte Token-Nutzung",
     "headers_actions": "Aktionen",
     "editIconDescription": "Benutzer bearbeiten",
     "deleteIconDescription": "Benutzer löschen",
     "modal_label": "Benutzer löschen",
-    "modal_heading": "Möchten Sie wirklich '{user}' löschen?",
+    "modal_heading": "Möchten Sie '{user}' wirklich löschen?",
     "modal_primaryButton": "Löschen",
     "modal_secondaryButton": "Abbrechen",
-    "modal_notificationTitle": "Durch das Löschen dieses Benutzers werden alle Daten entfernt, die der Galasa-Dienst über diesen Benutzer gespeichert hat.",
-    "modal_notificationSubtitle": "Alle Zugriffstoken, die diesem Benutzer zugeordnet wurden, verlieren den Zugriff auf diesen Galasa-Dienst.\n\nDies ist nicht rückgängig machbar, aber neue Zugangstokens können erstellt werden. Clients, die das alte Token verwendeten, müssen neu konfiguriert werden."
+    "modal_notificationTitle": "Das Löschen eines Benutzers entfernt alle gespeicherten Informationen dieses Benutzers.",
+    "modal_notificationSubtitle": "Zuvor erstellte Zugriffstoken werden ungültig. Tests dieses Benutzers bleiben erhalten. Nach einer erneuten Anmeldung wird der Benutzer wie ein neuer Benutzer behandelt."
   },
   "TokenResponseModal": {
-    "modalHeading": "Details zum persönlichen Zugriffstoken",
-    "description1": "Kopieren Sie diese Eigenschaft in die Datei galasactl.properties in Ihrem Galasa-Home-Verzeichnis* oder setzen Sie sie als Umgebungsvariable in Ihrem Terminal, damit Ihr Client-Tool auf das Galasa-Ökosystem zugreifen kann.",
-    "warningTitle": "Die Details zum persönlichen Zugriffstoken werden nicht gespeichert und können nach dem Schließen dieses Dialogs nicht wiederhergestellt werden.",
-    "warningSubtitle": "Denken Sie daran, die oben angezeigten Daten zu kopieren, bevor Sie diesen Dialog schließen.",
-    "description2": "*Wenn Sie keine Datei galasactl.properties in Ihrem Galasa-Home-Verzeichnis haben, führen Sie diesen Befehl im Terminal aus, um eine zu erstellen:",
+    "modalHeading": "Persönliche Zugriffstoken-Details",
+    "description1": "Kopieren Sie die folgende Eigenschaft in die Datei galasactl.properties in Ihrem Galasa-Verzeichnis* oder setzen Sie sie als Umgebungsvariable im Terminal.",
+    "warningTitle": "Diese Token-Details werden nach dem Schließen nicht gespeichert.",
+    "warningSubtitle": "Kopieren Sie die Informationen, bevor Sie dieses Dialogfeld schließen.",
+    "description2": "*Wenn Sie keine galasactl.properties-Datei haben, führen Sie folgenden Befehl aus:",
     "commandExample": "galasactl local init",
     "seeDocsIntro": "Siehe die",
     "seeDocsLinkText": "Galasa-Dokumentation",
     "seeDocsOutro": "für weitere Informationen.",
-    "loadError": "Fehler beim Laden des Token-Antwortdialogs:"
+    "loadError": "Fehler beim Laden des Token-Dialogs:"
   },
   "TokenRequestModal": {
     "new_access_token": "Neues Zugriffstoken erstellen",
-    "modal_heading": "Galasa Persönliches Zugriffstoken erstellen",
+    "modal_heading": "Galasa-Persönliches Zugriffstoken erstellen",
     "create": "Erstellen",
     "cancel": "Abbrechen",
-    "token_description": "Ein persönliches Zugriffstoken ist eine Alternative dazu, ein Passwort zur Authentifizierung zu verwenden, und kann Client-Tools im Namen des Benutzers Zugriff auf das Galasa-Ökosystem gewähren. Behandeln Sie persönliche Zugriffstoken wie Passwörter und halten Sie sie geheim.",
-    "token_name_description": "Sie sind dabei, ein neues Token zu erzeugen – bitte geben Sie einen Namen dafür ein.",
-    "token_name": "Token-Name",
-    "token_name_helper_text": "Verwenden Sie diesen Namen, um Ihre Tokens später unterscheiden zu können.",
-    "token_name_placeholder": "z. B. galasactl Zugang für meinen Windows‑PC",
-    "error_requesting_token": "Fehler beim Anfordern des Zugriffstokens"
+    "token_description": "Ein persönliches Zugriffstoken ersetzt das Passwort für die Authentifizierung. Behandeln Sie es wie ein Passwort.",
+    "token_name_description": "Geben Sie dem Token einen Namen.",
+    "token_name": "Tokenname",
+    "token_name_helper_text": "Hilft beim Wiedererkennen Ihrer Token.",
+    "token_name_placeholder": "z.B. galasactl Zugriff auf Windows",
+    "error_requesting_token": "Fehler beim Anfordern des Tokens"
   },
   "TokenCard": {
     "createdAt": "Erstellt am:",
-    "owner": "Eigentümer"
+    "owner": "Inhaber"
   },
   "TokenDeleteModal": {
     "modalHeading": "Zugriffstoken löschen",
     "primaryButtonText": "Löschen",
     "secondaryButtonText": "Abbrechen",
-    "tokensToDeleteCount": "Anzahl der zu löschenden Zugriffstoken: {count}",
-    "notificationTitle": "Clientprogramme mit diesen Zugriffstoken verlieren den Zugriff auf diesen Galasa-Dienst.",
-    "notificationSubtitle": "Dieser Vorgang ist irreversibel. Neue Zugriffstoken können jedoch als Ersatz erstellt werden. Clients, die das alte Token verwendet haben, müssen neu konfiguriert werden.",
-    "errorTitle": "Fehler beim Löschen des Zugriffstokens"
+    "tokensToDeleteCount": "Zu löschende Tokens: {count}",
+    "notificationTitle": "Diese Tokens verlieren den Zugriff auf den Dienst.",
+    "notificationSubtitle": "Diese Aktion ist endgültig. Neue Tokens können erstellt werden.",
+    "errorTitle": "Fehler beim Löschen des Tokens"
   },
   "ProfileDetails": {
     "title": "Benutzerdetails",
-    "loggedInAs": "Derzeit angemeldet als:",
+    "loggedInAs": "Angemeldet als:",
     "role": "Rolle",
-    "recentActivity": "Letzte Anmeldeaktivität",
+    "recentActivity": "Letzte Aktivitäten",
     "noLastLogin": "Kein letztes Login-Datum",
-    "lastLoginWeb": "Zuletzt angemeldet in dieser Webanwendung (UTC): {date}",
-    "lastLoginToken": "Zuletzt angemeldet mit einem Galasa Zugriffstoken (UTC): {date}"
+    "lastLoginWeb": "Letzte Anmeldung über Web (UTC): {date}",
+    "lastLoginToken": "Letzte Anmeldung mit Token (UTC): {date}"
   },
   "EditUserBreadCrumb": {
     "home": "Startseite",
     "users": "Benutzer"
   },
-  "BreadCrumb": {
-    "home": "Startseite"
-  },
   "AccessDeniedModal": {
     "modalHeading": "Unzureichende Berechtigungen",
     "logoutButton": "Abmelden",
-    "notificationSubtitle": "Sie haben Zugriff auf den Galasa-Dienst, aber Ihre Benutzerrolle verfügt nicht über die erforderlichen Berechtigungen für diese Aktion.",
-    "helpText": "Wenn dies ein Problem ist, wenden Sie sich an den Galasa‑Administrator und bitten Sie um eine Rolle mit den benötigten Berechtigungen."
+    "notificationSubtitle": "Ihre Rolle erlaubt diese Aktion nicht.",
+    "helpText": "Wenden Sie sich an Ihren Administrator für eine höhere Rolle."
   },
   "UsersPage": {
     "title": "Benutzer"
@@ -124,7 +125,8 @@
   },
   "TestRun": {
     "title": "Zugriff verweigert",
-    "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte kommen Sie später zurück, um eine Liste der Testläufe abzurufen."
+    "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte später wiederkommen.",
+    "status": "Wird geladen..."
   },
   "MySettings": {
     "title": "Meine Einstellungen"
@@ -133,7 +135,122 @@
     "title": "Mein Profil"
   },
   "ErrorPage": {
-    "errorTitle": "Etwas ist schiefgelaufen!",
-    "errorDescription": "Bitte melden Sie das Problem Ihrem Galasa‑Administrator."
+    "errorTitle": "Etwas ist schief gelaufen!",
+    "errorDescription": "Bitte melden Sie das Problem Ihrem Administrator."
+  },
+  "Artifacts": {
+    "title": "Artefakte",
+    "description": "Ein Artefakt ist ein Zustand, der nach einem Lauf erhalten bleibt. Artefakte können heruntergeladen und angezeigt werden.",
+    "downloading": "Artefakt wird heruntergeladen",
+    "download_button": "Herunterladen",
+    "error_title": "Fehler",
+    "error_subtitle": "Fehler beim Herunterladen. Versuchen Sie es erneut oder verwenden Sie das CLI-Tool:\ngalasactl runs download --name {runName}",
+    "select_file": "Datei auswählen, um Inhalt anzuzeigen",
+    "binary_file_message": "Dies ist eine Binärdatei ({contentType}), bitte laden Sie sie herunter, um den Inhalt zu sehen."
+  },
+  "LogTab": {
+    "title": "Ablaufprotokoll",
+    "description": "Schrittweises Protokoll des Testlaufs. Kann heruntergeladen werden.",
+    "search_placeholder": "Protokoll durchsuchen",
+    "no_matches": "Keine Treffer",
+    "match_counter": "{current} von {total}",
+    "match_previous": "Vorheriger Treffer",
+    "match_next": "Nächster Treffer",
+    "match_case": "Groß-/Kleinschreibung beachten",
+    "match_whole_word": "Ganzes Wort",
+    "filters_menu_title": "Inhalte filtern",
+    "filter_error": "Fehler",
+    "filter_warn": "Warnung",
+    "filter_info": "Info",
+    "filter_debug": "Debug",
+    "filter_trace": "Trace",
+    "download_button": "Protokoll herunterladen"
+  },
+  "MethodsTab": {
+    "title": "Methoden",
+    "subtitle": "Liste der während des Laufs ausgeführten Methoden.",
+    "search_placeholder": "Methode suchen",
+    "table": {
+      "methodName": "Name",
+      "status": "Status",
+      "result": "Ergebnis",
+      "duration": "Dauer"
+    }
+  },
+  "OverviewTab": {
+    "bundle": "Bundle",
+    "test": "Test",
+    "group": "Gruppe",
+    "submissionId": "Übermittlungs-ID",
+    "requestor": "Anforderer",
+    "submitted": "Eingereicht",
+    "started": "Gestartet",
+    "finished": "Beendet",
+    "duration": "Dauer",
+    "tags": "Tags",
+    "noTags": "Keine Tags vorhanden."
+  },
+  "TestRunDetails": {
+    "title": "Testlauf:",
+    "status": "Status",
+    "result": "Ergebnis",
+    "test": "Test",
+    "tabs": {
+      "overview": "Übersicht",
+      "methods": "Methoden",
+      "runLog": "Protokoll",
+      "artifacts": "Artefakte"
+    }
+  },
+  "TestRunSkeleton": {
+    "status": "Status",
+    "result": "Ergebnis",
+    "test": "Test",
+    "tabs": {
+      "overview": "Übersicht",
+      "methods": "Methoden",
+      "runLog": "Protokoll",
+      "artifacts": "Artefakte"
+    }
+  },
+  "TestRunsTable": {
+    "submittedAt": "Eingereicht am",
+    "testRunName": "Testlaufname",
+    "requestor": "Anforderer",
+    "group": "Gruppe",
+    "bundle": "Bundle",
+    "package": "Paket",
+    "testName": "Testname",
+    "status": "Status",
+    "result": "Ergebnis",
+    "loading": "Testergebnisse werden geladen...",
+    "noData": "Keine Testläufe in den letzten 24 Stunden gefunden.",
+    "timeFrameText": {
+      "default": "Zeige Testläufe der letzten 24 Stunden",
+      "range": "Zeige Testläufe von {from} bis {to}"
+    },
+    "pagination": {
+      "backwardText": "Vorherige Seite",
+      "forwardText": "Nächste Seite",
+      "itemsPerPageText": "Einträge pro Seite:",
+      "pageNumberText": "Seitennummer"
+    }
+  },
+  "TestRunsTabs": {
+    "tabs": {
+      "timeframe": "Zeitraum",
+      "tableDesign": "Tabellendesign",
+      "searchCriteria": "Suchkriterien",
+      "results": "Ergebnisse"
+    },
+    "content": {
+      "timeframe": "Diese Seite befindet sich im Aufbau. Derzeit werden alle Ergebnisse der letzten 24 Stunden angezeigt.",
+      "tableDesign": "Diese Seite befindet sich im Aufbau. Bald können Sie Spalten wählen.",
+      "searchCriteria": "Diese Seite befindet sich im Aufbau. Definieren Sie Suchkriterien zur Filterung."
+    }
+  },
+  "TestRunPage": {
+    "notFoundTitle": "Lauf nicht gefunden",
+    "notFoundDescription": "Kein Lauf mit ID: {id} gefunden"
   }
 }

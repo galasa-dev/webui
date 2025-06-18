@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || "Galasa Service";
   const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
   const locale = await getLocale();
-  const messages = await getMessages(); // or getMessages({ locale })
+  const messages = await getMessages();
   
   return (
     <NextIntlClientProvider locale={locale} messages={messages} >

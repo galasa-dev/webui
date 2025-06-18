@@ -9,6 +9,7 @@ import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { ArtifactIndexEntry, ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
 import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';
+import { getTranslations } from 'next-intl/server';
 
 // Define an interface for the component's props
 interface TestRunProps {
@@ -18,14 +19,14 @@ interface TestRunProps {
 }
 
 // Type the props directly on the function's parameter
-export default async function TestRunPage ({ params: { slug } }: TestRunProps) {
+export default async function TestRunPage({ params: { slug } }: TestRunProps) {
+  const translations = await getTranslations("TestRunPage");
 
   const apiConfig = createAuthenticatedApiConfiguration();
   const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
   const fetchRunDetailsFromApiServer = async () => {
     try {
-      
       const rasRunsResponse = await rasApiClient.getRasRunById(slug);
       return structuredClone(rasRunsResponse);
     } catch (error: any) {
@@ -56,8 +57,13 @@ export default async function TestRunPage ({ params: { slug } }: TestRunProps) {
     await fetchRunDetailsFromApiServer();
   } catch (error: any) {
     if (error?.code === 404) {
-      return <NotFound title='Run not found' description={`Unable to find a run with id: ${slug}`}/>;
-    } else{
+      return (
+        <NotFound
+          title={translations("notFoundTitle")}
+          description={translations("notFoundDescription", { id: slug })}
+        />
+      );
+    } else {
       return <ErrorPage />;
     }
   }

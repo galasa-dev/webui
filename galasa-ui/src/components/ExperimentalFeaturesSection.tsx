@@ -12,27 +12,27 @@ import { useTranslations } from "next-intl";
 
 export default function ExperimentalFeaturesSection() { 
   const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
-  const t = useTranslations('ExperimentalFeatures');
+  const translations = useTranslations('ExperimentalFeatures');
 
   // Feature configuration for easier management and display
   const featureConfig = [
     {
       key: FEATURE_FLAGS.TEST_RUNS,
-      label: t(`features.testRunSearch`)
+      label: translations(`features.testRunSearch`)
       ,
     },
     {
       key: FEATURE_FLAGS.INTERNATIONALIZATION,
-      label: t('features.Internationalization'),
+      label: translations('features.Internationalization'),
     },
     // Add more features here when they are added to DEFAULT_FEATURE_FLAGS
   ];
 
   return (
     <section className={styles.experimentalFeaturesContainer}>
-      <h3 className={styles.title}>{t('title')}</h3>
+      <h3 className={styles.title}>{translations('title')}</h3>
       <div className={styles.experimentalFeaturesHeaderContainer}>
-        <p className={styles.heading}>{t('description')}</p>
+        <p className={styles.heading}>{translations('description')}</p>
         <ul className={styles.featureFlagsContainer}>
           {featureConfig.map(({ key, label }) => (
             <li key={key} className={styles.featureFlag}>

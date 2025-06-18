@@ -21,6 +21,7 @@ import LogTab from './LogTab';
 import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import StatusCheck from '../common/StatusCheck';
+import { useTranslations } from 'next-intl';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -38,7 +39,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-
+  const translations = useTranslations("TestRunDetails");
 
   const extractRunDetails = (runDetails: Run) => {
 
@@ -46,7 +47,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
 
     // Build run metadata object
     const runMetadata: RunMetadata = {
-
       runId: runId,
       result: runDetails.testStructure?.result!,
       status: runDetails.testStructure?.status!,
@@ -65,17 +65,13 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     setRun(runMetadata);
-
   };
 
   useEffect(() => {
-
     const loadRunDetails = async () => {
-
       setIsLoading(true);
 
       try {
-
         const runDetails = await runDetailsPromise;
         const runArtifacts = await runArtifactsPromise;
         const runLog = await runLogPromise;
@@ -85,7 +81,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
           setArtifacts(runArtifacts);
           setLogs(runLog);
         }
-
       } catch (err) {
         setIsError(true);
       } finally {
@@ -94,61 +89,75 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     loadRunDetails();
-
   }, [runDetailsPromise, runArtifactsPromise, runLogPromise]);
 
   if (isError) {
     return <ErrorPage />;
   }
+  
 
   return (
     <main id="content">
-
       <BreadCrumb breadCrumbItems={[HOME, TEST_RUNS]} />
-      <PageTile title={`Test Run: ${run?.runName}`} />
+      <PageTile
+        translationKey={translations("title", {
+          runName: run?.runName || "Unknown Run Name",
+        })}
+      />
 
-      {
-        isLoading ? <TestRunSkeleton /> :
-
-          <div className={styles.testRunContainer}>
-            <div className={styles.summarySection}>
-              <div>
-                <span className={styles.summaryStatus}>
-                  Status: {run?.status}
-                </span>
-                <span className={styles.summaryStatus}>
-                  Result: <StatusCheck status={run?.result!}></StatusCheck>
-                </span>
-              </div>
+      {isLoading ? (
+        <TestRunSkeleton />
+      ) : (
+        <div className={styles.testRunContainer}>
+          <div className={styles.summarySection}>
+            <div>
               <span className={styles.summaryStatus}>
-                Test: {run?.testName}
+                {translations("status")}: {run?.status}
+              </span>
+              <span className={styles.summaryStatus}>
+                {translations("result")}: <StatusCheck status={run?.result!} />
               </span>
             </div>
-            <Tabs>
-              <TabList iconSize="lg" className={styles.tabs}>
-                <Tab renderIcon={Dashboard} href="#">Overview</Tab>
-                <Tab renderIcon={Code} href="#">Methods</Tab>
-                <Tab renderIcon={CloudLogging} href="#">Run Log</Tab>
-                <Tab renderIcon={RepoArtifact} href="#">Artifacts</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel>
-                  <OverviewTab metadata={run!} />
-                </TabPanel>
-                <TabPanel>
-                  <MethodsTab methods={methods} />
-                </TabPanel>
-                <TabPanel>
-                  <LogTab logs={logs} />
-                </TabPanel>
-                <TabPanel>
-                  <ArtifactsTab artifacts={artifacts} runId={runId} runName={run?.runName!} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+            <span className={styles.summaryStatus}>
+              {translations("test")}: {run?.testName}
+            </span>
           </div>
-      }
-
+          <Tabs>
+            <TabList iconSize="lg" className={styles.tabs}>
+              <Tab renderIcon={Dashboard} href="#">
+                {translations("tabs.overview")}
+              </Tab>
+              <Tab renderIcon={Code} href="#">
+                {translations("tabs.methods")}
+              </Tab>
+              <Tab renderIcon={CloudLogging} href="#">
+                {translations("tabs.runLog")}
+              </Tab>
+              <Tab renderIcon={RepoArtifact} href="#">
+                {translations("tabs.artifacts")}
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <OverviewTab metadata={run!} />
+              </TabPanel>
+              <TabPanel>
+                <MethodsTab methods={methods} />
+              </TabPanel>
+              <TabPanel>
+                <LogTab logs={logs} />
+              </TabPanel>
+              <TabPanel>
+                <ArtifactsTab
+                  artifacts={artifacts}
+                  runId={runId}
+                  runName={run?.runName!}
+                />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+      )}
     </main>
   );
 };

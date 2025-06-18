@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 
 export default function PageHeader({ galasaServiceName }: { galasaServiceName: string }) {
   const {isFeatureEnabled} = useFeatureFlags();
-  const t = useTranslations('PageHeader');
+  const translations = useTranslations('PageHeader');
 
   return (
     <Theme theme="g90">
@@ -36,8 +36,8 @@ export default function PageHeader({ galasaServiceName }: { galasaServiceName: s
         <HeaderName href="/" prefix="">Galasa</HeaderName>
         
         <HeaderNavigation aria-label="Galasa menu bar navigation">
-          <HeaderMenuItem href="/users">{t('users')}</HeaderMenuItem>
-          {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS) && (<HeaderMenuItem href="/test-runs">{t("testRuns")}</HeaderMenuItem>)}
+          <HeaderMenuItem href="/users">{translations('users')}</HeaderMenuItem>
+          {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS) && (<HeaderMenuItem href="/test-runs">{translations("testRuns")}</HeaderMenuItem>)}
         </HeaderNavigation>
      
 

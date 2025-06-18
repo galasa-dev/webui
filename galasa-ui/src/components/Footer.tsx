@@ -20,7 +20,7 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
 
   const [isHealthOk, setIsHealthOk] = useState(true);
   const [apiVersion, setApiVersion] = useState("");
-  const t = useTranslations('Footer');
+  const translations = useTranslations('Footer');
 
   useEffect(() => {
     const checkServiceHealth = async () => {
@@ -44,9 +44,9 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
     <Theme theme="g90">
       <footer className={styles.footer} role="footer">
         {
-          isHealthOk && <p>{t('versionText', { version: apiVersion })}</p>
+          isHealthOk && <p>{translations('versionText', { version: apiVersion })}</p>
         }
-        <p className={styles.serviceHealthTitle}>{t("health")}</p>
+        <p className={styles.serviceHealthTitle}>{translations("health")}</p>
         { isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} /> }
       </footer>
     </Theme>

@@ -13,6 +13,7 @@ import { CarbonIconType, CloudDownload, Document, Folder, Image, Json, Zip } fro
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
 import { handleDownload } from '@/utils/artifacts';
+import { useTranslations } from 'next-intl';
 
 interface FileNode {
   name: string;
@@ -42,7 +43,7 @@ type DownloadResult = { contentType: string; data: string; size: number; base64:
 
 
 export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: ArtifactIndexEntry[], runId: string, runName: string }) {
-
+  const translations = useTranslations("Artifacts");
   const [treeData, setTreeData] = useState<FolderNode>({
     name: '',
     isFile: false,
@@ -63,7 +64,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg"];
 
   function formatFileSize(bytes: number) {
-
     let fileSize = "";
 
     if (bytes < 10000) {
@@ -95,7 +95,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   };
 
   const downloadArtifact = async (runId: string, artifactUrl: string) => {
-
     setLoading(true);
     setError(null);
 
@@ -110,14 +109,12 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
         base64Data:   result.base64,
         contentType:  result.contentType,
       });
-
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Unknown error');
     } finally {
       setLoading(false);
     }
-
   };
 
   function renderArtifactContent(artifactFile: string, contentType: string) {
@@ -192,7 +189,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   }, [artifacts]);
 
   const cleanArtifactPath = (rawPath: string) => {
-
     let cleanedPath = rawPath;
     if (rawPath.startsWith("./")) {
       cleanedPath = rawPath.substring(2);
@@ -201,7 +197,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     }
 
     return cleanedPath;
-
   };
 
   const createFolderSegments = (segments: string[], currentNode: FolderNode, artifact: ArtifactIndexEntry) => {
@@ -251,7 +246,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     const extension = pathSplit[pathSplit.length - 1]; // get the last split e.g some.file.ts -> we need the extension (ts)
     let icon: CarbonIconType = Document;
 
-    if(ZIP_EXTENSIONS.includes(extension)) {
+    if (ZIP_EXTENSIONS.includes(extension)) {
       icon = Zip;
     } else if (extension == "json") {
       icon = Json;
@@ -293,8 +288,8 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   return (
     <>
       <div className={styles.titleContainer}>
-        <h3>Artifacts</h3>
-        <p>An artifact is a piece of captured state left behind once a Run has completed. Artifacts can also be downloaded and viewed.</p>
+        <h3>{translations("title")}</h3>
+        <p>{translations("description")}</p>
       </div>
       <div className={styles.artifact}>
 
@@ -305,38 +300,51 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
         </TreeView>
 
         <div className={styles.artifactView}>
+          {loading && (
+            <InlineLoading
+              description={translations("downloading")}
+              iconDescription={translations("downloading")}
+            />
+          )}
+          {error && (
+            <InlineNotification
+              title={translations("error_title")}
+              subtitle={translations.rich("error_subtitle", { runName })}
+            />
+          )}
 
-          {loading && <InlineLoading description="Downloading Artifact" iconDescription="Downloading Artifact" />}
-          {error && <InlineNotification statusIconDescription="notification" kind="error" title="Something went wrong" subtitle={`There was an error downloading the artifact. It may be that the artifact is too big for this web application, try refreshing the page or downloading the test run using the 'galasactl' command-line tool.\nFor example:\ngalasactl runs download --name ${runName}`} />}
-
-          {
-            !loading && !error && (
+          {!loading && !error && (
+            <div>
               <div>
-
-                <div>
-                  {artifactDetails.artifactFile !== "" &&
-                    <Tile className={styles.toolbar}>
-                      <div>
-                        <h5>{artifactDetails.fileName}</h5>
-                        <p className={styles.fileSize}>
-                          {artifactDetails.fileSize}
-                        </p>
-                      </div>
-                      <div className={styles.toolbarOptions}>
-                        <button type="button" onClick={handleDownloadClick} className={styles.downloadButton}>
-                          <CloudDownload size={22} color='#0043ce' />
-                        </button>
-                      </div>
-                    </Tile>
-                  }
-                </div>
-
-                <pre className={styles.fileRenderer}>
-                  {renderArtifactContent(artifactDetails.artifactFile, artifactDetails.contentType)}
-                </pre>
+                {artifactDetails.artifactFile !== "" && (
+                  <Tile className={styles.toolbar}>
+                    <div>
+                      <h5>{artifactDetails.fileName}</h5>
+                      <p className={styles.fileSize}>
+                        {artifactDetails.fileSize}
+                      </p>
+                    </div>
+                    <div className={styles.toolbarOptions}>
+                      <button
+                        type="button"
+                        onClick={handleDownloadClick}
+                        className={styles.downloadButton}
+                      >
+                        <CloudDownload size={22} color="#0043ce" />
+                      </button>
+                    </div>
+                  </Tile>
+                )}
               </div>
-            )
-          }
+
+              <pre className={styles.fileRenderer}>
+                {renderArtifactContent(
+                  artifactDetails.artifactFile,
+                  artifactDetails.contentType,
+                )}
+              </pre>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -13,13 +13,13 @@ import styles from "@/styles/BreadCrumb.module.css";
 import { useTranslations } from 'next-intl';
 
 export default function EditUserBreadCrumb() {
-  const t = useTranslations('EditUserBreadCrumb');
+  const translations = useTranslations('EditUserBreadCrumb');
 
   return (
     <Theme theme="g10">
       <Breadcrumb className={styles.crumbContainer}>
-        <BreadcrumbItem isCurrentPage={false} href="/">{t("home")}</BreadcrumbItem>
-        <BreadcrumbItem isCurrentPage={false} href="/test-runs">{t("users")}</BreadcrumbItem>
+        <BreadcrumbItem isCurrentPage={false} href="/">{translations("home")}</BreadcrumbItem>
+        <BreadcrumbItem isCurrentPage={false} href="/test-runs">{translations("users")}</BreadcrumbItem>
       </Breadcrumb>
     </Theme>
   );

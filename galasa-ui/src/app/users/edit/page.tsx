@@ -13,7 +13,6 @@ import { fetchAccessTokens } from '@/actions/getUserAccessTokens';
 import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { EDIT_USER, HOME } from '@/utils/constants/breadcrumb';
-import { useTranslations } from 'next-intl';
 
 // In order to extract query param on server-side
 type UsersPageProps = {
@@ -22,30 +21,26 @@ type UsersPageProps = {
 };
 
 export default function EditUserPage({ searchParams }: UsersPageProps) {
-
   const loginIdFromQueryParam = searchParams.loginId as string;
 
   const apiConfig = createAuthenticatedApiConfiguration();
 
   const fetchRBACRolesFromApiServer = async () => {
-
     let roles: RBACRole[] = [];
 
     const rbacApiClient = new RoleBasedAccessControlAPIApi(apiConfig);
     const rolesReponse = await rbacApiClient.getRBACRoles();
 
-    if(rolesReponse && rolesReponse.length >= 1){
+    if (rolesReponse && rolesReponse.length >= 1) {
       roles = structuredClone(rolesReponse);
     }
 
     return roles;
-
   };
-  const t=useTranslations("UserEditPage");
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME, EDIT_USER]}/>
-      <PageTile title={t('title')} />
+      <BreadCrumb breadCrumbItems={[HOME, EDIT_USER]} />
+      <PageTile translationKey={"UserEditPage.title"} />
       <UserRoleSection userProfilePromise={fetchUserFromApiServer(loginIdFromQueryParam)} roleDetailsPromise={fetchRBACRolesFromApiServer()}/>
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(loginIdFromQueryParam)} isAddBtnVisible={false}/>
     </main>

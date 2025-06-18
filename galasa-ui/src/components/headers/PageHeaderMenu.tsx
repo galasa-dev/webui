@@ -16,7 +16,7 @@ import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
-  const t = useTranslations('PageHeaderMenu');
+  const translations = useTranslations('PageHeaderMenu');
 
   const router = useRouter();
 
@@ -43,17 +43,17 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
         flipped={true}
       >
         <OverflowMenuItem
-          itemText={t('profile')}
+          itemText={translations('profile')}
           data-testid='my-profile-btn'
           onClick={handleRedirectToMyProfilePage}
         />
         <OverflowMenuItem
-          itemText={t('settings')}
+          itemText={translations('settings')}
           data-testid='my-settings-btn'
           onClick={handleRedirectToMySettingsPage}
         />
         <OverflowMenuItem
-          itemText={t('logout')}
+          itemText={translations('logout')}
           onClick={() => handleDeleteCookieApiOperation(router)}
           data-testid='logout-btn'
         />

@@ -77,7 +77,7 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
         if (accessTokens && accessTokens.tokens) {
           setTokens(new Set(accessTokens.tokens));
         } else {
-          throw new Error(t("error"));
+          throw new Error(translations("error"));
         }
       } catch (err) {
         setIsError(true);
@@ -90,19 +90,19 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
     loadAccessTokens();
   }, [accessTokensPromise]);
 
-  const t = useTranslations('AccessTokensSection');
+  const translations = useTranslations('AccessTokensSection');
   return (
     <section className={styles.tokenContainer}>
       { isLoading ?
         <Loading />
         : !isError &&
         <>
-          <h3 className={styles.title}>{t('title')}</h3>
+          <h3 className={styles.title}>{translations('title')}</h3>
 
           <div className={styles.pageHeaderContainer}>
             <div>
-              <p className={styles.heading}>{t('descriptionline1')}</p>
-              <p className={styles.heading}>{t('descriptionline2')}</p>
+              <p className={styles.heading}>{translations('descriptionline1')}</p>
+              <p className={styles.heading}>{translations('descriptionline2')}</p>
             </div>
           </div>
 
@@ -113,7 +113,7 @@ export default function AccessTokensSection({ accessTokensPromise, isAddBtnVisib
             {isAddBtnVisible && <TokenRequestModal isDisabled={selectedTokens.size > 0} />}
 
             <Button onClick={() => setIsDeleteModalOpen(true)} className={styles.deleteBtn} disabled={selectedTokens.size === 0} kind="danger">
-              {t('deleteButtontext', { count: selectedTokens.size })}
+              {translations('deleteButtontext', { count: selectedTokens.size })}
             </Button>
           </div>
 

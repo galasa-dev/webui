@@ -20,7 +20,7 @@ interface TokenDeleteModalProps {
 
 export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFromSet, updateDeleteModalState }: TokenDeleteModalProps) {
 
-  const t = useTranslations('TokenDeleteModal');
+  const translations = useTranslations('TokenDeleteModal');
   const [open, setOpen] = useState(true);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -79,9 +79,9 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
   return (
     <>
       <Modal
-        modalHeading={t('modalHeading')}
-        primaryButtonText={t('primaryButtonText')}
-        secondaryButtonText={t('secondaryButtonText')}
+        modalHeading={translations('modalHeading')}
+        primaryButtonText={translations('primaryButtonText')}
+        secondaryButtonText={translations('secondaryButtonText')}
         danger
         shouldSubmitOnEnter={true}
         open={open}
@@ -95,13 +95,13 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
         }}
       >
         <h6 className='margin-top-1'>
-          {t('tokensToDeleteCount', { count: selectedTokens.size })}
+          {translations('tokensToDeleteCount', { count: selectedTokens.size })}
         </h6>
 
         <div className='margin-top-2'>
           <InlineNotification
-            title={t('notificationTitle')}
-            subtitle={t('notificationSubtitle')}
+            title={translations('notificationTitle')}
+            subtitle={translations('notificationSubtitle')}
             kind="warning"
             lowContrast
             hideCloseButton
@@ -112,7 +112,7 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
         {error && (
           <InlineNotification
             className="margin-top-1"
-            title={t('errorTitle')}
+            title={translations('errorTitle')}
             subtitle={error}
             kind="error"
             onCloseButtonClick={() => setError('')}

@@ -16,7 +16,6 @@ import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
 import { HOME } from '@/utils/constants/breadcrumb';
-import PageTileClient from '@/components/PageTileClient';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -55,8 +54,8 @@ export default async function MySettings() {
 
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME]}/>
-      <PageTileClient translationKey="MySettings.title" />
+      <BreadCrumb breadCrumbItems={[HOME]} />
+      <PageTile translationKey="MySettings.title" />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <ExperimentalFeaturesSection />

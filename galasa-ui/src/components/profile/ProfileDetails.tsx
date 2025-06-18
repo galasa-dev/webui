@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfileDetails({ userProfilePromise }: ProfileDetailsProps) {
   const WEB_UI_CLIENT_NAME = "web-ui";
-  const t = useTranslations("ProfileDetails");
+  const translations = useTranslations("ProfileDetails");
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -50,13 +50,13 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
         : !isError &&
         <>
           <div className={styles.userDetailsContainer}>
-            <h3>{t("title")}</h3>
-            <p>{t("loggedInAs")} {userProfile?.loginId}</p>
-            <p>{t("role")}: {roleName}</p>
+            <h3>{translations("title")}</h3>
+            <p>{translations("loggedInAs")} {userProfile?.loginId}</p>
+            <p>{translations("role")}: {roleName}</p>
           </div>
 
           <div className={styles.loginActivityContainer}>
-            <h3>{t("recentActivity")}</h3>
+            <h3>{translations("recentActivity")}</h3>
             {
               userProfile?.clients?.map((client, index) => {
                 let lastLoginDateStr: string;
@@ -64,15 +64,15 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
                   const clientLastLoginDate = new Date(client.lastLogin);
                   lastLoginDateStr = `${clientLastLoginDate.toUTCString()}`;
                 } else {
-                  lastLoginDateStr = t("noLastLogin");
+                  lastLoginDateStr = translations("noLastLogin");
                 }
 
                 return (
                   <p key={index}>
                     {
                       client.clientName === WEB_UI_CLIENT_NAME
-                        ? t("lastLoginWeb", { date: lastLoginDateStr })
-                        : t("lastLoginToken", { date: lastLoginDateStr })}
+                        ? translations("lastLoginWeb", { date: lastLoginDateStr })
+                        : translations("lastLoginToken", { date: lastLoginDateStr })}
 
                   </p>
                 );

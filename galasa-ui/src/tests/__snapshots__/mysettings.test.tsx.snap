@@ -9,12 +9,12 @@ exports[`MySettings Component renders correctly when user login id is found 1`] 
       [
         {
           "route": "/",
-          "title": "Home",
+          "title": "home",
         },
       ]
     }
   />
-  <PageTileClient
+  <PageTile
     translationKey="MySettings.title"
   />
   <AccessTokensSection

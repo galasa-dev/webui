@@ -5,18 +5,18 @@
  */
 
 const HOME = {
-  title: "Home",
-  route: "/"
+  title: "home",
+  route: "/",
 };
 
 const EDIT_USER = {
-  title: "Users",
-  route: "/users"
+  title: "users",
+  route: "/users",
 };
 
 const TEST_RUNS = {
-  title: "Test Runs",
-  route: "/test-runs"
+  title: "testRuns",
+  route: "/test-runs",
 };
 
-export {HOME, EDIT_USER, TEST_RUNS};
+export { HOME, EDIT_USER, TEST_RUNS };

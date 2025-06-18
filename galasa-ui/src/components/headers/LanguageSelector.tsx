@@ -4,32 +4,33 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-'use client';
+"use client";
 
-import React, { useState, useTransition } from 'react';
-import { Dropdown } from '@carbon/react';
-import { Language } from '@carbon/icons-react';
-import { setUserLocale } from '@/utils/locale';
-import { useLocale } from 'next-intl';
-import { Locale } from '@/i18n/config';
-import { useRouter } from 'next/navigation';
+import React, { useState, useTransition } from "react";
+import { Dropdown } from "@carbon/react";
+import { Language } from "@carbon/icons-react";
+import { setUserLocale } from "@/utils/locale";
+import styles from "@/styles/LanguageSelector.module.css";
+import { useLocale } from "next-intl";
+import { Locale } from "@/i18n/config";
+import { useRouter } from "next/navigation";
 
 const languages = [
-  { id: 'en', text: 'English', value: 'en' },
-  { id: 'de', text: 'Deutsch', value: 'de' }
+  { id: "en", text: "English", value: "en" },
+  { id: "de", text: "Deutsch", value: "de" },
 ];
 
 export default function LanguageSelector() {
   const locale = useLocale();
   const [selectedLanguage, setSelectedLanguage] = useState(
-    languages.find((lang) => lang.value === locale) || languages[0]
+    languages.find((lang) => lang.value === locale) || languages[0],
   );
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const handleLanguageChange = ({
-    selectedItem
+    selectedItem,
   }: {
     selectedItem: { id: string; text: string; value: string };
   }) => {
@@ -44,21 +45,19 @@ export default function LanguageSelector() {
   };
 
   return (
-    <div style={{ marginRight: '1rem', display: 'flex', alignItems: 'center' }}>
-      <Language style={{ marginRight: '0.5rem', fill: 'white' }} />
+    <div className={styles.container}>
+      <Language className={styles.language} />
       <Dropdown
         id="language-selector"
         items={languages}
         onChange={handleLanguageChange}
         selectedItem={selectedLanguage}
         label="Select language"
-        itemToString={(item: { id: string; text: string; value: string } | null) => item?.text || ''}
+        itemToString={(
+          item: { id: string; text: string; value: string } | null,
+        ) => item?.text || ""}
         size="sm"
-        style={{
-          backgroundColor: 'transparent',
-          color: 'white',
-          width: '120px'
-        }}
+        classnName={styles.dropdown}
         disabled={isPending}
       />
     </div>
