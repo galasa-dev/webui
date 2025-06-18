@@ -22,16 +22,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const messages = await getMessages();
   
   return (
-    <NextIntlClientProvider locale={locale} messages={messages} >
-      <RootLayoutInner
-        galasaServiceName={galasaServiceName}
-        featureFlagsCookie={featureFlagsCookie}
-        locale={locale}
-      > 
-        {children}
-      </RootLayoutInner>
+    <html lang={locale || "en"}>
+      <NextIntlClientProvider locale={locale} messages={messages} >
+        <RootLayoutInner
+          galasaServiceName={galasaServiceName}
+          featureFlagsCookie={featureFlagsCookie}
+        > 
+          {children}
+        </RootLayoutInner>
 
 
-    </NextIntlClientProvider>
+      </NextIntlClientProvider>
+    </html>
   );
 }

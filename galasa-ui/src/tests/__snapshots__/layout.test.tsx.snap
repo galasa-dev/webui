@@ -5,171 +5,6 @@ exports[`Layout renders the web UI layout 1`] = `
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <html
-        lang="en"
-      >
-        <head>
-          <title>
-            Galasa Service
-          </title>
-          <meta
-            content="Galasa Ecosystem Web UI"
-            name="description"
-          />
-        </head>
-        <body>
-          <div
-            class="cds--g90 cds--layer-one"
-          >
-            <header
-              aria-label="Galasa Ecosystem"
-              class="cds--header"
-            >
-              <a
-                class="cds--skip-to-content"
-                href="#main-content"
-                tabindex="0"
-              >
-                Skip to main content
-              </a>
-              <a
-                href="/"
-                style="padding-left: 0.5rem;"
-              >
-                <img
-                  alt="Galasa logo"
-                  data-nimg="1"
-                  decoding="async"
-                  height="28"
-                  loading="lazy"
-                  src="/_next/image?url=%2Fimg.jpg&w=64&q=75"
-                  srcset="/_next/image?url=%2Fimg.jpg&w=32&q=75 1x, /_next/image?url=%2Fimg.jpg&w=64&q=75 2x"
-                  style="color: transparent;"
-                  width="28"
-                />
-              </a>
-              <a
-                class="cds--header__name"
-                href="/"
-              >
-                Galasa
-              </a>
-              <nav
-                aria-label="Galasa menu bar navigation"
-                class="cds--header__nav"
-              >
-                <ul
-                  class="cds--header__menu-bar"
-                >
-                  <li>
-                    <a
-                      class="cds--header__menu-item"
-                      href="/users"
-                      tabindex="0"
-                    >
-                      <span
-                        class="cds--text-truncate--end"
-                      >
-                        Users
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-              <div
-                class="cds--header__global"
-                data-testid="header-menu"
-              >
-                <a
-                  class="cds--header__name"
-                >
-                  Galasa Service
-                </a>
-                <span
-                  class="cds--overflow-menu__wrapper"
-                >
-                  <span
-                    class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--top cds--tooltip cds--icon-tooltip"
-                  >
-                    <div
-                      class="cds--tooltip-trigger__wrapper"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        aria-labelledby="tooltip-:r0:"
-                        class="cds--btn--icon-only cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
-                        data-floating-menu-container="true"
-                        data-testid="menu-btn"
-                        type="button"
-                      >
-                        <svg
-                          aria-label="Options"
-                          class="cds--overflow-menu__icon"
-                          fill="currentColor"
-                          focusable="false"
-                          height="16"
-                          preserveAspectRatio="xMidYMid meet"
-                          role="img"
-                          viewBox="0 0 16 16"
-                          width="16"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M8 2c1.4 0 2.5 1.1 2.5 2.5S9.4 7 8 7 5.5 5.9 5.5 4.5 6.6 2 8 2M8 1C6.1 1 4.5 2.6 4.5 4.5S6.1 8 8 8s3.5-1.6 3.5-3.5S9.9 1 8 1zM13 15h-1v-2.5c0-1.4-1.1-2.5-2.5-2.5h-3C5.1 10 4 11.1 4 12.5V15H3v-2.5C3 10.6 4.6 9 6.5 9h3c1.9 0 3.5 1.6 3.5 3.5V15z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                    <span
-                      aria-hidden="true"
-                      class="cds--popover"
-                      id="tooltip-:r0:"
-                      role="tooltip"
-                    >
-                      <span
-                        class="cds--popover-content cds--tooltip-content"
-                      >
-                        Options
-                      </span>
-                      <span
-                        class="cds--popover-caret"
-                      />
-                    </span>
-                  </span>
-                </span>
-              </div>
-            </header>
-          </div>
-          Hello, world!
-          <div
-            class="cds--g90 cds--layer-one"
-          >
-            <footer
-              class="footer"
-              role="footer"
-            >
-              <p>
-                Galasa version my-galasa-version
-              </p>
-              <p
-                class="serviceHealthTitle"
-              >
-                Service health
-              </p>
-              <div
-                class="healthy"
-              />
-            </footer>
-          </div>
-        </body>
-      </html>
-    </div>
-  </body>,
-  "container": <div>
-    <html
-      lang="en"
-    >
       <head>
         <title>
           Galasa Service
@@ -325,7 +160,164 @@ exports[`Layout renders the web UI layout 1`] = `
           </footer>
         </div>
       </body>
-    </html>
+    </div>
+  </body>,
+  "container": <div>
+    <head>
+      <title>
+        Galasa Service
+      </title>
+      <meta
+        content="Galasa Ecosystem Web UI"
+        name="description"
+      />
+    </head>
+    <body>
+      <div
+        class="cds--g90 cds--layer-one"
+      >
+        <header
+          aria-label="Galasa Ecosystem"
+          class="cds--header"
+        >
+          <a
+            class="cds--skip-to-content"
+            href="#main-content"
+            tabindex="0"
+          >
+            Skip to main content
+          </a>
+          <a
+            href="/"
+            style="padding-left: 0.5rem;"
+          >
+            <img
+              alt="Galasa logo"
+              data-nimg="1"
+              decoding="async"
+              height="28"
+              loading="lazy"
+              src="/_next/image?url=%2Fimg.jpg&w=64&q=75"
+              srcset="/_next/image?url=%2Fimg.jpg&w=32&q=75 1x, /_next/image?url=%2Fimg.jpg&w=64&q=75 2x"
+              style="color: transparent;"
+              width="28"
+            />
+          </a>
+          <a
+            class="cds--header__name"
+            href="/"
+          >
+            Galasa
+          </a>
+          <nav
+            aria-label="Galasa menu bar navigation"
+            class="cds--header__nav"
+          >
+            <ul
+              class="cds--header__menu-bar"
+            >
+              <li>
+                <a
+                  class="cds--header__menu-item"
+                  href="/users"
+                  tabindex="0"
+                >
+                  <span
+                    class="cds--text-truncate--end"
+                  >
+                    Users
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div
+            class="cds--header__global"
+            data-testid="header-menu"
+          >
+            <a
+              class="cds--header__name"
+            >
+              Galasa Service
+            </a>
+            <span
+              class="cds--overflow-menu__wrapper"
+            >
+              <span
+                class="cds--popover-container cds--popover--caret cds--popover--high-contrast cds--popover--top cds--tooltip cds--icon-tooltip"
+              >
+                <div
+                  class="cds--tooltip-trigger__wrapper"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    aria-labelledby="tooltip-:r0:"
+                    class="cds--btn--icon-only cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
+                    data-floating-menu-container="true"
+                    data-testid="menu-btn"
+                    type="button"
+                  >
+                    <svg
+                      aria-label="Options"
+                      class="cds--overflow-menu__icon"
+                      fill="currentColor"
+                      focusable="false"
+                      height="16"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      viewBox="0 0 16 16"
+                      width="16"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M8 2c1.4 0 2.5 1.1 2.5 2.5S9.4 7 8 7 5.5 5.9 5.5 4.5 6.6 2 8 2M8 1C6.1 1 4.5 2.6 4.5 4.5S6.1 8 8 8s3.5-1.6 3.5-3.5S9.9 1 8 1zM13 15h-1v-2.5c0-1.4-1.1-2.5-2.5-2.5h-3C5.1 10 4 11.1 4 12.5V15H3v-2.5C3 10.6 4.6 9 6.5 9h3c1.9 0 3.5 1.6 3.5 3.5V15z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <span
+                  aria-hidden="true"
+                  class="cds--popover"
+                  id="tooltip-:r0:"
+                  role="tooltip"
+                >
+                  <span
+                    class="cds--popover-content cds--tooltip-content"
+                  >
+                    Options
+                  </span>
+                  <span
+                    class="cds--popover-caret"
+                  />
+                </span>
+              </span>
+            </span>
+          </div>
+        </header>
+      </div>
+      Hello, world!
+      <div
+        class="cds--g90 cds--layer-one"
+      >
+        <footer
+          class="footer"
+          role="footer"
+        >
+          <p>
+            Galasa version my-galasa-version
+          </p>
+          <p
+            class="serviceHealthTitle"
+          >
+            Service health
+          </p>
+          <div
+            class="healthy"
+          />
+        </footer>
+      </div>
+    </body>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],

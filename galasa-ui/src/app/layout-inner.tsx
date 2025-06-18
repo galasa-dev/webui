@@ -12,15 +12,13 @@ export default function RootLayoutInner({
   children,
   galasaServiceName,
   featureFlagsCookie,
-  locale,
 }: {
   children: React.ReactNode;
   galasaServiceName: string;
   featureFlagsCookie?: string;
-  locale?: string;
 }) {
   return (
-    <html lang={locale || "en"}>
+    <>
       <head>
         <title>{galasaServiceName}</title>
         <meta name="description" content="Galasa Ecosystem Web UI" />
@@ -35,6 +33,6 @@ export default function RootLayoutInner({
           />
         </FeatureFlagProvider>
       </body>
-    </html>
+    </>
   );
 }
