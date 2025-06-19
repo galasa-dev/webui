@@ -113,26 +113,16 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
   return parts;
 };
 
-
 /**
- * A mapping of timezone abbreviations to their UTC offsets.
- */
-const TIMEZONE_OFFSETS: { [key: string]: string } = {
-  'GMT': '+00:00', 
-  'PDT': '-07:00', 
-};
-
-/**
- *  Combines date, time, AM/PM, and timezone parts into a single, accurate Date object.
+ *  Combines date, time, AM/PM  parts into a single, accurate Date object.
  * 
  * @param date - The date part as a Date object.
  * @param time - The time part as a string in 'HH:MM' format.
  * @param amPm - The AM/PM part as a string ('AM' or 'PM').
- * @param timezone - The timezone part as a string (e.g., 'GMT', 'PDT').
  * 
- * @return A Date object representing the combined date and time in the specified timezone.
+ * @return A Date object representing the combined date and time.
  */
-export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', timezone: string): Date => {
+export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM'): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
@@ -150,10 +140,10 @@ export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', tim
 };
 
 /**
- * Extracts the time, AM/PM, and timezone from a Date object for populating UI fields.
+ * Extracts the time, AM/PM from a Date object for populating UI fields.
  * 
  * @param date - A Date object to extract date and time from.
- * @returns An object with `time`, `amPm`, and `timezone` properties.
+ * @returns An object with `time` and `amPm` properties.
  */
 export const extractDateTimeForUI = (date: Date) => {
 const hours24 = date.getHours();
@@ -173,13 +163,9 @@ const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
   // Construct the final time string
   const timeValue = `${hoursStr}:${minutesStr}`;
 
-  // Reliably get the local timezone abbreviation (e.g., EET, PDT)
-  const timezone = 'GMT';
-
   return {
     time: timeValue,
     amPm: amPm,
-    timezone: timezone,
   };
 };
 

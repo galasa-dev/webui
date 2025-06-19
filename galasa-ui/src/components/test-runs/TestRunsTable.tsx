@@ -129,7 +129,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
     if (!rawRuns || rawRuns.length === 0) {
-      return 'No test runs found in the last 24 hours.';
+      return 'No test runs found for the selected time frame.';
     }
 
     let text = 'Showing test runs submitted in the last 24 hours';

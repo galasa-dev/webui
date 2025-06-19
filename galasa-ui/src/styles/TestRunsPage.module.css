@@ -28,7 +28,7 @@
 
 .ErrorNotification {
     position: fixed;
-    top: 5.5rem;
+    bottom: 5.5rem;
     right: 1rem;
     z-index: 9999;
 }

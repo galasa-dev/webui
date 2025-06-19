@@ -11,6 +11,7 @@ import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, combineDateTime, extractDateTimeForUI, subtractMonths } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ToastNotification } from '@carbon/react';
+import { InlineNotification } from '@carbon/react';
 
 // Constants
 const MINUTE_MS = 60 * 1000;
@@ -41,11 +42,9 @@ const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFrameValu
     fromDate,
     fromTime: fromUiParts.time,
     fromAmPm: fromUiParts.amPm,
-    fromTimeZone: fromUiParts.timezone,
     toDate,
     toTime: toUiParts.time,
     toAmPm: toUiParts.amPm,
-    toTimeZone: toUiParts.timezone,
     durationDays,
     durationHours,
     durationMinutes,
@@ -80,7 +79,7 @@ export default function TimeFrameContent() {
    * This function is called when any part of the time frame changes (from/to dates, times, durations).
    * It recalculates the entire time frame state, validates it, and updates the URL.
    *
-   * @param field - The specific field that changed (e.g., 'fromDate', 'toTime', 'durationDays').
+   * @param field - The specific field that changed 
    * @param value - The new value for the changed field.
    */
   const handleValueChange = useCallback((field: keyof TimeFrameValues, value: any) => {
@@ -96,28 +95,28 @@ export default function TimeFrameContent() {
     // 2. Determine the new `fromDate` and `toDate` based on what changed.
     if (field.startsWith('duration')) {
       // If duration changed, 'From' date is the anchor, so we calculate the 'To' date.
-      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm, draftValues.fromTimeZone);
+      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
       const durationInMs = (draftValues.durationDays * DAY_MS) +
                            (draftValues.durationHours * HOUR_MS) +
                            (draftValues.durationMinutes * MINUTE_MS);
       toDate = new Date(fromDate.getTime() + durationInMs);
     } else {
       // If a 'From' or 'To' field changed, we recalculate both dates from their parts.
-      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm, draftValues.fromTimeZone);
-      toDate = combineDateTime(draftValues.toDate, draftValues.toTime, draftValues.toAmPm, draftValues.toTimeZone);
+      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
+      toDate = combineDateTime(draftValues.toDate, draftValues.toTime, draftValues.toAmPm);
     }
     
     // 3. Validate and apply business logic to the calculated dates.
     const now = new Date();
     if (toDate > now) {
       toDate = now;
-      error = "Date range cannot extend beyond the current time. 'To' date has been adjusted to now.";
+      error = "Date range cannot extend beyond the current time";
     }
     
     if (fromDate > toDate) {
       // If the user sets 'From' after 'To', bring 'From' back to be equal to 'To'.
-      fromDate = toDate;
-      if (!error) error = "'From' date cannot be after 'To' date. 'From' date has been adjusted.";
+      fromDate = new Date(toDate.getTime() - DAY_MS); // Default to 1 day before 'To' date.
+      if (!error) error = "'From' date cannot be after 'To' date. 'From' date has been adjusted to a day before.";
     }
 
     const maxToDate = addMonths(fromDate, MAX_RANGE_MONTHS);
@@ -129,6 +128,7 @@ export default function TimeFrameContent() {
 
     // 4. Calculate the final, fully synchronized state from the validated dates.
     const finalState = calculateSynchronizedState(fromDate, toDate);
+    console.log("Final state after validation:", finalState);
 
     // 5. Set state and update URL.
     setValues(finalState);
@@ -143,8 +143,13 @@ export default function TimeFrameContent() {
 
   return (
     <div className={styles.TimeFrameContainer}>
+      <div>
+        <p>Select the time envelope against which the submission time of each test run will be compared.</p>
+        <p>Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.</p>
+      </div>
+      <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
       {errorText && (
-        <ToastNotification
+        <InlineNotification
           className={styles.ErrorNotification}
           kind="warning"
           title="Auto-Correction"
@@ -153,11 +158,6 @@ export default function TimeFrameContent() {
           timeout={5000}
         />
       )}
-      <div>
-        <p>Select the time envelope against which the submission time of each test run will be compared.</p>
-        <p>Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.</p>
-      </div>
-      <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { parseAndValidateTime } from '@/utils/functions';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { FormGroup } from '@carbon/react';
 import { DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem, NumberInput } from '@carbon/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function TimeFrameFilter({
   values,
@@ -23,12 +23,20 @@ export default function TimeFrameFilter({
   // Local state for TimePicker inputs to allow immediate typing
   const [localFromTime, setLocalFromTime] = useState(values.fromTime);
   const [localToTime, setLocalToTime] = useState(values.toTime);
+
+  // Sync local time state with parent values on mount and when toTime changes
+  useEffect(() => {
+    setLocalFromTime(values.fromTime);
+  }, [values.toTime]);
+
+  useEffect(() => {
+    setLocalToTime(values.toTime);
+  }, [values.toTime]);
   
 
   // Handle TimePicker change
   const handleTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    field: 'fromTime' | 'toTime',
     setLocalTime: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const newValue = event.target.value;
@@ -55,6 +63,7 @@ export default function TimeFrameFilter({
       field,
       setLocalTime
     );
+    console.log(`Time blurred for ${field}:`, formattedTime);
     handleValueChange(field, formattedTime);
   };
 

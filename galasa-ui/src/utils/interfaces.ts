@@ -73,11 +73,9 @@ export interface TimeFrameValues {
     fromDate: Date;
     fromTime: string;
     fromAmPm: 'AM' | 'PM';
-    fromTimeZone: string;
     toDate: Date;
     toTime: string;
     toAmPm: 'AM' | 'PM';
-    toTimeZone: string;
     durationDays: number;
     durationHours: number;
     durationMinutes: number;
