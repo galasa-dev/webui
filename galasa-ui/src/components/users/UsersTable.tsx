@@ -28,7 +28,7 @@ interface UsersTableProps {
 }
 
 export default function UsersTable({ usersListPromise, currentUserPromise }: UsersTableProps) {
-  const t = useTranslations('usersTable');
+  const translations = useTranslations('usersTable');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -54,19 +54,19 @@ If the user logs in to the Galasa service after this point, they will be challen
 
     {
       key: "loginId",
-      header: t('headers_loginId')
+      header: translations('headers_loginId')
     },
     {
       key: "role",
-      header: t('headers_role')
+      header: translations('headers_role')
     },
     {
       key: "lastLogin",
-      header: t('headers_lastLogin')
+      header: translations('headers_lastLogin')
     },
     {
       key: "lastAccessTokenUse",
-      header: t('headers_lastAccessTokenUse')
+      header: translations('headers_lastAccessTokenUse')
     },
   ];
 
@@ -194,9 +194,9 @@ If the user logs in to the Galasa service after this point, they will be challen
         }) => (
           <TableContainer>
             <TableToolbarContent>
-              <TableToolbarSearch placeholder={t('searchPlaceholder')} persistent onChange={onInputChange} />
+              <TableToolbarSearch placeholder={translations('searchPlaceholder')} persistent onChange={onInputChange} />
             </TableToolbarContent>
-            <Table {...getTableProps()} aria-label={t('ariaLabel')} size="lg">
+            <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
@@ -204,7 +204,7 @@ If the user logs in to the Galasa service after this point, they will be challen
                       {header.header}
                     </TableHeader>
                   ))}
-                  {hasEditUserPermission && <TableHeader aria-label={t('headers_actions')} />}
+                  {hasEditUserPermission && <TableHeader aria-label={translations('headers_actions')} />}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -220,10 +220,10 @@ If the user logs in to the Galasa service after this point, they will be challen
                         hasEditUserPermission &&
                         <TableCell className="cds--table-column-menu">
                           <Link href={{ pathname: currentUser.loginId === row.cells[0].value ? "/mysettings" : "/users/edit", query: { loginId: row.cells[0].value } }}>
-                            <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription={t('editIconDescription')} />
+                            <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription={translations('editIconDescription')} />
                           </Link>
                           {(currentUser.id !== row.id && row.cells[1].value !== OWNER_ROLE_NAME) && 
-                            <Button onClick={() => selectRowForDeletion(row)} renderIcon={TrashCan} hasIconOnly kind="ghost" iconDescription={t('deleteIconDescription')} />
+                            <Button onClick={() => selectRowForDeletion(row)} renderIcon={TrashCan} hasIconOnly kind="ghost" iconDescription={translations('deleteIconDescription')} />
                           }
                         </TableCell>
                       }
@@ -233,17 +233,17 @@ If the user logs in to the Galasa service after this point, they will be challen
                           open={isDeleteModalOpen} 
                           onRequestClose={() => setIsDeleteModalOpen(false)} 
                           danger 
-                          modalHeading={t('modal_heading', { user: selectedRow!.cells[0].value })} 
-                          modalLabel={t('modal_label')} 
-                          primaryButtonText={t('modal_primaryButton')} 
-                          secondaryButtonText={t('modal_secondaryButton')}
+                          modalHeading={translations('modal_heading', { user: selectedRow!.cells[0].value })} 
+                          modalLabel={translations('modal_label')} 
+                          primaryButtonText={translations('modal_primaryButton')} 
+                          secondaryButtonText={translations('modal_secondaryButton')}
                         >
                           <InlineNotification
-                            title={t('modal_notificationTitle')}
+                            title={translations('modal_notificationTitle')}
                             kind="warning"
                             subtitle={
                               <div style={{ whiteSpace: 'pre-wrap' }}>
-                                {t('modal_notificationSubtitle')}
+                                {translations('modal_notificationSubtitle')}
                               </div>
                             }
                             lowContrast
