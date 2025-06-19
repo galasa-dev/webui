@@ -141,28 +141,20 @@ const TIMEZONE_OFFSETS: { [key: string]: string } = {
  * @return A Date object representing the combined date and time in the specified timezone.
  */
 export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', timezone: string): Date => {
-  // Get the UTC offsets for the specified timezone
-  const offset = TIMEZONE_OFFSETS[timezone] || '+00:00';
+  const [hoursStr, minutesStr] = time.split(':');
+  let hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
 
-  // Convert 12-hour time with AM/PM to 24-hour format
-  let [hours, minutes] = time.split(':').map(Number);
-  let hours24 = hours;
   if (amPm === 'PM' && hours < 12) {
-    hours24 += 12; // Convert PM to 24-hour format
+    hours += 12;
   }
-  if (amPm === 'AM' && hours === 12) {
-    hours24 = 0; // Convert 12 AM to 0 hours
+  if (amPm === 'AM' && hours === 12) { // Handle midnight case
+    hours = 0;
   }
-
-  // Format the date and time parts with leading zeroes to ensure a valid ISO string
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hoursStr = String(hours24).padStart(2, '0');
-  const minutesStr = String(minutes).padStart(2, '0');
-
-  const isoString = `${year}-${month}-${day}T${hoursStr}:${minutesStr}:00${offset}`;
-  return new Date(isoString);
+  
+  const newDate = new Date(date);
+  newDate.setHours(hours, minutes, 0, 0); // Sets time in the local timezone
+  return newDate;
 };
 
 /**
@@ -172,18 +164,30 @@ export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM', tim
  * @returns An object with `time`, `amPm`, and `timezone` properties.
  */
 export const extractDateTimeForUI = (date: Date) => {
-  const timezone = 'GMT'; // Default timezone
-  const hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes();
-  const amPm = hours >= 12 ? 'PM' : 'AM';
-  const hours12 = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 is displayed as 12
+const hours24 = date.getHours();
+const minutes = date.getMinutes();
 
-  const pad = (n: number) => n.toString().padStart(2, '0');
+const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
+
+  // Convert 24-hour format to 12-hour format for display
+  let hours12 = hours24 % 12;
+  if (hours12 === 0) {
+    hours12 = 12;
+  }
+
+  const minutesStr = minutes.toString().padStart(2, '0');
+  const hoursStr = hours12.toString().padStart(2, '0');
+
+  // Construct the final time string
+  const timeValue = `${hoursStr}:${minutesStr}`;
+
+  // Reliably get the local timezone abbreviation (e.g., EET, PDT)
+  const timezone = 'GMT';
 
   return {
-    time: `${pad(hours12)}:${pad(minutes)}`,
-    amPm: amPm as 'AM' | 'PM',
-    timezone: timezone
+    time: timeValue,
+    amPm: amPm,
+    timezone: timezone,
   };
 };
 

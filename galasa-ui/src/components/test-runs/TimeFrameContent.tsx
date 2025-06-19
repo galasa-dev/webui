@@ -31,20 +31,14 @@ export default function TimeFrameContent() {
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
 
-    const fromUiParts = fromParam ? extractDateTimeForUI(new Date(fromParam)) : {
-      time: '09:00',
-      amPm: 'AM' as 'AM' | 'PM',
-      timezone: 'PDT'
-    };
+    const toDate = toParam ? new Date(toParam) : new Date();
+    const fromDate = fromParam ? new Date(fromParam) : new Date(toDate.getTime() - DAY_MS);
 
-    const toUiParts = toParam ? extractDateTimeForUI(new Date(toParam)) : {
-      time: '09:00',
-      amPm: 'PM' as 'AM' | 'PM',
-      timezone: 'GMT' 
-    };
+    const fromUiParts = extractDateTimeForUI(fromDate);
+    const toUiParts = extractDateTimeForUI(toDate);
 
-    // Calculate duration
-    let difference = toParam ? new Date(toParam).getTime() - (fromParam ? new Date(fromParam).getTime() : getYesterday().getTime()) : 0;
+    // Calculate duration 
+    let difference = toDate.getTime() - fromDate.getTime();
     const durationDays = Math.floor(difference / DAY_MS);
     difference %= DAY_MS;
     const durationHours = Math.floor(difference / HOUR_MS);
@@ -52,11 +46,11 @@ export default function TimeFrameContent() {
     const durationMinutes = Math.floor(difference / MINUTE_MS);
 
     return {
-      fromDate: fromParam ? new Date(fromParam) : getYesterday(),
+      fromDate: fromDate,
       fromTime: fromUiParts.time,
       fromAmPm: fromUiParts.amPm,
       fromTimeZone: fromUiParts.timezone,
-      toDate: toParam ? new Date(toParam) : new Date(),
+      toDate: toDate,
       toTime: toUiParts.time,
       toAmPm: toUiParts.amPm,
       toTimeZone: toUiParts.timezone,
@@ -69,6 +63,116 @@ export default function TimeFrameContent() {
   // State to hold the values for the time frame selection
   const [values, setValues] = useState<TimeFrameValues>(initializeState);
   const [errorText, setErrorText] = useState<string | null>(null);
+
+  const applyValidationAndSyncState = (
+    from: Date,
+    to: Date,
+    field: keyof TimeFrameValues,
+    currentValues: TimeFrameValues
+  )  => {
+    let error: string | null = null;
+    let finalFrom = new Date(from);
+    let finalTo = new Date(to);
+
+    // Enforce the 3-months maximum rule
+    const maxToDate = addMonths(finalFrom, 3);
+    if (finalTo > maxToDate) {
+      error = "Date range cannot exceed 3 months. A date has been automatically adjusted.";
+      if (field.startsWith('to')) {
+        finalFrom = subtractMonths(finalTo, 3);
+      }
+      else {
+        finalTo = maxToDate;
+      }
+    }
+
+    // Check if the 'To' date is in the future
+    const now = new Date();
+    if (finalTo > now) {
+      if (!error) {
+        error = "Date range cannot extend beyond the current time. Adjusting to now.";
+      }
+      finalTo = now;
+    }
+
+    // Synchronize the values with the final dates rendered for the UI
+    const syncedValues = {...currentValues };
+    const fromUiParts = extractDateTimeForUI(finalFrom);
+    syncedValues.fromDate = finalFrom;
+    syncedValues.fromTime = fromUiParts.time;
+    syncedValues.fromAmPm = fromUiParts.amPm;
+    syncedValues.fromTimeZone = fromUiParts.timezone;
+
+    const toUiParts = extractDateTimeForUI(finalTo);
+    syncedValues.toDate = finalTo;
+    syncedValues.toTime = toUiParts.time;
+    syncedValues.toAmPm = toUiParts.amPm;
+    syncedValues.toTimeZone = toUiParts.timezone;
+
+    let durationDifference = finalTo.getTime() - finalFrom.getTime();
+    syncedValues.durationDays = Math.floor(durationDifference / DAY_MS);
+    durationDifference %= DAY_MS;
+    syncedValues.durationHours = Math.floor(durationDifference / HOUR_MS);
+    durationDifference %= HOUR_MS;
+    syncedValues.durationMinutes = Math.floor(durationDifference / MINUTE_MS);
+
+    return {values: syncedValues, error, finalFrom, finalTo};
+  }
+
+  const updateStateAndUrl = (result: ReturnType<typeof applyValidationAndSyncState>) => {
+    setValues(result.values);
+    setErrorText(result.error);
+
+    const params = new URLSearchParams(searchParams);
+    params.set('from', result.finalFrom.toISOString());
+    params.set('to', result.finalTo.toISOString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }
+
+  /**
+   * Handles changes to date or time fields.
+   */
+  const handleDateChange = (field: keyof TimeFrameValues, value: any) :  ReturnType<typeof applyValidationAndSyncState> => {
+    const newValues = {...values, [field]: value };
+    const fromDateTime = combineDateTime(
+      newValues.fromDate,
+      newValues.fromTime,
+      newValues.fromAmPm,
+      newValues.fromTimeZone
+    );
+    const toDateTime = combineDateTime(
+      newValues.toDate,
+      newValues.toTime,
+      newValues.toAmPm,
+      newValues.toTimeZone
+    );
+    const result = applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
+    return result;
+  };
+
+  /**
+   * Handles changes to duration fields (days, hours, minutes).
+   */
+  const handleDurationChange = (field: keyof TimeFrameValues, value: any): ReturnType<typeof applyValidationAndSyncState> =>  {
+    const newValues = {...values, [field]: value };
+    const fromDateTime = combineDateTime(
+      newValues.fromDate,
+      newValues.fromTime,   
+      newValues.fromAmPm,
+      newValues.fromTimeZone
+    );
+    
+    const durationInMs = (newValues.durationDays * DAY_MS) +
+      (newValues.durationHours * HOUR_MS) +
+      (newValues.durationMinutes * MINUTE_MS);
+
+    const toDateTime = new Date(fromDateTime.getTime() + durationInMs);
+
+    const result = applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
+    return result;
+  };
+
+
 
   function handleValueChange(field: keyof TimeFrameValues, value: any) {
     setErrorText(null); // Reset error text on any change
@@ -84,89 +188,14 @@ export default function TimeFrameContent() {
       if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return; 
     }
 
-    // Create a new values object with the updated field
-    let newValues: TimeFrameValues = { ...values, [field]: value };
-    
-    // Construct initial dates from user input
-    let fromDateTime = combineDateTime(
-      newValues.fromDate,
-      newValues.fromTime,
-      newValues.fromAmPm,
-      newValues.fromTimeZone
-    );
-
-    let toDateTime = combineDateTime(
-      newValues.toDate,
-      newValues.toTime,
-      newValues.toAmPm,
-      newValues.toTimeZone
-    );
-
-    // Enforce the 3-month maximum rule
-    const maxToDate = addMonths(fromDateTime, 3);
-
-    if (toDateTime > maxToDate) {
-      setErrorText("Date range cannot exceed 3 months. A date has been automatically adjusted.");
-      if (field.startsWith('to')) {
-        fromDateTime = subtractMonths(toDateTime, 3);
-        newValues.fromDate = fromDateTime;
-        newValues.fromTime = extractDateTimeForUI(fromDateTime).time;
-        newValues.fromAmPm = extractDateTimeForUI(fromDateTime).amPm;
-        newValues.fromTimeZone = extractDateTimeForUI(fromDateTime).timezone;
-      } else {
-        toDateTime = maxToDate;
-      }
+   let result: ReturnType<typeof applyValidationAndSyncState>;
+    if (field.startsWith('from') || field.startsWith('to')) {
+      result = handleDateChange(field, value);
+    } else {
+      result = handleDurationChange(field, value);
     }
 
-    let finalToDateTime = toDateTime;
-    const now = new Date();
-    
-    // Establish the 'To' anchor point based on the field being updated
-    if (field.startsWith('duration')) {
-      // Anchor is 'Duration'. Recalculate 'To' date
-      const durationInMs = (newValues.durationDays * DAY_MS) +
-      (newValues.durationHours * HOUR_MS) +
-      (newValues.durationMinutes * MINUTE_MS);
-
-      let proposedToDate = new Date(fromDateTime.getTime() + durationInMs);
-
-       // If proposedToDate is in the future, use now
-       if (proposedToDate > now) {
-        setErrorText("Duration extends beyond the current time. Adjusting to now.");
-        finalToDateTime = now;
-      } else {
-        finalToDateTime = proposedToDate;
-      }
-
-    };
-
-    // Re-synchronize the entire UI to be consistent with the final dates
-
-
-    // Recalculate the duration based on the final 'From' and 'To' dates
-    let durationDifference = finalToDateTime.getTime() - fromDateTime.getTime();
-
-    newValues.durationDays = Math.floor(durationDifference / DAY_MS);
-    durationDifference %= DAY_MS;
-    newValues.durationHours = Math.floor(durationDifference / HOUR_MS);
-    durationDifference %= HOUR_MS;
-    newValues.durationMinutes = Math.floor(durationDifference / MINUTE_MS);
-
-    // Update the 'To' date and time
-    const toUiParts = extractDateTimeForUI(finalToDateTime);
-    newValues.toDate = finalToDateTime;
-    newValues.toTime = toUiParts.time;
-    newValues.toAmPm = toUiParts.amPm;
-    newValues.toTimeZone = toUiParts.timezone;
-
-    // Set the fully consistent state and update the URL
-    setValues(newValues);
-    
-    // Set the SearchParams in the URL
-    const params = new URLSearchParams(searchParams);
-    params.set('from', fromDateTime.toISOString());
-    params.set('to', finalToDateTime.toISOString());
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    updateStateAndUrl(result);
   }
 
   
