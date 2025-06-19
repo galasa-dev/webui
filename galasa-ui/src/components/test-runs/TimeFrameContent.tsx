@@ -138,7 +138,6 @@ export default function TimeFrameContent() {
     params.set('from', finalState.fromDate.toISOString());
     params.set('to', finalState.toDate.toISOString());
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-
   }, [values, searchParams, pathname, router]); 
 
   return (

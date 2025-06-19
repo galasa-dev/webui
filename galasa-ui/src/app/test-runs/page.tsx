@@ -12,8 +12,18 @@ import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import * as Constants from "@/utils/constants";
 import { getYesterday } from "@/utils/functions";
+import { MAX_RECORDS } from "@/utils/constants";
 
 const BATCH_SIZE = 100; // Define the batch size for fetching runs
+
+/**
+ * The structure returned by the data fetching function.
+ */
+export interface TestRunsData {
+  runs: Run[];
+  limitExceeded: boolean;
+}
+
 
 /**
  * Fetches all test runs from the Result Archive Store API within a specified date range
@@ -23,18 +33,19 @@ const BATCH_SIZE = 100; // Define the batch size for fetching runs
  * @param {Date} params.fromDate - The start date for fetching runs.
  * @param {Date} params.toDate - The end date for fetching runs.
  * 
- * @returns {Promise<Run[]>} - A promise that resolves to an array of Run objects.
+ * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, toDate: Date}): Promise<Run[]> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, toDate: Date}): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
+  let limitExceeded = false;
 
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
-    while (hasMorePages) {
+    while (hasMorePages && allRuns.length < MAX_RECORDS) {
       // Fetch runs based on the provided date range
       const response: RunResults = await rasApiClient.getRasSearchRuns(
         'from:desc',
@@ -63,6 +74,14 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
         allRuns.push(...structuredClone(runsInBatch));
       }
 
+      // Check if the limit was exceeded
+      if (allRuns.length >= MAX_RECORDS) {
+        limitExceeded = true;
+        allRuns = allRuns.slice(0, MAX_RECORDS); // Trim to max records
+        hasMorePages = false; // Stop fetching more runs
+        break;
+      }
+
       const nextCursor = response.nextCursor;
       // Check condition to stop looping
       if (!nextCursor || 
@@ -78,7 +97,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
     console.error("Error fetching test runs:", error);
   }
   
-  return allRuns;
+  return {runs: allRuns, limitExceeded };
 };
 
 export default async function TestRunsPage({searchParams}: {searchParams: {[key: string]: string | undefined}} ) {
