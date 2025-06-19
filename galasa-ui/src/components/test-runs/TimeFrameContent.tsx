@@ -22,6 +22,22 @@ export default function TimeFrameContent() {
   const router = useRouter();
   const pathname = usePathname();
 
+    /**
+   * Helper function to validate time format
+   */
+    const isValidTimeFormat = (timeValue: string): boolean => {
+      if (!timeValue) return false;
+      const timeParts = timeValue.split(':');
+      if (timeParts.length !== 2) return false;
+      
+      const hours = Number(timeParts[0]);
+      const minutes = Number(timeParts[1]);
+      
+      return !isNaN(hours) && !isNaN(minutes) && 
+             hours >= 0 && hours <= 23 && 
+             minutes >= 0 && minutes <= 59;
+    };
+
   /**
    * State initializer function. This runs only once when the component is mounted.
    * It reads the URL search params to set the initial states
@@ -132,44 +148,28 @@ export default function TimeFrameContent() {
   /**
    * Handles changes to date or time fields.
    */
-  const handleDateChange = (field: keyof TimeFrameValues, value: any) :  ReturnType<typeof applyValidationAndSyncState> => {
-    const newValues = {...values, [field]: value };
+  const handleDateChange = (newValues: TimeFrameValues, field: keyof TimeFrameValues) :  ReturnType<typeof applyValidationAndSyncState> => {
     const fromDateTime = combineDateTime(
-      newValues.fromDate,
-      newValues.fromTime,
-      newValues.fromAmPm,
-      newValues.fromTimeZone
+      newValues.fromDate, newValues.fromTime, newValues.fromAmPm, newValues.fromTimeZone
     );
     const toDateTime = combineDateTime(
-      newValues.toDate,
-      newValues.toTime,
-      newValues.toAmPm,
-      newValues.toTimeZone
+      newValues.toDate, newValues.toTime, newValues.toAmPm, newValues.toTimeZone
     );
-    const result = applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
-    return result;
+    return applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
   };
-
+  
   /**
    * Handles changes to duration fields (days, hours, minutes).
    */
-  const handleDurationChange = (field: keyof TimeFrameValues, value: any): ReturnType<typeof applyValidationAndSyncState> =>  {
-    const newValues = {...values, [field]: value };
+  const handleDurationChange = (newValues: TimeFrameValues, field: keyof TimeFrameValues): ReturnType<typeof applyValidationAndSyncState> =>  {
     const fromDateTime = combineDateTime(
-      newValues.fromDate,
-      newValues.fromTime,   
-      newValues.fromAmPm,
-      newValues.fromTimeZone
+      newValues.fromDate, newValues.fromTime, newValues.fromAmPm, newValues.fromTimeZone
     );
-    
     const durationInMs = (newValues.durationDays * DAY_MS) +
       (newValues.durationHours * HOUR_MS) +
       (newValues.durationMinutes * MINUTE_MS);
-
     const toDateTime = new Date(fromDateTime.getTime() + durationInMs);
-
-    const result = applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
-    return result;
+    return applyValidationAndSyncState(fromDateTime, toDateTime, field, newValues);
   };
 
 
@@ -177,23 +177,18 @@ export default function TimeFrameContent() {
   function handleValueChange(field: keyof TimeFrameValues, value: any) {
     setErrorText(null); // Reset error text on any change
 
-    // Check validity of the time input 
-    if (field === 'fromTime' || field === 'toTime') {
-      const timeParts = value.split(':');
-      if (timeParts.length !== 2 || isNaN(Number(timeParts[0])) || isNaN(Number(timeParts[1])))  return; 
-      
-      // Ensure the time is in valid range
-      const hours = Number(timeParts[0]);
-      const minutes = Number(timeParts[1]);
-      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return; 
+    const newValues = {...values, [field]: value};
+
+    setValues(newValues);
+    console.log("New values:", newValues);
+   let result: ReturnType<typeof applyValidationAndSyncState>;
+
+    if (field.startsWith('duration')) {
+      result = handleDurationChange(newValues, field);
+    } else {
+      result = handleDateChange(newValues, field);
     }
 
-   let result: ReturnType<typeof applyValidationAndSyncState>;
-    if (field.startsWith('from') || field.startsWith('to')) {
-      result = handleDateChange(field, value);
-    } else {
-      result = handleDurationChange(field, value);
-    }
 
     updateStateAndUrl(result);
   }
