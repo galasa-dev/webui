@@ -5,6 +5,7 @@
  */
 'use client';
 import styles from '@/styles/TestRunsPage.module.css';
+import { parseAndValidateTime } from '@/utils/functions';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { FormGroup } from '@carbon/react';
 import { DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem, NumberInput } from '@carbon/react';
@@ -22,41 +23,15 @@ export default function TimeFrameFilter({
   // Local state for TimePicker inputs to allow immediate typing
   const [localFromTime, setLocalFromTime] = useState(values.fromTime);
   const [localToTime, setLocalToTime] = useState(values.toTime);
+  
 
-  // Helper function to validate time format
-  const isValidTimeFormat = (timeValue: string): boolean => {
-    if (!timeValue) return false;
-    const timeParts = timeValue.split(':');
-    if (timeParts.length !== 2) return false;
-
-    const [hours, minutes] = timeParts;
-    const hoursNum = Number(hours);
-    const minutesNum = Number(minutes);
-
-    return (
-      !isNaN(hoursNum) &&
-      !isNaN(minutesNum) &&
-      hoursNum >= 0 &&
-      hoursNum <= 23 &&
-      minutesNum >= 0 &&
-      minutesNum <= 59
-    );
-  };
-
-  // Helper function to format time on blur
-  const formatTime = (timeValue: string): string => {
-    if (isValidTimeFormat(timeValue)) return timeValue;
-    return "00:00"; // Default to a valid time if invalid
-  };
-
-  // Handle TimePicker change with logging
+  // Handle TimePicker change
   const handleTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     field: 'fromTime' | 'toTime',
     setLocalTime: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const newValue = event.target.value;
-    console.log(`TimePicker ${field} changed to: ${newValue}`);
     setLocalTime(newValue);
   };
 
@@ -66,11 +41,20 @@ export default function TimeFrameFilter({
     field: 'fromTime' | 'toTime',
     setLocalTime: React.Dispatch<React.SetStateAction<string>>
   ) => {
-    console.log(`TimePicker ${field} blurred with value: ${timeValue}`);
-    const formattedTime = formatTime(timeValue);
-    if (formattedTime !== timeValue) {
+    // Validate and format the time input
+    let formattedTime = parseAndValidateTime(timeValue);
+
+    // If the time is invalid, set to the last valid time
+    if (!formattedTime) {
+      formattedTime = field === 'fromTime' ? values.fromTime : values.toTime;
       setLocalTime(formattedTime);
     }
+
+    handleTimeChange(
+      { target: { value: formattedTime } } as React.ChangeEvent<HTMLInputElement>,
+      field,
+      setLocalTime
+    );
     handleValueChange(field, formattedTime);
   };
 
@@ -81,10 +65,9 @@ export default function TimeFrameFilter({
           datePickerType="single"
           value={values.fromDate}
           maxDate={values.toDate}
-          onChange={(dates: Date[]) => {
-            console.log('From Date changed to:', dates[0]);
-            handleValueChange('fromDate', dates[0]);
-          }}
+          onChange={(dates: Date[]) => 
+            handleValueChange('fromDate', dates[0])
+          }
         >
           <DatePickerInput
             id="from-date-picker"
@@ -96,7 +79,7 @@ export default function TimeFrameFilter({
           id="from-time-picker"
           labelText="Time"
           value={localFromTime}
-          invalid={localFromTime !== '' && !isValidTimeFormat(localFromTime)}
+          invalid={localFromTime !== '' && !parseAndValidateTime(localFromTime)}
           invalidText={invalidTimeText}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             handleTimeChange(event, 'fromTime', setLocalFromTime)
@@ -108,24 +91,11 @@ export default function TimeFrameFilter({
           <TimePickerSelect
             id="from-time-picker-ampm"
             value={values.fromAmPm}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-              console.log('From AM/PM changed to:', event.target.value);
-              handleValueChange('fromAmPm', event.target.value);
-            }}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => handleValueChange('fromAmPm', event.target.value)
+            }
           >
             <SelectItem text="AM" value="AM" />
             <SelectItem text="PM" value="PM" />
-          </TimePickerSelect>
-          <TimePickerSelect
-            id="from-time-picker-timezone"
-            value={values.fromTimeZone}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-              console.log('From TimeZone changed to:', event.target.value);
-              handleValueChange('fromTimeZone', event.target.value);
-            }}
-          >
-            <SelectItem text="PDT" value="PDT" />
-            <SelectItem text="GMT" value="GMT" />
           </TimePickerSelect>
         </TimePicker>
       </FormGroup>
@@ -137,10 +107,9 @@ export default function TimeFrameFilter({
             min={0}
             max={355}
             value={values.durationDays}
-            onChange={(_event: any, { value }: { value: number }) => {
-              console.log('Duration Days changed to:', value);
-              handleValueChange('durationDays', value);
-            }}
+            onChange={(_event: any, { value }: { value: number }) => 
+              handleValueChange('durationDays', value)
+            }
           />
           <NumberInput
             id="duration-hours"
@@ -148,10 +117,9 @@ export default function TimeFrameFilter({
             min={0}
             max={23}
             value={values.durationHours}
-            onChange={(_event: any, { value }: { value: number }) => {
-              console.log('Duration Hours changed to:', value);
-              handleValueChange('durationHours', value);
-            }}
+            onChange={(_event: any, { value }: { value: number }) => 
+              handleValueChange('durationHours', value)
+          }
           />
           <NumberInput
             id="duration-minutes"
@@ -159,10 +127,9 @@ export default function TimeFrameFilter({
             min={0}
             max={59}
             value={values.durationMinutes}
-            onChange={(_event: any, { value }: { value: number }) => {
-              console.log('Duration Minutes changed to:', value);
-              handleValueChange('durationMinutes', value);
-            }}
+            onChange={(_event: any, { value }: { value: number }) => 
+              handleValueChange('durationMinutes', value)
+            }
           />
         </div>
       </FormGroup>
@@ -172,10 +139,9 @@ export default function TimeFrameFilter({
           value={values.toDate}
           maxDate={new Date()}
           minDate={values.fromDate}
-          onChange={(dates: Date[]) => {
-            console.log('To Date changed to:', dates[0]);
-            handleValueChange('toDate', dates[0]);
-          }}
+          onChange={(dates: Date[]) => 
+            handleValueChange('toDate', dates[0])
+          }
         >
           <DatePickerInput
             id="to-date-picker"
@@ -187,7 +153,7 @@ export default function TimeFrameFilter({
           id="to-time-picker"
           labelText="Time"
           value={localToTime}
-          invalid={localToTime !== '' && !isValidTimeFormat(localToTime)}
+          invalid={localToTime !== '' && !parseAndValidateTime(localToTime)}
           invalidText={invalidTimeText}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             handleTimeChange(event, 'toTime', setLocalToTime)
@@ -199,24 +165,12 @@ export default function TimeFrameFilter({
           <TimePickerSelect
             id="to-time-picker-ampm"
             value={values.toAmPm}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-              console.log('To AM/PM changed to:', event.target.value);
-              handleValueChange('toAmPm', event.target.value);
-            }}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => 
+              handleValueChange('toAmPm', event.target.value)
+            }
           >
             <SelectItem text="AM" value="AM" />
             <SelectItem text="PM" value="PM" />
-          </TimePickerSelect>
-          <TimePickerSelect
-            id="to-time-picker-timezone"
-            value={values.toTimeZone}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-              console.log('To TimeZone changed to:', event.target.value);
-              handleValueChange('toTimeZone', event.target.value);
-            }}
-          >
-            <SelectItem text="PDT" value="PDT" />
-            <SelectItem text="GMT" value="GMT" />
           </TimePickerSelect>
         </TimePicker>
       </FormGroup>

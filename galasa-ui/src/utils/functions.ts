@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+import { time } from "console";
+
 export const handleDeleteCookieApiOperation = async (router: any) => {
 
   const response = await fetch('/logout', { method: 'DELETE' });
@@ -111,16 +113,6 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
   return parts;
 };
 
-/**
- * Function to get yesterday's date at the current time.
- * 
- * @returns a Date object representing yesterday's date at the current time
- */
-export const getYesterday = () => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return yesterday;
-};
 
 /**
  * A mapping of timezone abbreviations to their UTC offsets.
@@ -191,6 +183,13 @@ const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
   };
 };
 
+export function getYesterday(): Date {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1); 
+  yesterday.setHours(0, 0, 0, 0); // Reset time to midnight
+  return yesterday;
+};
+
 /**
  * Accurately adds a number of months to a date, handling end-of-month edge cases.
  * If the original day doesn't exist in the target month, it will use the last valid day.
@@ -226,3 +225,36 @@ export function subtractMonths(date: Date, months: number): Date {
   }
   return newDate;
 }
+
+/**
+ * Parses a time string and validates it.
+ * If the string is a valid time (e.g., "9:5", "14:30"), it returns an object with the hour and minute.
+ * Otherwise, it returns null.
+ *
+ * @param {string} timeString - The string to parse.
+ * @returns {{hour: number, minute: number} | null} The parsed time parts or null if invalid.
+ */
+export const parseAndValidateTime = (timeString: string) => {
+ if(!timeString) return null;
+
+ let parsedTime = null;
+
+ const parts = timeString.trim().split(':');
+  if (parts.length !== 2)  return null;
+
+  const hour = parseInt(parts[0], 10);
+  const minute = parseInt(parts[1], 10);
+
+  const isValid = !isNaN(hour) && !isNaN(minute) &&
+                  hour >= 0 && hour <= 12 &&
+                  minute >= 0 && minute <= 59;
+
+  // If valid, format the time as "HH:MM"
+  if (isValid) {
+    const formattedHour = hour.toString().padStart(2, '0');
+    const formattedMinute = minute.toString().padStart(2, '0');
+    parsedTime = `${formattedHour}:${formattedMinute}`;
+  }
+
+  return parsedTime;
+};

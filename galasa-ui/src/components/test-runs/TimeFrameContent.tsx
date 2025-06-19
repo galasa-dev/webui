@@ -8,7 +8,7 @@ import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
-import { addMonths, combineDateTime, extractDateTimeForUI, getYesterday, subtractMonths } from '@/utils/functions';
+import { addMonths, combineDateTime, extractDateTimeForUI, subtractMonths } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ToastNotification } from '@carbon/react';
 
@@ -16,27 +16,12 @@ import { ToastNotification } from '@carbon/react';
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
+const MAX_MONTHS_DIFFERENCE = 3; 
 
 export default function TimeFrameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-    /**
-   * Helper function to validate time format
-   */
-    const isValidTimeFormat = (timeValue: string): boolean => {
-      if (!timeValue) return false;
-      const timeParts = timeValue.split(':');
-      if (timeParts.length !== 2) return false;
-      
-      const hours = Number(timeParts[0]);
-      const minutes = Number(timeParts[1]);
-      
-      return !isNaN(hours) && !isNaN(minutes) && 
-             hours >= 0 && hours <= 23 && 
-             minutes >= 0 && minutes <= 59;
-    };
 
   /**
    * State initializer function. This runs only once when the component is mounted.
@@ -61,6 +46,18 @@ export default function TimeFrameContent() {
     difference %= HOUR_MS;
     const durationMinutes = Math.floor(difference / MINUTE_MS);
 
+    // Update the URL if 'from' or 'to' are not set
+    if (!fromParam || !toParam) {
+      const params = new URLSearchParams(searchParams);
+      if (!fromParam) {
+        params.set('from', fromDate.toISOString());
+      }
+      if (!toParam) {
+        params.set('to', toDate.toISOString());
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+
     return {
       fromDate: fromDate,
       fromTime: fromUiParts.time,
@@ -80,6 +77,17 @@ export default function TimeFrameContent() {
   const [values, setValues] = useState<TimeFrameValues>(initializeState);
   const [errorText, setErrorText] = useState<string | null>(null);
 
+  /**
+   * Validates the date range and synchronizes the state.
+   * This function checks if the 'From' and 'To' dates are within the allowed range,
+   * adjusts them if necessary, and updates the state accordingly.
+   * 
+   * @param from - The 'From' date
+   * @param to - The 'To' date
+   * @param field - The field that triggered the change (either 'from' or 'to')
+   * @param currentValues - The current values of the time frame
+   * @returns An object containing the updated values, any error message, and the final 'From' and 'To' dates.
+   */
   const applyValidationAndSyncState = (
     from: Date,
     to: Date,
@@ -91,11 +99,11 @@ export default function TimeFrameContent() {
     let finalTo = new Date(to);
 
     // Enforce the 3-months maximum rule
-    const maxToDate = addMonths(finalFrom, 3);
+    const maxToDate = addMonths(finalFrom, MAX_MONTHS_DIFFERENCE);
     if (finalTo > maxToDate) {
-      error = "Date range cannot exceed 3 months. A date has been automatically adjusted.";
+      error =  `Date range cannot exceed ${MAX_MONTHS_DIFFERENCE} months. A date has been automatically adjusted.`;
       if (field.startsWith('to')) {
-        finalFrom = subtractMonths(finalTo, 3);
+        finalFrom = subtractMonths(finalTo, MAX_MONTHS_DIFFERENCE);
       }
       else {
         finalTo = maxToDate;
@@ -111,7 +119,7 @@ export default function TimeFrameContent() {
       finalTo = now;
     }
 
-    // Synchronize the values with the final dates rendered for the UI
+    // Synchronize the values with the final dates (after validation) rendered for the UI
     const syncedValues = {...currentValues };
     const fromUiParts = extractDateTimeForUI(finalFrom);
     syncedValues.fromDate = finalFrom;
@@ -135,13 +143,15 @@ export default function TimeFrameContent() {
     return {values: syncedValues, error, finalFrom, finalTo};
   }
 
-  const updateStateAndUrl = (result: ReturnType<typeof applyValidationAndSyncState>) => {
-    setValues(result.values);
-    setErrorText(result.error);
-
+  /**
+   * Update the final state and URL based on the validation result.
+   * 
+   * @param result - The result of the validation and synchronization process.
+   */
+  const updateUrl = (fromDate: Date, toDate: Date) => {
     const params = new URLSearchParams(searchParams);
-    params.set('from', result.finalFrom.toISOString());
-    params.set('to', result.finalTo.toISOString());
+    params.set('from', fromDate.toISOString());
+    params.set('to', toDate.toISOString());
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
@@ -190,7 +200,9 @@ export default function TimeFrameContent() {
     }
 
 
-    updateStateAndUrl(result);
+    setValues(result.values);
+    setErrorText(result.error);
+    updateUrl(result.finalFrom, result.finalTo);
   }
 
   
