@@ -4,7 +4,7 @@
   },
   "Breadcrumb": {
     "home": "Startseite",
-    "users": "Benutzer",
+    "users": "Benutzeren",
     "testRuns": "Testläufe"
   },
   "PageHeaderMenu": {
@@ -13,7 +13,7 @@
     "logout": "Abmelden"
   },
   "PageHeader": {
-    "users": "Benutzer",
+    "users": "Benutzeren",
     "testRuns": "Testläufe"
   },
   "Footer": {
@@ -111,6 +111,9 @@
     "home": "Startseite",
     "users": "Benutzer"
   },
+  "BreadCrumb": {
+    "home": "Startseite"
+  },
   "AccessDeniedModal": {
     "modalHeading": "Unzureichende Berechtigungen",
     "logoutButton": "Abmelden",
@@ -124,8 +127,7 @@
     "title": "Benutzer bearbeiten"
   },
   "TestRun": {
-    "title": "Zugriff verweigert",
-    "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte später wiederkommen.",
+    "title": "Testläufe",
     "status": "Wird geladen..."
   },
   "MySettings": {
@@ -164,7 +166,7 @@
     "filter_info": "Info",
     "filter_debug": "Debug",
     "filter_trace": "Trace",
-    "download_button": "Protokoll herunterladen"
+    "download_button": "Laufprotokoll herunterladen"
   },
   "MethodsTab": {
     "title": "Methoden",
@@ -191,14 +193,14 @@
     "noTags": "Keine Tags vorhanden."
   },
   "TestRunDetails": {
-    "title": "Testlauf:",
+    "title": "Testlauf: ({runName})",
     "status": "Status",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {
       "overview": "Übersicht",
       "methods": "Methoden",
-      "runLog": "Protokoll",
+      "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
     }
   },
@@ -209,13 +211,13 @@
     "tabs": {
       "overview": "Übersicht",
       "methods": "Methoden",
-      "runLog": "Protokoll",
+      "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
     }
   },
   "TestRunsTable": {
     "submittedAt": "Eingereicht am",
-    "testRunName": "Testlaufname",
+    "testRunName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",
@@ -225,6 +227,7 @@
     "result": "Ergebnis",
     "loading": "Testergebnisse werden geladen...",
     "noData": "Keine Testläufe in den letzten 24 Stunden gefunden.",
+    "isloading": "Testergebnisse werden geladen...",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
       "range": "Zeige Testläufe von {from} bis {to}"
@@ -233,7 +236,11 @@
       "backwardText": "Vorherige Seite",
       "forwardText": "Nächste Seite",
       "itemsPerPageText": "Einträge pro Seite:",
-      "pageNumberText": "Seitennummer"
+      "pageNumberText": "Seitennummer",
+      "of": "von",
+      "items": "Einträge",
+      "pages": "Seiten",
+      "page": "Seite"
     }
   },
   "TestRunsTabs": {

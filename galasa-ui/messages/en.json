@@ -127,8 +127,7 @@
     "title": "Edit User"
   },
   "TestRun": {
-    "title": "Access Denied",
-    "underConstruction": "This page is under construction. Please come back later to query a list of test runs.",
+    "title": "Test Runs",
     "status": "Loading..."
   },
   "MySettings": {
@@ -194,7 +193,7 @@
     "noTags": "No tags were associated with this test run."
   },
   "TestRunDetails": {
-    "title": "Test Run:",
+    "title": "Test Run:({runName})",
     "status": "Status",
     "result": "Result",
     "test": "Test",
@@ -228,6 +227,7 @@
     "result": "Result",
     "loading": "Loading test results...",
     "noData": "No test runs found in the last 24 hours.",
+    "isloading":"Loading test results...",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
       "range": "Showing test runs submitted between {from} and {to}"
@@ -236,7 +236,11 @@
       "backwardText": "Previous page",
       "forwardText": "Next page",
       "itemsPerPageText": "Items per page:",
-      "pageNumberText": "Page Number"
+      "pageNumberText": "Page Number",
+      "of": "of",
+      "items":"items",
+      "pages":"pages",
+      "page":"page"
     }
   },
   "TestRunsTabs": {

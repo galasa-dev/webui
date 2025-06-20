@@ -11,8 +11,11 @@ import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { MarkdownResponse } from "@/utils/interfaces";
 import { readFile } from "fs/promises";
 import path from "path";
+import { getLocale } from "next-intl/server";
+import fs from "fs";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const locale = await getLocale() || "en";
   // Fetches the content contained in the service.welcome.markdown CPS property from the API server
   // Overrides the default markdown content present in /public/static/markdown/home-contents.md
   const fetchHomePageContentFromCps = async (): Promise<MarkdownResponse> => {
@@ -52,21 +55,28 @@ export default function HomePage() {
     return content;
   };
 
-  // Fetches markdown content from local project files, which will be used as the
-  // default content if the service.welcome.markdown property is not set
-  const fetchDefaultMarkdownContent = async () => {
+  const fetchDefaultMarkdownContent = async (locale: string): Promise<MarkdownResponse> => {
+    const localizedFileName = `home-contents.${locale}.md`;
+    const fallbackFileName = `home-contents.md`;
+
+    const markdownDir = path.join(process.cwd(), "public", "static", "markdown");
+
+    // Check if locale-specific file exists
+    const localizedFilePath = path.join(markdownDir, localizedFileName);
+    const fallbackFilePath = path.join(markdownDir, fallbackFileName);
+
+    const fileToRead = fs.existsSync(localizedFilePath)
+      ? localizedFilePath
+      : fallbackFilePath;
     let content: MarkdownResponse = {
       markdownContent: "",
       responseStatusCode: 200
     };
     try {
-      // Fetch the markdown file from the public/static folder
-      const defaultContentFilePath = path.join(process.cwd(), "public", "static", "markdown", "home-contents.md");
       content = {
-        markdownContent: await readFile(defaultContentFilePath, 'utf-8'),
+        markdownContent: await readFile(fileToRead, 'utf-8'),
         responseStatusCode: 200
       };
-
     } catch (error) {
       console.error('Error fetching or processing the default markdown contents', error);
       throw error;
@@ -75,9 +85,15 @@ export default function HomePage() {
   };
 
   // Fetch the content from the CPS property first, otherwise fall back to the default markdown content if unsuccessful
-  const markdownContentPromise = fetchHomePageContentFromCps().catch(() =>
-    fetchDefaultMarkdownContent(),
-  );
+  let markdownContentPromise: Promise<MarkdownResponse>;
+
+  if(locale=="en"){
+    markdownContentPromise = fetchHomePageContentFromCps().catch(() =>
+      fetchDefaultMarkdownContent( locale ),
+    );}else{
+    markdownContentPromise = fetchDefaultMarkdownContent(locale);
+    
+  }
 
   return (
     <main id="content">

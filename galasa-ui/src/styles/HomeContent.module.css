@@ -5,7 +5,7 @@
  */
 
 .homeContentWrapper{
-    width: 90%;
+    max-width: 650px; 
     height: 100%;
     margin: 4rem auto;
     display: grid;

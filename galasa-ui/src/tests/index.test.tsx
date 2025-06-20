@@ -8,15 +8,6 @@ import PageHeader from '@/components/headers/PageHeader';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { act, render, screen } from '@testing-library/react';
 
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
-    const mockTranslations: Record<string, string> = {
-      "title": "Home",
-     
-    };
-    return mockTranslations[key] || key;
-  }
-}));
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -26,7 +17,10 @@ jest.mock('next-intl', () => ({
     return translations[key] || key;
   }
 }));
-
+jest.mock('next-intl/server', () => ({
+  getLocale: jest.fn(() => Promise.resolve('en')),
+  getMessages: jest.fn(() => Promise.resolve({})),
+}));
 
 jest.mock('fs/promises', () => ({
   readFile: jest.fn(() => Promise.resolve('Dummy markdown content'))
@@ -45,6 +39,12 @@ jest.mock('next/navigation', () => ({
     prefetch: jest.fn(),
   }),
 }));
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(() => ({
+    get: jest.fn(),
+    set: jest.fn(),
+  })),
+}));
 
 
 test('renders Galasa header', () => {
@@ -60,9 +60,10 @@ test('renders Galasa header', () => {
 
 test('renders Galasa Ecosystem homepage', async () => {
   const homePage = await act(async () => {
+    const layout = await HomePage();
     return render(
       <FeatureFlagProvider>
-        <HomePage />
+        {layout}
       </FeatureFlagProvider>);
   });
   expect(homePage).toMatchSnapshot();

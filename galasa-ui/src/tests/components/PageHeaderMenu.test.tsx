@@ -17,6 +17,10 @@ const mockRouter = {
   refresh: jest.fn(() => useRouter().refresh)
 };
 
+jest.mock('@/utils/locale', () => ({
+  setUserLocale: jest.fn(), // mock the function
+}));
+
 jest.mock('next/navigation', () => ({
 
   useRouter: jest.fn(() => mockRouter),

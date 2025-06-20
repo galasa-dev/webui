@@ -37,6 +37,8 @@
 
 .deleteBtn {
     margin-left: 1rem !important;
+    text-align: center !important;
+    padding: 0.6rem 1rem !important;
 }
 
 .title{

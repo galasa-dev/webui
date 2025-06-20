@@ -165,7 +165,7 @@ export default function TestRunsTable({
   if (isLoading) {
     return (
       <div>
-        <p className={styles.timeFrameText}>Loading test results...</p>
+        <p className={styles.timeFrameText}>{translations('isloading')}</p>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
@@ -193,7 +193,7 @@ export default function TestRunsTable({
   };
 
   if (!tableRows || tableRows.length === 0) {
-    return <p>No test runs found in the last 24 hours.</p>;
+    return <p>{translations('noData')}</p>;
   }
 
   return (
@@ -241,6 +241,8 @@ export default function TestRunsTable({
           backwardText={translations("pagination.backwardText")}
           forwardText={translations("pagination.forwardText")}
           itemsPerPageText={translations("pagination.itemsPerPageText")}
+          itemRangeText={(min:number, max:number, total:number) =>`${min}–${max} ${translations("pagination.of")} ${total} ${translations("pagination.items")}`}
+          pageRangeText={(total:number) =>`${translations("pagination.of")} ${total} ${translations("pagination.pages")}`}
           pageNumberText={translations("pagination.pageNumberText")}
           page={currentPage}
           pageSize={pageSize}

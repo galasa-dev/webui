@@ -8,7 +8,6 @@
 
 import React, { useState, useTransition } from "react";
 import { Dropdown } from "@carbon/react";
-import { Language } from "@carbon/icons-react";
 import { setUserLocale } from "@/utils/locale";
 import styles from "@/styles/LanguageSelector.module.css";
 import { useLocale } from "next-intl";
@@ -46,7 +45,6 @@ export default function LanguageSelector() {
 
   return (
     <div className={styles.container}>
-      <Language className={styles.language} />
       <Dropdown
         id="language-selector"
         items={languages}
