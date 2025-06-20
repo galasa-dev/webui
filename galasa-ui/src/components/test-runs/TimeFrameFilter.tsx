@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import { from } from '@/generated/galasaapi/rxjsStub';
 import styles from '@/styles/TestRunsPage.module.css';
 import { parseAndValidateTime } from '@/utils/functions';
 import { TimeFrameValues } from '@/utils/interfaces';
@@ -60,7 +59,7 @@ export default function TimeFrameFilter({
         <DatePicker
           datePickerType="single"
           value={values.fromDate}
-          maxDate={values.toDate}
+          maxDate={new Date()}
           onChange={(dates: Date[]) =>
             handleValueChange('fromDate', dates && dates.length > 0 ? dates[0] : null)
           }
@@ -77,13 +76,13 @@ export default function TimeFrameFilter({
           value={localFromTime}
           invalid={localFromTime !== '' && !parseAndValidateTime(localFromTime)}
           invalidText={invalidTimeText}
-          onChange={(event) => setLocalFromTime(event.target.value)}
+          onChange={(event:  React.ChangeEvent<HTMLInputElement>) => setLocalFromTime(event.target.value)}
           onBlur={() => handleTimeBlur(localFromTime, 'fromTime')}
         >
           <TimePickerSelect
             id="from-time-picker-ampm"
             value={values.fromAmPm}
-            onChange={(event) => handleValueChange('fromAmPm', event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => handleValueChange('fromAmPm', event.target.value)}
           >
             <SelectItem text="AM" value="AM" />
             <SelectItem text="PM" value="PM" />
@@ -91,14 +90,14 @@ export default function TimeFrameFilter({
         </TimePicker>
       </FormGroup>
       <FormGroup legendText="Duration" className={styles.TimeFrameFilterItem}>
-        <div className={styles.DurationInputsContainer} key={values.toDate.getTime()}>
+        <div className={styles.DurationInputsContainer} key={values.toDate?.getTime() || 0}>
           <NumberInput
             id="duration-days"
             label="Days"
             min={0}
             max={355}
             value={values.durationDays}
-            onChange={(_event, { value }) => handleValueChange('durationDays', value)}
+            onChange={(_event:  React.ChangeEvent<HTMLSelectElement>, { value }) => handleValueChange('durationDays', value)}
           />
           <NumberInput
             id="duration-hours"
@@ -106,7 +105,7 @@ export default function TimeFrameFilter({
             min={0}
             max={23}
             value={values.durationHours}
-            onChange={(_event, { value }) => handleValueChange('durationHours', value)}
+            onChange={(_event:  React.ChangeEvent<HTMLSelectElement>, { value }) => handleValueChange('durationHours', value)}
           />
           <NumberInput
             id="duration-minutes"
@@ -114,7 +113,7 @@ export default function TimeFrameFilter({
             min={0}
             max={59}
             value={values.durationMinutes}
-            onChange={(_event, { value }) => handleValueChange('durationMinutes', value)}
+            onChange={(_event: React.ChangeEvent<HTMLSelectElement>, { value }) => handleValueChange('durationMinutes', value)}
           />
         </div>
       </FormGroup>
@@ -123,7 +122,6 @@ export default function TimeFrameFilter({
           datePickerType="single"
           value={values.toDate}
           maxDate={new Date()}
-          minDate={values.fromDate}
           onChange={(dates: Date[]) =>
             handleValueChange('toDate', dates && dates.length > 0 ? dates[0] : null)
           }
@@ -140,13 +138,13 @@ export default function TimeFrameFilter({
           value={localToTime}
           invalid={localToTime !== '' && !parseAndValidateTime(localToTime)}
           invalidText={invalidTimeText}
-          onChange={(event) => setLocalToTime(event.target.value)}
+          onChange={(event:  React.ChangeEvent<HTMLInputElement>) => setLocalToTime(event.target.value)}
           onBlur={() => handleTimeBlur(localToTime, 'toTime')}
         >
           <TimePickerSelect
             id="to-time-picker-ampm"
             value={values.toAmPm}
-            onChange={(event) => handleValueChange('toAmPm', event.target.value)}
+            onChange={(event:  React.ChangeEvent<HTMLSelectElement>) => handleValueChange('toAmPm', event.target.value)}
           >
             <SelectItem text="AM" value="AM" />
             <SelectItem text="PM" value="PM" />

@@ -14,11 +14,9 @@ const mockValues: TimeFrameValues = {
   fromDate: new Date('2023-10-01'),
   fromTime: '10:00',
   fromAmPm: 'AM',
-  fromTimeZone: 'PDT',
   toDate: new Date('2023-10-02'),
   toTime: '02:00',
   toAmPm: 'PM',
-  toTimeZone: 'GMT',
   durationDays: 1,
   durationHours: 10,
   durationMinutes: 0,
@@ -67,6 +65,7 @@ describe('TimeFrameFilter', () => {
 
 
     expect(mockHandleValueChange).toHaveBeenCalled();
+    console.log(mockHandleValueChange.mock.calls);
     const calledDate = mockHandleValueChange.mock.calls[0][1];
         
     expect(calledDate).toBeInstanceOf(Date);

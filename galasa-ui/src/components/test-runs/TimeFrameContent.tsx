@@ -10,7 +10,6 @@ import { useState, useCallback } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, combineDateTime, extractDateTimeForUI, subtractMonths } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ToastNotification } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 
 // Constants
@@ -75,7 +74,7 @@ export default function TimeFrameContent() {
   const [errorText, setErrorText] = useState<string | null>(null);
 
   /**
-    * Handles changes of entire time frame values.
+   * Handles changes of entire time frame values.
    * This function is called when any part of the time frame changes (from/to dates, times, durations).
    * It recalculates the entire time frame state, validates it, and updates the URL.
    *
@@ -83,10 +82,16 @@ export default function TimeFrameContent() {
    * @param value - The new value for the changed field.
    */
   const handleValueChange = useCallback((field: keyof TimeFrameValues, value: any) => {
+    if ((field === 'fromDate' || field === 'toDate') && !value) {
+      return; 
+    }
+
+
     setErrorText(null); // Reset error on any new interaction.
 
     // 1. Create a draft of the next state with the incoming change.
     const draftValues = { ...values, [field]: value };
+    console.log("Draft values after change:", draftValues);
 
     let fromDate: Date;
     let toDate: Date;
@@ -104,6 +109,7 @@ export default function TimeFrameContent() {
       // If a 'From' or 'To' field changed, we recalculate both dates from their parts.
       fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
       toDate = combineDateTime(draftValues.toDate, draftValues.toTime, draftValues.toAmPm);
+      console.log(`Calculated 'From' date: ${fromDate}, 'To' date: ${toDate}`);
     }
     
     // 3. Validate and apply business logic to the calculated dates.
@@ -114,13 +120,15 @@ export default function TimeFrameContent() {
     }
     
     if (fromDate > toDate) {
+      console.log(`Invalid date range: 'From' date (${fromDate}) is after 'To' date (${toDate}). Adjusting...`);
       // If the user sets 'From' after 'To', bring 'From' back to be equal to 'To'.
-      fromDate = new Date(toDate.getTime() - DAY_MS); // Default to 1 day before 'To' date.
-      if (!error) error = "'From' date cannot be after 'To' date. 'From' date has been adjusted to a day before.";
+      toDate = new Date(fromDate.getTime()); 
+      if (!error) error = "'To' date cannot be before 'From' date. 'To' date has been adjusted to be equal the From date.";
     }
 
     const maxToDate = addMonths(fromDate, MAX_RANGE_MONTHS);
     if (toDate > maxToDate) {
+      console.warn(`Date range exceeds maximum allowed of ${MAX_RANGE_MONTHS} months from 'From' date (${fromDate}). Adjusting 'To' date to ${maxToDate}.`);
       // If the range is too large, adjust the end date.
       toDate = maxToDate;
       if (!error) error = `Date range cannot exceed ${MAX_RANGE_MONTHS} months. 'To' date has been automatically adjusted.`;
@@ -138,7 +146,7 @@ export default function TimeFrameContent() {
     params.set('from', finalState.fromDate.toISOString());
     params.set('to', finalState.toDate.toISOString());
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [values, searchParams, pathname, router]); 
+  }, [values, searchParams, pathname, router, setErrorText]); 
 
   return (
     <div className={styles.TimeFrameContainer}>

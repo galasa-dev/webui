@@ -146,10 +146,10 @@ export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM'): Da
  * @returns An object with `time` and `amPm` properties.
  */
 export const extractDateTimeForUI = (date: Date) => {
-const hours24 = date.getHours();
-const minutes = date.getMinutes();
+  const hours24 = date.getHours();
+  const minutes = date.getMinutes();
 
-const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
+  const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
 
   // Convert 24-hour format to 12-hour format for display
   let hours12 = hours24 % 12;
@@ -221,11 +221,11 @@ export function subtractMonths(date: Date, months: number): Date {
  * @returns {{hour: number, minute: number} | null} The parsed time parts or null if invalid.
  */
 export const parseAndValidateTime = (timeString: string) => {
- if(!timeString) return null;
+  if(!timeString) return null;
 
- let parsedTime = null;
+  let parsedTime = null;
 
- const parts = timeString.trim().split(':');
+  const parts = timeString.trim().split(':');
   if (parts.length !== 2)  return null;
 
   const hour = parseInt(parts[0], 10);
