@@ -192,25 +192,11 @@ export function addMonths(date: Date, months: number): Date {
   if (newDate.getDate() !== originalDay) {
     newDate.setDate(0);
   }
+
+  newDate.setHours(23, 59, 59, 999);
   return newDate;
 }
 
-/**
- * Accurately subtracts a number of months from a date, handling end-of-month edge cases.
- * @param date The starting date.
- * @param months The number of months to subtract.
- * @returns A new Date object.
- */
-export function subtractMonths(date: Date, months: number): Date {
-  const newDate = new Date(date);
-  const originalDay = newDate.getDate();
-  newDate.setMonth(newDate.getMonth() - months);
-
-  if (newDate.getDate() !== originalDay) {
-    newDate.setDate(0);
-  }
-  return newDate;
-}
 
 /**
  * Parses a time string and validates it.

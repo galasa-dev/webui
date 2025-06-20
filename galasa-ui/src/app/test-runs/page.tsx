@@ -41,6 +41,8 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
   let hasMorePages = true;
   let limitExceeded = false;
 
+  if (fromDate > toDate) return {runs: [] , limitExceeded};
+
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);

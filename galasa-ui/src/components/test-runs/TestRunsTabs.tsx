@@ -37,7 +37,7 @@ export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promis
 
   return (
     <Tabs className={styles.tabs}>
-      <TabList scrollDebounceWait={200}>
+      <TabList scrollDebounceWait={200} aria-label="Test Runs Tabs">
         {TABS_CONFIG.map((tab) => (
           <Tab key={tab.label}>{tab.label}</Tab>
         ))}
