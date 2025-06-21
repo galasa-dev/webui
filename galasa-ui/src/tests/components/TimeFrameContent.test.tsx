@@ -11,42 +11,46 @@ import { DAY_MS } from '@/utils/constants';
 
 // Mock the child component to prevent its internal logic from running
 jest.mock('@/components/test-runs/TimeFrameFilter', () => (props: any) => (
-  <div data-testid="timeframe-filter">
-    <label htmlFor="from-date">From Date</label>
-    <input
-      id="from-date"
-      value={props.values.fromDate.toLocaleDateString('en-US')}
-      onChange={(e) =>
-        props.handleValueChange('fromDate', new Date(e.target.value))
-      }
-    />
-    <label htmlFor="duration-days">Days</label>
-    <input
-      type="number"
-      id="duration-days"
-      value={props.values.durationDays}
-      onChange={(e) =>
-        props.handleValueChange('durationDays', parseInt(e.target.value, 10))
-      }
-    />
-    <label htmlFor="duration-hours">Hours</label>
-    <input
-      type="number"
-      id="duration-hours"
-      value={props.values.durationHours}
-      onChange={(e) =>
-        props.handleValueChange('durationHours', parseInt(e.target.value, 10))
-      }
-    />
-    <label htmlFor="to-date">To Date</label>
-    <input
-      id="to-date"
-      value={props.values.toDate.toLocaleDateString('en-US')}
-      onChange={(e) =>
-        props.handleValueChange('toDate', new Date(e.target.value))
-      }
-    />
-  </div>
+  function TimeFrameFilterMock() {
+    return (
+      <div data-testid="timeframe-filter">
+        <label htmlFor="from-date">From Date</label>
+        <input
+          id="from-date"
+          value={props.values.fromDate.toLocaleDateString('en-US')}
+          onChange={(e) =>
+            props.handleValueChange('fromDate', new Date(e.target.value))
+          }
+        />
+        <label htmlFor="duration-days">Days</label>
+        <input
+          type="number"
+          id="duration-days"
+          value={props.values.durationDays}
+          onChange={(e) =>
+            props.handleValueChange('durationDays', parseInt(e.target.value, 10))
+          }
+        />
+        <label htmlFor="duration-hours">Hours</label>
+        <input
+          type="number"
+          id="duration-hours"
+          value={props.values.durationHours}
+          onChange={(e) =>
+            props.handleValueChange('durationHours', parseInt(e.target.value, 10))
+          }
+        />
+        <label htmlFor="to-date">To Date</label>
+        <input
+          id="to-date"
+          value={props.values.toDate.toLocaleDateString('en-US')}
+          onChange={(e) =>
+            props.handleValueChange('toDate', new Date(e.target.value))
+          }
+        />
+      </div>
+    );
+  }
 ));
 
 // Mock next/navigation hooks
@@ -342,7 +346,7 @@ describe('TimeFrameContent Tests', () => {
 
     // Assert on mount call
     await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+      expect(mockReplace).toHaveBeenCalledTimes(1);
     });
     const expectedMountUrl = `/test-runs?from=${encodeURIComponent(MOCK_INITIAL_FROM.toISOString())}&to=${encodeURIComponent(MOCK_NOW.toISOString())}`;
     expect(mockReplace).toHaveBeenCalledWith(expectedMountUrl, { scroll: false });
@@ -352,7 +356,7 @@ describe('TimeFrameContent Tests', () => {
     fireEvent.change(fromDateInput, { target: { value: '2025-08-15' } });
 
     await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(2);
+      expect(mockReplace).toHaveBeenCalledTimes(2);
     });
 
     // Change the "To" date
@@ -367,8 +371,8 @@ describe('TimeFrameContent Tests', () => {
       const expectedFinalTo = new Date('2025-08-19T12:00:00.000Z');
 
       const expectedParams = new URLSearchParams({
-          from: expectedFinalFrom.toISOString(),
-          to: expectedFinalTo.toISOString(),
+        from: expectedFinalFrom.toISOString(),
+        to: expectedFinalTo.toISOString(),
       });
       
       const lastCall = mockReplace.mock.calls[mockReplace.mock.calls.length - 1];
