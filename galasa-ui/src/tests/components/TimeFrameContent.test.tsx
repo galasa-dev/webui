@@ -6,8 +6,8 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TimeFrameContent, { applyTimeFrameRules, calculateSynchronizedState } from '@/components/test-runs/TimeFrameContent';
-import { addMonths } from '@/utils/functions';
-import { DAY_MS } from '@/utils/constants';
+import { addMonths } from '@/utils/timeOperations';
+import { DAY_MS } from '@/utils/constants/common';
 
 // Mock the child component to prevent its internal logic from running
 jest.mock('@/components/test-runs/TimeFrameFilter', () => {

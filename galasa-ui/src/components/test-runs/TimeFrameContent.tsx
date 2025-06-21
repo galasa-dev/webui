@@ -9,10 +9,10 @@ import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback, useEffect } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
-import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/functions';
+import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/timeOperations';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { InlineNotification } from '@carbon/react';
-import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants';
+import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 
 type Notification = {
   text: string;

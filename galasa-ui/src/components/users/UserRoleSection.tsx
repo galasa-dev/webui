@@ -13,6 +13,7 @@ import ErrorPage from '@/app/error/page';
 import { InlineNotification } from '@carbon/react';
 import { updateUserRoleAction } from '@/actions/userServerActions';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface DropdownItem {
   name?: string;
@@ -38,6 +39,7 @@ interface RoleDetailsProps {
 }
 
 export default function UserRoleSection({ userProfilePromise, roleDetailsPromise }: ProfileDetailsProps & RoleDetailsProps) {
+  const translations = useTranslations('userRole');
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -194,8 +196,8 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
     <div className={styles.roleDetails}>
       <div className={styles.roleDetailsContainer}>
         <h2>{userProfile.loginId}</h2>
-        <h3>User Role</h3>
-        <p>The actions a user can or cannot perform on this Galasa service is controlled by their user role.</p>
+        <h3>{translations('heading')}</h3>
+        <p>{translations('description')}</p>
         <div className={styles.dropdownContainer}>
           <Dropdown
             selectedItem={role}
@@ -204,18 +206,18 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
             size="lg"
             id="default"
             helperText={role.description}
-            label="User Role" // this remains a static label for the field
+            label={translations('dropdownLabel')}
             items={userRoles}
             itemToString={(item: DropdownItem) => (item ? item.name : '')}
           />
           <ButtonSet className={styles.buttonSet}>
-            <Button onClick={resetRole} disabled={isResetBtnDisabled} kind="secondary">Reset</Button>
-            <Button onClick={updateUserRole} disabled={isSaveBtnDisabled} kind="primary">Save</Button>
+            <Button onClick={resetRole} disabled={isResetBtnDisabled} kind="secondary">{translations('resetButton')}</Button>
+            <Button onClick={updateUserRole} disabled={isSaveBtnDisabled} kind="primary">{translations('saveButton')}</Button>
           </ButtonSet>
         </div>
 
         {
-          isToastVisible && <InlineNotification inline={true} onClose={() => setIsToastVisible(false)} lowContrast={true} kind="success" title="Success" subtitle="User role was updated successfully." />
+          isToastVisible && <InlineNotification inline={true} onClose={() => setIsToastVisible(false)} lowContrast={true} kind="success" title={translations('toastTitle')} subtitle={translations('toastSubtitle')}/>
         }
 
       </div>

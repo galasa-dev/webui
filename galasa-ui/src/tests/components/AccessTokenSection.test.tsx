@@ -18,6 +18,31 @@ jest.mock('@carbon/react', () => ({
   ),
 }));
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => {
+    return (key: string, params?: { count?: number }) => {
+      switch (key) {
+      case "title":
+        return "Access Tokens";
+      case "descriptionline1":
+        return "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.";
+      case "descriptionline2":
+        return "A token has the same access rights as the user who allocated it.";
+      case "errorTitle":
+        return "Something went wrong!";
+      case "errorDescription":
+        return "Please report the problem to your Galasa Ecosystem administrator.";
+      case "deleteButtontext":
+        return `Delete ${params?.count} selected access token${params?.count === 1 ? "" : "s"}`;
+      case "error":
+        return "Failed to fetch tokens from the Galasa API server";
+      default:
+        return `Translated ${key}`;
+      }
+    };
+  },
+}));
+
 // Mock TokenCard to render a button that calls the passed callback
 jest.mock('@/components/tokens/TokenCard', () => {
   const MockTokenCard = ({ token, selectTokenForDeletion }: any) => (
@@ -126,43 +151,44 @@ describe('AccessTokensSection', () => {
     );
   });
 
-  test('enables delete button and opens delete modal when token is selected', async () => {
+  test("enables delete button and opens delete modal when token is selected", async () => {
     const authTokens: AuthTokens = {
-      tokens: [{ tokenId: 'token-1' }],
+      tokens: [{ tokenId: "token-1" }],
     };
     const resolvedPromise = Promise.resolve(authTokens);
     render(
       <AccessTokensSection
         accessTokensPromise={resolvedPromise}
         isAddBtnVisible={true}
-      />
+      />,
     );
 
     // Wait for the token to render.
     await waitFor(() =>
-      expect(screen.getByTestId('token-card-token-1')).toBeInTheDocument()
+      expect(screen.getByTestId("token-card-token-1")).toBeInTheDocument(),
     );
 
     // Initially, the delete button should be disabled.
-    const deleteButtonInitial = screen.getByRole('button', {
+    const deleteButtonInitial = screen.getByRole("button", {
       name: /Delete 0 selected access tokens/i,
     });
     expect(deleteButtonInitial).toBeDisabled();
 
     // Click the token card to select it.
-    fireEvent.click(screen.getByTestId('token-card-token-1'));
+    fireEvent.click(screen.getByTestId("token-card-token-1"));
 
     // After selection, the delete button text updates and becomes enabled.
-    const deleteButtonSelected = await screen.findByRole('button', {
-      name: /Delete 1 selected access tokens/i,
+    const deleteButtonSelected = await screen.findByRole("button", {
+      name: /Delete 1 selected access token(s)?/i,
     });
+
     expect(deleteButtonSelected).toBeEnabled();
 
     // Click the delete button to open the delete modal.
     fireEvent.click(deleteButtonSelected);
 
     // The delete modal should now be visible.
-    expect(screen.getByTestId('token-delete-modal')).toBeInTheDocument();
+    expect(screen.getByTestId("token-delete-modal")).toBeInTheDocument();
   });
 
   test('updates TokenRequestModal isDisabled prop based on token selection', async () => {

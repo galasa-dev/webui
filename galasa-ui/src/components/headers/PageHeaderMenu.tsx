@@ -9,9 +9,14 @@ import React from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem, HeaderName } from '@carbon/react';
 import { User } from "@carbon/icons-react";
 import { useRouter } from 'next/navigation';
-import { handleDeleteCookieApiOperation } from '@/utils/functions';
+import { handleDeleteCookieApiOperation } from '@/utils/logout';
+import LanguageSelector from './LanguageSelector';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
+import { useTranslations } from 'next-intl';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
+  const translations = useTranslations('PageHeaderMenu');
 
   const router = useRouter();
 
@@ -22,12 +27,13 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const handleRedirectToMySettingsPage = () => {
     router.push("/mysettings");
   };
-
+  const {isFeatureEnabled} = useFeatureFlags();
+  
   return (
     <HeaderGlobalBar data-testid="header-menu">
 
+      {isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION) && ( <LanguageSelector/>)}
       <HeaderName prefix="">{galasaServiceName}</HeaderName>
-
       <OverflowMenu
         data-floating-menu-container
         selectorPrimaryFocus={'.optionOne'}
@@ -37,17 +43,17 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
         flipped={true}
       >
         <OverflowMenuItem
-          itemText="My Profile"
+          itemText={translations('profile')}
           data-testid='my-profile-btn'
           onClick={handleRedirectToMyProfilePage}
         />
         <OverflowMenuItem
-          itemText="My Settings"
+          itemText={translations('settings')}
           data-testid='my-settings-btn'
           onClick={handleRedirectToMySettingsPage}
         />
         <OverflowMenuItem
-          itemText="Log out"
+          itemText={translations('logout')}
           onClick={() => handleDeleteCookieApiOperation(router)}
           data-testid='logout-btn'
         />

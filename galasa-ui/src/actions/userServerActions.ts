@@ -6,7 +6,7 @@
 "use server";
 import { UserData, UsersAPIApi } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants";
+import * as Constants from "@/utils/constants/common";
 import { UpdateUserRolePayload } from "@/utils/interfaces";
 
 

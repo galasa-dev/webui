@@ -1,13 +1,13 @@
-
 /*
  * Copyright contributors to the Galasa project
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use client';
+"use client";
 
 import { Run } from "@/generated/galasaapi";
-import {  DataTable,
+import {
+  DataTable,
   Table,
   TableHead,
   TableRow,
@@ -15,37 +15,31 @@ import {  DataTable,
   TableBody,
   TableCell,
   TableContainer,
-  Pagination, DataTableSkeleton
-} from '@carbon/react';
-import { DataTableHeader, DataTableRow, DataTableCell as IDataTableCell } from "@/utils/interfaces";
+  Pagination,
+  DataTableSkeleton,
+} from "@carbon/react";
+import {
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell as IDataTableCell,
+} from "@/utils/interfaces";
 import styles from "@/styles/TestRunsPage.module.css";
-import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
-import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
-import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
+import { TableRowProps } from "@carbon/react/lib/components/DataTable/TableRow";
+import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead";
+import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
 import StatusIndicator from "../common/StatusIndicator";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from "next/navigation";
 import ErrorPage from "@/app/error/page";
 import { TestRunsData } from "@/app/test-runs/page";
-import {MAX_RECORDS} from "@/utils/constants";
+import {MAX_RECORDS} from "@/utils/constants/common";
+import { useTranslations } from "next-intl";
 
-interface CustomCellProps  {
+
+interface CustomCellProps {
   header: string;
   value: any;
 }
-
-const headers = [
-  { key: 'submittedAt', header: 'Submitted at' }, 
-  { key: 'testRunName', header: 'Test Run Name' }, 
-  { key: 'requestor', header: 'Requestor' }, 
-  { key: 'group', header: 'Group' }, 
-  { key: 'bundle', header: 'Bundle' }, 
-  { key: 'package', header: 'Package' }, 
-  { key: 'testName', header: 'Test Name' },
-  { key: 'status', header: 'Status' },
-  { key: 'result', header: 'Result'}
-];
-
 
 /**
  * Transforms and flattens the raw API data for Carbon DataTable.
@@ -53,7 +47,7 @@ const headers = [
  * @returns A new array of flat objects, each with a unique `id` and properties matching the headers.
  */
 const transformRunsforTable = (runs: Run[]) => {
-  if(!runs) {
+  if (!runs) {
     return [];
   }
 
@@ -80,7 +74,7 @@ const transformRunsforTable = (runs: Run[]) => {
  * It renders a special layout for the 'result' column and a default for all others.
  */
 const CustomCell = ({ header, value }: CustomCellProps) => {
-  if (header === 'result') {
+  if (header === "result") {
     return (
       <TableCell>
         <StatusIndicator status={value as string} />
@@ -92,6 +86,8 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
 };
 
 export default function TestRunsTable({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
+  const translations = useTranslations("TestRunsTable");
+
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -99,6 +95,18 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [limitExceeded, setLimitExceeded] = useState(false);
+
+  const headers = [
+    { key: "submittedAt", header: translations("submittedAt") },
+    { key: "testRunName", header: translations("testRunName") },
+    { key: "requestor", header: translations("requestor") },
+    { key: "group", header: translations("group") },
+    { key: "bundle", header: translations("bundle") },
+    { key: "package", header: translations("package") },
+    { key: "testName", header: translations("testName") },
+    { key: "status", header: translations("status") },
+    { key: "result", header: translations("result") },
+  ];
 
   // Load the raw runs data from the promise
   useEffect(() => {
@@ -133,16 +141,21 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
     if (!rawRuns || rawRuns.length === 0) {
-      return 'No test runs found for the selected time frame.';
+      return translations("noData");
     }
 
-    let text = 'Showing test runs submitted in the last 24 hours';
-    const dates = rawRuns.map(run => new Date(run.testStructure?.queued || 0).getTime());
+    let text = translations("timeFrameText.default");;
+    const dates = rawRuns.map((run) =>
+      new Date(run.testStructure?.queued || 0).getTime(),
+    );
     const earliestDate = new Date(Math.min(...dates));
     const latestDate = new Date(Math.max(...dates));
 
-    if(earliestDate && latestDate) {
-      text = `Showing test runs submitted between ${earliestDate.toLocaleString().replace(',', '')} and ${latestDate.toLocaleString().replace(',', '')}`;
+    if (earliestDate && latestDate) {
+      text = translations('timeFrameText.range', {
+        from: earliestDate.toLocaleString().replace(',', ''),
+        to: latestDate.toLocaleString().replace(',', '')
+      });
     }
     return text;
   }, [rawRuns]);
@@ -158,12 +171,20 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
-          rowCount={pageSize}/>;
+          rowCount={pageSize}
+        />
+        ;
       </div>
     );
   }
 
-  const handlePaginationChange = ({page, pageSize} : {page: number, pageSize: number}) => {
+  const handlePaginationChange = ({
+    page,
+    pageSize,
+  }: {
+    page: number;
+    pageSize: number;
+  }) => {
     setCurrentPage(page);
     setPageSize(pageSize);
   };
@@ -183,18 +204,19 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>
-          {({ 
+          {({
             rows,
             headers,
-            getTableProps, 
-            getHeaderProps, 
-            getRowProps }: {
-          rows: DataTableRow[];
-          headers: DataTableHeader[];
-          getHeaderProps: (options: any) => TableHeadProps;
-          getRowProps: (options: any) => TableRowProps;
-          getTableProps: () => TableBodyProps;
-        }) => (
+            getTableProps,
+            getHeaderProps,
+            getRowProps,
+          }: {
+            rows: DataTableRow[];
+            headers: DataTableHeader[];
+            getHeaderProps: (options: any) => TableHeadProps;
+            getRowProps: (options: any) => TableRowProps;
+            getTableProps: () => TableBodyProps;
+          }) => (
             <TableContainer>
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
@@ -219,19 +241,13 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
           )}
         </DataTable>
         <Pagination
-          backwardText="Previous page"
-          forwardText="Next page"
-          itemsPerPageText="Items per page:"
+          backwardText={translations("pagination.backwardText")}
+          forwardText={translations("pagination.forwardText")}
+          itemsPerPageText={translations("pagination.itemsPerPageText")}
+          pageNumberText={translations("pagination.pageNumberText")}
           page={currentPage}
-          pageNumberText="Page Number"
           pageSize={pageSize}
-          pageSizes={[
-            10,
-            20,
-            30,
-            40,
-            50
-          ]}
+          pageSizes={[10, 20, 30, 40, 50]}
           totalItems={tableRows.length}
           onChange={handlePaginationChange}
         />

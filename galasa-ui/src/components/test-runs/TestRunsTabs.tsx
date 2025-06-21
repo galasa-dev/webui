@@ -8,14 +8,14 @@ import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react';
 import styles from '@/styles/TestRunsPage.module.css';
 import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
-import { Run, TestRun } from '@/generated/galasaapi';
 import { TestRunsData } from '@/app/test-runs/page';
+import { useTranslations } from "next-intl";
 
-type TabLabel = 'Timeframe' | 'Table Design' | 'Search Criteria' | 'Results';
 interface TabConfig {
-    label: TabLabel;
-    component: React.ReactNode;
+  label: string;
+  component: React.ReactNode;
 }
+
 
 const TableDesignContent = () => <p>
     This page is under construction. In future, you will be able to choose which columns are visible and their order.
@@ -27,12 +27,26 @@ const SearchCriteriaContent = () => <p>
 
 
 export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
+  const translations = useTranslations("TestRunsTabs");
+
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
-    {label: 'Timeframe', component: <TimeframeContent />},
-    {label: 'Table Design', component: <TableDesignContent />},
-    {label: 'Search Criteria', component: <SearchCriteriaContent />},
-    {label: 'Results', component: <TestRunsTable runsListPromise={runsListPromise}/>},
+    {
+      label: translations("tabs.timeframe"),
+      component: <TimeframeContent />,
+    },
+    {
+      label: translations("tabs.tableDesign"),
+      component: <p>{translations("content.tableDesign")}</p>,
+    },
+    {
+      label: translations("tabs.searchCriteria"),
+      component: <p>{translations("content.searchCriteria")}</p>,
+    },
+    {
+      label: translations("tabs.results"),
+      component: <TestRunsTable runsListPromise={runsListPromise} />,
+    },
   ];
 
   return (
@@ -45,12 +59,10 @@ export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promis
       <TabPanels>
         {TABS_CONFIG.map((tab) => (
           <TabPanel key={tab.label}>
-            <div className={styles.tabContent}>
-              {tab.component}
-            </div>
+            <div className={styles.tabContent}>{tab.component}</div>
           </TabPanel>
         ))}
       </TabPanels>
     </Tabs>
   );
-};
+}

@@ -6,7 +6,7 @@
 'use client';
 
 import styles from '@/styles/TestRunsPage.module.css';
-import { parseAndValidateTime } from '@/utils/functions';
+import { parseAndValidateTime } from '@/utils/timeOperations';
 import { FormGroup, DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem } from '@carbon/react';
 import { useState, useEffect } from 'react';
 

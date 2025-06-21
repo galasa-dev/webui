@@ -16,8 +16,23 @@ jest.mock('@/components/common/StatusIndicator', () => {
   };
 });
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      title: "Methods",
+      subtitle: "The list of methods executed during this test run.",
+      search_placeholder: "Search method",
+      "table.methodName": "Name",
+      "table.status": "Status",
+      "table.result": "Result",
+      "table.duration": "Duration",
+    };
+    return translations[key] || key;
+  },
+}));
+
 // Mock the utility function
-jest.mock('@/utils/functions', () => ({
+jest.mock('@/utils/timeOperations', () => ({
   getIsoTimeDifference: jest.fn((startTime: string, endTime: string) => {
     // Mock implementation - return a simple duration string
     return '00:05:30';
@@ -232,7 +247,7 @@ describe('MethodsTab Component', () => {
 
   describe('Duration Calculation', () => {
     it('calls getIsoTimeDifference with correct parameters', () => {
-      const { getIsoTimeDifference } = require('@/utils/functions');
+      const { getIsoTimeDifference } = require('@/utils/timeOperations');
       
       render(<MethodsTab methods={mockMethods} />);
       
@@ -293,8 +308,8 @@ describe('MethodsTab Component', () => {
     });
   });
 
-  describe('Edge Cases', () => {
-    it('handles methods with null/undefined values', () => {
+  describe("Edge Cases", () => {
+    it("handles methods with null/undefined values", () => {
       const methodsWithNulls: TestMethod[] = [
         {
           methodName: null as any,

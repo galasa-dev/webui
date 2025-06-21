@@ -16,6 +16,10 @@ jest.mock('@/app/test-runs/page', () => {
   };
 });
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 // Mock the child components.
 jest.mock('@/components/test-runs/TestRunsTabs', () =>
   function MockTestRunsTabs() {

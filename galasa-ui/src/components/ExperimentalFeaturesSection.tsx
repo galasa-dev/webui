@@ -8,24 +8,31 @@
 import { FeatureFlagProvider, useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import styles from "@/styles/MySettings.module.css";
 import { FEATURE_FLAGS } from "@/utils/featureFlags";
+import { useTranslations } from "next-intl";
 
 export default function ExperimentalFeaturesSection() { 
   const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
+  const translations = useTranslations('ExperimentalFeatures');
 
   // Feature configuration for easier management and display
   const featureConfig = [
     {
       key: FEATURE_FLAGS.TEST_RUNS,
-      label: 'Test Run searching and viewing',
+      label: translations(`features.testRunSearch`)
+      ,
+    },
+    {
+      key: FEATURE_FLAGS.INTERNATIONALIZATION,
+      label: translations('features.Internationalization'),
     },
     // Add more features here when they are added to DEFAULT_FEATURE_FLAGS
   ];
 
   return (
     <section className={styles.experimentalFeaturesContainer}>
-      <h3 className={styles.title}>Experimental Features</h3>
+      <h3 className={styles.title}>{translations('title')}</h3>
       <div className={styles.experimentalFeaturesHeaderContainer}>
-        <p className={styles.heading}>Early access to new features. These are experimental and subject to change or removal.</p>
+        <p className={styles.heading}>{translations('description')}</p>
         <ul className={styles.featureFlagsContainer}>
           {featureConfig.map(({ key, label }) => (
             <li key={key} className={styles.featureFlag}>

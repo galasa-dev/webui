@@ -5,7 +5,7 @@
  */
 import { BootstrapAPIApi, OpenAPIAPIApi } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import { CLIENT_API_VERSION } from "@/utils/constants";
+import { CLIENT_API_VERSION } from "@/utils/constants/common";
 
 export async function getServiceHealthStatus() {
 

@@ -68,7 +68,6 @@ export interface DataTableRow {
   isSelected?: boolean;
 }
 
-
 export interface TimeFrameValues {
     fromDate: Date;
     fromTime: string;
@@ -79,4 +78,9 @@ export interface TimeFrameValues {
     durationDays: number;
     durationHours: number;
     durationMinutes: number;
+}
+
+export interface RunLog {
+  content : string;
+  route: string;
 }

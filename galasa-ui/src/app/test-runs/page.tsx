@@ -7,12 +7,12 @@ import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
+import { HOME } from "@/utils/constants/breadcrumb";
 import { Suspense } from "react";
 import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants";
-import { getYesterday } from "@/utils/functions";
-import { MAX_RECORDS } from "@/utils/constants";
+import { getYesterday } from "@/utils/timeOperations";
+import { CLIENT_API_VERSION, MAX_RECORDS } from "@/utils/constants/common";
 
 const BATCH_SIZE = 100; // Define the batch size for fetching runs
 
@@ -51,7 +51,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
       // Fetch runs based on the provided date range
       const response: RunResults = await rasApiClient.getRasSearchRuns(
         'from:desc',
-        Constants.CLIENT_API_VERSION,
+        CLIENT_API_VERSION,
         undefined, // result
         undefined, // status
         undefined, // bundle
@@ -108,13 +108,13 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
 
   return (
     <main id="content">
-      <BreadCrumb />
-      <PageTile title={"Test Runs"} />
+      <BreadCrumb breadCrumbItems={[HOME]} />
+      <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
           <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate})}/>
         </Suspense>
       </div>
-    </main>   
+    </main>
   );
 }
