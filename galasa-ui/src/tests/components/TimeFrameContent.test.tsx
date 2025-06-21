@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import '@testing-library/jest-dom';
-import { applyTimeFrameRules } from '@/components/test-runs/TimeFrameContent';
+import { applyTimeFrameRules, calculateSynchronizedState } from '@/components/test-runs/TimeFrameContent';
 import { addMonths } from '@/utils/functions';
 
 
@@ -86,3 +86,65 @@ describe('applyTimeFrameRules', () => {
     expect(correctedTo.toISOString()).toEqual(maxToDate.toISOString());
   });
 });
+
+describe('calculateSynchronizedState', () => {
+  test('should correctly calculate a duration of excactly 1 day', () => {
+    const fromDate = new Date('2025-08-15T10:00:00.000Z');
+    const toDate = new Date('2025-08-16T10:00:00.000Z');
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+
+    expect(durationDays).toBe(1);
+    expect(durationHours).toBe(0);
+    expect(durationMinutes).toBe(0);
+  });
+
+  test('should correctly calculate a complex duration of 2 days, 5 hours and 15 minutes', () => {
+    const fromDate = new Date('2025-08-15T10:00:00.000Z');
+    const toDate = new Date('2025-08-17T15:15:00.000Z');
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+
+    expect(durationDays).toBe(2);
+    expect(durationHours).toBe(5);
+    expect(durationMinutes).toBe(15);
+  });
+
+  test('should handle a zero duration when "From" and "To" dates are the same', () => {
+    const sameDate = new Date('2025-08-15T10:00:00.000Z');
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(sameDate, sameDate);
+
+    expect(durationDays).toBe(0);
+    expect(durationHours).toBe(0);
+    expect(durationMinutes).toBe(0);
+  });
+
+  test('should handle a negative duration by returning zero values', () => {
+    const fromDate = new Date('2025-08-15T10:00:00.000Z');
+    const toDate = new Date('2025-08-14T10:00:00.000Z'); // One day before
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+
+    expect(durationDays).toBe(0);
+    expect(durationHours).toBe(0);
+    expect(durationMinutes).toBe(0);
+  });
+
+  test('should handle a duration of less than a minute', () => {
+    const fromDate = new Date('2025-08-15T10:00:00.000Z');
+    const toDate = new Date('2025-08-15T10:00:30.000Z'); // 30 seconds later
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+
+    expect(durationDays).toBe(0);
+    expect(durationHours).toBe(0);
+    expect(durationMinutes).toBe(0);
+  });
+
+  test('should corrrectly extract time parts for "From" and "To" dates', () => {
+    const fromDate = new Date('2025-08-15T10:30:00.000');
+    const toDate = new Date('2025-08-15T12:45:00.000');
+    const { fromTime, fromAmPm, toTime, toAmPm } = calculateSynchronizedState(fromDate, toDate);
+
+    expect(fromTime).toBe('10:30');
+    expect(fromAmPm).toBe('AM');
+    expect(toTime).toBe('12:45');
+    expect(toAmPm).toBe('PM');
+  });
+})

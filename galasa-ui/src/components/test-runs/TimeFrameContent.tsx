@@ -12,12 +12,7 @@ import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/functions';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { InlineNotification } from '@carbon/react';
-
-// Constants
-const MINUTE_MS = 60 * 1000;
-const HOUR_MS = 60 * MINUTE_MS;
-const DAY_MS = 24 * HOUR_MS;
-const MAX_RANGE_MONTHS = 3;
+import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants';
 
 type Notification = {
   text: string;
