@@ -8,11 +8,16 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
+import { TestRunsData } from '@/app/test-runs/page';
+import { MAX_RECORDS } from '@/utils/constants/common';
 
 // Mock the useRouter hook from Next.js to return a mock router object.
-const mockRouter = {
-  push: jest.fn(),
-};
+const mockRouterPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockRouterPush,
+  }),
+}));
 
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
@@ -34,13 +39,16 @@ jest.mock("next-intl", () => ({
 }));
 
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(() => mockRouter),
-}));
+
 
 jest.mock('@/app/error/page', () =>
   function MockErrorPage() {
     return <div data-testid="error-page">Error Occurred</div>;
+  }
+);
+jest.mock('@/components/common/StatusIndicator', () =>
+  function StatusIndicator() {
+    return <div data-testid="status-indicator">Status: {status}</div>;
   }
 );
 
@@ -66,23 +74,19 @@ const generateMockRuns = (count: number) => {
 
 describe('TestRunsTable Component', () => {
   beforeEach(() => {
-    mockRouter.push.mockClear();
+    mockRouterPush.mockClear();
     // Suppress console.error for rejected promise tests
     jest.spyOn(console, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
   });
 
   describe('Rendering Logic', () => {
     test('shows loading state initially, then displays data when promise resolves', async() => {
       // Arrange
-      const mockRuns = generateMockRuns(2);
-      const mockPromise = Promise.resolve(mockRuns);
+      const mockData: TestRunsData = { runs: generateMockRuns(2), limitExceeded: false };
+      const runsPromise = Promise.resolve(mockData);
 
       // Act
-      render(<TestRunsTable runsListPromise={mockPromise}/>);
+      render(<TestRunsTable runsListPromise={runsPromise}/>);
 
       // Assert: Check if the loading state is displayed
       expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
@@ -99,22 +103,36 @@ describe('TestRunsTable Component', () => {
 
   test('display an error component when an empty array is passed', async () => {
     // Arrange
-    const runsPromise = Promise.resolve([]);
-  
+    const emptyData: TestRunsData = { runs: [], limitExceeded: false };
+    const runsPromise = Promise.resolve(emptyData);
     // Act
     render(<TestRunsTable runsListPromise={runsPromise} />);
 
     // Assert: Check if the error state is displayed
-    expect(await screen.findByText(/No test runs found/i)).toBeInTheDocument();
+    expect(await screen.findByText(/No test runs were found/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  test('displays the record limit warning when limitExceeded is true', async () => {
+    // Arrange
+    const limitedData: TestRunsData = { runs: generateMockRuns(5), limitExceeded: true };
+    const runsPromise = Promise.resolve(limitedData);
+
+    // Act
+    render(<TestRunsTable runsListPromise={runsPromise} />);
+
+    // Assert
+    const warningMessage = await screen.findByText(`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`);
+    expect(warningMessage).toBeInTheDocument();
   });
 });
 
 describe('TestRunsTable Interactions', () => {
   test('navigates to run details when a run is clicked', async () => {
     // Arrange
-    const mockRuns = generateMockRuns(1);
-    const runsPromise = Promise.resolve(mockRuns);
+    const mockData: TestRunsData = { runs: generateMockRuns(1), limitExceeded: false };
+    const runsPromise = Promise.resolve(mockData);
+
     render(<TestRunsTable runsListPromise={runsPromise} />);
     const tableRow = await screen.findByText('Test Run 1');
 
@@ -122,14 +140,15 @@ describe('TestRunsTable Interactions', () => {
     fireEvent.click(tableRow);
 
     // Assert
-    expect(mockRouter.push).toHaveBeenCalledWith('/test-runs/1');
+    expect(mockRouterPush).toHaveBeenCalledWith('/test-runs/1');
   });
 
 
   test('handles pagination changes correctly', async () => {
     // Arrange
-    const mockRuns = generateMockRuns(15);
-    const runsPromise = Promise.resolve(mockRuns);
+    const mockData: TestRunsData = { runs: generateMockRuns(15), limitExceeded: false };
+    const runsPromise = Promise.resolve(mockData);
+
     render(<TestRunsTable runsListPromise={runsPromise} />);
     
     // Wait for the table to finish loading
