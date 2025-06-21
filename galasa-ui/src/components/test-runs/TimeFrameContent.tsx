@@ -130,6 +130,11 @@ export default function TimeFrameContent() {
 
     const { correctedFrom, correctedTo, notification: validationNotification } = applyTimeFrameRules(fromDate, toDate);
 
+    if (validationNotification?.kind === 'error') {
+      setNotification(validationNotification);
+      return; 
+    }
+
     const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
     setValues(finalState);
 

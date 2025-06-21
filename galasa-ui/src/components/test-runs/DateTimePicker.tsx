@@ -43,7 +43,6 @@ export default function DateTimePicker({
 
   const handleTimeBlur = () => {
     const formattedTime = parseAndValidateTime(localTime);
-    console.log(`Parsed time: ${formattedTime}`);
     if (formattedTime) {
       onTimeChange(formattedTime); 
     } else {
