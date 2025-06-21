@@ -193,7 +193,6 @@ export function addMonths(date: Date, months: number): Date {
     newDate.setDate(0);
   }
 
-  newDate.setHours(23, 59, 59, 999);
   return newDate;
 }
 

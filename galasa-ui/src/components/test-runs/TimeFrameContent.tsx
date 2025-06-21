@@ -30,33 +30,16 @@ type Notification = {
  * It returns a hard error for critical issues (like an inverted range).
  * @returns An object with the corrected dates and an optional notification object.
  */
-function applyTimeFrameRules(fromDate: Date, toDate: Date): { correctedFrom: Date; correctedTo: Date; notification: Notification | null } {
+export function applyTimeFrameRules(fromDate: Date, toDate: Date): { correctedFrom: Date; correctedTo: Date; notification: Notification | null } {
   let correctedFrom = new Date(fromDate.getTime());
   let correctedTo = new Date(toDate.getTime());
   let notification: Notification | null = null;
 
-  const now = new Date();
-  if (correctedTo > now) {
-    correctedTo = now;
-    notification = {
-      text: "Date range was capped at the current time.",
-      kind: 'warning',
-    };
-  }
-  
-  const maxToDate = addMonths(correctedFrom, MAX_RANGE_MONTHS);
-  if (correctedTo > maxToDate) {
-    correctedTo = maxToDate;
-    notification = {
-      text: `Date range cannot exceed ${MAX_RANGE_MONTHS} months; 'To' date has been adjusted.`,
-      kind: 'warning',
-    };
-  }
-
   if (correctedFrom > correctedTo) {
-    return { 
-      correctedFrom: fromDate, // Return original dates
-      correctedTo: toDate, 
+    console.error("Invalid date range: 'From' date is after 'To' date.");
+    return {
+      correctedFrom: fromDate,
+      correctedTo: toDate,
       notification: {
         text: "'To' date cannot be before 'From' date.",
         kind: 'error',
@@ -64,13 +47,35 @@ function applyTimeFrameRules(fromDate: Date, toDate: Date): { correctedFrom: Dat
     };
   }
 
+  const maxToDate = addMonths(correctedFrom, MAX_RANGE_MONTHS);
+  if (correctedTo > maxToDate) {
+    console.warn(`'To' date exceeds the maximum allowed range of ${MAX_RANGE_MONTHS} months from 'From' date.`);
+    correctedTo = maxToDate;
+    notification = {
+      text: `Date range cannot exceed ${MAX_RANGE_MONTHS} months; 'To' date has been adjusted.`,
+      kind: 'warning',
+    };
+  }
+
+  const now = new Date();
+  console.log('Current time:', now.toISOString());
+  if (correctedTo > now) {
+    console.warn("'To' date exceeds the current time, capping it at 'now'.");
+    correctedTo = now;
+    notification = {
+      text: "Date range was capped at the current time.",
+      kind: 'warning',
+    };
+  }
+
+
   return { correctedFrom, correctedTo, notification };
 }
 
 /**
  * Calculates the final, fully synchronized state object from two valid dates.
  */
-const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFrameValues => {
+export const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFrameValues => {
   const fromUiParts = extractDateTimeForUI(fromDate);
   const toUiParts = extractDateTimeForUI(toDate);
   let difference = toDate.getTime() - fromDate.getTime();

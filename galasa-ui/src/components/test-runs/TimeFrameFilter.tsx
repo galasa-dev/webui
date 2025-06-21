@@ -29,11 +29,11 @@ export default function TimeFrameFilter({
         onAmPmChange={(amPm) => handleValueChange('fromAmPm', amPm)}
       />
 
-      <FormGroup legendText="Duration" className={styles.TimeFrameFilterItem}>
+      <FormGroup legendText="Duration" className={styles.TimeFrameFilterItem} >
         <div className={styles.DurationInputsContainer} key={values.toDate?.getTime() || 0}>
-          <NumberInput id="duration-days" label="Days" min={0} max={90} value={values.durationDays} onChange={(_, { value }) => handleValueChange('durationDays', value)} />
-          <NumberInput id="duration-hours" label="Hours" min={0} max={23} value={values.durationHours} onChange={(_, { value }) => handleValueChange('durationHours', value)} />
-          <NumberInput id="duration-minutes" label="Minutes" min={0} max={59} value={values.durationMinutes} onChange={(_, { value }) => handleValueChange('durationMinutes', value)} />
+          <NumberInput id="duration-days" label="Days" min={0} max={90} value={values.durationDays} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationDays', value)} />
+          <NumberInput id="duration-hours" label="Hours" min={0} max={23} value={values.durationHours} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationHours', value)} />
+          <NumberInput id="duration-minutes" label="Minutes" min={0} max={59} value={values.durationMinutes} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationMinutes', value)} />
         </div>
       </FormGroup>
 
