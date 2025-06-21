@@ -24,6 +24,17 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => mockRouter),
 
 }));
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "modalHeading": "Insufficient Permissions",
+      "logoutButton": "Log out",
+      "notificationSubtitle": "You have access to the Galasa service, but your user role does not have sufficient permissions to perform this operation.",
+      "helpText": "If this is a problem, contact your Galasa service administrator and ask to be assigned a role with the required permissions."
+    };
+    return translations[key] || key;
+  }
+}));
 
 test('renders markdown content', async () => {
   // Given...

@@ -4,9 +4,18 @@ exports[`MySettings Component renders correctly when user login id is found 1`] 
 <main
   id="content"
 >
-  <BreadCrumb />
+  <BreadCrumb
+    breadCrumbItems={
+      [
+        {
+          "route": "/",
+          "title": "home",
+        },
+      ]
+    }
+  />
   <PageTile
-    title="My Settings"
+    translationKey="MySettings.title"
   />
   <AccessTokensSection
     accessTokensPromise={Promise {}}

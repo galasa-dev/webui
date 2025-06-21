@@ -7,10 +7,11 @@ import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
+import { HOME } from "@/utils/constants/breadcrumb";
 import { Suspense } from "react";
 import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants";
+import {CLIENT_API_VERSION} from "@/utils/constants/common";
 
 /**
  * Fetches test runs from the Result Archive Store (RAS) for the last 24 hours.
@@ -22,7 +23,7 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
-      
+
     // Calculate the date for 24 hours ago
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 1);
@@ -30,7 +31,7 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
     // Fetch runs from the last 24 hours
     const response: RunResults = await rasApiClient.getRasSearchRuns(
       'from:desc',
-      Constants.CLIENT_API_VERSION,
+      CLIENT_API_VERSION,
       undefined,
       undefined,
       undefined,
@@ -52,13 +53,13 @@ const fetchAllTestRunsForLastDay  = async (): Promise<Run[]> => {
 export default async function TestRunsPage() {
   return (
     <main id="content">
-      <BreadCrumb />
-      <PageTile title={"Test Runs"} />
+      <BreadCrumb breadCrumbItems={[HOME]} />
+      <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsForLastDay()}/>
+        <Suspense fallback={<p>loading ...</p>}>
+          <TestRunsTabs runsListPromise={fetchAllTestRunsForLastDay()} />
         </Suspense>
       </div>
-    </main>   
+    </main>
   );
 }

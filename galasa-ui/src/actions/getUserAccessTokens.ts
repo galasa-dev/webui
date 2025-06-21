@@ -6,7 +6,7 @@
 
 import { AuthenticationAPIApi, AuthTokens } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants";
+import * as Constants from "@/utils/constants/common";
 
 export const fetchAccessTokens = async (loginId: string) => {
 

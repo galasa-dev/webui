@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 .tree {
-  width: 25%;
+  min-width: 15%;
 }
 
 .artifact {

@@ -8,17 +8,19 @@
 
 import React from 'react';
 import { Modal, InlineNotification } from "@carbon/react";
-import { handleDeleteCookieApiOperation } from '@/utils/functions';
+import { handleDeleteCookieApiOperation } from '@/utils/logout';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 function AccessDeniedModal() {
 
   const router = useRouter();
+  const translations= useTranslations('AccessDeniedModal');  
 
   return (
     <Modal
-      modalHeading="Insufficient Permissions"
-      primaryButtonText="Log out"
+      modalHeading={translations("modalHeading")}
+      primaryButtonText={translations("logoutButton")}
       open={true}
       onRequestSubmit={async () => {
         await handleDeleteCookieApiOperation(router);
@@ -30,13 +32,12 @@ function AccessDeniedModal() {
 
       <div className='margin-top-2'>
         <InlineNotification
-          subtitle="You have access to the Galasa service, but your user role does not have sufficient permissions to perform this operation."
+          subtitle={translations("notificationSubtitle")}
           kind="warning"
           lowContrast
           hideCloseButton
         />
-
-        <p className='margin-top-2'>If this is a problem, contact your Galasa service administrator and ask to be assigned a different role which will give you the permission.</p>
+        <p className='margin-top-2'>{translations("helpText")}</p>
       </div>
 
     </Modal>

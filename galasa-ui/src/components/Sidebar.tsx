@@ -6,15 +6,17 @@
 'use client';
 
 import { SideNav, SideNavItems, SideNavItem} from '@carbon/react';
+import { useTranslations } from 'next-intl';
 
 export default function Sidebar (){
+  const translations = useTranslations('Sidebar');
   return (
     <SideNav aria-label="Sidebar">
       <SideNavItems>
-        <SideNavItem >Token Management</SideNavItem>
-        <SideNavItem >You are logged in as:</SideNavItem>
-        <SideNavItem >Previous login</SideNavItem>
-        <SideNavItem >Your access roles:</SideNavItem>
+        <SideNavItem>{translations('tokenManagement')}</SideNavItem>
+        <SideNavItem>{translations('loggedInAs')}</SideNavItem>
+        <SideNavItem>{translations('previousLogin')}</SideNavItem>
+        <SideNavItem>{translations('accessRoles')}</SideNavItem>
       </SideNavItems>
     </SideNav>
   );

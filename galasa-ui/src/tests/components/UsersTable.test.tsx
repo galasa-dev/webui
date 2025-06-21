@@ -24,6 +24,31 @@ jest.mock('@carbon/react', () => {
   };
 });
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "searchPlaceholder": "Search",
+      "ariaLabel": "Users table",
+      "headers_loginId": "Login ID",
+      "headers_role": "Role",
+      "headers_lastLogin": "Last login",
+      "headers_lastAccessTokenUse": "Last access token use",
+      "headers_actions": "Actions",
+      "editIconDescription": "Edit User",
+      "deleteIconDescription": "Delete User",
+      "modal_label": "Delete User",
+      "modal_heading": "Are you sure you want to delete '{user}'?",
+      "modal_primaryButton": "Delete",
+      "modal_secondaryButton": "Cancel",
+      "modal_notificationTitle": "Deleting a user will remove any memory the Galasa service has of this user.",
+      "modal_notificationSubtitle": "Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.\n\nTests run by this user will remain untouched and available for queries.\n\nIf the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point.",
+      "errorTitle": "Something went wrong!",
+      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+    };
+    return translations[key] || key;
+  }
+}));
+
 let deleteUserByNumberMock: jest.Mock;
 
 deleteUserByNumberMock = jest.fn();

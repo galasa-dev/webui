@@ -3,44 +3,48 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-'use client';
-import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
-import styles from '@/styles/TestRunsPage.module.css';
-import TestRunsTable from './TestRunsTable';
-import { Run } from '@/generated/galasaapi';
+"use client";
+import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@carbon/react";
+import styles from "@/styles/TestRunsPage.module.css";
+import TestRunsTable from "./TestRunsTable";
+import { Run } from "@/generated/galasaapi";
+import { useTranslations } from "next-intl";
 
-type TabLabel = 'Timeframe' | 'Table Design' | 'Search Criteria' | 'Results';
 interface TabConfig {
-    label: TabLabel;
-    component: React.ReactNode;
+  label: string;
+  component: React.ReactNode;
 }
 
-// Currently, the content for each tab is static and under construction.
-const TimeframeContent = () => <p>
-    This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.
-</p>;
+export default function TestRunsTabs({
+  runsListPromise,
+}: {
+  runsListPromise: Promise<Run[]>;
+}) {
+  const translations = useTranslations("TestRunsTabs");
 
-const TableDesignContent = () => <p>
-    This page is under construction. In future, you will be able to choose which columns are visible and their order.
-</p>;
-
-const SearchCriteriaContent = () => <p>
-    This page is under construction. Define specific search criteria to filter the results below.
-</p>;
-
-
-export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<Run[]>}) {
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
-    {label: 'Timeframe', component: <TimeframeContent />},
-    {label: 'Table Design', component: <TableDesignContent />},
-    {label: 'Search Criteria', component: <SearchCriteriaContent />},
-    {label: 'Results', component: <TestRunsTable runsListPromise={runsListPromise}/>},
+    {
+      label: translations("tabs.timeframe"),
+      component: <p>{translations("content.timeframe")}</p>,
+    },
+    {
+      label: translations("tabs.tableDesign"),
+      component: <p>{translations("content.tableDesign")}</p>,
+    },
+    {
+      label: translations("tabs.searchCriteria"),
+      component: <p>{translations("content.searchCriteria")}</p>,
+    },
+    {
+      label: translations("tabs.results"),
+      component: <TestRunsTable runsListPromise={runsListPromise} />,
+    },
   ];
 
   return (
     <Tabs className={styles.tabs}>
-      <TabList scrollDebounceWait={200}>
+      <TabList scrollDebounceWait={200} aria-label="Test Runs Tabs">
         {TABS_CONFIG.map((tab) => (
           <Tab key={tab.label}>{tab.label}</Tab>
         ))}
@@ -48,12 +52,10 @@ export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promis
       <TabPanels>
         {TABS_CONFIG.map((tab) => (
           <TabPanel key={tab.label}>
-            <div className={styles.tabContent}>
-              {tab.component}
-            </div>
+            <div className={styles.tabContent}>{tab.component}</div>
           </TabPanel>
         ))}
       </TabPanels>
     </Tabs>
   );
-};
+}

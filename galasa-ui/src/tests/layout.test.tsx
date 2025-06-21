@@ -27,6 +27,29 @@ jest.mock('next/headers', () => ({
   }),
 }));
 
+
+jest.mock('next-intl/server', () => ({
+  getLocale: jest.fn(() => Promise.resolve('en')), // ✅ mock getLocale async
+}));
+
+jest.mock('next-intl', () => ({
+  useTranslations: jest.fn(() => (key: string, vars?: Record<string, any>) => {
+    switch (key) {
+    case 'profile': return 'My Profile';
+    case 'settings': return 'My Settings';
+    case 'logout': return 'Log out';
+    case 'users': return 'Users';
+    case 'testRuns': return 'Test runs';
+    case 'versionText': return `Galasa version ${vars?.version ?? ''}`;
+    case 'health': return 'Service health';
+    default: return `Translated ${key}`;
+    }
+  }),
+
+  NextIntlClientProvider: ({ children }: any) => <>{children}</>,
+}));
+
+
 jest.mock('next/navigation', () => ({
 
   useRouter: jest.fn(() => mockRouter),
@@ -51,8 +74,10 @@ describe('Layout', () => {
   });
 
   it('renders the web UI layout', async () => {
+    const children = <>Hello, world!</>;
     const layout = await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
+      const renderedLayout = await RootLayout({ children });
+      return render(renderedLayout);
     });
     expect(layout).toMatchSnapshot();
   });
@@ -60,11 +85,13 @@ describe('Layout', () => {
   it('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank string', async () => {
 
     process.env.GALASA_SERVICE_NAME = "";
+    const children = <>Hello, world!</>;
 
     await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
-    });
+      const renderedLayout = await RootLayout({ children });
+      return render(renderedLayout);
 
+    });
     const titleElement = document.querySelector('title')?.textContent;
     expect(titleElement).toBe("Galasa Service");
   });
@@ -72,12 +99,13 @@ describe('Layout', () => {
   it('renders custom title when env GALASA_SERVICE_NAME is not present (not null or blank)', async () => {
 
     process.env.GALASA_SERVICE_NAME = 'Managers';
+    const children = <>Hello, world!</>;
     await act(async () => {
-      return render(<RootLayout>Hello, world!</RootLayout>);
+      const renderedLayout = await RootLayout({ children });
+      return render(renderedLayout);
     });
 
     const titleElement = document.querySelector('title')?.textContent;
-
     expect(titleElement).not.toBe("Galasa Service");
     expect(titleElement).toBe("Managers");
   });

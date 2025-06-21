@@ -12,7 +12,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
           class="cds--tile"
           id="tile"
         >
-          Home
+          Home.title
         </div>
         <section>
           <div
@@ -32,7 +32,7 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
         class="cds--tile"
         id="tile"
       >
-        Home
+        Home.title
       </div>
       <section>
         <div

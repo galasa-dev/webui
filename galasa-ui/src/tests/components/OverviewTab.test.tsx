@@ -16,6 +16,25 @@ jest.mock('@carbon/react', () => ({
   ),
 }));
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      bundle: "Bundle",
+      test: "Test",
+      group: "Group",
+      submissionId: "Submission ID",
+      requestor: "Requestor",
+      submitted: "Submitted",
+      started: "Started",
+      finished: "Finished",
+      duration: "Duration",
+      tags: "Tags",
+      noTags: "No tags were associated with this test run.",
+    };
+    return translations[key] || key;
+  },
+}));
+
 const completeMetadata: RunMetadata = {
   runId: "12345678",
   runName: "C123456",
@@ -69,7 +88,7 @@ describe('OverviewTab', () => {
   it('renders each tag when tags array is non-empty', () => {
     render(<OverviewTab metadata={completeMetadata} />);
     // header
-    expect(screen.getByRole('heading', { level: 5, name: 'Tags:' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 5, name: 'Tags' })).toBeInTheDocument();
     // tags
     const tagEls = screen.getAllByTestId('mock-tag');
     expect(tagEls).toHaveLength(2);

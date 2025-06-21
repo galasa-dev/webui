@@ -15,11 +15,28 @@ jest.mock('@/components/test-runs/TestRunsTable', () => {
     default: () => <div data-testid="test-runs-table">Mocked Test Runs Table</div>,
   };
 });
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "tabs.timeframe": "Timeframe",
+      "tabs.tableDesign": "Table Design",
+      "tabs.searchCriteria": "Search Criteria",
+      "tabs.results": "Results",
+      "content.timeframe":
+        "This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.",
+      "content.tableDesign":
+        "This page is under construction. In future, you will be able to choose which columns are visible and their order.",
+      "content.searchCriteria":
+        "This page is under construction. Define specific search criteria to filter the results below.",
+    };
+    return translations[key] || key;
+  },
+}));
 
 // Mock window.matchMedia to prevent errors in the JSDOM test environment
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -65,5 +82,4 @@ describe('TestRunsTabs Component', () => {
     expect(screen.getByTestId('test-runs-table')).toBeVisible();
     expect(screen.getByText('Mocked Test Runs Table')).toBeVisible();
   });
-
 });

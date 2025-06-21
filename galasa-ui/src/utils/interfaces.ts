@@ -67,3 +67,8 @@ export interface DataTableRow {
   isExpanded?: boolean;
   isSelected?: boolean;
 }
+
+export interface RunLog {
+  content : string;
+  route: string;
+}

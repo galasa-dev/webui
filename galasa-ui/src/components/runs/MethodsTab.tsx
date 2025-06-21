@@ -4,89 +4,93 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-import { TestMethod } from '@/generated/galasaapi';
-import { getIsoTimeDifference } from '@/utils/functions';
-import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
-import { DataTable, TableContainer, Table, TableCell, TableHeader } from '@carbon/react';
-import TableBody, { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
-import TableHead, { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
-import TableRow, { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
-import React, { useEffect, useState } from 'react';
-import { TableToolbarContent } from '@carbon/react';
-import { TableToolbarSearch } from '@carbon/react';
-import StatusIndicator from '../common/StatusIndicator';
+import { TestMethod } from "@/generated/galasaapi";
+import { getIsoTimeDifference } from "@/utils/timeOperations";
+import { DataTableHeader, DataTableRow } from "@/utils/interfaces";
+import {
+  DataTable,
+  TableContainer,
+  Table,
+  TableCell,
+  TableHeader,
+} from "@carbon/react";
+import TableBody, {
+  TableBodyProps,
+} from "@carbon/react/lib/components/DataTable/TableBody";
+import TableHead, {
+  TableHeadProps,
+} from "@carbon/react/lib/components/DataTable/TableHead";
+import TableRow, {
+  TableRowProps,
+} from "@carbon/react/lib/components/DataTable/TableRow";
+import React, { useEffect, useState } from "react";
+import { TableToolbarContent } from "@carbon/react";
+import { TableToolbarSearch } from "@carbon/react";
+import StatusIndicator from "../common/StatusIndicator";
 import styles from "@/styles/MethodsTab.module.css";
-
+import { useTranslations } from "next-intl";
 
 export interface MethodDetails {
-
   id: string;
   methodName: string;
   duration: string;
   status: string;
   result: string;
-
 }
 
 function MethodsTab({ methods }: { methods: TestMethod[] }) {
+  const translations = useTranslations("MethodsTab");
 
   const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
 
   const extractMethods = (methods: TestMethod[]) => {
-
     let methodDetails: MethodDetails[] = [];
 
     methods.map((method, index) => {
       const methodDetail: MethodDetails = {
-
         id: index.toString(),
         methodName: method.methodName || "",
         duration: getIsoTimeDifference(method.startTime!, method.endTime!),
         status: method.status || "",
-        result: method.result || ""
+        result: method.result || "",
       };
 
       methodDetails.push(methodDetail);
-    }
-    );
+    });
 
     setMethodDetails(methodDetails);
-
   };
 
   const headers = [
-
     // headers we want to show in the data table
     // keys should match with the prop name in the interface
     {
       key: "methodName",
-      header: "Name"
+      header: translations("table.methodName"),
     },
     {
       key: "status",
-      header: "Status"
+      header: translations("table.status"),
     },
     {
       key: "result",
-      header: "Result"
+      header: translations("table.result"),
     },
     {
       key: "duration",
-      header: "Duration"
+      header: translations("table.duration"),
     },
   ];
 
   useEffect(() => {
-
     extractMethods(methods);
-
   }, [methods]);
 
   return (
     <>
       <div className={styles.titleContainer}>
-        <h3>Methods</h3>
-        <p>The list of methods executed during this test run.</p>
+        <h3>{translations("title")}</h3>
+        <p>{translations("subtitle")}</p>
       </div>
       <DataTable isSortable rows={methodDetails} headers={headers}>
         {({
@@ -95,7 +99,7 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
           getHeaderProps,
           getRowProps,
           getTableProps,
-          onInputChange
+          onInputChange,
         }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
@@ -106,13 +110,20 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
         }) => (
           <TableContainer>
             <TableToolbarContent>
-              <TableToolbarSearch placeholder="Search method" persistent onChange={onInputChange} />
+              <TableToolbarSearch
+                placeholder={translations("search_placeholder")}
+                persistent
+                onChange={onInputChange}
+              />
             </TableToolbarContent>
             <Table {...getTableProps()} aria-label="runs table" size="lg">
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                    <TableHeader
+                      key={header.key}
+                      {...getHeaderProps({ header })}
+                    >
                       {header.header}
                     </TableHeader>
                   ))}
@@ -129,7 +140,9 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
                       </TableCell>
                       {/* Status */}
                       <TableCell key={row.cells[1].id}>
-                        <p style={{ "textTransform": "capitalize" }}>{row.cells[1].value}</p>
+                        <p style={{ textTransform: "capitalize" }}>
+                          {row.cells[1].value}
+                        </p>
                       </TableCell>
                       {/* Result */}
                       <TableCell key={row.cells[2].id}>
@@ -149,6 +162,6 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
       </DataTable>
     </>
   );
-};
+}
 
 export default MethodsTab;
