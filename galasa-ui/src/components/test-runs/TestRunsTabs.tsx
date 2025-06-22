@@ -7,6 +7,7 @@
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@carbon/react";
 import styles from "@/styles/TestRunsPage.module.css";
 import TestRunsTable from "./TestRunsTable";
+import SearchCriteriaContent from "./SearchCriteriaContent";
 import { Run } from "@/generated/galasaapi";
 import { useTranslations } from "next-intl";
 
@@ -34,7 +35,7 @@ export default function TestRunsTabs({
     },
     {
       label: translations("tabs.searchCriteria"),
-      component: <p>{translations("content.searchCriteria")}</p>,
+      component: <SearchCriteriaContent />,
     },
     {
       label: translations("tabs.results"),

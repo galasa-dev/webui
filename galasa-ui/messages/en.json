@@ -127,7 +127,7 @@
     "title": "Edit User"
   },
   "TestRun": {
-    "title": "Access Denied",
+    "title": "Test Runs",
     "underConstruction": "This page is under construction. Please come back later to query a list of test runs.",
     "status": "Loading..."
   },
