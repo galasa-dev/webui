@@ -10,11 +10,12 @@ import {
   StructuredListHead,
   StructuredListCell, 
   StructuredListRow, 
-  StructuredListBody, 
+  StructuredListBody,
 } from "@carbon/react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import CustomSearchComponent from "./CustomSearchComponent";
+import CustomCheckBoxList from "./CustomCheckBoxList";
 
 interface FilterableField {
     id: string;
@@ -27,6 +28,7 @@ interface SearchCriteriaContentProps {
   requestorNamesPromise: Promise<string[]>, resultsNamesPromise: Promise<string[]>
 }
 
+
 const filterableFields: FilterableField[] = [
   {id: 'runName', label: 'Test Run Name', placeHolder: 'any', description: 'Type the name of one test run. An exact match is searched for.'},
   {id: 'requestor', label: 'Requestor', placeHolder: 'any', description: 'Type the name of a requestor. An exact match is searched for.'},
@@ -36,7 +38,7 @@ const filterableFields: FilterableField[] = [
   {id: 'testName', label: 'Test Name', placeHolder: 'any', description: 'Type the name of the test.'},
   {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Type the status of the test run.'},
   {id: 'tags', label: 'Tags', placeHolder: 'any', description: 'Type the tags associated with the test run.'},
-  {id: 'result', label: 'Result', placeHolder: 'Finished, Queued, RunDone, Waiting', description: 'Type the result of the test run.'},
+  {id: 'result', label: 'Result', placeHolder: 'Finished, Queued, RunDone, Waiting', description: 'Select the test result you wish to search for.'},
 ];
 
 export default function SearchCriteriaContent({requestorNamesPromise, resultsNamesPromise}: SearchCriteriaContentProps) {
@@ -48,6 +50,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   const [currentInputValue, setCurrentInputValue] = useState('');
   const [allRequestors, setAllRequestors] = useState<string[]>([]);
   const [resultsNames, setResultsNames] = useState<string[]>([]);
+  const [selectedResults, setSelectedResults] = useState<string[]>([]);
 
 
   // Initialize the saved query  state directly from the URL
@@ -57,6 +60,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       const value = searchParams.get(field.id);
       if (value) {
         initialQuery.set(field.id, value);
+        if (field.id === 'result') {
+          setSelectedResults(value.split(','));
+        }
       } 
     });
 
@@ -73,7 +79,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       } catch (error) {
         console.error("Error fetching requestors:", error);
       }
-    }
+    };
     loadRequestors();
   }, [requestorNamesPromise]);
 
@@ -87,26 +93,43 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       } catch (error) {
         console.error("Error fetching results:", error);
       }
-    }
+    };
     loadResultsNames();
-  }, [resultsNamesPromise])
+  }, [resultsNamesPromise]);
 
   // Update the current input value when the selected filter changes or when the query is updated
   useEffect(() => {
     const savedValue = query.get(selectedFilter.id) || '';
     setCurrentInputValue(savedValue);
+
+    if (selectedFilter.id === 'result') {
+      const resultsFromQuery = query.get('result');
+      setSelectedResults(resultsFromQuery ? resultsFromQuery.split(','): []);
+    }
+
   }, [selectedFilter, query]);
 
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
     const newQuery = new Map(query);
-    if (currentInputValue && currentInputValue.trim() !== '') {
-      newQuery.set(selectedFilter.id, currentInputValue.trim());
+   
+    // Handle saving based on which filter is selected
+    if (selectedFilter.id === 'result') {
+      if (selectedResults.length > 0) {
+        newQuery.set('result', selectedResults.join(','));
+      } else {
+        newQuery.delete('result');
+      }
     } else {
-      // If the input is empty, remove the filter
-      newQuery.delete(selectedFilter.id);
+      // Logic for all other input-based fields
+      if (currentInputValue && currentInputValue.trim() !== '') {
+        newQuery.set(selectedFilter.id, currentInputValue.trim());
+      } else {
+        newQuery.delete(selectedFilter.id);
+      }
     }
+        
     setQuery(newQuery);
 
     // Update the URL with the new query parameters
@@ -115,17 +138,23 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       params.set(key, value);
     });
     router.replace(`${pathname}?${params.toString()}`, {scroll: false});
-  }
+  };
 
   const handleCancel = () => {
-    // Revert any typing by resetting the input to the last saved value
-    setCurrentInputValue(query.get(selectedFilter.id) || '');
+    // Revert changes for the currently selected filter
+    if (selectedFilter.id === 'result') {
+      const resultsFromQuery = query.get('result');
+      setSelectedResults(resultsFromQuery ? resultsFromQuery.split(',') : []);
+    } else {
+      setCurrentInputValue(query.get(selectedFilter.id) || '');
+    }
   };
 
 
   // Render the editor component based on the selected filter
   const renderComponent = (field: FilterableField) => {
-    const commonProps = {
+    // Props for the search component
+    const searchProps = {
       title: field.description,
       placeholder: field.placeHolder,
       value: currentInputValue,
@@ -135,13 +164,24 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onCancel: handleCancel,
     };
 
+    // Props for the checkbox list component
+    const checkboxProps = {
+      title: field.description,
+      items: resultsNames,
+      selectedItems: selectedResults,
+      onChange: setSelectedResults, 
+      onSubmit: handleSave,
+      onCancel: handleCancel,
+    };
+
+
     switch (field.id) {
-    case 'runName':
-      return <CustomSearchComponent {...commonProps} />;
     case 'requestor':
-      return <CustomSearchComponent {...commonProps} allRequestors={allRequestors} />;
+      return <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+    case 'result':
+      return <CustomCheckBoxList {...checkboxProps} />;
     default:
-      return <CustomSearchComponent {...commonProps} />;
+      return <CustomSearchComponent {...searchProps} />;
     }
   };
 

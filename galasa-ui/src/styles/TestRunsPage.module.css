@@ -39,6 +39,11 @@
   padding: 1rem;
 }
   
+.checkBoxList {
+  flex: 3;
+  padding: 2rem;
+  font-size: 2rem;
+}
 .rowWrapper {
   display: grid; 
   grid-template-columns: 40% 1fr;

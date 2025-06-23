@@ -35,6 +35,7 @@ interface fetchAllTestRunsByPagingParams {
   packageName?: string;
   bundle?: string;
   testName?: string;
+  result?: string;
 }
 
 
@@ -48,7 +49,7 @@ interface fetchAllTestRunsByPagingParams {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
@@ -67,18 +68,18 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
       const response: RunResults = await rasApiClient.getRasSearchRuns(
         'from:desc',
         CLIENT_API_VERSION,
-        undefined, // result
+        result,
         undefined, // status
-        undefined, // bundle
+        bundle, // bundle
         requestor, 
         fromDate, 
         toDate,  
-        undefined, // testname
+        testName, 
         undefined, // page
         BATCH_SIZE, 
         undefined, // runId
         testRunName, 
-        undefined, // group
+        group, // group
         undefined, // submissionId
         undefined, // detail
         undefined, // tags
@@ -162,6 +163,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
   const packageName = searchParams?.package ? searchParams.package : undefined;
   const bundle = searchParams?.bundle ? searchParams.bundle : undefined;
   const testName = searchParams?.testName ? searchParams.testName : undefined;
+  const result = searchParams?.result ? searchParams.result : undefined;
 
   return (
     <main id="content">
@@ -170,7 +172,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
           <TestRunsTabs 
-          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName})} 
+          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result })} 
             requestorNamesPromise={getRequestorList()} 
             resultsNamesPromise={getResultsNames()} 
             />
