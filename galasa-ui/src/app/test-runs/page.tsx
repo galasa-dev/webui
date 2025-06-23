@@ -13,6 +13,8 @@ import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { getYesterday } from "@/utils/timeOperations";
 import { CLIENT_API_VERSION, MAX_RECORDS } from "@/utils/constants/common";
+import { UserData } from '@/generated/galasaapi';
+import { fetchAllUsersFromApiServer } from "../users/page";
 
 const BATCH_SIZE = 100; // Define the batch size for fetching runs
 
@@ -28,6 +30,7 @@ interface fetchAllTestRunsByPagingParams {
   fromDate: Date;
   toDate: Date;
   testRunName?: string;
+  requestor?: string;
 }
 
 
@@ -41,7 +44,7 @@ interface fetchAllTestRunsByPagingParams {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
@@ -61,14 +64,14 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName}: fetchA
         undefined, // result
         undefined, // status
         undefined, // bundle
-        undefined, // requestor
+        requestor, 
         fromDate, 
         toDate,  
         undefined, // testname
         undefined, // page
         BATCH_SIZE, 
         undefined, // runId
-        testRunName, // runname
+        testRunName, 
         undefined, // group
         undefined, // submissionId
         undefined, // detail
@@ -108,10 +111,28 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName}: fetchA
   return {runs: allRuns, limitExceeded };
 };
 
+/**
+ * Fetches a list of requestor names from the API server.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of requestor names.
+ */
+
+export async function getRequestorList(): Promise<string[]> {
+  try {
+    const users: UserData[] = await fetchAllUsersFromApiServer();
+    const requestorNames = users.map((user: UserData) => user.loginId);
+
+    return requestorNames as string[];
+  } catch (error) {
+    console.error("Error fetching requestor list:", error);
+    return [];
+  }
+}
+
 export default async function TestRunsPage({searchParams}: {searchParams: {[key: string]: string | undefined}} ) {
   const fromDate = searchParams?.from ? new Date(searchParams.from) : getYesterday();
   const toDate = searchParams?.to ? new Date(searchParams.to) : new Date();
   const testRunName = searchParams?.runName ? searchParams.runName : undefined;
+  const requestor = searchParams?.requestor ? searchParams.requestor : undefined;
 
   return (
     <main id="content">
@@ -119,7 +140,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName})}/>
+          <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor})} requestorNamesPromise={getRequestorList()} />
         </Suspense>
       </div>
     </main>

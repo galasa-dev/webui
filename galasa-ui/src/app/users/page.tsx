@@ -16,22 +16,22 @@ import { HOME } from '@/utils/constants/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
+const apiConfig = createAuthenticatedApiConfiguration();
+export const fetchAllUsersFromApiServer = async () => {
+
+  let users: UserData[] = [];
+
+  const usersApiClient = new UsersAPIApi(apiConfig);
+  const usersReponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION);
+
+  if (usersReponse && usersReponse.length >= 1) {
+    users = structuredClone(usersReponse);
+  }
+
+  return users;
+};
+
 export default function UsersPage() {
-
-  const apiConfig = createAuthenticatedApiConfiguration();
-  const fetchAllUsersFromApiServer = async () => {
-
-    let users: UserData[] = [];
-
-    const usersApiClient = new UsersAPIApi(apiConfig);
-    const usersReponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION);
-
-    if (usersReponse && usersReponse.length >= 1) {
-      users = structuredClone(usersReponse);
-    }
-
-    return users;
-  };
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />

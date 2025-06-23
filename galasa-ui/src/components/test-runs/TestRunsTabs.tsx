@@ -24,7 +24,7 @@ const TableDesignContent = () => <p>
 
 
 
-export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
+export default function TestRunsTabs({runsListPromise, requestorNamesPromise}: {runsListPromise: Promise<TestRunsData>, requestorNamesPromise: Promise<string[]>}) {
   const translations = useTranslations("TestRunsTabs");
 
   // Define the tabs with their corresponding content.
@@ -39,7 +39,7 @@ export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promis
     },
     {
       label: translations("tabs.searchCriteria"),
-      component: <SearchCriteriaContent />,
+      component: <SearchCriteriaContent requestorNamesPromise={requestorNamesPromise}/>,
     },
     {
       label: translations("tabs.results"),

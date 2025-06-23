@@ -63,6 +63,37 @@
 
 }
 
+/* In TestRunsPage.module.css */
+
+.suggestionContainer {
+  position: relative; /* This is crucial for positioning the list */
+}
+
+.suggestionList {
+  position: absolute;
+  top: 100%; /* Position it right below the input */
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+.suggestionList li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.suggestionList li:hover {
+  background-color: #f0f0f0;
+}
+
 .buttonContainer {
     display: flex;
     gap: 1rem;
