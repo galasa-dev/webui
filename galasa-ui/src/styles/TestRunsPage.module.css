@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-.testRunsContentWrapper {
+ .testRunsContentWrapper {
     width: 90%;
     height: 100%;
     margin: 4rem auto;
@@ -72,4 +72,35 @@
 .buttonContainer > button {
     width: 20%;
     height: 3rem;
+}
+
+.TimeFrameFilterContainer {
+    display: flex;
+    justify-content: space-between; 
+    gap: 2rem; 
+    width: 85%;
+    padding-top: 1.5rem;
+}
+
+.DurationInputsContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.ErrorNotification {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1rem;
+    z-index: 9999;
+}
+
+@media (max-width: 1055px) {
+    .TimeFrameFilterContainer {
+        flex-direction: column; 
+    }
+    
+    .DurationInputsContainer {
+        flex-direction: column; 
+        gap: 0.5rem;
+    }
 }

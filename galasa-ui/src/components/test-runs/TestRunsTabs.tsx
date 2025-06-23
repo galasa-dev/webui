@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
-import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@carbon/react";
-import styles from "@/styles/TestRunsPage.module.css";
-import TestRunsTable from "./TestRunsTable";
+'use client';
+import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
+import styles from '@/styles/TestRunsPage.module.css';
+import TimeframeContent from './TimeFrameContent';
+import TestRunsTable from './TestRunsTable';
 import SearchCriteriaContent from "./SearchCriteriaContent";
-import { Run } from "@/generated/galasaapi";
+import { TestRunsData } from '@/app/test-runs/page';
 import { useTranslations } from "next-intl";
 
 interface TabConfig {
@@ -16,18 +17,21 @@ interface TabConfig {
   component: React.ReactNode;
 }
 
-export default function TestRunsTabs({
-  runsListPromise,
-}: {
-  runsListPromise: Promise<Run[]>;
-}) {
+
+const TableDesignContent = () => <p>
+    This page is under construction. In future, you will be able to choose which columns are visible and their order.
+</p>;
+
+
+
+export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
   const translations = useTranslations("TestRunsTabs");
 
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
     {
       label: translations("tabs.timeframe"),
-      component: <p>{translations("content.timeframe")}</p>,
+      component: <TimeframeContent />,
     },
     {
       label: translations("tabs.tableDesign"),

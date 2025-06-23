@@ -68,6 +68,18 @@ export interface DataTableRow {
   isSelected?: boolean;
 }
 
+export interface TimeFrameValues {
+    fromDate: Date;
+    fromTime: string;
+    fromAmPm: 'AM' | 'PM';
+    toDate: Date;
+    toTime: string;
+    toAmPm: 'AM' | 'PM';
+    durationDays: number;
+    durationHours: number;
+    durationMinutes: number;
+}
+
 export interface RunLog {
   content : string;
   route: string;

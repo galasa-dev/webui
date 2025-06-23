@@ -5,14 +5,14 @@
  */
 import { render, screen, waitFor } from '@testing-library/react';
 import { Run } from '@/generated/galasaapi';
-import TestRunsPage, { fetchAllTestRunsForLastDay } from '@/app/test-runs/page';
+import TestRunsPage, { fetchAllTestRunsByPaging } from '@/app/test-runs/page';
 
 jest.mock('@/app/test-runs/page', () => {
   const originalModule = jest.requireActual('@/app/test-runs/page');
   return {
     __esModule: true,
     default: originalModule.default,
-    fetchAllTestRunsForLastDay: jest.fn(),
+    fetchAllTestRunsByPaging: jest.fn(),
   };
 });
 
@@ -39,7 +39,7 @@ jest.mock('@/components/common/BreadCrumb', () =>
   }
 );
 
-const mockedFetch = fetchAllTestRunsForLastDay as jest.Mock;
+const mockedFetch = fetchAllTestRunsByPaging as jest.Mock;
 
 describe('TestRunsPage', () => {
   beforeEach(() => {
@@ -53,7 +53,7 @@ describe('TestRunsPage', () => {
     mockedFetch.mockResolvedValue(mockRuns);
 
     // Act
-    const page = await TestRunsPage();
+    const page = await TestRunsPage({searchParams: { from: '', to: '' } });
     render(page);
 
     // Assert
@@ -68,7 +68,7 @@ describe('TestRunsPage', () => {
     mockedFetch.mockResolvedValue([]);
 
     // Act
-    const Page = await TestRunsPage();
+    const Page = await TestRunsPage({searchParams: { from: '', to: '' } });
     render(Page);
 
     // Assert
