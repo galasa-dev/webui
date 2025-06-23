@@ -9,7 +9,7 @@ import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
 import { HOME } from "@/utils/constants/breadcrumb";
 import { Suspense } from "react";
-import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
+import { ResultArchiveStoreAPIApi, ResultNames, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { getYesterday } from "@/utils/timeOperations";
 import { CLIENT_API_VERSION, MAX_RECORDS } from "@/utils/constants/common";
@@ -31,6 +31,10 @@ interface fetchAllTestRunsByPagingParams {
   toDate: Date;
   testRunName?: string;
   requestor?: string;
+  group?: string;
+  packageName?: string;
+  bundle?: string;
+  testName?: string;
 }
 
 
@@ -44,11 +48,13 @@ interface fetchAllTestRunsByPagingParams {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
   let limitExceeded = false;
+
+  console.log("Fetching test runs from:", fromDate, "to:", toDate, "for runName:", testRunName, "requestor:", requestor, "group:", group, "packageName:", packageName, "bundle:", bundle, "testName:", testName);
 
   if (fromDate > toDate) return {runs: [] , limitExceeded};
 
@@ -107,7 +113,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
   } catch (error: any) {
     console.error("Error fetching test runs:", error);
   }
-  
+  console.log("Total runs fetched:", allRuns.length, "Limit exceeded:", limitExceeded);
   return {runs: allRuns, limitExceeded };
 };
 
@@ -116,7 +122,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
  * @returns {Promise<string[]>} - A promise that resolves to an array of requestor names.
  */
 
-export async function getRequestorList(): Promise<string[]> {
+async function getRequestorList(): Promise<string[]> {
   try {
     const users: UserData[] = await fetchAllUsersFromApiServer();
     const requestorNames = users.map((user: UserData) => user.loginId);
@@ -128,11 +134,34 @@ export async function getRequestorList(): Promise<string[]> {
   }
 }
 
+async function getResultsNames(): Promise<string[]> {
+  try {
+    const apiConfig = createAuthenticatedApiConfiguration();
+    const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+    
+    const resultsNamesResponse = await rasApiClient.getRasResultNames(
+      CLIENT_API_VERSION,
+      'results:asc'
+    );
+
+    const resultsNames = resultsNamesResponse?.resultnames ?? [];
+    return resultsNames;
+
+  } catch (error) {
+    console.error("Error fetching results names:", error);
+    return [];
+  }
+}
+
 export default async function TestRunsPage({searchParams}: {searchParams: {[key: string]: string | undefined}} ) {
   const fromDate = searchParams?.from ? new Date(searchParams.from) : getYesterday();
   const toDate = searchParams?.to ? new Date(searchParams.to) : new Date();
   const testRunName = searchParams?.runName ? searchParams.runName : undefined;
   const requestor = searchParams?.requestor ? searchParams.requestor : undefined;
+  const group = searchParams?.group ? searchParams.group : undefined;
+  const packageName = searchParams?.package ? searchParams.package : undefined;
+  const bundle = searchParams?.bundle ? searchParams.bundle : undefined;
+  const testName = searchParams?.testName ? searchParams.testName : undefined;
 
   return (
     <main id="content">
@@ -140,7 +169,11 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor})} requestorNamesPromise={getRequestorList()} />
+          <TestRunsTabs 
+          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName})} 
+            requestorNamesPromise={getRequestorList()} 
+            resultsNamesPromise={getResultsNames()} 
+            />
         </Suspense>
       </div>
     </main>

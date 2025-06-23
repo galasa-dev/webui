@@ -116,6 +116,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       try {
         const {runs, limitExceeded } = await runsListPromise;
         setRawRuns(runs || []);
+        console.log(runs);
         setLimitExceeded(limitExceeded);
       } catch (error) {
         console.error("Error fetching test runs:", error);

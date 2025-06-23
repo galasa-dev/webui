@@ -17,6 +17,11 @@ interface TabConfig {
   component: React.ReactNode;
 }
 
+interface TestRunsTabProps {
+  runsListPromise: Promise<TestRunsData>;
+  requestorNamesPromise: Promise<string[]>;
+  resultsNamesPromise: Promise<string[]>;
+}
 
 const TableDesignContent = () => <p>
     This page is under construction. In future, you will be able to choose which columns are visible and their order.
@@ -24,7 +29,7 @@ const TableDesignContent = () => <p>
 
 
 
-export default function TestRunsTabs({runsListPromise, requestorNamesPromise}: {runsListPromise: Promise<TestRunsData>, requestorNamesPromise: Promise<string[]>}) {
+export default function TestRunsTabs({runsListPromise, requestorNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
 
   // Define the tabs with their corresponding content.

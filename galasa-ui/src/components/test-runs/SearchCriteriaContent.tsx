@@ -5,8 +5,6 @@
  */
 "use client";
 import styles from "@/styles/TestRunsPage.module.css";
-import { Button } from "@carbon/react";
-import { Search } from "@carbon/react";
 import { 
   StructuredListWrapper, 
   StructuredListHead,
@@ -16,6 +14,7 @@ import {
 } from "@carbon/react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import CustomSearchComponent from "./CustomSearchComponent";
 
 interface FilterableField {
     id: string;
@@ -24,21 +23,15 @@ interface FilterableField {
     placeHolder: string;
 }
 
-interface SearchComponentProps {
-  title: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClear: () => void;
-  onSubmit: (e: FormEvent) => void;
-  onCancel: () => void;
-  allRequestors?: string[]; 
+interface SearchCriteriaContentProps {
+  requestorNamesPromise: Promise<string[]>, resultsNamesPromise: Promise<string[]>
 }
 
 const filterableFields: FilterableField[] = [
   {id: 'runName', label: 'Test Run Name', placeHolder: 'any', description: 'Type the name of one test run. An exact match is searched for.'},
   {id: 'requestor', label: 'Requestor', placeHolder: 'any', description: 'Type the name of a requestor. An exact match is searched for.'},
   {id: 'group', label: 'Group', placeHolder: 'any', description: 'Type the name of the group.'},
+  {id: 'bundle', label: 'Bundle', placeHolder: 'any', description: 'Type the name of the bundle.'},
   {id: 'package', label: 'Package', placeHolder: 'any', description: 'Type the name of the package.'},
   {id: 'testName', label: 'Test Name', placeHolder: 'any', description: 'Type the name of the test.'},
   {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Type the status of the test run.'},
@@ -46,60 +39,7 @@ const filterableFields: FilterableField[] = [
   {id: 'result', label: 'Result', placeHolder: 'Finished, Queued, RunDone, Waiting', description: 'Type the result of the test run.'},
 ];
 
-const SearchComponent = ({title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors}: SearchComponentProps) => {
-  const [isListVisible, setIsListVisible] = useState(false);
-
-  const filteredRequestors = useMemo(() => {
-    let currentRequestors = allRequestors || [];
-    
-    if (value && currentRequestors.length > 0) {
-      currentRequestors = currentRequestors?.filter((name: string) => name.toLowerCase().includes(value.toLowerCase()));
-    }
-
-    return currentRequestors;
-  }, [value, allRequestors]);
-
-  const handleSelectRequestor = (name: string) => {
-    onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
-    setIsListVisible(false);
-  }
-
-  return (
-    <form className={styles.filterInputContainer} onSubmit={onSubmit}>
-      <div className={styles.customComponentWrapper}>
-        <p>{title}</p>
-        <div className={styles.suggestionContainer}>
-        <Search
-          id="search-input"
-          placeholder={placeholder}
-          size="md"
-          type="text"
-          value={value}
-          onChange={onChange}
-          onClear={onClear}
-          onFocus={() => allRequestors && setIsListVisible(true)}
-          onBlur={() => setTimeout(() => setIsListVisible(false), 100)} //
-        />
-        {allRequestors && isListVisible && filteredRequestors.length > 0 && (
-          <ul className={styles.suggestionList}>
-            {filteredRequestors.map((name: string) => (
-              <li key={name} onMouseDown={() => handleSelectRequestor(name)}>
-                {name}
-              </li>
-            ))}
-          </ul>
-        )}
-        </div>
-      </div>
-      <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
-  );
-};
-
-export default function SearchCriteriaContent({requestorNamesPromise}: {requestorNamesPromise: Promise<string[]>}) {
+export default function SearchCriteriaContent({requestorNamesPromise, resultsNamesPromise}: SearchCriteriaContentProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -107,8 +47,8 @@ export default function SearchCriteriaContent({requestorNamesPromise}: {requesto
   const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
   const [currentInputValue, setCurrentInputValue] = useState('');
   const [allRequestors, setAllRequestors] = useState<string[]>([]);
+  const [resultsNames, setResultsNames] = useState<string[]>([]);
 
-  console.log("All requestors" , allRequestors);
 
   // Initialize the saved query  state directly from the URL
   const [query, setQuery] = useState(() => {
@@ -126,8 +66,6 @@ export default function SearchCriteriaContent({requestorNamesPromise}: {requesto
   // Fetch all requestors on mount 
   useEffect(() => {
     const loadRequestors = async () => {
-      console.log("Fetching requestors...");
-
       try {
         const requestors = await requestorNamesPromise;
         console.log("Requestors fetched:", requestors);
@@ -138,6 +76,20 @@ export default function SearchCriteriaContent({requestorNamesPromise}: {requesto
     }
     loadRequestors();
   }, [requestorNamesPromise]);
+
+  // Get all results names
+  useEffect(() => {
+    const loadResultsNames = async () => {
+      try {
+        const resultsNames = await resultsNamesPromise;
+        console.log("Results fetched:", resultsNames);
+        setResultsNames(resultsNames);
+      } catch (error) {
+        console.error("Error fetching results:", error);
+      }
+    }
+    loadResultsNames();
+  }, [resultsNamesPromise])
 
   // Update the current input value when the selected filter changes or when the query is updated
   useEffect(() => {
@@ -185,11 +137,11 @@ export default function SearchCriteriaContent({requestorNamesPromise}: {requesto
 
     switch (field.id) {
     case 'runName':
-      return <SearchComponent {...commonProps} />;
+      return <CustomSearchComponent {...commonProps} />;
     case 'requestor':
-      return <SearchComponent {...commonProps} allRequestors={allRequestors} />;
+      return <CustomSearchComponent {...commonProps} allRequestors={allRequestors} />;
     default:
-      return <SearchComponent {...commonProps} />;
+      return <CustomSearchComponent {...commonProps} />;
     }
   };
 
