@@ -24,6 +24,12 @@ export interface TestRunsData {
   limitExceeded: boolean;
 }
 
+interface fetchAllTestRunsByPagingParams {
+  fromDate: Date;
+  toDate: Date;
+  testRunName?: string;
+}
+
 
 /**
  * Fetches all test runs from the Result Archive Store API within a specified date range
@@ -35,7 +41,7 @@ export interface TestRunsData {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, toDate: Date}): Promise<TestRunsData> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
@@ -62,7 +68,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
         undefined, // page
         BATCH_SIZE, 
         undefined, // runId
-        undefined, // runname
+        testRunName, // runname
         undefined, // group
         undefined, // submissionId
         undefined, // detail
@@ -105,6 +111,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
 export default async function TestRunsPage({searchParams}: {searchParams: {[key: string]: string | undefined}} ) {
   const fromDate = searchParams?.from ? new Date(searchParams.from) : getYesterday();
   const toDate = searchParams?.to ? new Date(searchParams.to) : new Date();
+  const testRunName = searchParams?.runName ? searchParams.runName : undefined;
 
   return (
     <main id="content">
@@ -112,7 +119,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate})}/>
+          <TestRunsTabs runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName})}/>
         </Suspense>
       </div>
     </main>

@@ -54,8 +54,16 @@ export default function SearchCriteriaContent() {
         initialQuery.set(field.id, value);
       } 
     });
+
     return initialQuery;
   });
+
+  // Update the current input value when the selected filter changes or when the query is updated
+  useEffect(() => {
+    const savedValue = query.get(selectedFilter.id) || '';
+    setCurrentInputValue(savedValue);
+  }, [selectedFilter, query]);
+
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
@@ -74,10 +82,12 @@ export default function SearchCriteriaContent() {
       params.set(key, value);
     });
     router.replace(`${pathname}?${params.toString()}`, {scroll: false});
-
-    setCurrentInputValue(''); // Clear the input after saving
   }
 
+  const handleCancel = () => {
+    // Revert any typing by resetting the input to the last saved value
+    setCurrentInputValue(query.get(selectedFilter.id) || '');
+  };
 
   const searchComponent = (title: string, placeholder: string) => {
     return (
@@ -97,13 +107,14 @@ export default function SearchCriteriaContent() {
           />
         </div>
         <div className={styles.buttonContainer}>
-          <Button type="button" kind="secondary" onClick={()=> setCurrentInputValue('')}>Cancel</Button>
+          <Button type="button" kind="secondary" onClick={handleCancel}>Cancel</Button>
           <Button type="submit">Save</Button>
         </div>
       </form>
     );
   };
 
+  // Render the editor component based on the selected filter
   const renderComponent = (field: FilterableField) => {
     switch (field.id) {
     case 'runName':
@@ -137,7 +148,7 @@ export default function SearchCriteriaContent() {
                     className={`${styles.rowWrapper} ${selectedFilter.id === field.id ? styles.selectedRow : ''}`}
                   >
                     <StructuredListCell>{field.label}</StructuredListCell>
-                    <StructuredListCell>{field.placeHolder}</StructuredListCell>
+                    <StructuredListCell>{query.get(field.id) || field.placeHolder}</StructuredListCell>
                   </div>
                 </StructuredListRow>
               ))}
