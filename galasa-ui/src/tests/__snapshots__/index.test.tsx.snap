@@ -3,16 +3,22 @@
 exports[`renders Galasa Ecosystem homepage 1`] = `
 {
   "asFragment": [Function],
-  "baseElement": <body>
+  "baseElement": <body
+    data-carbon-theme="g100"
+  >
     <div>
       <main
         id="content"
       >
         <div
-          class="cds--tile"
-          id="tile"
+          class="cds--layer-one"
         >
-          Home.title
+          <div
+            class="cds--tile"
+            id="tile"
+          >
+            Home.title
+          </div>
         </div>
         <section>
           <div
@@ -29,10 +35,14 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
       id="content"
     >
       <div
-        class="cds--tile"
-        id="tile"
+        class="cds--layer-one"
       >
-        Home.title
+        <div
+          class="cds--tile"
+          id="tile"
+        >
+          Home.title
+        </div>
       </div>
       <section>
         <div

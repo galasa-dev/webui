@@ -26,9 +26,8 @@
 }
 
 .fileRenderer {
-  background-color: #f5f5f5;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #939393;
   white-space: pre;
   word-break: break-word;
   max-height: 75vh;

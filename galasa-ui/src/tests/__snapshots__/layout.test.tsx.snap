@@ -3,7 +3,9 @@
 exports[`Layout renders the web UI layout 1`] = `
 {
   "asFragment": [Function],
-  "baseElement": <body>
+  "baseElement": <body
+    data-carbon-theme="white"
+  >
     <div>
       <html
         lang="en"
@@ -17,7 +19,9 @@ exports[`Layout renders the web UI layout 1`] = `
             name="description"
           />
         </head>
-        <body>
+        <body
+          data-carbon-theme="white"
+        >
           <div
             class="cds--g90 cds--layer-one"
           >
@@ -179,7 +183,9 @@ exports[`Layout renders the web UI layout 1`] = `
           name="description"
         />
       </head>
-      <body>
+      <body
+        data-carbon-theme="white"
+      >
         <div
           class="cds--g90 cds--layer-one"
         >

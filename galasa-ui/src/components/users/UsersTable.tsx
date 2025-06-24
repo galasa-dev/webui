@@ -19,6 +19,8 @@ import { InlineNotification } from '@carbon/react';
 import { deleteUserFromService } from '@/actions/userServerActions';
 import { DataTableCell, DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
+import { Theme } from '@carbon/react';
+import { useTheme } from '@carbon/react';
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,7 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
   const [selectedRow, setSelectedRow] = useState<DataTableRow>();
   const EDIT_OTHER_USERS_PERMISSION = "USER_EDIT_OTHER";
   const OWNER_ROLE_NAME = "owner";
+  const theme = useTheme();
 
   const warningString = `Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.
 
@@ -174,17 +177,18 @@ If the user logs in to the Galasa service after this point, they will be challen
   }
 
   return (
-    <div className={styles.userListContainer}>
+    <Theme theme={theme}>
+      <div className={styles.userListContainer}>
 
-      <DataTable isSortable rows={users} headers={headers}>
-        {({
-          rows,
-          headers,
-          getHeaderProps,
-          getRowProps,
-          getTableProps,
-          onInputChange
-        }: {
+        <DataTable isSortable rows={users} headers={headers}>
+          {({
+            rows,
+            headers,
+            getHeaderProps,
+            getRowProps,
+            getTableProps,
+            onInputChange
+          }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
           getHeaderProps: (options: any) => TableHeadProps;
@@ -192,32 +196,32 @@ If the user logs in to the Galasa service after this point, they will be challen
           getTableProps: () => TableBodyProps;
           onInputChange: (evt: React.ChangeEvent<HTMLImageElement>) => void;
         }) => (
-          <TableContainer>
-            <TableToolbarContent>
-              <TableToolbarSearch placeholder={translations('searchPlaceholder')} persistent onChange={onInputChange} />
-            </TableToolbarContent>
-            <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
-                  {hasEditUserPermission && <TableHeader aria-label={translations('headers_actions')} />}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => {
-                  return (
-                    <TableRow key={row.id} {...getRowProps({ row })}>
-                      {row.cells.map((cell: DataTableCell) => (
-                        <TableCell key={cell.id}>{cell.value}</TableCell>
-                      ))
-                      }
-                      {
+            <TableContainer>
+              <TableToolbarContent>
+                <TableToolbarSearch placeholder={translations('searchPlaceholder')} persistent onChange={onInputChange} />
+              </TableToolbarContent>
+              <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                        {header.header}
+                      </TableHeader>
+                    ))}
+                    {hasEditUserPermission && <TableHeader aria-label={translations('headers_actions')} />}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => {
+                    return (
+                      <TableRow key={row.id} {...getRowProps({ row })}>
+                        {row.cells.map((cell: DataTableCell) => (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ))
+                        }
+                        {
                         // Only display edit button if user has the relevant action / permission
-                        hasEditUserPermission &&
+                          hasEditUserPermission &&
                         <TableCell className="cds--table-column-menu">
                           <Link href={{ pathname: currentUser.loginId === row.cells[0].value ? "/mysettings" : "/users/edit", query: { loginId: row.cells[0].value } }}>
                             <Button renderIcon={Edit} hasIconOnly kind="ghost" iconDescription={translations('editIconDescription')} />
@@ -226,8 +230,8 @@ If the user logs in to the Galasa service after this point, they will be challen
                             <Button onClick={() => selectRowForDeletion(row)} renderIcon={TrashCan} hasIconOnly kind="ghost" iconDescription={translations('deleteIconDescription')} />
                           }
                         </TableCell>
-                      }
-                      {isDeleteModalOpen &&
+                        }
+                        {isDeleteModalOpen &&
                         <Modal 
                           onRequestSubmit={() => deleteUser(selectedRow!.id)} 
                           open={isDeleteModalOpen} 
@@ -250,17 +254,18 @@ If the user logs in to the Galasa service after this point, they will be challen
                             hideCloseButton
                           />
                         </Modal>
-                      }
+                        }
 
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </DataTable>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
 
-    </div>
+      </div>
+    </Theme>
   );
 }

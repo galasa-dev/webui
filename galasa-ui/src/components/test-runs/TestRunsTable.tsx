@@ -32,6 +32,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ErrorPage from "@/app/error/page";
 import { useTranslations } from "next-intl";
+import { Theme } from "@carbon/react";
+import { useTheme } from "@carbon/react";
 
 interface CustomCellProps {
   header: string;
@@ -94,6 +96,7 @@ export default function TestRunsTable({
   const [rawRuns, setRawRuns] = useState<Run[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const theme = useTheme();
 
   const headers = [
     { key: "submittedAt", header: translations("submittedAt") },
@@ -166,12 +169,14 @@ export default function TestRunsTable({
     return (
       <div>
         <p className={styles.timeFrameText}>Loading test results...</p>
-        <DataTableSkeleton
-          data-testid="loading-table-skeleton"
-          columnCount={headers.length}
-          rowCount={pageSize}
-        />
-        ;
+        <Theme theme={theme}>
+          <DataTableSkeleton
+            data-testid="loading-table-skeleton"
+            columnCount={headers.length}
+            rowCount={pageSize}
+          />
+        </Theme>
+        
       </div>
     );
   }
@@ -197,58 +202,60 @@ export default function TestRunsTable({
   }
 
   return (
-    <div className={styles.resultsPageContainer}>
-      <p className={styles.timeFrameText}>{timeFrameText}</p>
-      <div className={styles.testRunsTableContainer}>
-        <DataTable isSortable rows={paginatedRows} headers={headers}>
-          {({
-            rows,
-            headers,
-            getTableProps,
-            getHeaderProps,
-            getRowProps,
-          }: {
+    <Theme theme={theme}>
+      <div className={styles.resultsPageContainer}>
+        <p className={styles.timeFrameText}>{timeFrameText}</p>
+        <div className={styles.testRunsTableContainer}>
+          <DataTable isSortable rows={paginatedRows} headers={headers}>
+            {({
+              rows,
+              headers,
+              getTableProps,
+              getHeaderProps,
+              getRowProps,
+            }: {
             rows: DataTableRow[];
             headers: DataTableHeader[];
             getHeaderProps: (options: any) => TableHeadProps;
             getRowProps: (options: any) => TableRowProps;
             getTableProps: () => TableBodyProps;
           }) => (
-            <TableContainer>
-              <Table {...getTableProps()} aria-label="test runs results table" size="lg">
-                <TableHead>
-                  <TableRow>
-                    {headers.map((header) => (
-                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                        {header.header}
-                      </TableHeader>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
-                      {row.cells.map((cell) => 
-                        <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
+              <TableContainer>
+                <Table {...getTableProps()} aria-label="test runs results table" size="lg">
+                  <TableHead>
+                    <TableRow>
+                      {headers.map((header) => (
+                        <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                          {header.header}
+                        </TableHeader>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </DataTable>
-        <Pagination
-          backwardText={translations("pagination.backwardText")}
-          forwardText={translations("pagination.forwardText")}
-          itemsPerPageText={translations("pagination.itemsPerPageText")}
-          pageNumberText={translations("pagination.pageNumberText")}
-          page={currentPage}
-          pageSize={pageSize}
-          pageSizes={[10, 20, 30, 40, 50]}
-          totalItems={tableRows.length}
-          onChange={handlePaginationChange}
-        />
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
+                        {row.cells.map((cell) => 
+                          <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </DataTable>
+          <Pagination
+            backwardText={translations("pagination.backwardText")}
+            forwardText={translations("pagination.forwardText")}
+            itemsPerPageText={translations("pagination.itemsPerPageText")}
+            pageNumberText={translations("pagination.pageNumberText")}
+            page={currentPage}
+            pageSize={pageSize}
+            pageSizes={[10, 20, 30, 40, 50]}
+            totalItems={tableRows.length}
+            onChange={handlePaginationChange}
+          />
+        </div>
       </div>
-    </div>
+    </Theme>
   );
 }

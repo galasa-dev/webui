@@ -7,6 +7,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import MyProfilePage from '../app/myprofile/page';
 import { RBACRole, UsersAPIApi } from '@/generated/galasaapi';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const mockUsersApi = UsersAPIApi as jest.Mock;
 
@@ -36,7 +37,10 @@ describe('MyProfilePage', () => {
 
   test('renders loading spinner initially', async () => {
     // When...
-    render(<MyProfilePage />);
+    render(
+      <ThemeProvider >
+        <MyProfilePage />
+      </ThemeProvider>);
 
     // Assert that the loading spinner is shown initially
     const loader = screen.getByTestId('loader');
@@ -70,7 +74,10 @@ describe('MyProfilePage', () => {
 
     // When...
     await act(async () => {
-      return render(<MyProfilePage />);
+      return render(
+        <ThemeProvider>
+          <MyProfilePage />
+        </ThemeProvider>);
     });
 
     // Wait for the data to be fetched and the loading spinner to disappear
@@ -90,7 +97,11 @@ describe('MyProfilePage', () => {
 
     // When...
     await act(async () => {
-      return render(<MyProfilePage />);
+      return render(
+        <ThemeProvider>
+          <MyProfilePage />
+        </ThemeProvider>
+      );
     });
 
     // Wait for the fetch operation to complete

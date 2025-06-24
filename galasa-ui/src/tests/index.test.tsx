@@ -6,6 +6,7 @@
 import HomePage from '@/app/page';
 import PageHeader from '@/components/headers/PageHeader';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { act, render, screen } from '@testing-library/react';
 
 jest.mock('next-intl', () => ({
@@ -18,14 +19,6 @@ jest.mock('next-intl', () => ({
   }
 }));
 
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      "title": "Home",
-    };
-    return translations[key] || key;
-  }
-}));
 
 
 jest.mock('fs/promises', () => ({
@@ -49,9 +42,11 @@ jest.mock('next/navigation', () => ({
 
 test('renders Galasa header', () => {
   render(
-    <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service'/>
-    </FeatureFlagProvider>
+    <ThemeProvider>
+      <FeatureFlagProvider>
+        <PageHeader galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>
   );
 
   const titleElement = screen.getByText('Galasa');
@@ -60,9 +55,10 @@ test('renders Galasa header', () => {
 
 test('renders Galasa Ecosystem homepage', async () => {
   const homePage = await act(async () => {
+    const layout = await HomePage();
     return render(
       <FeatureFlagProvider>
-        <HomePage />
+        {layout}
       </FeatureFlagProvider>);
   });
   expect(homePage).toMatchSnapshot();

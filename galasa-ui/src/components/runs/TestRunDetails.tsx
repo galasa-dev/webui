@@ -22,6 +22,8 @@ import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import StatusCheck from '../common/StatusCheck';
 import { useTranslations } from 'next-intl';
+import { Theme } from '@carbon/react';
+import { useTheme } from '@carbon/react';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -40,6 +42,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const translations = useTranslations("TestRunDetails");
+  const theme = useTheme();
 
   const extractRunDetails = (runDetails: Run) => {
 
@@ -97,6 +100,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   
 
   return (
+      
+    
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME, TEST_RUNS]} />
       <PageTile
@@ -107,7 +112,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
 
       {isLoading ? (
         <TestRunSkeleton />
-      ) : (
+      ) : (  <Theme theme={theme}>
         <div className={styles.testRunContainer}>
           <div className={styles.summarySection}>
             <div>
@@ -157,6 +162,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
             </TabPanels>
           </Tabs>
         </div>
+      </Theme>
       )}
     </main>
   );

@@ -25,7 +25,8 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "Internationalization": "Internationalization/Multiple language support"
+      "Internationalization": "Internationalization/Multiple language support",
+      "Theme": "Theme support"
     }
   },
   "AccessTokensSection": {

@@ -11,6 +11,8 @@ import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useTranslations } from 'next-intl';
+import { Theme } from '@carbon/react';
+import { useTheme } from '@carbon/react';
 
 export default function TokenRequestModal({isDisabled} : {isDisabled : boolean}) {
 
@@ -20,6 +22,7 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const tokenNameInputRef = useRef<HTMLInputElement>();
+  const theme = useTheme();
 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';
@@ -57,58 +60,60 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
     
   return (
     <>
-      <Button iconDescription={translations('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
-        <Add/>
-      </Button>
-      <Modal
-        modalHeading={translations('modal_heading')}
-        primaryButtonText={translations('create')}
-        primaryButtonDisabled={submitDisabled}
-        secondaryButtonText={translations('cancel')}
-        shouldSubmitOnEnter={true}
-        open={open}
-        onRequestClose={() => {
-          setOpen(false);
-          setError('');
-        }}
-        onRequestSubmit={async () => {
-          if (!submitDisabled) {
-            await submitTokenRequest();
-          }
-        }}
-      >
-        <p>
-          {translations('token_description')}
-        </p>
+      <Theme theme={theme}>
+        <Button iconDescription={translations('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
+          <Add/>
+        </Button>
+        <Modal
+          modalHeading={translations('modal_heading')}
+          primaryButtonText={translations('create')}
+          primaryButtonDisabled={submitDisabled}
+          secondaryButtonText={translations('cancel')}
+          shouldSubmitOnEnter={true}
+          open={open}
+          onRequestClose={() => {
+            setOpen(false);
+            setError('');
+          }}
+          onRequestSubmit={async () => {
+            if (!submitDisabled) {
+              await submitTokenRequest();
+            }
+          }}
+        >
+          <p>
+            {translations('token_description')}
+          </p>
 
-        <br />
+          <br />
 
-        <p>
-          {translations('token_name_description')}
-        </p>
+          <p>
+            {translations('token_name_description')}
+          </p>
 
-        <br />
+          <br />
 
-        <TextInput
-          data-modal-primary-focus
-          ref={tokenNameInputRef}
-          id="name-txtinput"
-          labelText={translations('token_name')}
-          helperText={translations('token_name_helper_text')}
-          placeholder={translations('token_name_placeholder')}
-          onChange={onChangeInputValidation}
-        />
-        {error && (
-          <InlineNotification
-            className="margin-top-1"
-            title={translations('error_requesting_token')}
-            subtitle={error}
-            kind="error"
-            onCloseButtonClick={() => setError('')}
-            lowContrast
+          <TextInput
+            data-modal-primary-focus
+            ref={tokenNameInputRef}
+            id="name-txtinput"
+            labelText={translations('token_name')}
+            helperText={translations('token_name_helper_text')}
+            placeholder={translations('token_name_placeholder')}
+            onChange={onChangeInputValidation}
           />
-        )}
-      </Modal>
+          {error && (
+            <InlineNotification
+              className="margin-top-1"
+              title={translations('error_requesting_token')}
+              subtitle={error}
+              kind="error"
+              onCloseButtonClick={() => setError('')}
+              lowContrast
+            />
+          )}
+        </Modal>
+      </Theme>
     </>
   );
 };

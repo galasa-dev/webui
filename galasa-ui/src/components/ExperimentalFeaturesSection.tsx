@@ -25,6 +25,10 @@ export default function ExperimentalFeaturesSection() {
       key: FEATURE_FLAGS.INTERNATIONALIZATION,
       label: translations('features.Internationalization'),
     },
+    {
+      key:FEATURE_FLAGS.THEME,
+      label: translations('features.Theme'),
+    }
     // Add more features here when they are added to DEFAULT_FEATURE_FLAGS
   ];
 

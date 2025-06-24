@@ -8,6 +8,8 @@ import React from 'react';
 import { Table } from '@carbon/react';
 import { TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
 import dynamic from 'next/dynamic';
+import { Theme } from '@carbon/react';
+import { useTheme } from '@carbon/react';
 
 
 export function rowData (row: {id: string; tokenName: string; scope: string; expires: string;}){
@@ -31,17 +33,20 @@ export function CreateTokenTable({headers, rows}:
     }) {
   const header = headers.map(header => headerData(header));
   const row = rows.map(row => rowData(row));
+  const theme = useTheme();
   return (
-    <Table size="lg" useZebraStyles={false}>
-      <TableHead>
-        <TableRow key='header'>
-          {header}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {row}
-      </TableBody>
-    </Table>
+    <Theme theme={theme}>
+      <Table size="lg" useZebraStyles={false}>
+        <TableHead>
+          <TableRow key='header'>
+            {header}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {row}
+        </TableBody>
+      </Table>
+    </Theme>
   );
 };
 

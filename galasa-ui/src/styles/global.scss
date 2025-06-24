@@ -4,6 +4,21 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 @use '@carbon/react';
+@use '@carbon/themes/scss/themes' as *;
+@use '@carbon/themes';
+
+:root {
+  @include themes.theme($white);
+}
+
+[data-carbon-theme='white'] {
+  @include themes.theme($white);
+}
+
+[data-carbon-theme='g100'] {
+  @include themes.theme($g100);
+}
+
 
 body {
   margin: 0;

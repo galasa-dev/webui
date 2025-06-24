@@ -5,15 +5,17 @@
  */
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem, HeaderName } from '@carbon/react';
 import { User } from "@carbon/icons-react";
 import { useRouter } from 'next/navigation';
 import { handleDeleteCookieApiOperation } from '@/utils/logout';
 import LanguageSelector from './LanguageSelector';
-import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FeatureFlagContext, useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
+import ThemeSelector from './ThemeSelector';
+import { useTheme } from '@/contexts/ThemeContext';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const translations = useTranslations('PageHeaderMenu');
@@ -28,10 +30,15 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
     router.push("/mysettings");
   };
   const {isFeatureEnabled} = useFeatureFlags();
+  const { theme, setTheme } = useTheme();
+         
+  useEffect(() => {
+    setTheme(isFeatureEnabled(FEATURE_FLAGS.THEME) ? theme : 'white'); 
+  },[isFeatureEnabled]);
   
   return (
     <HeaderGlobalBar data-testid="header-menu">
-
+      {isFeatureEnabled(FEATURE_FLAGS.THEME) && (<ThemeSelector/>)}
       {isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION) && ( <LanguageSelector/>)}
       <HeaderName prefix="">{galasaServiceName}</HeaderName>
       <OverflowMenu

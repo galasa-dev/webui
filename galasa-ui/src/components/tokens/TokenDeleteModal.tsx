@@ -10,6 +10,8 @@ import { InlineNotification } from '@carbon/react';
 import { Loading, Modal } from "@carbon/react";
 import { AuthToken } from '@/generated/galasaapi';
 import { useTranslations } from 'next-intl';
+import { Theme } from '@carbon/react';
+import { useTheme } from '@carbon/react';
 
 interface TokenDeleteModalProps {
   tokens: Set<AuthToken>;
@@ -24,6 +26,7 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
   const [open, setOpen] = useState(true);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const theme = useTheme();
 
   const deleteTokensById = async () => {
 
@@ -78,48 +81,50 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
 
   return (
     <>
-      <Modal
-        modalHeading={translations('modalHeading')}
-        primaryButtonText={translations('primaryButtonText')}
-        secondaryButtonText={translations('secondaryButtonText')}
-        danger
-        shouldSubmitOnEnter={true}
-        open={open}
-        onRequestClose={() => {
-          setOpen(false);
-          setError('');
-          updateDeleteModalState();
-        }}
-        onRequestSubmit={async () => {
-          await deleteTokensById();
-        }}
-      >
-        <h6 className='margin-top-1'>
-          {translations('tokensToDeleteCount', { count: selectedTokens.size })}
-        </h6>
+      <Theme theme={theme}>
+        <Modal
+          modalHeading={translations('modalHeading')}
+          primaryButtonText={translations('primaryButtonText')}
+          secondaryButtonText={translations('secondaryButtonText')}
+          danger
+          shouldSubmitOnEnter={true}
+          open={open}
+          onRequestClose={() => {
+            setOpen(false);
+            setError('');
+            updateDeleteModalState();
+          }}
+          onRequestSubmit={async () => {
+            await deleteTokensById();
+          }}
+        >
+          <h6 className='margin-top-1'>
+            {translations('tokensToDeleteCount', { count: selectedTokens.size })}
+          </h6>
 
-        <div className='margin-top-2'>
-          <InlineNotification
-            title={translations('notificationTitle')}
-            subtitle={translations('notificationSubtitle')}
-            kind="warning"
-            lowContrast
-            hideCloseButton
-          />
-        </div>
-        <br />
+          <div className='margin-top-2'>
+            <InlineNotification
+              title={translations('notificationTitle')}
+              subtitle={translations('notificationSubtitle')}
+              kind="warning"
+              lowContrast
+              hideCloseButton
+            />
+          </div>
+          <br />
 
-        {error && (
-          <InlineNotification
-            className="margin-top-1"
-            title={translations('errorTitle')}
-            subtitle={error}
-            kind="error"
-            onCloseButtonClick={() => setError('')}
-            lowContrast
-          />
-        )}
-      </Modal>
+          {error && (
+            <InlineNotification
+              className="margin-top-1"
+              title={translations('errorTitle')}
+              subtitle={error}
+              kind="error"
+              onCloseButtonClick={() => setError('')}
+              lowContrast
+            />
+          )}
+        </Modal>
+      </Theme>
     </>
   );
 };

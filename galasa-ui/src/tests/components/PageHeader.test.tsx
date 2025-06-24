@@ -9,6 +9,7 @@ import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { useRouter } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 
 const mockRouter = {
@@ -44,9 +45,12 @@ afterEach(() => {
 test('renders the header containing the header menu', () => {
 
   render(
-    <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service' />
-    </FeatureFlagProvider>);
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeader galasaServiceName='Galasa Service' />
+      </FeatureFlagProvider>
+    </ThemeProvider>
+  );
   
   const headerMenu = screen.getByTestId('header-menu');
   expect(headerMenu).toBeInTheDocument();
@@ -55,9 +59,11 @@ test('renders the header containing the header menu', () => {
 
 test('does NOT render the "Test runs" link by default', () => {
   render(
-    <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service' />
-    </FeatureFlagProvider>
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeader galasaServiceName='Galasa Service' />
+      </FeatureFlagProvider>
+    </ThemeProvider>
   );
 
   const testRunsLink = screen.queryByText('Test runs');
@@ -68,9 +74,11 @@ test('renders the "Test runs" link when the feature flag is enabled via prop', (
   const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
 
   render(
-    <FeatureFlagProvider initialFlags={initialFlags}>
-      <PageHeader galasaServiceName='Galasa Service' />
-    </FeatureFlagProvider>
+    <ThemeProvider >
+      <FeatureFlagProvider initialFlags={initialFlags}>
+        <PageHeader galasaServiceName='Galasa Service' />
+      </FeatureFlagProvider>
+    </ThemeProvider>
   );
 
    

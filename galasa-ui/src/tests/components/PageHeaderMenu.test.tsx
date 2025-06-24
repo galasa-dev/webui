@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import PageHeaderMenu from '@/components/headers/PageHeaderMenu';
 import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const fetchMock = jest.spyOn(global, 'fetch');
 
@@ -39,18 +39,24 @@ afterEach(() => {
 
 test('checking if the menu btn exists', () => {
   render(
-    <FeatureFlagProvider>
-      <PageHeaderMenu galasaServiceName='Galasa Service'/>
-    </FeatureFlagProvider>);
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider >
+  );
   const menuBtn = screen.getByTestId('menu-btn');
   expect(menuBtn).toBeInTheDocument();
 });
 
 test('renders logout btn when menu btn is pressed', async () => {
 
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>);
 
   fireEvent.click(screen.getByTestId('menu-btn'));
 
@@ -61,9 +67,13 @@ test('renders logout btn when menu btn is pressed', async () => {
 
 test('renders my profile btn when menu btn is pressed', async () => {
 
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>
+  );
 
   fireEvent.click(screen.getByTestId('menu-btn'));
 
@@ -74,9 +84,13 @@ test('renders my profile btn when menu btn is pressed', async () => {
 
 
 test('clicking my profile btn redirects me to My Profle Page', async () => {
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>
+  );
 
   fireEvent.click(screen.getByTestId('menu-btn'));
 
@@ -96,9 +110,12 @@ test('clicking my profile btn redirects me to My Profle Page', async () => {
 });
 
 test('clicking my settings btn redirects me to My Settings Page', async () => {
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>);
 
   fireEvent.click(screen.getByTestId('menu-btn'));
 
@@ -119,9 +136,12 @@ test('clicking my settings btn redirects me to My Settings Page', async () => {
 
 test('clicking log out button calls handleDeleteCookieApiOperation, RESPONSE OK', async () => {
 
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>);
 
   const response = new Response(null, {
     status: 204,
@@ -156,9 +176,12 @@ test('clicking log out button calls handleDeleteCookieApiOperation, RESPONSE OK'
 
 test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null or blank string', () => {
 
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Galasa Service'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Galasa Service'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>);
 
   const titleElement = screen.getByText("Galasa Service");
   expect(titleElement.textContent).toBe("Galasa Service");
@@ -169,9 +192,12 @@ test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null o
 
 test('renders custom header when title when env GALASA_SERVICE_NAME is present', () => {
 
-  render(<FeatureFlagProvider>
-    <PageHeaderMenu galasaServiceName='Managers'/>
-  </FeatureFlagProvider>);
+  render(
+    <ThemeProvider >
+      <FeatureFlagProvider>
+        <PageHeaderMenu galasaServiceName='Managers'/>
+      </FeatureFlagProvider>
+    </ThemeProvider>);
 
   const titleElement = screen.getByText("Managers");
   expect(titleElement.textContent).not.toBe("Galasa Service");
