@@ -122,7 +122,7 @@
     gap: 1rem;
 }
 
-.ErrorNotification {
+.notification{
     position: fixed;
     bottom: 5.5rem;
     right: 1rem;

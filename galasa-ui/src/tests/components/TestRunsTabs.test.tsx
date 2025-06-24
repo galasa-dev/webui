@@ -8,13 +8,21 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 
-// Mock the TestRunsTable component to avoid making actual API calls
+// Mock the TestRunsTable and TimeFrameContent components 
 jest.mock('@/components/test-runs/TestRunsTable', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="test-runs-table">Mocked Test Runs Table</div>,
   };
 });
+
+jest.mock('@/components/test-runs/TimeFrameContent', () => {
+  return {
+    __esModule: true,
+    default: () => <div>Mocked Timeframe Content</div>,
+  };
+});
+
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
@@ -57,10 +65,18 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 describe('TestRunsTabs Component', () => {
-  const mockPromise = Promise.resolve([]);
+  const mockPromise = Promise.resolve({ runs: [], limitExceeded: false });
+  const mockRequestorNamesPromise = Promise.resolve([]);
+  const mockResultsNamesPromise = Promise.resolve([]);
 
   test('renders all tabs correctly', () => {
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
 
     const tabLabels = ['Timeframe', 'Table Design', 'Search Criteria', 'Results'];
     tabLabels.forEach(label => {
@@ -68,16 +84,36 @@ describe('TestRunsTabs Component', () => {
     });
   });
 
-  // test('displays the content of the Timeframe tab', () => {
-  //   render(<TestRunsTabs runsListPromise={mockPromise}/>);
+test('displays the content of the Timeframe tab', () => {
+  render(
+    <TestRunsTabs
+      runsListPromise={mockPromise}
+      requestorNamesPromise={mockRequestorNamesPromise}
+      resultsNamesPromise={mockResultsNamesPromise}
+    />
+  );
+    // Act: Click on the 'Timeframe' tab
+    const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
+    fireEvent.click(timeframeTab);
 
-  //   fireEvent.click(screen.getByText('Timeframe'));
-  //   expect(screen.getByText(/Currently, all results for the last 24 hours/i)).toBeInTheDocument();
-  // });
+    // Assert: Check that the 'Timeframe' tab is now active
+    expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
+    const resultsTab = screen.getByRole('tab', { name: 'Results' });
+    expect(resultsTab).toHaveAttribute('aria-selected', 'false');
+
+    // Assert: The content of the 'Timeframe' tab should be visible.
+    expect(screen.getByText('Mocked Timeframe Content')).toBeVisible();
+  });
 
   test('switches to the "Results" tab and displays its content on click', async () => {
     // Arrange
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
 
     // Act: Click on the 'Results' tab
     const resultsTab = screen.getByRole('tab', { name: 'Results' });

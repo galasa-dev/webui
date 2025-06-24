@@ -24,6 +24,11 @@ const mockValues: TimeFrameValues = {
 
 const mockHandleValueChange = jest.fn();
 
+
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 beforeEach(() => {
   // Reset the mock function before each test
   mockHandleValueChange.mockClear();
@@ -94,7 +99,8 @@ describe('TimeFrameFilter', () => {
     // Arrange
     const user = userEvent.setup();
     render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
-    const minutesInput = screen.getByLabelText('Minutes');
+
+    const minutesInput = screen.getByLabelText('minutes');
 
     // Act: Change the value of the minutes input
     await user.clear(minutesInput);

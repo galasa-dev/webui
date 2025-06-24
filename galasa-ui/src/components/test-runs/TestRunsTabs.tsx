@@ -28,7 +28,6 @@ const TableDesignContent = () => <p>
 </p>;
 
 
-
 export default function TestRunsTabs({runsListPromise, requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
 

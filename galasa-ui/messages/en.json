@@ -227,8 +227,10 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
+    "noTestRunsFound": "No test runs were found for the selected timeframe",
     "loading": "Loading test results...",
-    "noData": "No test runs found in the last 24 hours.",
+    "limitExceededTitle": "Limit Exceeded",
+    "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records.",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
       "range": "Showing test runs submitted between {from} and {to}"
@@ -256,5 +258,30 @@
   "TestRunPage": {
     "notFoundTitle": "Run not found",
     "notFoundDescription": "Unable to find a run with id: {id}"
+  },
+  "TimeFrame": {
+    "selectEnvelope": "Select the time envelope against which the submission time of each test run will be compared.",
+    "envelopeDescription": "Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.",
+    "invalidTimeFrame": "Invalid Time Frame",
+    "autoCorrection": "Auto-Correction",
+    "toBeforeFrom": "'To' date cannot be before 'From' date.",
+    "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
+    "dateRangeCapped": "Date range was capped at the current time.",
+    "invalidTimeText": "Please enter a valid time in HH:MM format."
+  },
+  "DateTimePicker": {
+    "invalidTimeText": "Please enter a valid time in HH:MM format.",
+    "AM": "AM",
+    "PM": "PM",
+    "date": "Date",
+    "time": "Time"
+  },
+  "TimeFrameFilter": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "from": "From",
+    "to": "To",
+    "duration": "Duration"
   }
 }

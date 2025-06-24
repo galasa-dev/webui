@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import React from 'react';
-import TestRunDetails from '@/components/runs/TestRunDetails';
+import TestRunDetails from '@/components/test-runs/TestRunDetails';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { ArtifactIndexEntry, ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
 import NotFound from '@/components/common/NotFound';

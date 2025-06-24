@@ -34,6 +34,8 @@ import ErrorPage from "@/app/error/page";
 import { TestRunsData } from "@/app/test-runs/page";
 import {MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
+import { InlineNotification } from "@carbon/react";
+
 
 
 interface CustomCellProps {
@@ -118,7 +120,6 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       try {
         const {runs, limitExceeded } = await runsListPromise;
         setRawRuns(runs || []);
-        console.log(runs);
         setLimitExceeded(limitExceeded);
       } catch (error) {
         console.error("Error fetching test runs:", error);
@@ -161,7 +162,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       });
     }
     return text;
-  }, [rawRuns]);
+  }, [rawRuns, translations]);
 
   if (isError) {
     return <ErrorPage />;
@@ -170,13 +171,12 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   if (isLoading) {
     return (
       <div>
-        <p className={styles.timeFrameText}>Loading test results...</p>
+        <p className={styles.timeFrameText}>{translations("loading")}</p>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
           rowCount={pageSize}
         />
-        ;
       </div>
     );
   }
@@ -203,7 +203,12 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
 
   return (
     <div className={styles.resultsPageContainer}>
-      {limitExceeded && <p>Your query returned more than {MAX_RECORDS} results. Showing the first {MAX_RECORDS} records.</p>}
+      {limitExceeded && <InlineNotification
+        className={styles.notification}
+        kind="warning" 
+        title="Limit Exceeded" 
+        subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
+      />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>

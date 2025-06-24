@@ -9,6 +9,29 @@ import TimeFrameContent, { applyTimeFrameRules, calculateSynchronizedState } fro
 import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
 
+// Mock next-intl to prevent ESM parsing errors in Jest
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      toBeforeFrom: "'To' date cannot be before 'From' date.",
+      dateRangeCapped: "Date range was capped at the current time.",
+      dateRangeExceeded: "Date range cannot exceed 3 months; 'To' date has been adjusted.",
+      invalidTimeFrame: 'Invalid Time Frame',
+      autoCorrection: 'Auto-Correction',
+    };
+    return translations[key] || key;
+  },
+}));
+
+const mockTranslator = (key: string, values?: Record<string, any>) => {
+  if (key === 'toBeforeFrom') return "'To' date cannot be before 'From' date.";
+  if (key === 'dateRangeCapped') return "Date range was capped at the current time.";
+  if (key === 'dateRangeExceeded' && values) {
+    return `Date range cannot exceed ${values.maxMonths} months; 'To' date has been adjusted.`;
+  }
+  return key; 
+};
+
 // Mock the child component to prevent its internal logic from running
 jest.mock('@/components/test-runs/TimeFrameFilter', () => {
   const TimeFrameFilterMock = (props: any) => (
@@ -52,6 +75,8 @@ jest.mock('@/components/test-runs/TimeFrameFilter', () => {
 
   return TimeFrameFilterMock;
 });
+
+
 // Mock next/navigation hooks
 const mockReplace = jest.fn();
 let mockSearchParams = new URLSearchParams();
@@ -79,7 +104,7 @@ describe('applyTimeFrameRules', () => {
     jest.setSystemTime(MOCK_NOW);
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-17T10:00:00.000Z');
-    const { notification, correctedTo } = applyTimeFrameRules(fromDate, toDate);
+    const { notification, correctedTo } = applyTimeFrameRules(fromDate, toDate, mockTranslator);
 
     expect(notification).toBeNull();
     expect(correctedTo).toEqual(toDate);
@@ -88,7 +113,7 @@ describe('applyTimeFrameRules', () => {
   test('should return null notification if "To" date is exactly "now"', () => {
     jest.setSystemTime(MOCK_NOW);
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
-    const { notification } = applyTimeFrameRules(fromDate, MOCK_NOW);
+    const { notification } = applyTimeFrameRules(fromDate, MOCK_NOW, mockTranslator);
 
     expect(notification).toBeNull();
   });
@@ -98,7 +123,7 @@ describe('applyTimeFrameRules', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     // Set a date 5 minutes into the future from our mocked "now"
     const futureDate = new Date(MOCK_NOW.getTime() + 5 * 60 * 1000);
-    const { correctedTo, notification } = applyTimeFrameRules(fromDate, futureDate);
+    const { correctedTo, notification } = applyTimeFrameRules(fromDate, futureDate, mockTranslator);
 
     expect(notification?.kind).toEqual('warning');
     expect(notification?.text).toEqual('Date range was capped at the current time.');
@@ -108,8 +133,8 @@ describe('applyTimeFrameRules', () => {
 
   test('should return an error if "From" date is after "To" date', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
-    const toDate = new Date('2025-08-14T10:00:00.000Z'); // One day before
-    const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(fromDate, toDate);
+    const toDate = new Date('2025-08-14T10:00:00.000Z'); 
+    const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(fromDate, toDate, mockTranslator);
 
     expect(notification?.kind).toEqual('error');
     expect(notification?.text).toEqual("'To' date cannot be before 'From' date.");
@@ -122,7 +147,7 @@ describe('applyTimeFrameRules', () => {
   test('should return null notification if "From" and "To" dates are the same', () => {
     jest.setSystemTime(new Date('2025-09-01T00:00:00.000Z'));
     const sameDate = new Date('2025-08-15T10:00:00.000Z');
-    const { notification } = applyTimeFrameRules(sameDate, sameDate);
+    const { notification } = applyTimeFrameRules(sameDate, sameDate, mockTranslator);
 
     expect(notification).toBeNull();
   });
@@ -132,8 +157,8 @@ describe('applyTimeFrameRules', () => {
 
     const fromDate = new Date('2025-05-15T10:00:00.000Z');
     const toDate = new Date('2025-08-16T10:00:00.000Z');
-    const { correctedTo, notification } = applyTimeFrameRules(fromDate, toDate);
-
+    const { correctedTo, notification } = applyTimeFrameRules(fromDate, toDate, mockTranslator);
+    
     expect(notification?.kind).toEqual('warning');
     expect(notification?.text).toContain('Date range cannot exceed 3 months');
 

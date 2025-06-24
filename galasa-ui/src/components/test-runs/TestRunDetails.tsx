@@ -7,7 +7,7 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import PageTile from '@/components/PageTile';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
 import { Dashboard, Code, CloudLogging, RepoArtifact } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
@@ -20,8 +20,8 @@ import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
 import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
-import StatusCheck from '../common/StatusCheck';
 import { useTranslations } from 'next-intl';
+import StatusIndicator from '../common/StatusIndicator';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -41,7 +41,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isError, setIsError] = useState(false);
   const translations = useTranslations("TestRunDetails");
 
-  const extractRunDetails = (runDetails: Run) => {
+  const extractRunDetails = useCallback((runDetails: Run) => {
 
     setMethods(runDetails.testStructure?.methods || []);
 
@@ -65,7 +65,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     setRun(runMetadata);
-  };
+  },[runId]);
 
   useEffect(() => {
     const loadRunDetails = async () => {
@@ -89,7 +89,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     loadRunDetails();
-  }, [runDetailsPromise, runArtifactsPromise, runLogPromise]);
+  }, [runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
 
   if (isError) {
     return <ErrorPage />;
@@ -115,7 +115,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
                 {translations("status")}: {run?.status}
               </span>
               <span className={styles.summaryStatus}>
-                {translations("result")}: <StatusCheck status={run?.result!} />
+                {translations("result")}: <StatusIndicator status={run?.result!} />
               </span>
             </div>
             <span className={styles.summaryStatus}>

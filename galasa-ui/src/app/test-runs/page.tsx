@@ -16,7 +16,8 @@ import { CLIENT_API_VERSION, MAX_RECORDS } from "@/utils/constants/common";
 import { UserData } from '@/generated/galasaapi';
 import { fetchAllUsersFromApiServer } from "../users/page";
 
-const BATCH_SIZE = 100; // Define the batch size for fetching runs
+// Define the batch size for fetching runs
+const BATCH_SIZE = 100;
 
 /**
  * The structure returned by the data fetching function.
@@ -94,8 +95,12 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
       // Check if the limit was exceeded
       if (allRuns.length >= MAX_RECORDS) {
         limitExceeded = true;
-        allRuns = allRuns.slice(0, MAX_RECORDS); // Trim to max records
-        hasMorePages = false; // Stop fetching more runs
+
+        // Trim to max records
+        allRuns = allRuns.slice(0, MAX_RECORDS);
+
+        // Stop fetching more runs
+        hasMorePages = false; 
         break;
       }
 
@@ -106,7 +111,8 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
         || runsInBatch.length < BATCH_SIZE) {
         hasMorePages = false; 
       } else {
-        currentCursor = nextCursor; // Update cursor for next iteration
+        // Update cursor for next iteration
+        currentCursor = nextCursor; 
       }
       
     }
@@ -164,7 +170,6 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
   const testName = searchParams?.testName ? searchParams.testName : undefined;
   const result = searchParams?.result ? searchParams.result : undefined;
   const tags = searchParams?.tags ? searchParams.tags : undefined;
-
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
