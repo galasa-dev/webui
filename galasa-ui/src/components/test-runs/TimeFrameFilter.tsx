@@ -10,6 +10,10 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import { FormGroup, NumberInput } from '@carbon/react';
 import DateTimePicker from './DateTimePicker'; 
 
+const MAX_DAYS = 90;
+const MAX_HOURS = 23;
+const MAX_MINUTES = 59;
+
 export default function TimeFrameFilter({
   values,
   handleValueChange,
@@ -31,9 +35,9 @@ export default function TimeFrameFilter({
 
       <FormGroup legendText="Duration" className={styles.TimeFrameFilterItem} >
         <div className={styles.DurationInputsContainer} key={values.toDate?.getTime() || 0}>
-          <NumberInput id="duration-days" label="Days" min={0} max={90} value={values.durationDays} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationDays', value)} />
-          <NumberInput id="duration-hours" label="Hours" min={0} max={23} value={values.durationHours} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationHours', value)} />
-          <NumberInput id="duration-minutes" label="Minutes" min={0} max={59} value={values.durationMinutes} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationMinutes', value)} />
+          <NumberInput id="duration-days" label="Days" min={0} max={MAX_DAYS} value={values.durationDays} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationDays', value)} />
+          <NumberInput id="duration-hours" label="Hours" min={0} max={MAX_HOURS} value={values.durationHours} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationHours', value)} />
+          <NumberInput id="duration-minutes" label="Minutes" min={0} max={MAX_MINUTES} value={values.durationMinutes} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationMinutes', value)} />
         </div>
       </FormGroup>
 

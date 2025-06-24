@@ -118,6 +118,7 @@ export default function TimeFrameContent() {
 
     const draftValues = { ...values, [field]: value };
 
+    // Combine date and time into Date objects
     let fromDate: Date, toDate: Date;
     if (field.startsWith('duration')) {
       fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
@@ -130,17 +131,13 @@ export default function TimeFrameContent() {
 
     const { correctedFrom, correctedTo, notification: validationNotification } = applyTimeFrameRules(fromDate, toDate);
 
-    if (validationNotification?.kind === 'error') {
-      setNotification(validationNotification);
-      return; 
-    }
+    // Set the notification if there is one
+    setNotification(validationNotification);
 
-    const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
-    setValues(finalState);
-
-    // Show any warning message that was generated during correction.
-    if (validationNotification) {
-      setNotification(validationNotification);
+    // Update the state with the corrected values
+    if (validationNotification?.kind !== 'error') {
+      const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
+      setValues(finalState);
     }
   }, [values]);
 
