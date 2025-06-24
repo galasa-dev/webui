@@ -36,6 +36,7 @@ interface fetchAllTestRunsByPagingParams {
   bundle?: string;
   testName?: string;
   result?: string;
+  tags?: string;
 }
 
 
@@ -49,13 +50,11 @@ interface fetchAllTestRunsByPagingParams {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result, tags}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
   let limitExceeded = false;
-
-  console.log("Fetching test runs from:", fromDate, "to:", toDate, "for runName:", testRunName, "requestor:", requestor, "group:", group, "packageName:", packageName, "bundle:", bundle, "testName:", testName);
 
   if (fromDate > toDate) return {runs: [] , limitExceeded};
 
@@ -82,7 +81,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, request
         group, // group
         undefined, // submissionId
         undefined, // detail
-        undefined, // tags
+        tags, 
         'true',    // includeCursor
         currentCursor
       );
@@ -164,6 +163,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
   const bundle = searchParams?.bundle ? searchParams.bundle : undefined;
   const testName = searchParams?.testName ? searchParams.testName : undefined;
   const result = searchParams?.result ? searchParams.result : undefined;
+  const tags = searchParams?.tags ? searchParams.tags : undefined;
 
   return (
     <main id="content">
@@ -172,7 +172,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
           <TestRunsTabs 
-          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result })} 
+          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, packageName, bundle, testName, result, tags})} 
             requestorNamesPromise={getRequestorList()} 
             resultsNamesPromise={getResultsNames()} 
             />

@@ -63,6 +63,7 @@ const transformRunsforTable = (runs: Run[]) => {
       bundle: structure.bundle || 'N/A',
       package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
       testName: structure.testShortName || structure.testName || 'N/A',
+      tags: structure.tags ? structure.tags.join(', ') : 'N/A',
       status: structure.status || 'N/A',
       result: structure.result || 'N/A',
     };
@@ -104,6 +105,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
     { key: "bundle", header: translations("bundle") },
     { key: "package", header: translations("package") },
     { key: "testName", header: translations("testName") },
+    { key: "tags", header: translations("tags") },
     { key: "status", header: translations("status") },
     { key: "result", header: translations("result") },
   ];

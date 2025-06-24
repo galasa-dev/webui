@@ -224,6 +224,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "tags": "Tags",
     "status": "Status",
     "result": "Result",
     "loading": "Loading test results...",

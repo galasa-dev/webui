@@ -16,11 +16,11 @@ interface CustomSearchComponentProps {
     onClear: () => void;
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
-    allRequestors?: string[]; 
-  }
-  
+    allRequestors?: string[];
+}
 
-export default function CustomSearchComponent({title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors}: CustomSearchComponentProps) {
+
+export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
     const [isListVisible, setIsListVisible] = useState(false);
   
     const filteredRequestors = useMemo(() => {

@@ -17,6 +17,8 @@ import { FormEvent, useEffect, useState } from "react";
 import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
 import {TEST_RUNS_STATUS} from "@/utils/constants/common";
+import CustomTagsComponent from "./CustomTagsComponent";
+import { title } from "process";
 
 interface FilterableField {
     id: string;
@@ -54,6 +56,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   const [resultsNames, setResultsNames] = useState<string[]>([]);
   const [selectedResults, setSelectedResults] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
 
   // Initialize the saved query  state directly from the URL
@@ -65,11 +68,13 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         // Set the value in the initial query map
         initialQuery.set(field.id, value);
 
-        // If the field is 'result' or 'status', split the value into an array and set the corresponding state
+        // If the field is 'result' or 'status' or 'tags', split the value into an array and set the corresponding state
         if (field.id === 'result') {
           setSelectedResults(value.split(','));
         } else if (field.id === 'status') {
           setSelectedStatuses(value.split(','));
+        } else if (field.id === 'tags') {
+          setSelectedTags(value.split(','));
         }
       } 
     });
@@ -82,7 +87,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     const loadRequestors = async () => {
       try {
         const requestors = await requestorNamesPromise;
-        console.log("Requestors fetched:", requestors);
         setAllRequestors(requestors);
       } catch (error) {
         console.error("Error fetching requestors:", error);
@@ -96,7 +100,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     const loadResultsNames = async () => {
       try {
         const resultsNames = await resultsNamesPromise;
-        console.log("Results fetched:", resultsNames);
         setResultsNames(resultsNames);
       } catch (error) {
         console.error("Error fetching results:", error);
@@ -110,43 +113,43 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     const savedValue = query.get(selectedFilter.id) || '';
     setCurrentInputValue(savedValue);
 
-    // If the selected filter is 'result' or 'status', update the corresponding state
+    // If the selected filter is 'result' or 'status' or 'tags', update the corresponding state
     if (selectedFilter.id === 'result') {
       const resultsFromQuery = query.get('result');
       setSelectedResults(resultsFromQuery ? resultsFromQuery.split(','): []);
     } else if (selectedFilter.id === 'status') {
       const statusesFromQuery = query.get('status');
       setSelectedStatuses(statusesFromQuery ? statusesFromQuery.split(',') : []);
-    }
+    } else if (selectedFilter.id === 'tags') {
+      const tagsFromQuery = query.get('tags');
+      setSelectedTags(tagsFromQuery ? tagsFromQuery.split(',') : []);
+    } 
 
   }, [selectedFilter, query]);
 
+  
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
     const newQuery = new Map(query);
-   
-    // Handle saving based on which filter is selected
+
+    // Update the query based on the selected filter
     if (selectedFilter.id === 'result') {
-      if (selectedResults.length > 0) {
-        newQuery.set('result', selectedResults.join(','));
-      } else {
-        newQuery.delete('result');
-      }
+      newQuery.set('result', selectedResults.length > 0 ? selectedResults.join(',') : '');
     } else if (selectedFilter.id === 'status') {
-      if (selectedStatuses.length > 0) {
-        newQuery.set('status', selectedStatuses.join(','));
-      } else {
-        newQuery.delete('status');
-      }
-    } else {
-      // Logic for all other input-based fields
-      if (currentInputValue && currentInputValue.trim() !== '') {
-        newQuery.set(selectedFilter.id, currentInputValue.trim());
-      } else {
-        newQuery.delete(selectedFilter.id);
-      }
+      newQuery.set('status', selectedStatuses.length > 0 ? selectedStatuses.join(',') : '');
+    } else if (selectedFilter.id === 'tags') {
+      newQuery.set('tags', selectedTags.length > 0 ? selectedTags.join(',') : '');
+    }else {
+      newQuery.set(selectedFilter.id, currentInputValue.trim());
     }
+
+    // Clean up empty values from the query
+    newQuery.forEach((value, key) => {
+        if (!value) {
+            newQuery.delete(key);
+        }
+    });
         
     setQuery(newQuery);
 
@@ -158,11 +161,18 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     router.replace(`${pathname}?${params.toString()}`, {scroll: false});
   };
 
+
   const handleCancel = () => {
     // Revert changes for the currently selected filter
     if (selectedFilter.id === 'result') {
       const resultsFromQuery = query.get('result');
       setSelectedResults(resultsFromQuery ? resultsFromQuery.split(',') : []);
+    } else if (selectedFilter.id === 'status') {
+      const statusesFromQuery = query.get('status');
+      setSelectedStatuses(statusesFromQuery ? statusesFromQuery.split(',') : []);
+    } else if (selectedFilter.id === 'tags') {
+      const tagsFromQuery = query.get('tags');
+      setSelectedTags(tagsFromQuery ? tagsFromQuery.split(',') : []);
     } else {
       setCurrentInputValue(query.get(selectedFilter.id) || '');
     }
@@ -192,6 +202,13 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onCancel: handleCancel,
     };
 
+    const tagsPops = {
+      title: field.description,
+      tags: selectedTags,
+      onChange: setSelectedTags,
+      onSubmit: handleSave,
+      onCancel: handleCancel,
+    }
 
     switch (field.id) {
     case 'requestor':
@@ -199,6 +216,8 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     case 'result':
     case 'status':
       return <CustomCheckBoxList {...checkboxProps} />;
+    case 'tags':
+      return <CustomTagsComponent {...tagsPops} />;
     default:
       return <CustomSearchComponent {...searchProps} />;
     }
