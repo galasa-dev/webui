@@ -10,6 +10,8 @@ import { ConfigurationPropertyStoreAPIApi } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { MarkdownResponse } from "@/utils/interfaces";
 import { readFile } from "fs/promises";
+import { getLocale } from "next-intl/server";
+import { getMarkdownFilePath } from "@/utils/markdown";
 import path from "path";
 
 export default function HomePage() {
@@ -52,9 +54,7 @@ export default function HomePage() {
     return content;
   };
 
-  // Fetches markdown content from local project files, which will be used as the
-  // default content if the service.welcome.markdown property is not set
-  const fetchDefaultMarkdownContent = async () => {
+  const fetchDefaultMarkdownContent = async (locale: string): Promise<MarkdownResponse> => {
     let content: MarkdownResponse = {
       markdownContent: "",
       responseStatusCode: 200
@@ -63,7 +63,7 @@ export default function HomePage() {
       // Fetch the markdown file from the public/static folder
       const defaultContentFilePath = path.join(process.cwd(), "public", "static", "markdown", "home-contents.md");
       content = {
-        markdownContent: await readFile(defaultContentFilePath, 'utf-8'),
+        markdownContent: await readFile(getMarkdownFilePath(locale), 'utf-8'),
         responseStatusCode: 200
       };
 
@@ -75,9 +75,9 @@ export default function HomePage() {
   };
 
   // Fetch the content from the CPS property first, otherwise fall back to the default markdown content if unsuccessful
-  const markdownContentPromise = fetchHomePageContentFromCps().catch(() =>
-    fetchDefaultMarkdownContent(),
-  );
+  let markdownContentPromise: Promise<MarkdownResponse>;
+
+  markdownContentPromise = fetchHomePageContentFromCps().catch(() =>fetchDefaultMarkdownContent( locale ));
 
   return (
     <main id="content">

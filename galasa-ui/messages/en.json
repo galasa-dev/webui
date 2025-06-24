@@ -194,7 +194,7 @@
     "noTags": "No tags were associated with this test run."
   },
   "TestRunDetails": {
-    "title": "Test Run:",
+    "title": "Test Run: {runName}",
     "status": "Status",
     "result": "Result",
     "test": "Test",

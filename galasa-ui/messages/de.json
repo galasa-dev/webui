@@ -191,7 +191,7 @@
     "noTags": "Keine Tags vorhanden."
   },
   "TestRunDetails": {
-    "title": "Testlauf:",
+    "title": "Testlauf: {runName}",
     "status": "Status",
     "result": "Ergebnis",
     "test": "Test",
