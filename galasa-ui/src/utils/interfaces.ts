@@ -1,4 +1,3 @@
-
 /*
  * Copyright contributors to the Galasa project
  *
@@ -68,13 +67,15 @@ export interface DataTableRow {
   isSelected?: boolean;
 }
 
+export type AmPm = 'AM' | 'PM';
+
 export interface TimeFrameValues {
     fromDate: Date;
     fromTime: string;
-    fromAmPm: 'AM' | 'PM';
+    fromAmPm: AmPm;
     toDate: Date;
     toTime: string;
-    toAmPm: 'AM' | 'PM';
+    toAmPm: AmPm;
     durationDays: number;
     durationHours: number;
     durationMinutes: number;

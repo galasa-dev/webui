@@ -3,21 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import { time } from "console";
-
-export const handleDeleteCookieApiOperation = async (router: any) => {
-
-  const response = await fetch('/logout', { method: 'DELETE' });
-
-  if (response.status === 204) {
-
-    //auto redirect to render dex login page
-    router.refresh();
-
-  }
-};
-
+import { AmPm } from "./interfaces";
 
 export function parseIsoDateTime(isoString: string) {
   // Construct a Date object
@@ -123,7 +109,7 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
  * 
  * @return A Date object representing the combined date and time.
  */
-export const combineDateTime = (date: Date, time: string, amPm: 'AM' | 'PM'): Date => {
+export const combineDateTime = (date: Date, time: string, amPm: AmPm): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
@@ -150,7 +136,7 @@ export const extractDateTimeForUI = (date: Date) => {
   const hours24 = date.getHours();
   const minutes = date.getMinutes();
 
-  const amPm = hours24 >= 12 ? 'PM' : 'AM' as 'AM' | 'PM';
+  const amPm: AmPm = hours24 >= 12 ? 'PM' : 'AM';
 
   // Convert 24-hour format to 12-hour format for display
   let hours12 = hours24 % 12;
