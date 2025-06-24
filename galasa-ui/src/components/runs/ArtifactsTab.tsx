@@ -59,6 +59,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<{[path: string]: boolean}>({});
 
   const ZIP_EXTENSIONS = ["zip", "gz", "jar", "rar", "7z"];
   const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg"];
@@ -93,6 +94,14 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       handleDownload(bytes.buffer , cleanFileName);
 
     }
+  };
+
+  const toggleFolder = (path: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      // Toggle just this folder's state
+      [path]: !prev[path]
+    }));
   };
 
   const downloadArtifact = async (runId: string, artifactUrl: string) => {
@@ -262,6 +271,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   const renderNode = (node: TreeNodeData, path: string) => {
 
     let treeNode;
+    const isExpanded = expandedFolders[path] || false;
 
     if (node.isFile) {
       // Leaf file node
@@ -275,7 +285,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       />;
     } else {
       // Folder node: render label, then recurse on children
-      treeNode = <TreeNode isExpanded={false} key={path} id={path} label={node.name} value={node.name} renderIcon={Folder}>
+      treeNode = <TreeNode onToggle={() => toggleFolder(path)} isExpanded={isExpanded} key={path} id={path} label={node.name} value={node.name} renderIcon={Folder}>
         {Object.values(node.children).map((child) => {
           const childPath = path ? `${path}/${child.name}` : child.name;
           return renderNode(child, childPath);
