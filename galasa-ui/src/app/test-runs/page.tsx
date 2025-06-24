@@ -79,8 +79,12 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
       // Check if the limit was exceeded
       if (allRuns.length >= MAX_RECORDS) {
         limitExceeded = true;
-        allRuns = allRuns.slice(0, MAX_RECORDS); // Trim to max records
-        hasMorePages = false; // Stop fetching more runs
+
+         // Trim to max records
+        allRuns = allRuns.slice(0, MAX_RECORDS);
+
+        // Stop fetching more runs
+        hasMorePages = false; 
         break;
       }
 
@@ -91,7 +95,8 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
         || runsInBatch.length < BATCH_SIZE) {
         hasMorePages = false; 
       } else {
-        currentCursor = nextCursor; // Update cursor for next iteration
+        // Update cursor for next iteration
+        currentCursor = nextCursor; 
       }
       
     }

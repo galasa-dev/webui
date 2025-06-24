@@ -46,7 +46,8 @@ export default function DateTimePicker({
     if (formattedTime) {
       onTimeChange(formattedTime); 
     } else {
-      setLocalTime(time); // Revert to last known valid time
+      // Revert to last known valid time
+      setLocalTime(time); 
     }
   };
 

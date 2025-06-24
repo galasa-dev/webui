@@ -52,6 +52,7 @@ jest.mock('@/components/test-runs/TimeFrameFilter', () => {
 
   return TimeFrameFilterMock;
 });
+
 // Mock next/navigation hooks
 const mockReplace = jest.fn();
 let mockSearchParams = new URLSearchParams();
@@ -108,7 +109,7 @@ describe('applyTimeFrameRules', () => {
 
   test('should return an error if "From" date is after "To" date', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
-    const toDate = new Date('2025-08-14T10:00:00.000Z'); // One day before
+    const toDate = new Date('2025-08-14T10:00:00.000Z'); 
     const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(fromDate, toDate);
 
     expect(notification?.kind).toEqual('error');
