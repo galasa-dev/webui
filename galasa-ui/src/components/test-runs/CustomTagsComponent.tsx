@@ -62,7 +62,7 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentTagInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <div className={styles.buttonContainer}>
+          <div className={styles.tagsButtonContainer}>
             <Button
               type="button"
               kind="secondary"
@@ -84,7 +84,7 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
           value={selectedForRemoval}
         >
           {tags.map(tag => (
-            <option key={tag} value={tag}>{tag}</option>
+            <option key={tag} value={tag} className={styles.tagOption}>{tag}</option>
           ))}
         </select>
       </div>

@@ -51,7 +51,7 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
             <Checkbox
               key={name}
               id={`checkbox-${name}`}
-              labelText={name}
+              labelText={name.charAt(0).toUpperCase() + name.slice(1)}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleItemChange(event.target.checked, name)}
               checked={selectedItems.includes(name)}
             />

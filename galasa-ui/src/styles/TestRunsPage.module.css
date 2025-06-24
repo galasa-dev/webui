@@ -98,15 +98,35 @@
   background-color: #f0f0f0;
 }
 
-.buttonContainer {
+.buttonContainer, .tagsButtonContainer {
     display: flex;
     gap: 1rem;
     padding-top: 2rem;
 }
 
-.buttonContainer > button {
-    width: 20%;
+.buttonContainer > button, .tagsButtonContainer > button {
+    width: 15%;
     height: 3rem;
+}
+
+.tagsButtonContainer {
+    justify-content: flex-end;
+}
+
+.tagsListbox {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--cds-border-subtle, #e0e0e0);
+    background-color: var(--cds-background, #ffffff);
+}
+
+.tagOption {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    &:hover {
+        background-color: var(--cds-interactive-hover, #f4f4f4);
+    }
 }
 
 .TimeFrameFilterContainer {
