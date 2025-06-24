@@ -153,7 +153,7 @@ export default function TimeFrameContent() {
       <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
       {notification && (
         <InlineNotification
-          className={styles.ErrorNotification}
+          className={styles.notification}
           kind={notification.kind} 
           title={notification.kind === 'error' ? 'Invalid Time Frame' : 'Auto-Correction'}
           subtitle={notification.text}

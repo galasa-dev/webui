@@ -34,6 +34,7 @@ import ErrorPage from "@/app/error/page";
 import { TestRunsData } from "@/app/test-runs/page";
 import {MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
+import { InlineNotification } from "@carbon/react";
 
 
 interface CustomCellProps {
@@ -200,7 +201,12 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
 
   return (
     <div className={styles.resultsPageContainer}>
-      {limitExceeded && <p>Your query returned more than {MAX_RECORDS} results. Showing the first {MAX_RECORDS} records.</p>}
+      {limitExceeded && <InlineNotification
+      className={styles.notification}
+      kind="warning" 
+      title="Limit Exceeded" 
+      subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
+      />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>
