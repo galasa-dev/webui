@@ -79,17 +79,17 @@ describe('TestRunsTabs Component', () => {
   test('displays the content of the Timeframe tab', () => {
     render(<TestRunsTabs runsListPromise={mockPromise}/>);
 
-     // Act: Click on the 'Timeframe' tab
-     const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
-     fireEvent.click(timeframeTab);
+    // Act: Click on the 'Timeframe' tab
+    const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
+    fireEvent.click(timeframeTab);
 
-     // Assert: Check that the 'Timeframe' tab is now active
-     expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
-     const resultsTab = screen.getByRole('tab', { name: 'Results' });
-     expect(resultsTab).toHaveAttribute('aria-selected', 'false');
+    // Assert: Check that the 'Timeframe' tab is now active
+    expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
+    const resultsTab = screen.getByRole('tab', { name: 'Results' });
+    expect(resultsTab).toHaveAttribute('aria-selected', 'false');
 
-     // Assert: The content of the 'Timeframe' tab should be visible.
-     expect(screen.getByText('Mocked Timeframe Content')).toBeVisible();
+    // Assert: The content of the 'Timeframe' tab should be visible.
+    expect(screen.getByText('Mocked Timeframe Content')).toBeVisible();
   });
 
   test('switches to the "Results" tab and displays its content on click', async () => {

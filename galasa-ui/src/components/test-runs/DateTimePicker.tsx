@@ -8,6 +8,7 @@
 import styles from '@/styles/TestRunsPage.module.css';
 import { parseAndValidateTime } from '@/utils/timeOperations';
 import { FormGroup, DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem } from '@carbon/react';
+import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 
 interface DateTimePickerProps {
@@ -33,12 +34,12 @@ export default function DateTimePicker({
   onAmPmChange,
 }: DateTimePickerProps) {
   const [localTime, setLocalTime] = useState(time);
-  const invalidTimeText = 'Please enter a valid time in HH:MM format.';
+  const translations = useTranslations('DateTimePicker');
+  const invalidTimeText = translations('invalidTimeText');
 
   // Sync local state if the time prop changes from the parent
   useEffect(() => {
     setLocalTime(time);
-    console.log(`Time prop updated: ${time}`);
   }, [time]);
 
   const handleTimeBlur = () => {
@@ -59,11 +60,11 @@ export default function DateTimePicker({
         maxDate={new Date()}
         onChange={(dates: Date[]) => onDateChange(dates?.[0] || null)}
       >
-        <DatePickerInput id={`${legend}-date-picker`} labelText="Date" placeholder="mm/dd/yyyy" />
+        <DatePickerInput id={`${legend}-date-picker`} labelText={translations('date')} placeholder="mm/dd/yyyy" />
       </DatePicker>
       <TimePicker
         id={`${legend}-time-picker`}
-        labelText="Time"
+        labelText={translations('time')}
         value={localTime}
         invalid={!parseAndValidateTime(localTime)}
         invalidText={invalidTimeText}
@@ -75,8 +76,8 @@ export default function DateTimePicker({
           value={amPm}
           onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onAmPmChange(event.target.value)}
         >
-          <SelectItem text="AM" value="AM" />
-          <SelectItem text="PM" value="PM" />
+          <SelectItem text={translations('AM')} value="AM" />
+          <SelectItem text={translations('PM')} value="PM" />
         </TimePickerSelect>
       </TimePicker>
     </FormGroup>

@@ -159,7 +159,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
       });
     }
     return text;
-  }, [rawRuns]);
+  }, [rawRuns, translations]);
 
   if (isError) {
     return <ErrorPage />;
@@ -168,13 +168,12 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   if (isLoading) {
     return (
       <div>
-        <p className={styles.timeFrameText}>Loading test results...</p>
+        <p className={styles.timeFrameText}>{translations("loading")}</p>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
           rowCount={pageSize}
         />
-        ;
       </div>
     );
   }
@@ -202,10 +201,10 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   return (
     <div className={styles.resultsPageContainer}>
       {limitExceeded && <InlineNotification
-      className={styles.notification}
-      kind="warning" 
-      title="Limit Exceeded" 
-      subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
+        className={styles.notification}
+        kind="warning" 
+        title="Limit Exceeded" 
+        subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
       />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>

@@ -80,7 +80,7 @@ const fetchAllTestRunsByPaging  = async ({fromDate, toDate}: {fromDate: Date, to
       if (allRuns.length >= MAX_RECORDS) {
         limitExceeded = true;
 
-         // Trim to max records
+        // Trim to max records
         allRuns = allRuns.slice(0, MAX_RECORDS);
 
         // Stop fetching more runs

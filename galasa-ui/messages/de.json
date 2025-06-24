@@ -223,8 +223,10 @@
     "testName": "Testname",
     "status": "Status",
     "result": "Ergebnis",
+    "noTestRunsFound": "Für den ausgewählten Zeitraum wurden keine Testläufe gefunden",
     "loading": "Testergebnisse werden geladen...",
-    "noData": "Keine Testläufe in den letzten 24 Stunden gefunden.",
+    "limitExceededTitle": "Limit überschritten",
+    "limitExceededSubtitle": "Ihre Abfrage ergab mehr als {maxRecords} Ergebnisse. Es werden die ersten {maxRecords} Datensätze angezeigt.",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
       "range": "Zeige Testläufe von {from} bis {to}"
@@ -245,12 +247,37 @@
     },
     "content": {
       "timeframe": "Diese Seite befindet sich im Aufbau. Derzeit werden alle Ergebnisse der letzten 24 Stunden angezeigt.",
-      "tableDesign": "Diese Seite befindet sich im Aufbau. Bald können Sie Spalten wählen.",
-      "searchCriteria": "Diese Seite befindet sich im Aufbau. Definieren Sie Suchkriterien zur Filterung."
+      "tableDesign": "Diese Seite ist im Aufbau. In Zukunft können Sie auswählen, welche Spalten sichtbar sind und in welcher Reihenfolge.",
+      "searchCriteria": "Diese Seite ist im Aufbau. Definieren Sie spezifische Suchkriterien, um die untenstehenden Ergebnisse zu filtern."
     }
   },
   "TestRunPage": {
     "notFoundTitle": "Lauf nicht gefunden",
     "notFoundDescription": "Kein Lauf mit ID: {id} gefunden"
+  },
+  "TimeFrame": {
+    "selectEnvelope": "Wählen Sie den Zeitraum aus, gegen den die Einreichungszeit jedes Testlaufs verglichen wird.",
+    "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern keine anderen Filter angewendet werden.",
+    "invalidTimeFrame": "Ungültiger Zeitraum",
+    "autoCorrection": "Automatische Korrektur",
+    "toBeforeFrom": "'Bis'-Datum darf nicht vor dem 'Von'-Datum liegen.",
+    "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
+    "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
+    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein."
+  },
+  "DateTimePicker": {
+    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:mm ein.",
+    "AM": "vorm",
+    "PM": "nachm",
+    "date": "Datum",
+    "time": "Uhrzeit"
+  },
+  "TimeFrameFilter": {
+    "days": "Tage",
+    "hours": "Stunden",
+    "minutes": "Minuten",
+    "from": "Von",
+    "to": "Bis",
+    "duration": "Dauer"
   }
 }

@@ -144,6 +144,7 @@ export const extractDateTimeForUI = (date: Date) => {
     hours12 = 12;
   }
 
+  // Pad hours and minutes with leading zeros to ensure they are always two digits
   const minutesStr = minutes.toString().padStart(2, '0');
   const hoursStr = hours12.toString().padStart(2, '0');
 
@@ -156,10 +157,17 @@ export const extractDateTimeForUI = (date: Date) => {
   };
 };
 
+/**
+ * Gets the date and time for "yesterday" at midnight.
+ * 
+ * @returns A Date object representing yesterday at midnight.
+ */
 export function getYesterday(): Date {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1); 
-  yesterday.setHours(0, 0, 0, 0); // Reset time to midnight
+
+  // Reset time to midnight
+  yesterday.setHours(0, 0, 0, 0); 
   return yesterday;
 };
 
@@ -197,21 +205,29 @@ export const parseAndValidateTime = (timeString: string) => {
 
   let parsedTime = null;
 
+  // Expecting time in 'HH:MM' format, so splitting into [hours, minutes]
+  const TIME_PARTS_EXPECTED = 2;
+  // parseInt radix for base-10 numbers
+  const DECIMAL_RADIX = 10;
   const parts = timeString.trim().split(':');
-  if (parts.length !== 2)  return null;
 
-  const hour = parseInt(parts[0], 10);
-  const minute = parseInt(parts[1], 10);
+  if (parts.length === TIME_PARTS_EXPECTED) {
+    
+    // Parse hours and minutes as base-10 integers
+    const hour = parseInt(parts[0], DECIMAL_RADIX);
+    const minute = parseInt(parts[1], DECIMAL_RADIX);
 
-  const isValid = !isNaN(hour) && !isNaN(minute) &&
-                  hour >= 0 && hour <= 12 &&
-                  minute >= 0 && minute <= 59;
+    // Validate hour and minute ranges for 12-hour time
+    const isValid = !isNaN(hour) && !isNaN(minute) &&
+                    hour >= 0 && hour <= 12 &&
+                    minute >= 0 && minute <= 59;
 
-  // If valid, format the time as "HH:MM"
-  if (isValid) {
-    const formattedHour = hour.toString().padStart(2, '0');
-    const formattedMinute = minute.toString().padStart(2, '0');
-    parsedTime = `${formattedHour}:${formattedMinute}`;
+    // If valid, format the time as "HH:MM"
+    if (isValid) {
+      const formattedHour = hour.toString().padStart(2, '0');
+      const formattedMinute = minute.toString().padStart(2, '0');
+      parsedTime = `${formattedHour}:${formattedMinute}`;
+    }
   }
 
   return parsedTime;

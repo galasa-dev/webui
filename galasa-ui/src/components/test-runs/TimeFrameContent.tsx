@@ -7,65 +7,18 @@
 
 import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useTransition } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/timeOperations';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { InlineNotification } from '@carbon/react';
 import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
+import { useTranslations } from 'next-intl';
 
 type Notification = {
   text: string;
   kind: 'error' | 'warning';
 };
-
-/**
- * A hybrid function that both validates and corrects a date range.
- * It auto-corrects non-critical issues (like exceeding 'now') and returns a warning.
- * It returns a hard error for critical issues (like an inverted range).
- * @returns An object with the corrected dates and an optional notification object.
- */
-export function applyTimeFrameRules(fromDate: Date, toDate: Date): { correctedFrom: Date; correctedTo: Date; notification: Notification | null } {
-  let correctedFrom = new Date(fromDate.getTime());
-  let correctedTo = new Date(toDate.getTime());
-  let notification: Notification | null = null;
-
-  if (correctedFrom > correctedTo) {
-    console.error("Invalid date range: 'From' date is after 'To' date.");
-    return {
-      correctedFrom: fromDate,
-      correctedTo: toDate,
-      notification: {
-        text: "'To' date cannot be before 'From' date.",
-        kind: 'error',
-      }
-    };
-  }
-
-  const maxToDate = addMonths(correctedFrom, MAX_RANGE_MONTHS);
-  if (correctedTo > maxToDate) {
-    console.warn(`'To' date exceeds the maximum allowed range of ${MAX_RANGE_MONTHS} months from 'From' date.`);
-    correctedTo = maxToDate;
-    notification = {
-      text: `Date range cannot exceed ${MAX_RANGE_MONTHS} months; 'To' date has been adjusted.`,
-      kind: 'warning',
-    };
-  }
-
-  const now = new Date();
-  console.log('Current time:', now.toISOString());
-  if (correctedTo > now) {
-    console.warn("'To' date exceeds the current time, capping it at 'now'.");
-    correctedTo = now;
-    notification = {
-      text: "Date range was capped at the current time.",
-      kind: 'warning',
-    };
-  }
-
-
-  return { correctedFrom, correctedTo, notification };
-}
 
 /**
  * Calculates the final, fully synchronized state object from two valid dates.
@@ -85,11 +38,56 @@ export const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFr
   return { fromDate, fromTime: fromUiParts.time, fromAmPm: fromUiParts.amPm, toDate, toTime: toUiParts.time, toAmPm: toUiParts.amPm, durationDays, durationHours, durationMinutes };
 };
 
+/**
+ * A hybrid function that both validates and corrects a date range.
+ * It auto-corrects non-critical issues (like exceeding 'now') and returns a warning.
+ * It returns a hard error for critical issues (like an inverted range).
+ * @returns An object with the corrected dates and an optional notification object.
+ */
+export function applyTimeFrameRules(fromDate: Date, toDate: Date, 
+  translations: (key: string, values?: Record<string, any>) => string): { correctedFrom: Date; correctedTo: Date; notification: Notification | null } {
+  let correctedFrom = new Date(fromDate.getTime());
+  let correctedTo = new Date(toDate.getTime());
+  let notification: Notification | null = null;
+    
+  if (correctedFrom > correctedTo) {
+    return {
+      correctedFrom: fromDate,
+      correctedTo: toDate,
+      notification: {
+        text: translations('toBeforeFrom'),
+        kind: 'error',
+      }
+    };
+  }
+    
+  const maxToDate = addMonths(correctedFrom, MAX_RANGE_MONTHS);
+  if (correctedTo > maxToDate) {
+    correctedTo = maxToDate;
+    notification = {
+      text: translations('dateRangeExceeded', { maxMonths: MAX_RANGE_MONTHS }),
+      kind: 'warning',
+    };
+  }
+    
+  const now = new Date();
+  if (correctedTo > now) {
+    correctedTo = now;
+    notification = {
+      text: translations('dateRangeCapped'),
+      kind: 'warning',
+    };
+  }
+    
+    
+  return { correctedFrom, correctedTo, notification };
+}
 
 export default function TimeFrameContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const translations = useTranslations('TimeFrame');
 
   const initializeState = (): TimeFrameValues => {
     const fromParam = searchParams.get('from');
@@ -129,7 +127,7 @@ export default function TimeFrameContent() {
       toDate = combineDateTime(draftValues.toDate, draftValues.toTime, draftValues.toAmPm);
     }
 
-    const { correctedFrom, correctedTo, notification: validationNotification } = applyTimeFrameRules(fromDate, toDate);
+    const { correctedFrom, correctedTo, notification: validationNotification } = applyTimeFrameRules(fromDate, toDate, translations);
 
     // Set the notification if there is one
     setNotification(validationNotification);
@@ -139,20 +137,20 @@ export default function TimeFrameContent() {
       const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
       setValues(finalState);
     }
-  }, [values]);
+  }, [values, translations]);
 
   return (
     <div className={styles.TimeFrameContainer}>
       <div>
-        <p>Select the time envelope against which the submission time of each test run will be compared.</p>
-        <p>Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.</p>
+        <p>{translations('selectEnvelope')}</p>
+        <p>{translations('envelopeDescription')}</p>
       </div>
       <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
       {notification && (
         <InlineNotification
           className={styles.notification}
           kind={notification.kind} 
-          title={notification.kind === 'error' ? 'Invalid Time Frame' : 'Auto-Correction'}
+          title={notification.kind === 'error' ? translations('invalidTimeFrame') : translations('autoCorrection')}
           subtitle={notification.text}
           hideCloseButton={true}
         />
