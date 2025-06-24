@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import OverviewTab from '@/components/runs/OverviewTab'; // adjust the path as needed
+import OverviewTab from '@/components/test-runs/OverviewTab'; // adjust the path as needed
 import { RunMetadata } from '@/utils/interfaces';
 
 // Mock the Carbon Tag component to simplify assertions

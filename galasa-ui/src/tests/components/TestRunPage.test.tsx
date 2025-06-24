@@ -5,7 +5,6 @@
  * @jest-environment node
  */
 
-import React from "react";
 import "@testing-library/jest-dom";
 
 // Mock translations
@@ -44,7 +43,7 @@ jest.mock("@/app/test-runs/[slug]/page", () => {
 
 import TestRunPage from "@/app/test-runs/[slug]/page";
 // Note: We keep imports of these for mocking API behavior, but tests will assert against the mock-page div
-import TestRunDetails from "@/components/runs/TestRunDetails";
+import TestRunDetails from "@/components/test-runs/TestRunDetails";
 import NotFound from "@/components/common/NotFound";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { ResultArchiveStoreAPIApi } from "@/generated/galasaapi";

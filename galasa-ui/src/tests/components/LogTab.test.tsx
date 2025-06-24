@@ -6,7 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import LogTab from '@/components/runs/LogTab';
+import LogTab from '@/components/test-runs/LogTab';
 import { handleDownload } from '@/utils/artifacts';
 
 // Mock the utility function

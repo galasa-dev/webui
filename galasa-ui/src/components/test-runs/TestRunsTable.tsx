@@ -31,7 +31,11 @@ import StatusIndicator from "../common/StatusIndicator";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ErrorPage from "@/app/error/page";
+import { TestRunsData } from "@/app/test-runs/page";
+import {MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
+import { InlineNotification } from "@carbon/react";
+
 
 interface CustomCellProps {
   header: string;
@@ -82,18 +86,16 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
   return <TableCell>{value}</TableCell>;
 };
 
-export default function TestRunsTable({
-  runsListPromise,
-}: {
-  runsListPromise: Promise<Run[]>;
-}) {
+export default function TestRunsTable({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
   const translations = useTranslations("TestRunsTable");
+
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [rawRuns, setRawRuns] = useState<Run[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [limitExceeded, setLimitExceeded] = useState(false);
 
   const headers = [
     { key: "submittedAt", header: translations("submittedAt") },
@@ -113,8 +115,9 @@ export default function TestRunsTable({
       setIsLoading(true);
 
       try {
-        const runs = await runsListPromise;
+        const {runs, limitExceeded } = await runsListPromise;
         setRawRuns(runs || []);
+        setLimitExceeded(limitExceeded);
       } catch (error) {
         console.error("Error fetching test runs:", error);
         setIsError(true);
@@ -156,7 +159,7 @@ export default function TestRunsTable({
       });
     }
     return text;
-  }, [rawRuns]);
+  }, [rawRuns, translations]);
 
   if (isError) {
     return <ErrorPage />;
@@ -165,13 +168,12 @@ export default function TestRunsTable({
   if (isLoading) {
     return (
       <div>
-        <p className={styles.timeFrameText}>Loading test results...</p>
+        <p className={styles.timeFrameText}>{translations("loading")}</p>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
           rowCount={pageSize}
         />
-        ;
       </div>
     );
   }
@@ -192,12 +194,18 @@ export default function TestRunsTable({
     router.push(`/test-runs/${runId}`);
   };
 
-  if (!tableRows || tableRows.length === 0) {
-    return <p>No test runs found in the last 24 hours.</p>;
+  if( !tableRows || tableRows.length === 0) {
+    return <p>No test runs were found for the selected timeframe</p>;
   }
 
   return (
     <div className={styles.resultsPageContainer}>
+      {limitExceeded && <InlineNotification
+        className={styles.notification}
+        kind="warning" 
+        title="Limit Exceeded" 
+        subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
+      />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable isSortable rows={paginatedRows} headers={headers}>

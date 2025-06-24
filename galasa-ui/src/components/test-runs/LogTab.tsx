@@ -170,51 +170,6 @@ export default function LogTab({ logs }: { logs: string }) {
     return logLevel;
   };
 
-  const processLogLines = (content: string) => {
-    const lines = content.split("\n");
-    const processed: LogLine[] = [];
-    let currentLevel = "INFO"; // Default level
-
-    lines.forEach((line, index) => {
-      const detectedLevel = getLogLevel(line);
-
-      // If we find a new level, update current level
-      if (detectedLevel) {
-        currentLevel = detectedLevel;
-      }
-
-      // All lines get assigned to the current level (either explicit or inherited)
-      processed.push({
-        content: line,
-        level: currentLevel,
-        lineNumber: index + 1,
-        isVisible: true,
-      });
-    });
-
-    return processed;
-  };
-
-  const applyFilters = (lines: LogLine[]) => {
-    let filteredLines = [];
-    const hasActiveFilters = Object.values(filters).some(
-      (filter) => filter === true,
-    );
-
-    if (!hasActiveFilters) {
-      // If no filters are active, hide all lines
-      filteredLines = lines.map((line) => ({ ...line, isVisible: false }));
-    } else {
-      // Only show lines whose level is checked in the filters
-      filteredLines = lines.map((line) => ({
-        ...line,
-        isVisible: !!filters[line.level as keyof typeof filters],
-      }));
-    }
-
-    return filteredLines;
-  };
-
   // Search function that computes all matches once and caches results
   const computeSearchMatches = useCallback((lines: LogLine[], regex: RegExp | null): MatchInfo[] => {
     let result: MatchInfo[] = [];
@@ -378,6 +333,52 @@ export default function LogTab({ logs }: { logs: string }) {
 
   // Process log content and apply filters
   useEffect(() => {
+
+    const processLogLines = (content: string) => {
+      const lines = content.split("\n");
+      const processed: LogLine[] = [];
+      let currentLevel = "INFO"; // Default level
+  
+      lines.forEach((line, index) => {
+        const detectedLevel = getLogLevel(line);
+  
+        // If we find a new level, update current level
+        if (detectedLevel) {
+          currentLevel = detectedLevel;
+        }
+  
+        // All lines get assigned to the current level (either explicit or inherited)
+        processed.push({
+          content: line,
+          level: currentLevel,
+          lineNumber: index + 1,
+          isVisible: true,
+        });
+      });
+  
+      return processed;
+    };
+
+    const applyFilters = (lines: LogLine[]) => {
+      let filteredLines = [];
+      const hasActiveFilters = Object.values(filters).some(
+        (filter) => filter === true,
+      );
+  
+      if (!hasActiveFilters) {
+        // If no filters are active, hide all lines
+        filteredLines = lines.map((line) => ({ ...line, isVisible: false }));
+      } else {
+        // Only show lines whose level is checked in the filters
+        filteredLines = lines.map((line) => ({
+          ...line,
+          isVisible: !!filters[line.level as keyof typeof filters],
+        }));
+      }
+  
+      return filteredLines;
+    };
+
     if (logContent) {
       const processed = processLogLines(logContent);
       const filtered = applyFilters(processed);

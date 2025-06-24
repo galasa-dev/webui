@@ -6,7 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import MethodsTab, { MethodDetails } from '@/components/runs/MethodsTab';
+import MethodsTab, { MethodDetails } from '@/components/test-runs/MethodsTab';
 import { TestMethod } from '@/generated/galasaapi';
 
 // Mock the StatusCheck component
