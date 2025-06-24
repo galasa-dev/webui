@@ -13,9 +13,10 @@ import {
   StructuredListBody,
 } from "@carbon/react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
+import {TEST_RUNS_STATUS} from "@/utils/constants/common";
 
 interface FilterableField {
     id: string;
@@ -25,7 +26,8 @@ interface FilterableField {
 }
 
 interface SearchCriteriaContentProps {
-  requestorNamesPromise: Promise<string[]>, resultsNamesPromise: Promise<string[]>
+  requestorNamesPromise: Promise<string[]>;
+  resultsNamesPromise: Promise<string[]>;
 }
 
 
@@ -51,6 +53,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   const [allRequestors, setAllRequestors] = useState<string[]>([]);
   const [resultsNames, setResultsNames] = useState<string[]>([]);
   const [selectedResults, setSelectedResults] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
 
   // Initialize the saved query  state directly from the URL
@@ -59,9 +62,14 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     filterableFields.forEach(field => {
       const value = searchParams.get(field.id);
       if (value) {
+        // Set the value in the initial query map
         initialQuery.set(field.id, value);
+
+        // If the field is 'result' or 'status', split the value into an array and set the corresponding state
         if (field.id === 'result') {
           setSelectedResults(value.split(','));
+        } else if (field.id === 'status') {
+          setSelectedStatuses(value.split(','));
         }
       } 
     });
@@ -102,9 +110,13 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     const savedValue = query.get(selectedFilter.id) || '';
     setCurrentInputValue(savedValue);
 
+    // If the selected filter is 'result' or 'status', update the corresponding state
     if (selectedFilter.id === 'result') {
       const resultsFromQuery = query.get('result');
       setSelectedResults(resultsFromQuery ? resultsFromQuery.split(','): []);
+    } else if (selectedFilter.id === 'status') {
+      const statusesFromQuery = query.get('status');
+      setSelectedStatuses(statusesFromQuery ? statusesFromQuery.split(',') : []);
     }
 
   }, [selectedFilter, query]);
@@ -120,6 +132,12 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         newQuery.set('result', selectedResults.join(','));
       } else {
         newQuery.delete('result');
+      }
+    } else if (selectedFilter.id === 'status') {
+      if (selectedStatuses.length > 0) {
+        newQuery.set('status', selectedStatuses.join(','));
+      } else {
+        newQuery.delete('status');
       }
     } else {
       // Logic for all other input-based fields
@@ -167,9 +185,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     // Props for the checkbox list component
     const checkboxProps = {
       title: field.description,
-      items: resultsNames,
-      selectedItems: selectedResults,
-      onChange: setSelectedResults, 
+      items: (field.id === 'result') ? resultsNames : TEST_RUNS_STATUS,
+      selectedItems: (field.id === 'result') ? selectedResults : selectedStatuses,
+      onChange: (field.id === 'result') ? setSelectedResults : setSelectedStatuses, 
       onSubmit: handleSave,
       onCancel: handleCancel,
     };
@@ -179,12 +197,12 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     case 'requestor':
       return <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
     case 'result':
+    case 'status':
       return <CustomCheckBoxList {...checkboxProps} />;
     default:
       return <CustomSearchComponent {...searchProps} />;
     }
   };
-
 
   return (
     <div>

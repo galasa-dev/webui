@@ -23,5 +23,8 @@ const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
 const MAX_RANGE_MONTHS = 3;
 
-export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, HOUR_MS, DAY_MS, MAX_RANGE_MONTHS };
+const TEST_RUNS_STATUS = ['finished', 'building', 'generating', 'running', 'rundone',
+  'up', 'tarted', 'provstart', 'ending'];
+
+export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS };
 
