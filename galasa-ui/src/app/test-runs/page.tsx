@@ -116,7 +116,7 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, 
   } catch (error: any) {
     console.error("Error fetching test runs:", error);
   }
-  console.log("Total runs fetched:", allRuns.length, "Limit exceeded:", limitExceeded);
+  
   return {runs: allRuns, limitExceeded };
 };
 
