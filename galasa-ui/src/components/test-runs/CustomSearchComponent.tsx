@@ -33,28 +33,28 @@ interface CustomSearchComponentProps {
  * @returns The Search component.
  */
 export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
-    const [isListVisible, setIsListVisible] = useState(false);
+  const [isListVisible, setIsListVisible] = useState(false);
   
-    const filteredRequestors = useMemo(() => {
-      let currentRequestors = allRequestors || [];
+  const filteredRequestors = useMemo(() => {
+    let currentRequestors = allRequestors || [];
       
-      if (value && currentRequestors.length > 0) {
-        currentRequestors = currentRequestors?.filter((name: string) => name.toLowerCase().includes(value.toLowerCase()));
-      }
-  
-      return currentRequestors;
-    }, [value, allRequestors]);
-  
-    const handleSelectRequestor = (name: string) => {
-      onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
-      setIsListVisible(false);
+    if (value && currentRequestors.length > 0) {
+      currentRequestors = currentRequestors?.filter((name: string) => name.toLowerCase().includes(value.toLowerCase()));
     }
   
-    return (
-      <form className={styles.filterInputContainer} onSubmit={onSubmit}>
-        <div className={styles.customComponentWrapper}>
-          <p>{title}</p>
-          <div className={styles.suggestionContainer}>
+    return currentRequestors;
+  }, [value, allRequestors]);
+  
+  const handleSelectRequestor = (name: string) => {
+    onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
+    setIsListVisible(false);
+  };
+  
+  return (
+    <form className={styles.filterInputContainer} onSubmit={onSubmit}>
+      <div className={styles.customComponentWrapper}>
+        <p>{title}</p>
+        <div className={styles.suggestionContainer}>
           <Search
             id="search-input"
             placeholder={placeholder}
@@ -75,12 +75,12 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
               ))}
             </ul>
           )}
-          </div>
         </div>
-        <div className={styles.buttonContainer}>
-          <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
-          <Button type="submit">Save</Button>
-        </div>
-      </form>
-    );
-  };
+      </div>
+      <div className={styles.buttonContainer}>
+        <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </form>
+  );
+};

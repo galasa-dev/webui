@@ -18,7 +18,6 @@ import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
 import {TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
-import { title } from "process";
 
 interface FilterableField {
     id: string;
@@ -146,9 +145,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // Clean up empty values from the query
     newQuery.forEach((value, key) => {
-        if (!value) {
-            newQuery.delete(key);
-        }
+      if (!value) {
+        newQuery.delete(key);
+      }
     });
         
     setQuery(newQuery);
@@ -208,7 +207,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onChange: setSelectedTags,
       onSubmit: handleSave,
       onCancel: handleCancel,
-    }
+    };
 
     switch (field.id) {
     case 'requestor':

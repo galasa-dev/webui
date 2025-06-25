@@ -177,10 +177,10 @@ export default async function TestRunsPage({searchParams}: {searchParams: {[key:
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
           <TestRunsTabs 
-          runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, submissionId, bundle, testName, result, tags})} 
+            runsListPromise={fetchAllTestRunsByPaging({fromDate, toDate, testRunName, requestor, group, submissionId, bundle, testName, result, tags})} 
             requestorNamesPromise={getRequestorList()} 
             resultsNamesPromise={getResultsNames()} 
-            />
+          />
         </Suspense>
       </div>
     </main>

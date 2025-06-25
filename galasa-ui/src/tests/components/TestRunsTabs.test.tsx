@@ -84,14 +84,14 @@ describe('TestRunsTabs Component', () => {
     });
   });
 
-test('displays the content of the Timeframe tab', () => {
-  render(
-    <TestRunsTabs
-      runsListPromise={mockPromise}
-      requestorNamesPromise={mockRequestorNamesPromise}
-      resultsNamesPromise={mockResultsNamesPromise}
-    />
-  );
+  test('displays the content of the Timeframe tab', () => {
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
     // Act: Click on the 'Timeframe' tab
     const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
     fireEvent.click(timeframeTab);

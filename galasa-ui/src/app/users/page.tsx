@@ -16,11 +16,11 @@ import { HOME } from '@/utils/constants/breadcrumb';
 
 export const dynamic = 'force-dynamic';
 
-const apiConfig = createAuthenticatedApiConfiguration();
 export const fetchAllUsersFromApiServer = async () => {
 
   let users: UserData[] = [];
 
+  const apiConfig = createAuthenticatedApiConfiguration();
   const usersApiClient = new UsersAPIApi(apiConfig);
   const usersReponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION);
 
