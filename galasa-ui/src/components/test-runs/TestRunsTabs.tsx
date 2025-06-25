@@ -9,7 +9,7 @@ import styles from '@/styles/TestRunsPage.module.css';
 import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
 import SearchCriteriaContent from "./SearchCriteriaContent";
-import { TestRunsData } from '@/app/test-runs/page';
+import { TestRunsData } from "@/lib/data/testRuns";
 import { useTranslations } from "next-intl";
 
 interface TabConfig {
