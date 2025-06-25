@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright contributors to the Galasa project
  *

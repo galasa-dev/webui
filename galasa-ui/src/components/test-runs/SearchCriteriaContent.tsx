@@ -39,7 +39,7 @@ const filterableFields: FilterableField[] = [
   {id: 'bundle', label: 'Bundle', placeHolder: 'any', description: 'Type the name of the bundle.'},
   {id: 'submissionId', label: 'Submission ID', placeHolder: 'any', description: 'Type the ID of the submission.'},
   {id: 'testName', label: 'Test Name', placeHolder: 'any', description: 'Type the name of the test.'},
-  {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Type the status of the test run.'},
+  {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Select the status of the test result you wish to search for.'},
   {id: 'tags', label: 'Tags', placeHolder: 'any', description: 'Type the tags associated with the test run.'},
   {id: 'result', label: 'Result', placeHolder: 'Finished, Queued, RunDone, Waiting', description: 'Select the test result you wish to search for.'},
 ];
