@@ -67,7 +67,7 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
         CLIENT_API_VERSION,
         result,
         undefined, // status
-        bundle, // bundle
+        bundle,
         requestor, 
         fromDate, 
         toDate,  
@@ -76,8 +76,8 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
         BATCH_SIZE, 
         undefined, // runId
         runName, 
-        group, // group
-        submissionId, // submissionId
+        group, 
+        submissionId, 
         undefined, // detail
         tags, 
         'true',    // includeCursor
