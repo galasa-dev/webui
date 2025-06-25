@@ -228,9 +228,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     default:
       customComponent = <CustomSearchComponent {...searchProps} />;
       break;
-  }
-  return customComponent;
-};
+    }
+    return customComponent;
+  };
 
   return (
     <div>
