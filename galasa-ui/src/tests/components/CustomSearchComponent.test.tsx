@@ -8,6 +8,16 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomSearchComponent from '@/components/test-runs/CustomSearchComponent';
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "save": "Save",
+      "cancel": "Cancel",
+    };
+    return translations[key] || key;
+  },
+}));
+
 describe('CustomSearchComponent', () => {
   const mockOnChange = jest.fn();
   const mockOnClear = jest.fn();

@@ -5,6 +5,16 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomCheckBoxList from '@/components/test-runs/CustomCheckBoxList'; 
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "save": "Save",
+      "cancel": "Cancel",
+    };
+    return translations[key] || key;
+  },
+}));
+
 describe('CustomCheckBoxList', () => {
   const mockOnChange = jest.fn();
   const mockOnSubmit = jest.fn((e) => e.preventDefault());

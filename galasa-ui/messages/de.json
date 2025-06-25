@@ -281,5 +281,75 @@
     "from": "Von",
     "to": "Bis",
     "duration": "Dauer"
+  }, 
+  "SearchCriteriaContent": {
+    "description": "Bearbeiten Sie die Suchkriterien, um die Testergebnisse zu beschreiben, die Sie anzeigen möchten",
+    "table": {
+      "columnName": "Spaltenname",
+      "allowedValues": "Zulässige Werte"
+    },
+    "fields": {
+      "runName": {
+        "label": "Testlaufname",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen eines Testlaufs ein. Es wird nach einer exakten Übereinstimmung gesucht."
+      },
+      "requestor": {
+        "label": "Anforderer",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen eines Anforderers ein. Es wird nach einer exakten Übereinstimmung gesucht."
+      },
+      "group": {
+        "label": "Gruppe",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen der Gruppe ein."
+      },
+      "bundle": {
+        "label": "Bundle",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen des Bundles ein."
+      },
+      "submissionId": {
+        "label": "Übermittlungs-ID",
+        "placeholder": "beliebig",
+        "description": "Geben Sie die ID der Übermittlung ein."
+      },
+      "testName": {
+        "label": "Testname",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen des Tests ein."
+      },
+      "status": {
+        "label": "Status",
+        "placeholder": "Abgebrochen, Neu eingereiht, Bestanden, Fehlgeschlagen, Fehler",
+        "description": "Wählen Sie den Status des Testergebnisses aus, nach dem Sie suchen möchten."
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "beliebig",
+        "description": "Geben Sie die Tags ein, die mit dem Testlauf verknüpft sind."
+      },
+      "result": {
+        "label": "Ergebnis",
+        "placeholder": "Beendet, In Warteschlange, Lauf abgeschlossen, Wartend",
+        "description": "Wählen Sie das Testergebnis aus, nach dem Sie suchen möchten."
+      }
+    }
+  },
+  "CustomSearchComponent": {
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "CustomCheckBoxList": {
+    "all": "Alle",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "CustomTagsComponent": {
+    "tagInputPlaceholder": "beliebig",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
   }
 }

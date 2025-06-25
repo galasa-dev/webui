@@ -8,6 +8,18 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomTagsComponent from '@/components/test-runs/CustomTagsComponent';
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "save": "Save",
+      "cancel": "Cancel",
+      "add": "Add",
+      "remove": "Remove",
+    };
+    return translations[key] || key;
+  },
+}));
+
 describe('CustomTagsComponent', () => {
   const mockOnChange = jest.fn();
   const mockOnSubmit = jest.fn((e) => e.preventDefault());
@@ -16,9 +28,11 @@ describe('CustomTagsComponent', () => {
   const defaultProps = {
     title: 'Manage Your Tags',
     tags: ['existing-tag-1', 'existing-tag-2'],
+    placeholder: 'any',
     onChange: mockOnChange,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
+
   };
 
   beforeEach(() => {

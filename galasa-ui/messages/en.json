@@ -284,5 +284,75 @@
     "from": "From",
     "to": "To",
     "duration": "Duration"
+  },
+  "SearchCriteriaContent": {
+    "description": "Edit search criteria to describe the test results you wish to view",
+    "table": {
+      "columnName": "Column Name",
+      "allowedValues": "Allowed Values"
+    },
+    "fields": {
+      "runName": {
+        "label": "Test Run Name",
+        "placeholder": "any",
+        "description": "Type the name of one test run. An exact match is searched for."
+      },
+      "requestor": {
+        "label": "Requestor",
+        "placeholder": "any",
+        "description": "Type the name of a requestor. An exact match is searched for."
+      },
+      "group": {
+        "label": "Group",
+        "placeholder": "any",
+        "description": "Type the name of the group."
+      },
+      "bundle": {
+        "label": "Bundle",
+        "placeholder": "any",
+        "description": "Type the name of the bundle."
+      },
+      "submissionId": {
+        "label": "Submission ID",
+        "placeholder": "any",
+        "description": "Type the ID of the submission."
+      },
+      "testName": {
+        "label": "Test Name",
+        "placeholder": "any",
+        "description": "Type the name of the test."
+      },
+      "status": {
+        "label": "Status",
+        "placeholder": "Cancelled, Requeued, Passed, Failed, Error",
+        "description": "Select the status of the test result you wish to search for."
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "any",
+        "description": "Type the tags associated with the test run."
+      },
+      "result": {
+        "label": "Result",
+        "placeholder": "Finished, Queued, RunDone, Waiting",
+        "description": "Select the test result you wish to search for."
+      }
+    }
+  },
+  "CustomSearchComponent": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "CustomCheckBoxList": {
+    "all": "All",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "CustomTagsComponent": {
+    "tagInputPlaceholder": "any",
+    "add": "Add",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "save": "Save"
   }
 }

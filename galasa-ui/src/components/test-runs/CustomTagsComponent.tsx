@@ -7,6 +7,7 @@
 import { useState, FormEvent } from "react";
 import { Button, TextInput } from "@carbon/react";
 import styles from "@/styles/TestRunsPage.module.css";
+import { useTranslations } from "next-intl";
 
 interface CustomTagsComponentProps {
     title: string;
@@ -30,6 +31,7 @@ interface CustomTagsComponentProps {
 export default function CustomTagsComponent({ title, tags, onChange, onSubmit, onCancel }: CustomTagsComponentProps) {
   const [currentTagInput, setCurrentTagInput] = useState('');
   const [selectedForRemoval, setSelectedForRemoval] = useState<string[]>([]);
+  const translations = useTranslations("CustomTagsComponent");
 
   const handleAddTag = () => {
     const newTag = currentTagInput.trim();
@@ -79,9 +81,9 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
               onClick={handleRemoveTags}
               disabled={selectedForRemoval.length === 0}
             >
-                    Remove
+              {translations('remove')}
             </Button>
-            <Button type="button" onClick={handleAddTag}>Add</Button>
+            <Button type="button" onClick={handleAddTag}>{translations('add')}</Button>
           </div>
 
         </div>
@@ -98,8 +100,8 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
         </select>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
+        <Button type="button" kind="secondary" onClick={onCancel}>{translations('cancel')}</Button>
+        <Button type="submit">{translations('save')}</Button>
       </div>
     </form>
   );

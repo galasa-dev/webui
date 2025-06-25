@@ -18,6 +18,8 @@ import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
 import {TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
+import { useTranslations } from "next-intl";
+import { run } from "node:test";
 
 interface FilterableField {
     id: string;
@@ -32,22 +34,24 @@ interface SearchCriteriaContentProps {
 }
 
 
-const filterableFields: FilterableField[] = [
-  {id: 'runName', label: 'Test Run Name', placeHolder: 'any', description: 'Type the name of one test run. An exact match is searched for.'},
-  {id: 'requestor', label: 'Requestor', placeHolder: 'any', description: 'Type the name of a requestor. An exact match is searched for.'},
-  {id: 'group', label: 'Group', placeHolder: 'any', description: 'Type the name of the group.'},
-  {id: 'bundle', label: 'Bundle', placeHolder: 'any', description: 'Type the name of the bundle.'},
-  {id: 'submissionId', label: 'Submission ID', placeHolder: 'any', description: 'Type the ID of the submission.'},
-  {id: 'testName', label: 'Test Name', placeHolder: 'any', description: 'Type the name of the test.'},
-  {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Select the status of the test result you wish to search for.'},
-  {id: 'tags', label: 'Tags', placeHolder: 'any', description: 'Type the tags associated with the test run.'},
-  {id: 'result', label: 'Result', placeHolder: 'Finished, Queued, RunDone, Waiting', description: 'Select the test result you wish to search for.'},
-];
-
 export default function SearchCriteriaContent({requestorNamesPromise, resultsNamesPromise}: SearchCriteriaContentProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const translations = useTranslations("SearchCriteriaContent");
+
+
+  const filterableFields: FilterableField[] = [
+    {id: 'runName', label: translations("fields.runName.label"), placeHolder: 'any', description: translations("fields.runName.description")},
+    {id: 'requestor', label: translations("fields.requestor.label"), placeHolder: 'any', description: translations("fields.requestor.description")},
+    {id: 'group', label: translations("fields.group.label"), placeHolder: 'any', description: translations("fields.group.description")},
+    {id: 'bundle', label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
+    {id: 'submissionId', label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
+    {id: 'testName', label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
+    {id: 'status', label: translations("fields.status.label"), placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: translations("fields.status.description")},
+    {id: 'tags', label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
+    {id: 'result', label: translations("fields.result.label"), placeHolder: 'Finished, Queued, RunDone, Waiting', description: translations("fields.result.description")},
+  ];
 
   const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
   const [currentInputValue, setCurrentInputValue] = useState('');
@@ -224,15 +228,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
   return (
     <div>
-      <p>Edit search criteria to describe the test results you wish to view</p>
+      <p>{translations('description')}</p>
       <div className={styles.searchCriteriaContainer}>
         <div className={styles.structuredListContainer}>
           <StructuredListWrapper selection>
             <StructuredListHead>
               <StructuredListRow head>
                 <div className={styles.rowWrapper}>
-                  <StructuredListCell head>Column Name</StructuredListCell>
-                  <StructuredListCell head>Allowed Values</StructuredListCell>
+                  <StructuredListCell head>{translations('table.columnName')}</StructuredListCell>
+                  <StructuredListCell head>{translations('table.allowedValues')}</StructuredListCell>
                 </div>
               </StructuredListRow>
             </StructuredListHead>

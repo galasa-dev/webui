@@ -35,6 +35,14 @@ jest.mock('@/utils/constants/common', () => ({
   BATCH_SIZE: 4,
 }));
 
+jest.mock('next-intl', () => ({
+  // Mock the useTranslations hook
+  useTranslations: () => (key: string) => key,
+  // Mock any other exports from next-intl that components might use
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+
 describe('fetchAllTestRunsByPaging Function', () => {
   const fromDate = new Date('2023-10-26T00:00:00.000Z');
   const toDate = new Date('2023-10-27T00:00:00.000Z');

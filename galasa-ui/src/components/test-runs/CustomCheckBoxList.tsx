@@ -10,6 +10,7 @@ import {
   CheckboxGroup 
 } from "@carbon/react";
 import { Button } from "@carbon/react";
+import { useTranslations } from "next-intl";
 import { FormEvent } from "react";
 
 interface CheckBoxListProps {
@@ -33,6 +34,8 @@ interface CheckBoxListProps {
  * @returns The CheckBoxList component.
  */
 export default function CheckBoxList({ title, items, selectedItems, onChange, onSubmit, onCancel }: CheckBoxListProps) {
+  const translations = useTranslations('CustomCheckBoxList');
+
   const handleItemChange = (checked: boolean, name: string) => {
     if (checked) {
       onChange([...selectedItems, name]);
@@ -68,8 +71,8 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
         ))}
       </CheckboxGroup>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
+        <Button type="button" kind="secondary" onClick={onCancel}>{translations('cancel')}</Button>
+        <Button type="submit">{translations('save')}</Button>
       </div>
     </form>
   );

@@ -6,6 +6,7 @@
 "use client";
 import styles from "@/styles/TestRunsPage.module.css";
 import { Button, Search } from "@carbon/react";
+import { useTranslations } from "next-intl";
 import { FormEvent, useMemo, useState } from "react";
 
 interface CustomSearchComponentProps {
@@ -34,7 +35,8 @@ interface CustomSearchComponentProps {
  */
 export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
-  
+  const translations = useTranslations('CustomSearchComponent');
+
   const filteredRequestors = useMemo(() => {
     let currentRequestors = allRequestors || [];
       
@@ -78,8 +80,8 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
+        <Button type="button" kind="secondary" onClick={onCancel}>{translations("cancel")}</Button>
+        <Button type="submit">{translations("save")}</Button>
       </div>
     </form>
   );

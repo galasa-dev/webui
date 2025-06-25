@@ -49,6 +49,36 @@ jest.mock('@/components/test-runs/CustomCheckBoxList', () => {
   };
 });
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "description": "Edit search criteria to describe the test results you wish to view",
+      "table.columnName": "Column Name",
+      "table.allowedValues": "Allowed Values",
+      "fields.runName.label": "Test Run Name",
+      "fields.runName.description": "Description for Test Run Name",
+      "fields.requestor.label": "Requestor",
+      "fields.requestor.description": "Description for Requestor",
+      "fields.group.label": "Group",
+      "fields.group.description": "Description for Group",
+      "fields.bundle.label": "Bundle",
+      "fields.bundle.description": "Description for Bundle",
+      "fields.submissionId.label": "Submission ID",
+      "fields.submissionId.description": "Description for Submission ID",
+      "fields.testName.label": "Test Name",
+      "fields.testName.description": "Description for Test Name",
+      "fields.status.label": "Status",
+      "fields.status.description": "Description for Status",
+      "fields.tags.label": "Tags",
+      "fields.tags.description": "Description for Tags",
+      "fields.result.label": "Result",
+      "fields.result.description": "Description for Result",
+    };
+    return translations[key] || key;
+  },
+}));
+
+
 // Mock next/mavigation router
 const mockRouter = {
   replace: jest.fn(),
