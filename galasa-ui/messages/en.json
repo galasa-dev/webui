@@ -227,6 +227,7 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
+    "submissionId": "Submission ID",
     "noTestRunsFound": "No test runs were found for the selected timeframe",
     "loading": "Loading test results...",
     "limitExceededTitle": "Limit Exceeded",

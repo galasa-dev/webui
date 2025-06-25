@@ -68,6 +68,7 @@ const transformRunsforTable = (runs: Run[]) => {
       tags: structure.tags ? structure.tags.join(', ') : 'N/A',
       status: structure.status || 'N/A',
       result: structure.result || 'N/A',
+      submissionId: structure.submissionId || 'N/A',
     };
   });
 };
@@ -106,6 +107,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
     { key: "group", header: translations("group") },
     { key: "bundle", header: translations("bundle") },
     { key: "package", header: translations("package") },
+    { key: "submissionId", header: translations("submissionId") },
     { key: "testName", header: translations("testName") },
     { key: "tags", header: translations("tags") },
     { key: "status", header: translations("status") },

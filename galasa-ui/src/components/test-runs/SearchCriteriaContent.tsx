@@ -38,7 +38,7 @@ const filterableFields: FilterableField[] = [
   {id: 'requestor', label: 'Requestor', placeHolder: 'any', description: 'Type the name of a requestor. An exact match is searched for.'},
   {id: 'group', label: 'Group', placeHolder: 'any', description: 'Type the name of the group.'},
   {id: 'bundle', label: 'Bundle', placeHolder: 'any', description: 'Type the name of the bundle.'},
-  {id: 'package', label: 'Package', placeHolder: 'any', description: 'Type the name of the package.'},
+  {id: 'submissionId', label: 'Submission ID', placeHolder: 'any', description: 'Type the ID of the submission.'},
   {id: 'testName', label: 'Test Name', placeHolder: 'any', description: 'Type the name of the test.'},
   {id: 'status', label: 'Status', placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: 'Type the status of the test run.'},
   {id: 'tags', label: 'Tags', placeHolder: 'any', description: 'Type the tags associated with the test run.'},

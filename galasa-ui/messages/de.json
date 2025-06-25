@@ -224,6 +224,7 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
+    "submissionId":"Übermittlungs-ID",
     "noTestRunsFound": "Für den ausgewählten Zeitraum wurden keine Testläufe gefunden",
     "loading": "Testergebnisse werden geladen...",
     "limitExceededTitle": "Limit überschritten",
