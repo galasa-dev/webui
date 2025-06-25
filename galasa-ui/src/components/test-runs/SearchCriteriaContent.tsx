@@ -213,18 +213,24 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onCancel: handleCancel,
     };
 
+    let customComponent;
     switch (field.id) {
     case 'requestor':
-      return <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+      customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+      break;
     case 'result':
     case 'status':
-      return <CustomCheckBoxList {...checkboxProps} />;
+      customComponent = <CustomCheckBoxList {...checkboxProps} />;
+      break;
     case 'tags':
-      return <CustomTagsComponent {...tagsPops} />;
+      customComponent = <CustomTagsComponent {...tagsPops} />;
+      break;
     default:
-      return <CustomSearchComponent {...searchProps} />;
-    }
-  };
+      customComponent = <CustomSearchComponent {...searchProps} />;
+      break;
+  }
+  return customComponent;
+};
 
   return (
     <div>
