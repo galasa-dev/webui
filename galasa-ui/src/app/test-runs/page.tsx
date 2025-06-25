@@ -9,15 +9,12 @@ import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
 import { HOME } from "@/utils/constants/breadcrumb";
 import { Suspense } from "react";
-import { ResultArchiveStoreAPIApi, ResultNames, Run, RunResults } from "@/generated/galasaapi";
+import { ResultArchiveStoreAPIApi, Run, RunResults } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { getYesterday } from "@/utils/timeOperations";
-import { CLIENT_API_VERSION, MAX_RECORDS } from "@/utils/constants/common";
+import { CLIENT_API_VERSION, MAX_RECORDS, BATCH_SIZE } from "@/utils/constants/common";
 import { UserData } from '@/generated/galasaapi';
 import { fetchAllUsersFromApiServer } from "../users/page";
-
-// Define the batch size for fetching runs
-const BATCH_SIZE = 100;
 
 /**
  * The structure returned by the data fetching function.
@@ -51,7 +48,7 @@ interface fetchAllTestRunsByPagingParams {
  * 
  * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
  */
-const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, submissionId, bundle, testName, result, tags}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, testRunName, requestor, group, submissionId, bundle, testName, result, tags}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;

@@ -65,17 +65,12 @@ describe('CustomCheckBoxList', () => {
   test('handles multiple selection changes correctly in sequence', () => {
     render(<CustomCheckBoxList {...defaultProps} />);
 
-    //  Add Item B to the selection
     fireEvent.click(screen.getByLabelText('Item B'));
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item B']);
-        
-    //  Add Item C to the selection
+    
     fireEvent.click(screen.getByLabelText('Item C'));
-   
-    // It should now include Item C as well
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item C']);
 
-    // 3. Remove Item A from the selection
     fireEvent.click(screen.getByLabelText('Item A'));
     expect(mockOnChange).toHaveBeenLastCalledWith([]);
   });

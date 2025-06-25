@@ -23,7 +23,10 @@ const config = {
   moduleNameMapper: {
     "@/(.*)": "<rootDir>/src/$1"
   },
-  transformIgnorePatterns: ['node_modules/(?!next-intl)/']
+  transformIgnorePatterns: [
+    '/node_modules/(?!(next-intl))', 
+    '^.+\\.module\\.(css|sass|scss)$'
+  ]
 
 };
 

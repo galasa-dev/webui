@@ -9,3 +9,10 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import 'isomorphic-fetch';
+
+jest.mock('next-intl', () => ({
+    // Mock the useTranslations hook
+    useTranslations: () => (key: string) => key,
+    // Mock any other exports from next-intl that components might use
+    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  }));
