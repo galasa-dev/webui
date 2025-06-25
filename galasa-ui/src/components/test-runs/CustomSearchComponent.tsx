@@ -51,7 +51,7 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   };
   
   return (
-    <form className={styles.filterInputContainer} onSubmit={onSubmit}>
+    <form data-testid="custom-search-form"  className={styles.filterInputContainer} onSubmit={onSubmit}>
       <div className={styles.customComponentWrapper}>
         <p>{title}</p>
         <div className={styles.suggestionContainer}>
