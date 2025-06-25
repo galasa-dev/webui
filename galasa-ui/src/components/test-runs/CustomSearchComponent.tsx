@@ -19,7 +19,19 @@ interface CustomSearchComponentProps {
     allRequestors?: string[];
 }
 
-
+/**
+ * Search Component with an optional suggestion list if allRequestors is provided.
+ *
+ * @param title - The title of the search component.
+ * @param placeholder - The placeholder text for the search input.
+ * @param value - The current value of the search input.
+ * @param onChange - Callback function to handle changes in the search input.
+ * @param onClear - Callback function to handle clearing the search input.
+ * @param onSubmit - Callback function to handle form submission.
+ * @param onCancel - Callback function to handle cancellation.
+ * @param allRequestors - Optional list of all requestors for suggestion.
+ * @returns The Search component.
+ */
 export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
     const [isListVisible, setIsListVisible] = useState(false);
   

@@ -21,7 +21,17 @@ interface CheckBoxListProps {
     onCancel: () => void;
   }
   
-
+/**
+ * CheckBoxList component for displaying a list of checkboxes.
+ * @param title - The title of the checkbox list.
+ * @param items - The list of items to display as checkboxes.
+ * @param selectedItems - The currently selected items.
+ * @param onChange - Callback function to handle changes in selected items.
+ * @param onSubmit - Callback function to handle form submission.
+ * @param onCancel - Callback function to handle cancellation.
+ * 
+ * @returns The CheckBoxList component.
+ */
 export default function CheckBoxList({ title, items, selectedItems, onChange, onSubmit, onCancel }: CheckBoxListProps) {
     const handleItemChange = (checked: boolean, name: string) => {
       if (checked) {

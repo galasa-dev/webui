@@ -16,6 +16,17 @@ interface CustomTagsComponentProps {
     onCancel: () => void;
 }
 
+/**
+ * CustomTagsComponent allows users to add, remove, and manage tags.
+ * 
+ * @param title - The title of the custom tags component.
+ * @param tags - The current list of tags.
+ * @param onChange - Callback function to handle changes in the tags.
+ * @param onSubmit - Callback function to handle form submission.
+ * @param onCancel - Callback function to handle cancellation of the operation.
+ * 
+ * @returns The CustomTagsComponent for managing tags.
+ */
 export default function CustomTagsComponent({ title, tags, onChange, onSubmit, onCancel }: CustomTagsComponentProps) {
   const [currentTagInput, setCurrentTagInput] = useState('');
   const [selectedForRemoval, setSelectedForRemoval] = useState<string[]>([]);
@@ -36,9 +47,7 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
   };
 
   const handleRemoveTags = () => {
-    // Create the new list by filtering out selected tags
     const newTags = tags.filter(tag => !selectedForRemoval.includes(tag));
-    // Call the parent's onChange with the new list
     onChange(newTags);
     setSelectedForRemoval([]);
   };
