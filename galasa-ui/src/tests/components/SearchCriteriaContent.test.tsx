@@ -238,6 +238,7 @@ describe('SearchCriteriaContent', () => {
         resultsNamesPromise={resultsNamesPromise}
       />
     );
+    
     // Find the input and submit button within the mocked component
     const searchComponent = screen.getByTestId('mock-custom-search-component');
     const input = within(searchComponent).getByTestId('search-input');
