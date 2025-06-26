@@ -129,38 +129,43 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
   }, [selectedFilter, query]);
 
+  const updateQueryAndUrl = (newQuery: Map<string, string>) => {
+    // Update the component's query state
+    setQuery(newQuery);
   
+    // Synchronize the browser's URL with the new query
+    const params = new URLSearchParams();
+    newQuery.forEach((value, key) => {
+      params.set(key, value);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
     const newQuery = new Map(query);
 
-    // Update the query based on the selected filter
+    // Determine the new value for the currently selected filter
+    let valueToSet = '';
     if (selectedFilter.id === 'result') {
-      newQuery.set('result', selectedResults.length > 0 ? selectedResults.join(',') : '');
+        valueToSet = selectedResults.join(',');
     } else if (selectedFilter.id === 'status') {
-      newQuery.set('status', selectedStatuses.length > 0 ? selectedStatuses.join(',') : '');
+        valueToSet = selectedStatuses.join(',');
     } else if (selectedFilter.id === 'tags') {
-      newQuery.set('tags', selectedTags.length > 0 ? selectedTags.join(',') : '');
-    }else {
-      newQuery.set(selectedFilter.id, currentInputValue.trim());
+        valueToSet = selectedTags.join(',');
+    } else {
+        valueToSet = currentInputValue.trim();
     }
 
-    // Clean up empty values from the query
-    newQuery.forEach((value, key) => {
-      if (!value) {
-        newQuery.delete(key);
-      }
-    });
-        
-    setQuery(newQuery);
+    // If the new value is not empty, set it. Otherwise, delete the key.
+    if (valueToSet) {
+      newQuery.set(selectedFilter.id, valueToSet);
+    } else {
+      newQuery.delete(selectedFilter.id);
+    }
 
-    // Update the URL with the new query parameters
-    const params = new URLSearchParams();
-    newQuery.forEach((value, key) => {
-      params.set(key, value);
-    });
-    router.replace(`${pathname}?${params.toString()}`, {scroll: false});
+    // Update the URL with the new query parameters and set the query state
+    updateQueryAndUrl(newQuery);
   };
 
 
@@ -180,6 +185,17 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   };
 
+  const handleClearAndSave = (fieldId: string) => {
+    if (selectedFilter.id === fieldId) {
+      setCurrentInputValue('');
+    }
+  
+    const newQuery = new Map(query);
+    newQuery.delete(fieldId); 
+  
+    updateQueryAndUrl(newQuery);
+  };
+
 
   // Render the editor component based on the selected filter
   const renderComponent = (field: FilterableField) => {
@@ -189,7 +205,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       placeholder: field.placeHolder,
       value: currentInputValue,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => setCurrentInputValue(e.target.value),
-      onClear: () => setCurrentInputValue(''),
+      onClear: () => handleClearAndSave(field.id),
       onSubmit: handleSave,
       onCancel: handleCancel,
     };
