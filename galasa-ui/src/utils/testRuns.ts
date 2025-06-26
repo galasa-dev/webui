@@ -16,9 +16,9 @@ import { fetchAllUsersFromApiServer } from "@/app/users/page";
 export interface TestRunsData {
     runs: Run[];
     limitExceeded: boolean;
-  }
+}
   
-  interface fetchAllTestRunsByPagingParams {
+interface fetchAllTestRunsByPagingParams {
     fromDate: Date;
     toDate: Date;
     runName?: string;
@@ -29,7 +29,7 @@ export interface TestRunsData {
     testName?: string;
     result?: string;
     tags?: string;
-  }
+}
   
   
 /**

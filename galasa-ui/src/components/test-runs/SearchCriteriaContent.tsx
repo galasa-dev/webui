@@ -19,7 +19,6 @@ import CustomCheckBoxList from "./CustomCheckBoxList";
 import {TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
 import { useTranslations } from "next-intl";
-import { run } from "node:test";
 
 interface FilterableField {
     id: string;
@@ -205,7 +204,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onCancel: handleCancel,
     };
 
-    const tagsPops = {
+    const tagsProps = {
       title: field.description,
       tags: selectedTags,
       onChange: setSelectedTags,
@@ -223,7 +222,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       customComponent = <CustomCheckBoxList {...checkboxProps} />;
       break;
     case 'tags':
-      customComponent = <CustomTagsComponent {...tagsPops} />;
+      customComponent = <CustomTagsComponent {...tagsProps} />;
       break;
     default:
       customComponent = <CustomSearchComponent {...searchProps} />;

@@ -6,7 +6,7 @@
 import React from 'react';
 import TestRunDetails from '@/components/test-runs/TestRunDetails';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
-import { ArtifactIndexEntry, ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
+import { ArtifactIndexEntry, ResultArchiveStoreAPIApi} from '@/generated/galasaapi';
 import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';
 import { getTranslations } from 'next-intl/server';

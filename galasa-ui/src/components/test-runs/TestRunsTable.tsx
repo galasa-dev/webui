@@ -31,7 +31,7 @@ import StatusIndicator from "../common/StatusIndicator";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ErrorPage from "@/app/error/page";
-import { TestRunsData } from "@/lib/data/testRuns";
+import { TestRunsData } from "@/utils/testRuns";
 import {MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";

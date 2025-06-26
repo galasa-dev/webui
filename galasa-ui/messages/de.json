@@ -283,56 +283,56 @@
     "duration": "Dauer"
   }, 
   "SearchCriteriaContent": {
-    "description": "Bearbeiten Sie die Suchkriterien, um die Testergebnisse zu beschreiben, die Sie anzeigen möchten",
+    "description": "Bearbeiten Sie die Suchkriterien, um die gewünschten Testergebnisse anzuzeigen. Vergessen Sie nicht, auf 'Speichern' zu klicken, um Ihre Änderungen an der Abfrage zu übernehmen.",
     "table": {
       "columnName": "Spaltenname",
       "allowedValues": "Zulässige Werte"
     },
-    "fields": {
+"fields": {
       "runName": {
         "label": "Testlaufname",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen eines Testlaufs ein. Es wird nach einer exakten Übereinstimmung gesucht."
+        "description": "Geben Sie den exakten Namen eines bestimmten Testlaufs ein, den Sie abrufen möchten."
       },
       "requestor": {
         "label": "Anforderer",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen eines Anforderers ein. Es wird nach einer exakten Übereinstimmung gesucht."
+        "description": "Geben Sie den Namen des Benutzers ein, der die Testläufe angefordert hat, die Sie finden möchten."
       },
       "group": {
         "label": "Gruppe",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen der Gruppe ein."
+        "description": "Geben Sie den Namen einer Gruppe von Testläufen ein, die Sie abrufen möchten."
       },
       "bundle": {
         "label": "Bundle",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen des Bundles ein."
+        "description": "Geben Sie den Namen des Bundles ein, das mit einem oder mehreren Testläufen verknüpft ist."
       },
       "submissionId": {
         "label": "Übermittlungs-ID",
         "placeholder": "beliebig",
-        "description": "Geben Sie die ID der Übermittlung ein."
+        "description": "Geben Sie die ID einer früheren Testlauf-Übermittlung ein, die Sie abrufen möchten."
       },
       "testName": {
         "label": "Testname",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen des Tests ein."
+        "description": "Geben Sie den Namen eines bestimmten Tests ein, der in den Testläufen enthalten ist, die Sie finden möchten."
       },
       "status": {
         "label": "Status",
         "placeholder": "Abgebrochen, Neu eingereiht, Bestanden, Fehlgeschlagen, Fehler",
-        "description": "Wählen Sie den Status des Testergebnisses aus, nach dem Sie suchen möchten."
+        "description": "Wählen Sie einen Status aus, um alle Testläufe zu finden, die mit diesem Status abgeschlossen wurden."
       },
       "tags": {
         "label": "Tags",
         "placeholder": "beliebig",
-        "description": "Geben Sie die Tags ein, die mit dem Testlauf verknüpft sind."
+        "description": "Geben Sie ein oder mehrere Tags ein, die mit den Testläufen verknüpft sind, die Sie abrufen möchten."
       },
       "result": {
         "label": "Ergebnis",
         "placeholder": "Beendet, In Warteschlange, Lauf abgeschlossen, Wartend",
-        "description": "Wählen Sie das Testergebnis aus, nach dem Sie suchen möchten."
+        "description": "Wählen Sie ein Ergebnis aus, um alle Testläufe zu finden, die sich aktuell in diesem Zustand befinden (z.B. In Warteschlange, Beendet)."
       }
     }
   },

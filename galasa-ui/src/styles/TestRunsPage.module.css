@@ -51,15 +51,14 @@
   cursor: pointer;
 }
 
-.selectedRow,
-.selectedRow:hover {
-  background-color: var(--cds-interactive-01, #0f62fe) !important;
+
+.selectedRow {
+  background-color: var(--cds-interactive-01, #0f62fe);
+ --cds-text-primary: var(--cds-text-on-color, #ffffff);
+  --cds-text-01: var(--cds-text-on-color);
+  --cds-border-subtle-01: transparent;
 }
 
-.selectedRow .cds--structured-list-cell {
-  color: var(--cds-text-on-color, #ffffff) !important;
-  border-bottom-color: transparent !important;
-}
 
 .customComponentWrapper {
     display: flex;

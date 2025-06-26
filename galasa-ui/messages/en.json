@@ -286,56 +286,56 @@
     "duration": "Duration"
   },
   "SearchCriteriaContent": {
-    "description": "Edit search criteria to describe the test results you wish to view",
+    "description": "Edit search criteria to describe the test results you wish to view. Remember to click 'Save' to preserve your changes to the query.",
     "table": {
       "columnName": "Column Name",
       "allowedValues": "Allowed Values"
     },
-    "fields": {
+ "fields": {
       "runName": {
         "label": "Test Run Name",
         "placeholder": "any",
-        "description": "Type the name of one test run. An exact match is searched for."
+        "description": "Enter the exact name of a specific test run to retrieve."
       },
       "requestor": {
         "label": "Requestor",
         "placeholder": "any",
-        "description": "Type the name of a requestor. An exact match is searched for."
+        "description": "Enter the name of the user who requested the test runs you want to find."
       },
       "group": {
         "label": "Group",
         "placeholder": "any",
-        "description": "Type the name of the group."
+        "description": "Enter the name of a group of test runs to retrieve."
       },
       "bundle": {
         "label": "Bundle",
         "placeholder": "any",
-        "description": "Type the name of the bundle."
+        "description": "Enter the name of the bundle associated with one or more test runs."
       },
       "submissionId": {
         "label": "Submission ID",
         "placeholder": "any",
-        "description": "Type the ID of the submission."
+        "description": "Enter the ID of a previous test run submission that you wish to retrieve."
       },
       "testName": {
         "label": "Test Name",
         "placeholder": "any",
-        "description": "Type the name of the test."
+        "description": "Enter the name of a specific test contained within the test runs you want to find."
       },
       "status": {
         "label": "Status",
         "placeholder": "Cancelled, Requeued, Passed, Failed, Error",
-        "description": "Select the status of the test result you wish to search for."
+        "description": "Select a status to find all test runs that have finished with that status."
       },
       "tags": {
         "label": "Tags",
         "placeholder": "any",
-        "description": "Type the tags associated with the test run."
+        "description": "Enter one or more tags associated with the test runs that you wish to retrieve."
       },
       "result": {
         "label": "Result",
         "placeholder": "Finished, Queued, RunDone, Waiting",
-        "description": "Select the test result you wish to search for."
+        "description": "Select a result to find all test runs currently in that state (e.g., Queued, Finished)."
       }
     }
   },
