@@ -22,6 +22,7 @@ jest.mock('@/components/test-runs/CustomSearchComponent', () => {
         />
         <button onClick={props.onSubmit}>Submit</button>
         <button onClick={props.onCancel}>Cancel</button>
+        <button onClick={props.onClear}>Clear</button>
       </div>
     );
   };
@@ -211,7 +212,25 @@ describe('SearchCriteriaContent', () => {
     expect(input).toHaveValue('Save this value');
   });
 
-  test('removes a parameter from the URL if its value is cleared', () => {
+  test('removes a parameter from the URL when the clear action is triggered', () => {
+    mockSearchParams = 'runName=OldValue';
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={requestorNamesPromise}
+        resultsNamesPromise={resultsNamesPromise}
+      />
+    );
+
+    // Find the clear button within the mocked component
+    const searchComponent = screen.getByTestId('mock-custom-search-component');
+    const clearButton = within(searchComponent).getByText('Clear');
+
+    fireEvent.click(clearButton);
+
+    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+  });
+
+  test('removes a parameter from the URL if its value is cleared and saved', () => {
     mockSearchParams = 'runName=OldValue';
     render(
       <SearchCriteriaContent

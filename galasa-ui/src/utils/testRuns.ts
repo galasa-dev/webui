@@ -137,6 +137,11 @@ export async function getRequestorList(): Promise<string[]> {
   }
 }
   
+/**
+ * Fetches the names of results from the Result Archive Store API.
+ * 
+ * @returns {Promise<string[]>} - A promise that resolves to an array of result names.
+ */
 export async function getResultsNames(): Promise<string[]> {
   try {
     const apiConfig = createAuthenticatedApiConfiguration();

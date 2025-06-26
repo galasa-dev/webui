@@ -143,7 +143,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
-    const newQuery = new Map(query);
 
     // Determine the new value for the currently selected filter
     let valueToSet = '';
@@ -157,10 +156,21 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       valueToSet = currentInputValue.trim();
     }
 
+    // Get the old value from the query state for comparison
+    const oldValue = query.get(selectedFilter.id) || '';
+
+    // Only proceed if the value has actually changed.
+    if (valueToSet === oldValue) {
+      return;
+    }
+
+    const newQuery = new Map(query);
+
     // If the new value is not empty, set it. Otherwise, delete the key.
     if (valueToSet) {
       newQuery.set(selectedFilter.id, valueToSet);
     } else {
+      // If the value is empty, remove the key from the query
       newQuery.delete(selectedFilter.id);
     }
 
@@ -191,9 +201,10 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   
     const newQuery = new Map(query);
-    newQuery.delete(fieldId); 
-  
-    updateQueryAndUrl(newQuery);
+    if (newQuery.has(fieldId)) {
+      newQuery.delete(fieldId); 
+      updateQueryAndUrl(newQuery);
+    }
   };
 
 
