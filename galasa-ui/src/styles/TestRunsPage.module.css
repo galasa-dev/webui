@@ -51,14 +51,13 @@
   cursor: pointer;
 }
 
-
 .selectedRow {
   background-color: var(--cds-interactive-01, #0f62fe);
- --cds-text-primary: var(--cds-text-on-color, #ffffff);
-  --cds-text-01: var(--cds-text-on-color);
+  --cds-text-primary: var(--cds-text-on-color, #ffffff);
+  --cds-text-secondary: var(--cds-text-on-color, #ffffff);
   --cds-border-subtle-01: transparent;
+  color: var(--cds-text-on-color, #ffffff); 
 }
-
 
 .customComponentWrapper {
     display: flex;

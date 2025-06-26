@@ -160,22 +160,20 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     const oldValue = query.get(selectedFilter.id) || '';
 
     // Only proceed if the value has actually changed.
-    if (valueToSet === oldValue) {
-      return;
-    }
+    if (valueToSet !== oldValue) {
+      const newQuery = new Map(query);
 
-    const newQuery = new Map(query);
-
-    // If the new value is not empty, set it. Otherwise, delete the key.
-    if (valueToSet) {
-      newQuery.set(selectedFilter.id, valueToSet);
-    } else {
-      // If the value is empty, remove the key from the query
-      newQuery.delete(selectedFilter.id);
-    }
-
-    // Update the URL with the new query parameters and set the query state
-    updateQueryAndUrl(newQuery);
+      // If the new value is not empty, set it. Otherwise, delete the key.
+      if (valueToSet) {
+        newQuery.set(selectedFilter.id, valueToSet);
+      } else {
+        // If the value is empty, remove the key from the query
+        newQuery.delete(selectedFilter.id);
+      }
+  
+      // Update the URL with the new query parameters and set the query state
+      updateQueryAndUrl(newQuery);
+    };
   };
 
 
