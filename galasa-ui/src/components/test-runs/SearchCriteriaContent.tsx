@@ -148,13 +148,13 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     // Determine the new value for the currently selected filter
     let valueToSet = '';
     if (selectedFilter.id === 'result') {
-        valueToSet = selectedResults.join(',');
+      valueToSet = selectedResults.join(',');
     } else if (selectedFilter.id === 'status') {
-        valueToSet = selectedStatuses.join(',');
+      valueToSet = selectedStatuses.join(',');
     } else if (selectedFilter.id === 'tags') {
-        valueToSet = selectedTags.join(',');
+      valueToSet = selectedTags.join(',');
     } else {
-        valueToSet = currentInputValue.trim();
+      valueToSet = currentInputValue.trim();
     }
 
     // If the new value is not empty, set it. Otherwise, delete the key.
