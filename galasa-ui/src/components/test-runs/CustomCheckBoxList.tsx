@@ -11,7 +11,7 @@ import {
 } from "@carbon/react";
 import { Button } from "@carbon/react";
 import { useTranslations } from "next-intl";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 interface CheckBoxListProps {
     title: string;
@@ -35,11 +35,13 @@ interface CheckBoxListProps {
  */
 export default function CheckBoxList({ title, items, selectedItems, onChange, onSubmit, onCancel }: CheckBoxListProps) {
   const translations = useTranslations('CustomCheckBoxList');
+  const areAllSelected = items.length > 0 && selectedItems.length === items.length;
 
   const handleItemChange = (checked: boolean, name: string) => {
     if (checked) {
       onChange([...selectedItems, name]);
     } else {
+      // Remove the item from selectedItems
       onChange(selectedItems.filter(item=> item !==name));
     }
   };
@@ -48,18 +50,18 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
     onChange(checked ? items : []);
   };
   
-  const areAllSelected = items.length > 0 && selectedItems.length === items.length;
-    
   return (
     <form className={styles.filterInputContainer} onSubmit={onSubmit}>
       <p>{title}</p>
       <CheckboxGroup
         className={styles.checkBoxList}
       >
-        <Checkbox defaultChecked={areAllSelected}
+        <Checkbox
           id="checkbox-all"
           labelText="All"
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAllChange(event.target.checked)} />
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAllChange(event.target.checked)} 
+          checked={areAllSelected}
+        />
         {items.map((name: string) => (
           <Checkbox
             key={name}
