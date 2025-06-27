@@ -76,15 +76,39 @@ describe('CustomCheckBoxList', () => {
   });
 
   test('handles multiple selection changes correctly in sequence', () => {
-    render(<CustomCheckBoxList {...defaultProps} />);
+    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
 
     fireEvent.click(screen.getByLabelText('Item B'));
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item B']);
     
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B']} />);
+
     fireEvent.click(screen.getByLabelText('Item C'));
-    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item C']);
+    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A','Item B', 'Item C']);
+
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
 
     fireEvent.click(screen.getByLabelText('Item A'));
-    expect(mockOnChange).toHaveBeenLastCalledWith([]);
+    expect(mockOnChange).toHaveBeenLastCalledWith(['Item B', 'Item C']);
+  });
+
+  test('when checking `All` and then unchecking an item, `All` should be unchecked', () => {
+    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
+    
+    // Check 'All'
+    fireEvent.click(screen.getByLabelText('All'));
+    expect(mockOnChange).toHaveBeenCalledWith(['Item A', 'Item B', 'Item C']);
+    
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+
+    // Uncheck 'Item A'
+    expect(screen.getByLabelText('All')).toBeChecked();
+    fireEvent.click(screen.getByLabelText('Item A'));
+    expect(mockOnChange).toHaveBeenCalledWith(['Item B', 'Item C']);
+
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item B', 'Item C']} />);
+    
+    // Check that 'All' is now unchecked
+    expect(screen.getByLabelText('All')).not.toBeChecked();
   });
 });

@@ -61,7 +61,7 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
           labelText="All"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAllChange(event.target.checked)} 
           checked={areAllSelected}
-          />
+        />
         {items.map((name: string) => (
           <Checkbox
             key={name}
