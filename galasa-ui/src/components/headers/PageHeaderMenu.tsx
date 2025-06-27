@@ -14,6 +14,7 @@ import LanguageSelector from './LanguageSelector';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
+import { setUserLocale } from '@/utils/locale';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const translations = useTranslations('PageHeaderMenu');
@@ -29,6 +30,9 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   };
   const {isFeatureEnabled} = useFeatureFlags();
   
+  if(!isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION)) {
+    setUserLocale("en");
+  }
   return (
     <HeaderGlobalBar data-testid="header-menu">
 

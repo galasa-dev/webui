@@ -111,6 +111,9 @@
     "home": "Startseite",
     "users": "Benutzer"
   },
+  "BreadCrumb": {
+    "home": "Startseite"
+  },
   "AccessDeniedModal": {
     "modalHeading": "Unzureichende Berechtigungen",
     "logoutButton": "Abmelden",
@@ -125,7 +128,6 @@
   },
   "TestRun": {
     "title": "Testläufe",
-    "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte später wiederkommen.",
     "status": "Wird geladen..."
   },
   "MySettings": {
@@ -164,7 +166,7 @@
     "filter_info": "Info",
     "filter_debug": "Debug",
     "filter_trace": "Trace",
-    "download_button": "Protokoll herunterladen"
+    "download_button": "Laufprotokoll herunterladen"
   },
   "MethodsTab": {
     "title": "Methoden",
@@ -191,14 +193,14 @@
     "noTags": "Keine Tags vorhanden."
   },
   "TestRunDetails": {
-    "title": "Testlauf:",
+    "title": "Testlauf: {runName}",
     "status": "Status",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {
       "overview": "Übersicht",
       "methods": "Methoden",
-      "runLog": "Protokoll",
+      "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
     }
   },
@@ -209,13 +211,13 @@
     "tabs": {
       "overview": "Übersicht",
       "methods": "Methoden",
-      "runLog": "Protokoll",
+      "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
     }
   },
   "TestRunsTable": {
     "submittedAt": "Eingereicht am",
-    "testRunName": "Testlaufname",
+    "testRunName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",
@@ -226,7 +228,7 @@
     "result": "Ergebnis",
     "submissionId":"Übermittlungs-ID",
     "noTestRunsFound": "Für den ausgewählten Zeitraum wurden keine Testläufe gefunden",
-    "loading": "Testergebnisse werden geladen...",
+    "isloading": "Testergebnisse werden geladen...",
     "limitExceededTitle": "Limit überschritten",
     "limitExceededSubtitle": "Ihre Abfrage ergab mehr als {maxRecords} Ergebnisse. Es werden die ersten {maxRecords} Datensätze angezeigt.",
     "timeFrameText": {
@@ -237,7 +239,11 @@
       "backwardText": "Vorherige Seite",
       "forwardText": "Nächste Seite",
       "itemsPerPageText": "Einträge pro Seite:",
-      "pageNumberText": "Seitennummer"
+      "pageNumberText": "Seitennummer",
+      "of": "von",
+      "items": "Einträge",
+      "pages": "Seiten",
+      "page": "Seite"
     }
   },
   "TestRunsTabs": {

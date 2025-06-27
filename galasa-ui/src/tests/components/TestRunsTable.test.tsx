@@ -24,6 +24,7 @@ jest.mock("next-intl", () => ({
     const translations: Record<string, string> = {
       "timeFrameText.range": "Showing test runs submitted between Jan 1 and Jan 10",
       "pagination.forwardText": "Next page",
+      "noTestRunsFound":"No test runs were found for the selected timeframe"
     };
 
     let text = translations[key] || key;
@@ -109,7 +110,7 @@ describe('TestRunsTable Component', () => {
     render(<TestRunsTable runsListPromise={runsPromise} />);
 
     // Assert: Check if the error state is displayed
-    expect(await screen.findByText(/No test runs were found/i)).toBeInTheDocument();
+    expect(await screen.findByText(/No test runs were found for the selected timeframe/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 

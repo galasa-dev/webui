@@ -128,7 +128,6 @@
   },
   "TestRun": {
     "title": "Test Runs",
-    "underConstruction": "This page is under construction. Please come back later to query a list of test runs.",
     "status": "Loading..."
   },
   "MySettings": {
@@ -194,7 +193,7 @@
     "noTags": "No tags were associated with this test run."
   },
   "TestRunDetails": {
-    "title": "Test Run:",
+    "title": "Test Run: {runName}",
     "status": "Status",
     "result": "Result",
     "test": "Test",
@@ -229,7 +228,7 @@
     "result": "Result",
     "submissionId": "Submission ID",
     "noTestRunsFound": "No test runs were found for the selected timeframe",
-    "loading": "Loading test results...",
+    "isloading":"Loading test results...",
     "limitExceededTitle": "Limit Exceeded",
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records.",
     "timeFrameText": {
@@ -240,7 +239,11 @@
       "backwardText": "Previous page",
       "forwardText": "Next page",
       "itemsPerPageText": "Items per page:",
-      "pageNumberText": "Page Number"
+      "pageNumberText": "Page Number",
+      "of": "of",
+      "items":"items",
+      "pages":"pages",
+      "page":"page"
     }
   },
   "TestRunsTabs": {
