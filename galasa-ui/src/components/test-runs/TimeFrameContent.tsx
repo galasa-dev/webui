@@ -15,12 +15,13 @@ import { InlineNotification } from '@carbon/react';
 import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
 
+
 type Notification = {
   text: string;
   kind: 'error' | 'warning';
 };
 
-/**
+/*
  * Calculates the final, fully synchronized state object from two valid dates.
  */
 export const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFrameValues => {

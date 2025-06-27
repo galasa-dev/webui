@@ -13,6 +13,120 @@
     font-size: 1.2rem; 
 }
 
+.timeFrameText {
+    font-size: 1rem;
+    margin: 0.5rem 0.5rem;
+}
+
+  
+.searchCriteriaContainer {
+  display: flex;
+  flex-direction: row; 
+  gap: 1.5rem;  
+  margin-top: 1rem;      
+}
+
+.structuredListContainer {
+  flex: 2; 
+  max-height: 450px;
+  overflow-y: auto;
+  border: 1px solid var(--cds-border-subtle, #e0e0e0);
+  min-width: 300px;
+}
+
+.filterInputContainer {
+  flex: 3;
+  padding: 1rem;
+}
+  
+.checkBoxList {
+  flex: 3;
+  padding: 2rem;
+  font-size: 2rem;
+}
+.rowWrapper {
+  display: grid; 
+  grid-template-columns: 40% 1fr;
+  width: 100%;
+  cursor: pointer;
+}
+
+.selectedRow {
+  background-color: var(--cds-interactive-01, #0f62fe);
+  --cds-text-primary: var(--cds-text-on-color, #ffffff);
+  --cds-text-secondary: var(--cds-text-on-color, #ffffff);
+  --cds-border-subtle-01: transparent;
+  color: var(--cds-text-on-color, #ffffff); 
+}
+
+.customComponentWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+}
+
+.suggestionContainer {
+  position: relative;
+}
+
+.suggestionList {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000; 
+}
+
+.suggestionList li {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.suggestionList li:hover {
+  background-color: #f0f0f0;
+}
+
+.buttonContainer, .tagsButtonContainer {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+}
+
+.buttonContainer > button, .tagsButtonContainer > button {
+    width: 15%;
+    height: 3rem;
+}
+
+.tagsButtonContainer {
+    justify-content: flex-end;
+}
+
+.tagsListbox {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--cds-border-subtle, #e0e0e0);
+    background-color: var(--cds-background, #ffffff);
+}
+
+.tagOption {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    &:hover {
+        background-color: var(--cds-interactive-hover, #f4f4f4);
+    }
+}
+
 .TimeFrameFilterContainer {
     display: flex;
     justify-content: space-between; 

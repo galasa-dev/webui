@@ -66,9 +66,17 @@ Object.defineProperty(window, "matchMedia", {
 
 describe('TestRunsTabs Component', () => {
   const mockPromise = Promise.resolve({ runs: [], limitExceeded: false });
+  const mockRequestorNamesPromise = Promise.resolve([]);
+  const mockResultsNamesPromise = Promise.resolve([]);
 
   test('renders all tabs correctly', () => {
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
 
     const tabLabels = ['Timeframe', 'Table Design', 'Search Criteria', 'Results'];
     tabLabels.forEach(label => {
@@ -77,8 +85,13 @@ describe('TestRunsTabs Component', () => {
   });
 
   test('displays the content of the Timeframe tab', () => {
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
-
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
     // Act: Click on the 'Timeframe' tab
     const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
     fireEvent.click(timeframeTab);
@@ -94,7 +107,13 @@ describe('TestRunsTabs Component', () => {
 
   test('switches to the "Results" tab and displays its content on click', async () => {
     // Arrange
-    render(<TestRunsTabs runsListPromise={mockPromise}/>);
+    render(
+      <TestRunsTabs
+        runsListPromise={mockPromise}
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
 
     // Act: Click on the 'Results' tab
     const resultsTab = screen.getByRole('tab', { name: 'Results' });

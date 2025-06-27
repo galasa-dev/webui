@@ -31,10 +31,11 @@ import StatusIndicator from "../common/StatusIndicator";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ErrorPage from "@/app/error/page";
-import { TestRunsData } from "@/app/test-runs/page";
+import { TestRunsData } from "@/utils/testRuns";
 import {MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+
 
 
 interface CustomCellProps {
@@ -64,8 +65,10 @@ const transformRunsforTable = (runs: Run[]) => {
       bundle: structure.bundle || 'N/A',
       package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
       testName: structure.testShortName || structure.testName || 'N/A',
+      tags: structure.tags ? structure.tags.join(', ') : 'N/A',
       status: structure.status || 'N/A',
       result: structure.result || 'N/A',
+      submissionId: structure.submissionId || 'N/A',
     };
   });
 };
@@ -104,7 +107,9 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
     { key: "group", header: translations("group") },
     { key: "bundle", header: translations("bundle") },
     { key: "package", header: translations("package") },
+    { key: "submissionId", header: translations("submissionId") },
     { key: "testName", header: translations("testName") },
+    { key: "tags", header: translations("tags") },
     { key: "status", header: translations("status") },
     { key: "result", header: translations("result") },
   ];
@@ -142,10 +147,10 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
     if (!rawRuns || rawRuns.length === 0) {
-      return translations("noData");
+      return translations("noTestRunsFound");
     }
 
-    let text = translations("timeFrameText.default");;
+    let text = translations("timeFrameText.default");
     const dates = rawRuns.map((run) =>
       new Date(run.testStructure?.queued || 0).getTime(),
     );

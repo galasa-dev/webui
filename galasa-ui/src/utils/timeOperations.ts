@@ -5,6 +5,7 @@
  */
 import { AmPm } from "./interfaces";
 
+
 export function parseIsoDateTime(isoString: string) {
   // Construct a Date object
   const dt = new Date(isoString);
@@ -109,6 +110,7 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
  * 
  * @return A Date object representing the combined date and time.
  */
+
 export const combineDateTime = (date: Date, time: string, amPm: AmPm): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr, 10);

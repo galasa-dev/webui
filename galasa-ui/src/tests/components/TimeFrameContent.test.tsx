@@ -9,7 +9,6 @@ import TimeFrameContent, { applyTimeFrameRules, calculateSynchronizedState } fro
 import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
 
-
 // Mock next-intl to prevent ESM parsing errors in Jest
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
@@ -76,6 +75,7 @@ jest.mock('@/components/test-runs/TimeFrameFilter', () => {
 
   return TimeFrameFilterMock;
 });
+
 
 // Mock next/navigation hooks
 const mockReplace = jest.fn();
@@ -158,7 +158,7 @@ describe('applyTimeFrameRules', () => {
     const fromDate = new Date('2025-05-15T10:00:00.000Z');
     const toDate = new Date('2025-08-16T10:00:00.000Z');
     const { correctedTo, notification } = applyTimeFrameRules(fromDate, toDate, mockTranslator);
-
+    
     expect(notification?.kind).toEqual('warning');
     expect(notification?.text).toContain('Date range cannot exceed 3 months');
 

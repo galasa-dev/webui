@@ -124,7 +124,7 @@
     "title": "Benutzer bearbeiten"
   },
   "TestRun": {
-    "title": "Zugriff verweigert",
+    "title": "Testläufe",
     "underConstruction": "Diese Seite befindet sich im Aufbau. Bitte später wiederkommen.",
     "status": "Wird geladen..."
   },
@@ -221,8 +221,10 @@
     "bundle": "Bundle",
     "package": "Paket",
     "testName": "Testname",
+    "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
+    "submissionId":"Übermittlungs-ID",
     "noTestRunsFound": "Für den ausgewählten Zeitraum wurden keine Testläufe gefunden",
     "loading": "Testergebnisse werden geladen...",
     "limitExceededTitle": "Limit überschritten",
@@ -279,5 +281,75 @@
     "from": "Von",
     "to": "Bis",
     "duration": "Dauer"
+  }, 
+  "SearchCriteriaContent": {
+    "description": "Bearbeiten Sie die Suchkriterien, um die gewünschten Testergebnisse anzuzeigen. Vergessen Sie nicht, auf 'Speichern' zu klicken, um Ihre Änderungen an der Abfrage zu übernehmen.",
+    "table": {
+      "columnName": "Spaltenname",
+      "allowedValues": "Zulässige Werte"
+    },
+"fields": {
+      "runName": {
+        "label": "Testlaufname",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den exakten Namen eines bestimmten Testlaufs ein, den Sie abrufen möchten."
+      },
+      "requestor": {
+        "label": "Anforderer",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen des Benutzers ein, der die Testläufe angefordert hat, die Sie finden möchten."
+      },
+      "group": {
+        "label": "Gruppe",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen einer Gruppe von Testläufen ein, die Sie abrufen möchten."
+      },
+      "bundle": {
+        "label": "Bundle",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen des Bundles ein, das mit einem oder mehreren Testläufen verknüpft ist."
+      },
+      "submissionId": {
+        "label": "Übermittlungs-ID",
+        "placeholder": "beliebig",
+        "description": "Geben Sie die ID einer früheren Testlauf-Übermittlung ein, die Sie abrufen möchten."
+      },
+      "testName": {
+        "label": "Testname",
+        "placeholder": "beliebig",
+        "description": "Geben Sie den Namen eines bestimmten Tests ein, der in den Testläufen enthalten ist, die Sie finden möchten."
+      },
+      "status": {
+        "label": "Status",
+        "placeholder": "Abgebrochen, Neu eingereiht, Bestanden, Fehlgeschlagen, Fehler",
+        "description": "Wählen Sie einen Status aus, um alle Testläufe zu finden, die mit diesem Status abgeschlossen wurden."
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "beliebig",
+        "description": "Geben Sie ein oder mehrere Tags ein, die mit den Testläufen verknüpft sind, die Sie abrufen möchten."
+      },
+      "result": {
+        "label": "Ergebnis",
+        "placeholder": "Beendet, In Warteschlange, Lauf abgeschlossen, Wartend",
+        "description": "Wählen Sie ein Ergebnis aus, um alle Testläufe zu finden, die sich aktuell in diesem Zustand befinden (z.B. In Warteschlange, Beendet)."
+      }
+    }
+  },
+  "CustomSearchComponent": {
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "CustomCheckBoxList": {
+    "all": "Alle",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "CustomTagsComponent": {
+    "tagInputPlaceholder": "beliebig",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
   }
 }

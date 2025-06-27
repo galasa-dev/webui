@@ -15,6 +15,7 @@ const MAX_DAYS = 90;
 const MAX_HOURS = 23;
 const MAX_MINUTES = 59;
 
+
 export default function TimeFrameFilter({
   values,
   handleValueChange,
@@ -34,7 +35,6 @@ export default function TimeFrameFilter({
         onTimeChange={(time) => handleValueChange('fromTime', time)}
         onAmPmChange={(amPm) => handleValueChange('fromAmPm', amPm)}
       />
-
       <FormGroup legendText={translations('duration')} className={styles.TimeFrameFilterItem} >
         <div className={styles.DurationInputsContainer} key={values.toDate?.getTime() || 0}>
           <NumberInput id="duration-days" label={translations('days')} min={0} max={MAX_DAYS} value={values.durationDays} onChange={(_:React.ChangeEvent<HTMLInputElement>, { value }: {value: number | string}) => handleValueChange('durationDays', value)} />

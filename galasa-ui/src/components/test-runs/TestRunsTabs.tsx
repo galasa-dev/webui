@@ -8,7 +8,8 @@ import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react';
 import styles from '@/styles/TestRunsPage.module.css';
 import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
-import { TestRunsData } from '@/app/test-runs/page';
+import SearchCriteriaContent from "./SearchCriteriaContent";
+import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
 
 interface TabConfig {
@@ -16,17 +17,18 @@ interface TabConfig {
   component: React.ReactNode;
 }
 
+interface TestRunsTabProps {
+  runsListPromise: Promise<TestRunsData>;
+  requestorNamesPromise: Promise<string[]>;
+  resultsNamesPromise: Promise<string[]>;
+}
 
 const TableDesignContent = () => <p>
     This page is under construction. In future, you will be able to choose which columns are visible and their order.
 </p>;
 
-const SearchCriteriaContent = () => <p>
-    This page is under construction. Define specific search criteria to filter the results below.
-</p>;
 
-
-export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
+export default function TestRunsTabs({runsListPromise, requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
 
   // Define the tabs with their corresponding content.
@@ -41,7 +43,7 @@ export default function TestRunsTabs({runsListPromise}: {runsListPromise: Promis
     },
     {
       label: translations("tabs.searchCriteria"),
-      component: <p>{translations("content.searchCriteria")}</p>,
+      component: <SearchCriteriaContent requestorNamesPromise={requestorNamesPromise} resultsNamesPromise={resultsNamesPromise}/>,
     },
     {
       label: translations("tabs.results"),
