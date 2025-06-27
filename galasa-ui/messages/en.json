@@ -229,7 +229,7 @@
     "result": "Result",
     "submissionId": "Submission ID",
     "noTestRunsFound": "No test runs were found for the selected timeframe",
-    "loading": "Loading test results...",
+    "isloading":"Loading test results...",
     "limitExceededTitle": "Limit Exceeded",
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records.",
     "timeFrameText": {
