@@ -5,7 +5,7 @@
  */
 
 import { getClientApiVersion, getServiceHealthStatus } from '@/utils/health';
-import {NextIntlClientProvider, hasLocale} from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/headers/PageHeader';
 import '@/styles/global.scss';
