@@ -128,7 +128,6 @@
   },
   "TestRun": {
     "title": "Test Runs",
-    "underConstruction": "This page is under construction. Please come back later to query a list of test runs.",
     "status": "Loading..."
   },
   "MySettings": {
@@ -240,7 +239,11 @@
       "backwardText": "Previous page",
       "forwardText": "Next page",
       "itemsPerPageText": "Items per page:",
-      "pageNumberText": "Page Number"
+      "pageNumberText": "Page Number",
+      "of": "of",
+      "items":"items",
+      "pages":"pages",
+      "page":"page"
     }
   },
   "TestRunsTabs": {

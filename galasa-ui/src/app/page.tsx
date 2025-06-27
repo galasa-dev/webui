@@ -12,9 +12,9 @@ import { MarkdownResponse } from "@/utils/interfaces";
 import { readFile } from "fs/promises";
 import { getLocale } from "next-intl/server";
 import { getMarkdownFilePath } from "@/utils/markdown";
-import path from "path";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const locale = await getLocale() || "en";
   // Fetches the content contained in the service.welcome.markdown CPS property from the API server
   // Overrides the default markdown content present in /public/static/markdown/home-contents.md
   const fetchHomePageContentFromCps = async (): Promise<MarkdownResponse> => {
@@ -60,13 +60,10 @@ export default function HomePage() {
       responseStatusCode: 200
     };
     try {
-      // Fetch the markdown file from the public/static folder
-      const defaultContentFilePath = path.join(process.cwd(), "public", "static", "markdown", "home-contents.md");
       content = {
         markdownContent: await readFile(getMarkdownFilePath(locale), 'utf-8'),
         responseStatusCode: 200
       };
-
     } catch (error) {
       console.error('Error fetching or processing the default markdown contents', error);
       throw error;

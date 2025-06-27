@@ -18,7 +18,10 @@ jest.mock('next-intl', () => ({
     return translations[key] || key;
   }
 }));
-
+jest.mock('next-intl/server', () => ({
+  getLocale: jest.fn(() => Promise.resolve('en')),
+  getMessages: jest.fn(() => Promise.resolve({})),
+}));
 
 jest.mock('fs/promises', () => ({
   readFile: jest.fn(() => Promise.resolve('Dummy markdown content'))
@@ -37,6 +40,12 @@ jest.mock('next/navigation', () => ({
     forward: jest.fn(),
     prefetch: jest.fn(),
   }),
+}));
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(() => ({
+    get: jest.fn(),
+    set: jest.fn(),
+  })),
 }));
 
 test('renders Galasa header', () => {

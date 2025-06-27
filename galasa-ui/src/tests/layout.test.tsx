@@ -27,6 +27,9 @@ jest.mock('next/headers', () => ({
   }),
 }));
 
+jest.mock('@/utils/locale', () => ({
+  setUserLocale: jest.fn(), // mock the function
+}));
 
 jest.mock('next-intl/server', () => ({
   getLocale: jest.fn(() => Promise.resolve('en')), // ✅ mock getLocale async
