@@ -19,7 +19,6 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({children,}: {children: React.ReactNode}) {
   // Ensure that the incoming `locale` is valid
   const locale = await getLocale();
-
  
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || "Galasa Service";
   const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
