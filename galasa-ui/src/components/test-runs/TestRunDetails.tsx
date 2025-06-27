@@ -55,6 +55,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       bundle: runDetails.testStructure?.bundle!,
       submissionId: runDetails.testStructure?.submissionId!,
       group: runDetails.testStructure?.group!,
+      package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       submitted: parseIsoDateTime(runDetails.testStructure?.queued!),
       startedAt: parseIsoDateTime(runDetails.testStructure?.startTime!),

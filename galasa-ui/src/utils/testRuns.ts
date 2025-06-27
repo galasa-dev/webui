@@ -78,8 +78,8 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
         runName, 
         group, 
         submissionId, 
-        undefined, // detail
-        tags, 
+        // undefined, // detail
+        // tags, 
         'true',    // includeCursor
         currentCursor
       );

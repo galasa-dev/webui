@@ -174,6 +174,32 @@ export function getYesterday(): Date {
 };
 
 /**
+ * Gets the date and time for "two days ago" at midnight.
+ * 
+ * @returns A Date object representing two days ago at midnight.
+ */
+export function getTwoDaysAgo(): Date {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 2); 
+
+  // Reset time to midnight
+  yesterday.setHours(0, 0, 0, 0); 
+  return yesterday;
+};
+
+/**
+ * Gets the date and time for "one month ago" at midnight.
+ * 
+ * @returns A Date object representing one month ago at midnight.
+ */
+export function getOneMonthAgo(): Date {
+  const date = new Date();
+  date.setMonth(date.getMonth() - 1);
+  date.setHours(0, 0, 0, 0); // Reset time to midnight
+  return date;
+}
+
+/**
  * Accurately adds a number of months to a date, handling end-of-month edge cases.
  * If the original day doesn't exist in the target month, it will use the last valid day.
  * 

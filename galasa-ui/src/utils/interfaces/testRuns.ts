@@ -18,6 +18,7 @@ export interface RunMetadata {
   runName: string;
   bundle: string;
   submissionId: string;
+  package: string;
   group: string;
   requestor: string;
   submitted: string;
