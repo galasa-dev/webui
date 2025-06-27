@@ -6,17 +6,9 @@
 import HomePage from '@/app/page';
 import PageHeader from '@/components/headers/PageHeader';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+import { getMarkdownFilePath } from '@/utils/markdown';
 import { act, render, screen } from '@testing-library/react';
-
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
-    const mockTranslations: Record<string, string> = {
-      "title": "Home",
-     
-    };
-    return mockTranslations[key] || key;
-  }
-}));
+import fs, { PathLike } from 'fs';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -26,15 +18,19 @@ jest.mock('next-intl', () => ({
     return translations[key] || key;
   }
 }));
-
+jest.mock('next-intl/server', () => ({
+  getLocale: jest.fn(() => Promise.resolve('en')),
+  getMessages: jest.fn(() => Promise.resolve({})),
+}));
 
 jest.mock('fs/promises', () => ({
   readFile: jest.fn(() => Promise.resolve('Dummy markdown content'))
 }));
 
-jest.mock('path', () => ({
-  join: jest.fn(() => '/mocked/path/to/home-contents.md')
+jest.mock("path", () => ({
+  join: jest.fn((...args: string[]) => args.join("/")),
 }));
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -45,7 +41,12 @@ jest.mock('next/navigation', () => ({
     prefetch: jest.fn(),
   }),
 }));
-
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(() => ({
+    get: jest.fn(),
+    set: jest.fn(),
+  })),
+}));
 
 test('renders Galasa header', () => {
   render(
@@ -60,10 +61,27 @@ test('renders Galasa header', () => {
 
 test('renders Galasa Ecosystem homepage', async () => {
   const homePage = await act(async () => {
+    const homePageComponent = await HomePage();
     return render(
       <FeatureFlagProvider>
-        <HomePage />
+        {homePageComponent}
       </FeatureFlagProvider>);
   });
   expect(homePage).toMatchSnapshot();
+});
+
+test('getMarkdownFilePath returns localized path when that file exists', () => {
+  (fs.existsSync as jest.Mock) = jest.fn((filepath: PathLike) =>
+    typeof filepath === 'string' && filepath.includes('home-contents.de.md')
+  );
+
+  const result = getMarkdownFilePath('de');
+  expect(result).toContain('home-contents.de.md');
+});
+
+test('getMarkdownFilePath returns fallback path when localized does not exist', () => {
+  (fs.existsSync as jest.Mock) = jest.fn().mockReturnValue(false);
+
+  const result = getMarkdownFilePath('fr');
+  expect(result).toContain('home-contents.md');
 });

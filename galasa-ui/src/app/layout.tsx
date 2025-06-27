@@ -5,7 +5,7 @@
  */
 
 import { getClientApiVersion, getServiceHealthStatus } from '@/utils/health';
-import {NextIntlClientProvider, hasLocale} from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/headers/PageHeader';
 import '@/styles/global.scss';
@@ -19,7 +19,6 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({children,}: {children: React.ReactNode}) {
   // Ensure that the incoming `locale` is valid
   const locale = await getLocale();
-
  
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || "Galasa Service";
   const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;

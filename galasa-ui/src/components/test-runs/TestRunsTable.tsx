@@ -173,7 +173,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   if (isLoading) {
     return (
       <div>
-        <p className={styles.timeFrameText}>{translations("loading")}</p>
+        <p className={styles.timeFrameText}>{translations("isloading")}</p>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
@@ -199,8 +199,8 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
     router.push(`/test-runs/${runId}`);
   };
 
-  if( !tableRows || tableRows.length === 0) {
-    return <p>No test runs were found for the selected timeframe</p>;
+  if ( !tableRows || tableRows.length === 0) {
+    return <p>{translations('noTestRunsFound')}</p>;
   }
 
   return (
@@ -254,6 +254,8 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
           backwardText={translations("pagination.backwardText")}
           forwardText={translations("pagination.forwardText")}
           itemsPerPageText={translations("pagination.itemsPerPageText")}
+          itemRangeText={(min:number, max:number, total:number) =>`${min}–${max} ${translations("pagination.of")} ${total} ${translations("pagination.items")}`}
+          pageRangeText={(total:number) =>`${translations("pagination.of")} ${total} ${translations("pagination.pages")}`}
           pageNumberText={translations("pagination.pageNumberText")}
           page={currentPage}
           pageSize={pageSize}
