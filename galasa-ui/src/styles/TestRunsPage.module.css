@@ -13,7 +13,7 @@
     font-size: 1.2rem; 
 }
 
-.timeFrameText {
+.timeFrameText, .titleText {
     font-size: 1rem;
     margin: 0.5rem 0.5rem;
 }
@@ -156,4 +156,14 @@
         flex-direction: column; 
         gap: 0.5rem;
     }
+}
+
+.designTableContainer {
+  width: 50%;
+  min-width: 400px;
+}
+
+.dragOverlay {
+  padding: 0.5rem;
+  font-size: 0.8rem;
 }
