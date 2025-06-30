@@ -9,6 +9,7 @@ import styles from '@/styles/TestRunsPage.module.css';
 import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
 import SearchCriteriaContent from "./SearchCriteriaContent";
+import TableDesignContent from './TableDesignContent';
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
 
@@ -23,10 +24,6 @@ interface TestRunsTabProps {
   resultsNamesPromise: Promise<string[]>;
 }
 
-const TableDesignContent = () => <p>
-    This page is under construction. In future, you will be able to choose which columns are visible and their order.
-</p>;
-
 
 export default function TestRunsTabs({runsListPromise, requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
@@ -39,7 +36,7 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     },
     {
       label: translations("tabs.tableDesign"),
-      component: <p>{translations("content.tableDesign")}</p>,
+      component: <TableDesignContent />,
     },
     {
       label: translations("tabs.searchCriteria"),
