@@ -20,7 +20,7 @@ import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead
 import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
 import { IconButton } from "@carbon/react";
 import { Draggable } from "@carbon/icons-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState} from "react";
 
 const headers = [
   { header: "", key: "dragDrop" },
@@ -28,7 +28,6 @@ const headers = [
 ];
 
 const rows = [
-  { id: "test-submission", columnName: "Test Submission" },
   { id: "test-run-name", columnName: "Test Run name" },
   { id: "requestor", columnName: "Requestor" },
   { id: "submission-id", columnName: "Submission ID" },
@@ -55,14 +54,28 @@ const CustomCell = ({ header, value }: { header: string; value: any }) => {
 };
 
 export default function TableDesignContent() {
-  const [selectedRowsState, setSelectedRowsState] = useState<IDataTableRow[]>([]);
-  const selectedRowsRef = useRef<IDataTableRow[]>([]);
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    console.log("Selected rows updated:", selectedRowsRef.current);
 
-    console.log(selectedRowsRef.current);
-  }, [selectedRowsState]);
+  const handleRowSelect = (rowId: string) => {
+    setSelectedRowIds(prev => {
+        let currentSelectedRows;
+        currentSelectedRows = prev.includes(rowId) ? 
+         currentSelectedRows = prev.filter(id => id !== rowId) : currentSelectedRows = [...prev, rowId]; 
+        return currentSelectedRows;
+    })
+  }
+
+  const handleSelectAll = () => {
+    const allSelected = selectedRowIds.length === rows.length;
+    const rowIds = rows.map(row=>row.id);
+
+    if (selectedRowIds.length < rows.length && selectedRowIds.length !== 0) {
+        setSelectedRowIds([]);
+    } else {
+       setSelectedRowIds(allSelected ? [] : rowIds); 
+    }
+  }
 
   return (
     <DataTable rows={rows} headers={headers}>
@@ -83,20 +96,19 @@ export default function TableDesignContent() {
         getSelectionProps: (options?: any) => any;
         selectedRows: IDataTableRow[];
       }) => {
-        // Update ref with current selection
-        selectedRowsRef.current = selectedRows;
-        
-        // Update state if selected rows have changed
-        if (JSON.stringify(selectedRows) !== JSON.stringify(selectedRowsState)) {
-          setSelectedRowsState(selectedRows);
-        }
-
+        const allSelected = selectedRowIds.length === rows.length;
+        const someSelected = selectedRowIds.length > 0 && selectedRowIds.length < rows.length
         return (
           <TableContainer>
             <Table {...getTableProps()} aria-label="table design" size="lg" >
               <TableHead>
                 <TableRow>
-                  <TableSelectAll {...getSelectionProps()} />
+                  <TableSelectAll
+                   {...getSelectionProps()}
+                   checked={allSelected}
+                   indeterminate={someSelected}
+                   onSelect={handleSelectAll}
+                />
                   {headers.map((header) => (
                     <TableHeader key={header.key} {...getHeaderProps({ header })}>
                       {header.header}
@@ -107,7 +119,11 @@ export default function TableDesignContent() {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow key={row.id} {...getRowProps({ row })}>
-                    <TableSelectRow {...getSelectionProps({ row })} />
+                    <TableSelectRow
+                     {...getSelectionProps({ row })}
+                     checked={selectedRowIds.includes(row.id)}
+                     onSelect={() => handleRowSelect(row.id)}
+                    />
                     {row.cells.map((cell) => (
                       <CustomCell
                         key={cell.id}
