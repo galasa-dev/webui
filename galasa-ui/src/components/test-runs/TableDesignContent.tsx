@@ -23,55 +23,16 @@ import {
 import { TableRowProps } from "@carbon/react/lib/components/DataTable/TableRow";
 import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead";
 import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
-import { IconButton } from "@carbon/react";
-import { Draggable } from "@carbon/icons-react";
 import { useState } from "react";
 import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";
+import DraggableHandle from "./DraggableHandle";
 
 const headers = [
   { header: "", key: "dragDrop" },
   { header: "Column Name", key: "columnName" },
 ];
-
-// Draggable Handle Component
-const DraggableHandle = ({ rowId }: { rowId: string }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: rowId });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <TableCell>
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-      >
-        <IconButton 
-          kind="ghost" 
-          label="Drag to reorder"
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-        >
-          <Draggable size={20} />
-        </IconButton>
-      </div>
-    </TableCell>
-  );
-};
 
 const CustomCell = ({ header, value, rowId }: { header: string; value: any; rowId: string }) => {
   if (header === "dragDrop") {
@@ -80,25 +41,18 @@ const CustomCell = ({ header, value, rowId }: { header: string; value: any; rowI
   return <TableCell>{value}</TableCell>;
 };
 
-export default function TableDesignContent() {
-  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
-  const [tableRows, setRows] = useState<{ id: string; columnName: string }[]>([
-    { id: "test-run-name", columnName: "Test Run name" },
-    { id: "requestor", columnName: "Requestor" },
-    { id: "submission-id", columnName: "Submission ID" },
-    { id: "group", columnName: "Group" },
-    { id: "bundle", columnName: "Bundle" },
-    { id: "package", columnName: "Package" },
-    { id: "test-name", columnName: "Test Name" },
-    { id: "status", columnName: "Status" },
-    { id: "tags", columnName: "Tags" },
-    { id: "result", columnName: "Result" },
-  ]);
+interface TableDesignContentProps {
+    selectedRowIds: string[];
+    setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
+    tableRows: { id: string; columnName: string }[];
+    setTableRows: React.Dispatch<React.SetStateAction<{ id: string; columnName: string }[]>>;
+}
 
+export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows}: TableDesignContentProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleRowSelect = (rowId: string) => {
-    setSelectedRowIds(prev => {
+    setSelectedRowIds((prev: string[]) => {
       if (prev.includes(rowId)) {
         return prev.filter(id => id !== rowId);
       } else {
@@ -129,7 +83,7 @@ export default function TableDesignContent() {
     setActiveId(null);
 
     if (over && active.id !== over.id) {
-      setRows(rows => {
+      setTableRows((rows: { id: string; columnName: string }[]) => {
         const originalPosition = getRowPosition(active.id);
         const newPosition = getRowPosition(over.id);
         return arrayMove(rows, originalPosition, newPosition);
@@ -165,9 +119,9 @@ export default function TableDesignContent() {
           getTableProps: () => TableBodyProps;
           getSelectionProps: (options?: any) => any;
         }) => {
-          const allSelected = selectedRowIds.length === rows.length;
-          const someSelected = selectedRowIds.length > 0 && selectedRowIds.length < rows.length;
-          
+          const allSelected = selectedRowIds.length === tableRows.length;
+          const someSelected = selectedRowIds.length > 0 && selectedRowIds.length < tableRows.length;
+            
           return (
             <TableContainer className={styles.designTableContainer}>
               <Table {...getTableProps()} aria-label="table design" size="lg">
@@ -195,7 +149,7 @@ export default function TableDesignContent() {
                           checked={selectedRowIds.includes(row.id)}
                           onSelect={() => handleRowSelect(row.id)}
                         />
-                        {row.cells.map((cell) => (
+                        {row.cells.map((cell: any) => (
                           <CustomCell
                             key={cell.id}
                             value={cell.value}

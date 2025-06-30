@@ -12,6 +12,8 @@ import SearchCriteriaContent from "./SearchCriteriaContent";
 import TableDesignContent from './TableDesignContent';
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
+import { useState } from 'react';
+import { RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
 
 interface TabConfig {
   label: string;
@@ -27,6 +29,8 @@ interface TestRunsTabProps {
 
 export default function TestRunsTabs({runsListPromise, requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
+  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(["submittedAt", "testRunName", "requestor", "testName", "status", "result"]);
+  const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(RESULTS_TABLE_COLUMNS);
 
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
@@ -36,7 +40,12 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     },
     {
       label: translations("tabs.tableDesign"),
-      component: <TableDesignContent />,
+      component: <TableDesignContent 
+      selectedRowIds={selectedVisibleColumns}
+      setSelectedRowIds={setSelectedVisibleColumns}
+      tableRows={columnsOrder}
+      setTableRows={setColumnsOrder}
+      />,
     },
     {
       label: translations("tabs.searchCriteria"),
@@ -44,7 +53,11 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     },
     {
       label: translations("tabs.results"),
-      component: <TestRunsTable runsListPromise={runsListPromise} />,
+      component: <TestRunsTable 
+      runsListPromise={runsListPromise}
+      visibleColumns={selectedVisibleColumns}
+      orderedHeaders={columnsOrder}
+       />,
     },
   ];
 
