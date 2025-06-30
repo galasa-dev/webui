@@ -5,7 +5,7 @@
  */
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem, HeaderName } from '@carbon/react';
 import { User } from "@carbon/icons-react";
 import { useRouter } from 'next/navigation';
@@ -29,14 +29,19 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
     router.push("/mysettings");
   };
   const {isFeatureEnabled} = useFeatureFlags();
+
+  const isInternationalizationEnabled = isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION);
   
-  if(!isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION)) {
-    setUserLocale("en");
-  }
+  useEffect(() => {
+    if (!isInternationalizationEnabled) {
+      setUserLocale("en");
+    }
+  }, [isInternationalizationEnabled]);
+
   return (
     <HeaderGlobalBar data-testid="header-menu">
 
-      {isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION) && ( <LanguageSelector/>)}
+      {isInternationalizationEnabled && (<LanguageSelector/>)}
       <HeaderName prefix="">{galasaServiceName}</HeaderName>
       <OverflowMenu
         data-floating-menu-container

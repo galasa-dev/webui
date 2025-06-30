@@ -76,15 +76,66 @@ describe('CustomCheckBoxList', () => {
   });
 
   test('handles multiple selection changes correctly in sequence', () => {
-    render(<CustomCheckBoxList {...defaultProps} />);
+    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
 
     fireEvent.click(screen.getByLabelText('Item B'));
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item B']);
     
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B']} />);
+
     fireEvent.click(screen.getByLabelText('Item C'));
-    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item C']);
+    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A','Item B', 'Item C']);
+
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
 
     fireEvent.click(screen.getByLabelText('Item A'));
-    expect(mockOnChange).toHaveBeenLastCalledWith([]);
+    expect(mockOnChange).toHaveBeenLastCalledWith(['Item B', 'Item C']);
+  });
+
+  test('when checking `All` and then unchecking an item, `All` should be unchecked', () => {
+    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
+    
+    // Check 'All'
+    fireEvent.click(screen.getByLabelText('All'));
+    expect(mockOnChange).toHaveBeenCalledWith(['Item A', 'Item B', 'Item C']);
+    
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+
+    // Uncheck 'Item A'
+    expect(screen.getByLabelText('All')).toBeChecked();
+    fireEvent.click(screen.getByLabelText('Item A'));
+    expect(mockOnChange).toHaveBeenCalledWith(['Item B', 'Item C']);
+
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item B', 'Item C']} />);
+    
+    // Check that 'All' is now unchecked
+    expect(screen.getByLabelText('All')).not.toBeChecked();
+  });
+
+  test('clicking Cancel calls the onCancel prop and does not change selection', () => {
+    const initialSelection = ['Item A'];
+    const { rerender } = render(<CustomCheckBoxList {...defaultProps} selectedItems={initialSelection} />);
+    
+    // Check "All" checkbox
+    fireEvent.click(screen.getByLabelText('All'));
+    expect(mockOnChange).toHaveBeenCalledWith(['Item A', 'Item B', 'Item C']);
+
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+    expect(screen.getByLabelText('All')).toBeChecked();
+
+    // Click "Cancel".
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+    fireEvent.click(cancelButton);
+    
+    // Assert that onCancel was called.
+    expect(mockOnCancel).toHaveBeenCalledTimes(1);
+
+    // Simulate a rerender to check if the selection is reverted.
+    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={initialSelection} />);
+
+    // Assert the UI has been reverted correctly.
+    expect(screen.getByLabelText('Item A')).toBeChecked();
+    expect(screen.getByLabelText('Item B')).not.toBeChecked();
+    expect(screen.getByLabelText('All')).not.toBeChecked();
   });
 });
