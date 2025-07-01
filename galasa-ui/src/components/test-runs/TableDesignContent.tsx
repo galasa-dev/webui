@@ -104,8 +104,9 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           </div>
           <div className={styles.cellCheckbox}>
             <Checkbox
+              aria-label="Select all rows" 
               id={`checkbox-all`}
-              isSelected={selectedRowIds.length === tableRows.length}
+              checked={selectedRowIds.length === tableRows.length}
               onChange={handleSelectAll}
             />
           </div>
