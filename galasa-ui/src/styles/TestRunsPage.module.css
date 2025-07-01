@@ -167,3 +167,56 @@
   padding: 0.5rem;
   font-size: 0.8rem;
 }
+
+.tableDesignContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #a8a8a8; 
+  border-radius: 0;
+  background-color: #ffffff;
+  width: 50%;
+  min-width: 400px;
+}
+
+.tableDesignRow,
+.tableDesignHeaderRow {
+  display: flex;
+  align-items: center; 
+  gap: 1rem;
+  border-bottom: 1px solid #a8a8a8;
+  padding: 0.5rem;
+}
+
+.cellDragHandle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+  text-align: left;
+}
+
+.cellCheckbox, .cellValue {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  
+}
+
+/* Remove border from the very last row */
+.tableDesignContainer > div:last-child > .tableDesignRow:last-child {
+  border-bottom: none;
+}
+
+.tableDesignHeaderRow {
+  background-color: #f4f4f4;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-bottom: 1px solid #393939; 
+}
+
+
+
+

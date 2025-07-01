@@ -4,42 +4,17 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-import {
-  DataTable,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
-  TableSelectAll,
-  TableSelectRow,
-} from "@carbon/react";
-import {
-  DataTableHeader,
-  DataTableRow as IDataTableRow,
-} from "@/utils/interfaces";
-import { TableRowProps } from "@carbon/react/lib/components/DataTable/TableRow";
-import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead";
-import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
 import { useState } from "react";
 import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";
-import DraggableHandle from "./DraggableHandle";
+import TableDesignRow from "./TableDesignRow";
+import { Checkbox } from "@carbon/react";
 
 const headers = [
   { header: "", key: "dragDrop" },
   { header: "Column Name", key: "columnName" },
 ];
-
-const CustomCell = ({ header, value, rowId }: { header: string; value: any; rowId: string }) => {
-  if (header === "dragDrop") {
-    return <DraggableHandle rowId={rowId} />;
-  }
-  return <TableCell>{value}</TableCell>;
-};
 
 interface TableDesignContentProps {
     selectedRowIds: string[];
@@ -65,8 +40,8 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     const allSelected = selectedRowIds.length === tableRows.length;
     const rowIds = tableRows.map(row => row.id);
 
-    if (selectedRowIds.length < tableRows.length && selectedRowIds.length !== 0) {
-      setSelectedRowIds([]);
+    if (selectedRowIds.length < tableRows.length) {
+      setSelectedRowIds(rowIds);
     } else {
       setSelectedRowIds(allSelected ? [] : rowIds); 
     }
@@ -102,77 +77,38 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
       onDragCancel={handleDragCancel}
       collisionDetection={closestCorners}
     >
-     <p className={styles.titleText}>Adjust the column ordering, allowable values, and whether columns are visible or not</p>
-      <DataTable rows={tableRows} headers={headers}>
-        {({
-          rows,
-          headers,
-          getTableProps,
-          getHeaderProps,
-          getRowProps,
-          getSelectionProps,
-        }: {
-          rows: IDataTableRow[];
-          headers: DataTableHeader[];
-          getHeaderProps: (options: any) => TableHeadProps;
-          getRowProps: (options: any) => TableRowProps;
-          getTableProps: () => TableBodyProps;
-          getSelectionProps: (options?: any) => any;
-        }) => {
-          const allSelected = selectedRowIds.length === tableRows.length;
-          const someSelected = selectedRowIds.length > 0 && selectedRowIds.length < tableRows.length;
-            
-          return (
-            <TableContainer className={styles.designTableContainer}>
-              <Table {...getTableProps()} aria-label="table design" size="lg">
-                <TableHead>
-                  <TableRow>
-                    <TableSelectAll
-                      {...getSelectionProps()}
-                      checked={allSelected}
-                      indeterminate={someSelected}
-                      onSelect={handleSelectAll}
-                    />
-                    {headers.map((header) => (
-                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                        {header.header}
-                      </TableHeader>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <SortableContext items={rows.map(r => r.id)} strategy={verticalListSortingStrategy}>
-                    {rows.map((row) => (
-                      <TableRow key={row.id} {...getRowProps({ row })}>
-                        <TableSelectRow
-                          {...getSelectionProps({ row })}
-                          checked={selectedRowIds.includes(row.id)}
-                          onSelect={() => handleRowSelect(row.id)}
-                        />
-                        {row.cells.map((cell: any) => (
-                          <CustomCell
-                            key={cell.id}
-                            value={cell.value}
-                            header={cell.info.header}
-                            rowId={row.id}
-                          />
-                        ))}
-                      </TableRow>
-                    ))}
-                  </SortableContext>
-                </TableBody>
-              </Table>
-              <DragOverlay>
-                {activeId ? (
-                  <div className={styles.dragOverlay}>
-                    {tableRows.find(row => row.id === activeId)?.columnName}
-                  </div>
-                ) : null}
-              </DragOverlay>
-            </TableContainer>
-          );
-        }}
-      </DataTable>
+      <p className={styles.titleText}>Adjust the column ordering, allowable values, and whether columns are visible or not</p>
+        <div className={styles.tableDesignContainer}>
+          <div className={styles.tableDesignHeaderRow}>
+            <div className={styles.cellDragHandle}>
+              <strong>Drag to arrange columns</strong>
+            </div>
+            <div className={styles.cellCheckbox}>
+              <Checkbox
+                  id={`checkbox-all`}
+                  isSelected={selectedRowIds.length === tableRows.length}
+                  onChange={handleSelectAll}
+              />
+            </div>
+            <div className={styles.cellValue}>
+              <strong>Column Name</strong>
+            </div>
+          </div>
+          <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
+          {
+            tableRows.map((row) => (
+              <TableDesignRow 
+              key={row.id} 
+              rowId={row.id} 
+              value={row.columnName}
+              isSelected={selectedRowIds.includes(row.id)}
+              onSelect={handleRowSelect}
+              onSelectAll={handleSelectAll}
+              />
+            )) 
+          }
+          </SortableContext>
+        </div>
     </DndContext>
   );
 }
