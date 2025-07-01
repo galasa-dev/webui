@@ -46,7 +46,7 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
       className={styles.tableDesignRow}
       id={rowId}
     >
-      <div className={styles.cellDragHandle}>
+      <div className={styles.tableDesignIcons}>
         <IconButton 
           kind="ghost" 
           label="Drag to reorder"
@@ -69,11 +69,6 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
         >
           <ChevronDownOutline size={19}/>
         </IconButton>}
-
-      </div>
-
-      <div className={styles.upDownArrows}>
-     
       </div>
         
       <div className={styles.cellCheckbox}>

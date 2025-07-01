@@ -158,23 +158,13 @@
     }
 }
 
-.designTableContainer {
-  width: 50%;
-  min-width: 400px;
-}
-
-.dragOverlay {
-  padding: 0.5rem;
-  font-size: 0.8rem;
-}
-
 .tableDesignContainer {
   display: flex;
   flex-direction: column;
   border: 1px solid #a8a8a8; 
   border-radius: 0;
   background-color: #ffffff;
-  width: 50%;
+  width: 45%;
   min-width: 400px;
 }
 
@@ -182,13 +172,12 @@
 .tableDesignHeaderRow {
   display: flex;
   align-items: center; 
-  gap: 1rem;
   border-bottom: 1px solid #a8a8a8;
-  padding: 0.5rem;
+  padding: 0.2rem;
 }
 
-.cellDragHandle {
-  flex: 1;
+.tableDesignIcons {
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -196,13 +185,21 @@
   text-align: left;
 }
 
-.cellCheckbox, .cellValue {
-  flex: 1;
+.cellCheckbox {
+  flex: 0 0 60px;
+}
+
+.cellValue {
+  flex: 2;
+}
+
+.cellCheckbox,
+.cellValue {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  
+  font-size: 0.9rem;
 }
 
 /* Remove border from the very last row */
@@ -212,9 +209,18 @@
 
 .tableDesignHeaderRow {
   background-color: #f4f4f4;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: bold;
   border-bottom: 1px solid #393939; 
+}
+
+.tableDesignHeaderRow .cellDragHandle {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+  text-align: left;
 }
 
 

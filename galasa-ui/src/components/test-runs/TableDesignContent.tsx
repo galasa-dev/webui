@@ -11,10 +11,6 @@ import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
 
-const headers = [
-  { header: "", key: "dragDrop" },
-  { header: "Column Name", key: "columnName" },
-];
 
 interface TableDesignContentProps {
     selectedRowIds: string[];
@@ -24,8 +20,6 @@ interface TableDesignContentProps {
 }
 
 export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows}: TableDesignContentProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
-
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
       if (prev.includes(rowId)) {
@@ -49,13 +43,9 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
 
   const getRowPosition = (id: string) => tableRows.findIndex(row => row.id === id);
 
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
-  };
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    setActiveId(null);
 
     if (over && active.id !== over.id) {
       setTableRows((rows: { id: string; columnName: string }[]) => {
@@ -64,10 +54,6 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
         return arrayMove(rows, originalPosition, newPosition);
       });
     }
-  };
-
-  const handleDragCancel = () => {
-    setActiveId(null);
   };
 
   const handleMoveUp = (index: number) => {
@@ -107,9 +93,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
 
   return (
     <DndContext 
-      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
       collisionDetection={closestCorners}
       sensors={sensors}
     >
