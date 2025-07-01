@@ -36,6 +36,18 @@ jest.mock('@dnd-kit/core', () => ({
   },
 }));
 
+// Mock the useTranslations hook from next-intl
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "description": "Customize your table view by showing, hiding, and reordering columns.",
+      "dragAndDropHeader": "Drag columns to reorder",
+      "columnName": "Column Name",
+    };
+    return translations[key] || key;
+  },
+}));
+
 // Mock test data
 const mockTableRows = [
   { id: 'testName', columnName: 'Test Name' },
@@ -62,7 +74,7 @@ describe("TableDesignContent Component", () => {
           setTableRows={mockSetTableRows}
         />
       );
-      expect(screen.getByText(/Adjust the column ordering/i)).toBeInTheDocument();
+      expect(screen.getByText(/Customize your table view/i)).toBeInTheDocument();
       expect(screen.getByText('Column Name')).toBeInTheDocument();
     });
 

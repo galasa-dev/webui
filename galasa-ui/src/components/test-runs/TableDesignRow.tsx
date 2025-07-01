@@ -11,18 +11,20 @@ import { CSS } from "@dnd-kit/utilities";
 import { IconButton } from "@carbon/react";
 import { ChevronDownOutline, ChevronUpOutline, Draggable } from "@carbon/icons-react";
 import { RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
+import { useTranslations } from "next-intl";
 
 interface TableDesignRowProps {
   rowId: string;
   index: number;
-  value: string;
   isSelected: boolean;
   onSelect: (rowId: string) => void;
   onClickArrowUp: () => void;
   onClickArrowDown: () => void;
 }
 
-export default function TableDesignRow({ rowId, index, value, isSelected,  onSelect, onClickArrowUp, onClickArrowDown }: TableDesignRowProps) {
+export default function TableDesignRow({ rowId, index, isSelected,  onSelect, onClickArrowUp, onClickArrowDown }: TableDesignRowProps) {
+  const translations = useTranslations("TableDesignRow");
+
   const {
     attributes,
     listeners,
@@ -49,7 +51,7 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
       <div className={styles.tableDesignIcons}>
         <IconButton 
           kind="ghost" 
-          label="Drag to reorder"
+          label={translations("dragAndDropLabel")}
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
           {...listeners} 
         >
@@ -57,7 +59,7 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
         </IconButton>
         <IconButton
           kind="ghost"
-          label="Move up"
+          label={translations("moveUpLabel")}
           onClick={onClickArrowUp}
           className={styles.arrowUpButton}
           style={{ visibility: index === 0 ? 'hidden' : 'visible' }}
@@ -66,7 +68,7 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
         </IconButton>
         <IconButton
           kind="ghost"
-          label="Move down"
+          label={translations("moveDownLabel")}
           onClick={onClickArrowDown}
           className={styles.arrowDownButton}
           style={{ visibility: index === RESULTS_TABLE_COLUMNS.length - 1 ? 'hidden' : 'visible' }}
@@ -83,7 +85,7 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
         />
       </div>
 
-      <p className={styles.cellValue}>{value}</p>
+      <p className={styles.cellValue}>{translations(rowId)}</p>
     </div>
   );
 };

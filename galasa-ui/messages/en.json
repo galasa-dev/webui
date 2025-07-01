@@ -357,5 +357,26 @@
     "remove": "Remove",
     "cancel": "Cancel",
     "save": "Save"
+  },
+  "TableDesignContent": {
+    "description": "Customize your table view by showing, hiding, and reordering columns.",
+    "dragAndDropHeader": "Drag columns to reorder",
+    "columnName": "Column Name"
+  }, 
+  "TableDesignRow": {
+    "dragAndDropLabel": "Drag to reorder",
+    "moveUpLabel": "Move up",
+    "moveDownLabel": "Move down",
+    "submittedAt": "Submitted at",
+    "testRunName": "Test Run Name",
+    "requestor": "Requestor",
+    "group": "Group",
+    "bundle": "Bundle",
+    "package": "Package",
+    "testName": "Test Name",
+    "tags": "Tags",
+    "status": "Status",
+    "result": "Result",
+    "submissionId": "Submission ID"
   }
 }

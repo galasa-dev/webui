@@ -357,5 +357,26 @@
     "remove": "Entfernen",
     "cancel": "Abbrechen",
     "save": "Speichern"
+  }, 
+  "TableDesignContent": {
+    "description": "Passen Sie Ihre Tabellenansicht an, indem Sie Spalten einblenden, ausblenden oder neu anordnen.",
+    "dragAndDropHeader": "Spalten ziehen, um die Reihenfolge zu ändern",
+    "columnName": "Spaltenname"
+  },
+  "TableDesignRow": {
+    "dragAndDropLabel": "Ziehen zum Neuordnen",
+    "moveUpLabel": "Nach oben verschieben",
+    "moveDownLabel": "Nach unten verschieben",
+    "submittedAt": "Eingereicht am",
+    "testRunName": "Name des Testlaufs",
+    "requestor": "Anforderer",
+    "group": "Gruppe",
+    "bundle": "Bundle",
+    "package": "Paket",
+    "testName": "Testname",
+    "tags": "Tags",
+    "status": "Status",
+    "result": "Ergebnis",
+    "submissionId":"Übermittlungs-ID"
   }
 }

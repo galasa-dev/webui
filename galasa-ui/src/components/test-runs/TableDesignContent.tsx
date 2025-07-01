@@ -9,6 +9,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
+import { useTranslations } from "next-intl";
 
 
 interface TableDesignContentProps {
@@ -19,6 +20,7 @@ interface TableDesignContentProps {
 }
 
 export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows}: TableDesignContentProps) {
+  const translations = useTranslations("TableDesignContent"); 
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
       if (prev.includes(rowId)) {
@@ -96,11 +98,11 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
       collisionDetection={closestCorners}
       sensors={sensors}
     >
-      <p className={styles.titleText}>Customize your table view by showing, hiding, and reordering columns.</p>
+      <p className={styles.titleText}>{translations("description")}</p>
       <div className={styles.tableDesignContainer}>
         <div className={styles.tableDesignHeaderRow}>
           <div className={styles.cellDragHandle}>
-            <strong>Drag to arrange columns</strong>
+            <strong>{translations("dragAndDropHeader")}</strong>
           </div>
           <div className={styles.cellCheckbox}>
             <Checkbox
@@ -111,7 +113,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
             />
           </div>
           <div className={styles.cellValue}>
-            <strong>Column Name</strong>
+            <strong>{translations("columnName")}</strong>
           </div>
         </div>
         <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
@@ -121,7 +123,6 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
                 key={row.id} 
                 index={index}
                 rowId={row.id} 
-                value={row.columnName}
                 isSelected={selectedRowIds.includes(row.id)}
                 onSelect={handleRowSelect}
                 onClickArrowUp={() => handleMoveUp(index)}
