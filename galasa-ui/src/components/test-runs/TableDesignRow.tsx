@@ -55,22 +55,26 @@ export default function TableDesignRow({ rowId, index, value, isSelected,  onSel
         >
           <Draggable size={20} />
         </IconButton>
-        {index !== 0 && <IconButton
+        <IconButton
           kind="ghost"
           label="Move up"
           onClick={onClickArrowUp}
+          className={styles.arrowUpButton}
+          style={{ visibility: index === 0 ? 'hidden' : 'visible' }}
         >
           <ChevronUpOutline size={19}/>  
-        </IconButton>    }
-        {index !== RESULTS_TABLE_COLUMNS.length - 1 && <IconButton
+        </IconButton>
+        <IconButton
           kind="ghost"
           label="Move down"
           onClick={onClickArrowDown}
+          className={styles.arrowDownButton}
+          style={{ visibility: index === RESULTS_TABLE_COLUMNS.length - 1 ? 'hidden' : 'visible' }}
         >
           <ChevronDownOutline size={19}/>
-        </IconButton>}
+        </IconButton>
       </div>
-        
+    
       <div className={styles.cellCheckbox}>
         <Checkbox
           id={`checkbox-${rowId}`}

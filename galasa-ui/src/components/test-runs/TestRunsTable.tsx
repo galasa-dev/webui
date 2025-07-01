@@ -91,7 +91,6 @@ interface TestRunsTableProps {
   runsListPromise: Promise<TestRunsData>;
   visibleColumns: string[];
   orderedHeaders?: { id: string; columnName: string }[];
-
 }
 
 export default function TestRunsTable({runsListPromise, visibleColumns, orderedHeaders}: TestRunsTableProps) {

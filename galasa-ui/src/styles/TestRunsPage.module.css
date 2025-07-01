@@ -158,6 +158,8 @@
     }
 }
 
+/* Styles of the Table Design tab */
+
 .tableDesignContainer {
   display: flex;
   flex-direction: column;
@@ -222,7 +224,4 @@
   padding-left: 0.5rem;
   text-align: left;
 }
-
-
-
 
