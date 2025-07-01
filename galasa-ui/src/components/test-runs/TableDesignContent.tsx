@@ -66,7 +66,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
         return newRows;
       });
     }
-  }
+  };
 
   const handleMoveDown = (index: number) => {
     if (index < tableRows.length - 1) {
@@ -97,39 +97,39 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
       sensors={sensors}
     >
       <p className={styles.titleText}>Adjust the column ordering, allowable values, and whether columns are visible or not</p>
-        <div className={styles.tableDesignContainer}>
-          <div className={styles.tableDesignHeaderRow}>
-            <div className={styles.cellDragHandle}>
-              <strong>Drag to arrange columns</strong>
-            </div>
-            <div className={styles.cellCheckbox}>
-              <Checkbox
-                  id={`checkbox-all`}
-                  isSelected={selectedRowIds.length === tableRows.length}
-                  onChange={handleSelectAll}
-              />
-            </div>
-            <div className={styles.cellValue}>
-              <strong>Column Name</strong>
-            </div>
+      <div className={styles.tableDesignContainer}>
+        <div className={styles.tableDesignHeaderRow}>
+          <div className={styles.cellDragHandle}>
+            <strong>Drag to arrange columns</strong>
           </div>
-          <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
+          <div className={styles.cellCheckbox}>
+            <Checkbox
+              id={`checkbox-all`}
+              isSelected={selectedRowIds.length === tableRows.length}
+              onChange={handleSelectAll}
+            />
+          </div>
+          <div className={styles.cellValue}>
+            <strong>Column Name</strong>
+          </div>
+        </div>
+        <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
           {
             tableRows.map((row, index) => (
               <TableDesignRow 
-              key={row.id} 
-              index={index}
-              rowId={row.id} 
-              value={row.columnName}
-              isSelected={selectedRowIds.includes(row.id)}
-              onSelect={handleRowSelect}
-              onClickArrowUp={() => handleMoveUp(index)}
-              onClickArrowDown={() => handleMoveDown(index)}
+                key={row.id} 
+                index={index}
+                rowId={row.id} 
+                value={row.columnName}
+                isSelected={selectedRowIds.includes(row.id)}
+                onSelect={handleRowSelect}
+                onClickArrowUp={() => handleMoveUp(index)}
+                onClickArrowDown={() => handleMoveDown(index)}
               />
             )) 
           }
-          </SortableContext>
-        </div>
+        </SortableContext>
+      </div>
     </DndContext>
   );
 }

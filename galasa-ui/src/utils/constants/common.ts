@@ -28,18 +28,18 @@ const TEST_RUNS_STATUS = ['Finished', 'Building', 'Generating', 'Running', 'Rund
   'Up', 'Started', 'Provstart', 'Ending'];
 
 const RESULTS_TABLE_COLUMNS = [
-    {id: "submittedAt", columnName: "Submitted at"},
-    { id: "testRunName", columnName: "Test Run name" },
-    { id: "requestor", columnName: "Requestor" },
-    { id: "submissionId", columnName: "Submission ID" },
-    { id: "group", columnName: "Group" },
-    { id: "bundle", columnName: "Bundle" },
-    { id: "package", columnName: "Package" },
-    { id: "testName", columnName: "Test Name" },
-    { id: "status", columnName: "Status" },
-    { id: "tags", columnName: "Tags" },
-    { id: "result", columnName: "Result" },
-]
+  {id: "submittedAt", columnName: "Submitted at"},
+  { id: "testRunName", columnName: "Test Run name" },
+  { id: "requestor", columnName: "Requestor" },
+  { id: "submissionId", columnName: "Submission ID" },
+  { id: "group", columnName: "Group" },
+  { id: "bundle", columnName: "Bundle" },
+  { id: "package", columnName: "Package" },
+  { id: "testName", columnName: "Test Name" },
+  { id: "status", columnName: "Status" },
+  { id: "tags", columnName: "Tags" },
+  { id: "result", columnName: "Result" },
+];
   
   
 const BATCH_SIZE = 100;

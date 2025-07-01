@@ -86,10 +86,10 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     {
       label: translations("tabs.tableDesign"),
       component: <TableDesignContent 
-      selectedRowIds={selectedVisibleColumns}
-      setSelectedRowIds={setSelectedVisibleColumns}
-      tableRows={columnsOrder}
-      setTableRows={setColumnsOrder}
+        selectedRowIds={selectedVisibleColumns}
+        setSelectedRowIds={setSelectedVisibleColumns}
+        tableRows={columnsOrder}
+        setTableRows={setColumnsOrder}
       />,
     },
     {
@@ -99,10 +99,10 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     {
       label: translations("tabs.results"),
       component: <TestRunsTable 
-      runsListPromise={runsListPromise}
-      visibleColumns={selectedVisibleColumns}
-      orderedHeaders={columnsOrder}
-       />,
+        runsListPromise={runsListPromise}
+        visibleColumns={selectedVisibleColumns}
+        orderedHeaders={columnsOrder}
+      />,
     },
   ];
 

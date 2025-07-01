@@ -5,23 +5,37 @@
  */
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 
-// Mock the TestRunsTable and TimeFrameContent components 
-jest.mock('@/components/test-runs/TestRunsTable', () => {
-  return {
-    __esModule: true,
-    default: () => <div data-testid="test-runs-table">Mocked Test Runs Table</div>,
-  };
-});
+// Mock Child Components
+const TestRunsTableMock = jest.fn((props) => <div data-testid="test-runs-table">Mocked Test Runs Table</div>);
+jest.mock('@/components/test-runs/TestRunsTable', () => ({
+  __esModule: true,
+  default: (props: any) => TestRunsTableMock(props),
+}));
 
-jest.mock('@/components/test-runs/TimeFrameContent', () => {
-  return {
-    __esModule: true,
-    default: () => <div>Mocked Timeframe Content</div>,
-  };
-});
+jest.mock('@/components/test-runs/TimeFrameContent', () => ({
+  __esModule: true,
+  default: () => <div>Mocked Timeframe Content</div>,
+}));
+
+jest.mock('@/components/test-runs/SearchCriteriaContent', () => ({
+  __esModule: true,
+  default: () => <div>Mocked Search Criteria Content</div>,
+}));
+
+let capturedSetSelectedVisibleColumns: (columns: string[]) => void;
+let capturedSetColumnsOrder: (order: { id: string; columnName: string }[]) => void;
+
+jest.mock('@/components/test-runs/TableDesignContent', () => ({
+  __esModule: true,
+  default: (props: any) => {
+    capturedSetSelectedVisibleColumns = props.setSelectedRowIds;
+    capturedSetColumnsOrder = props.setTableRows;
+    return <div>Mocked Table Design Content</div>;
+  },
+}));
 
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
@@ -30,28 +44,35 @@ jest.mock("next-intl", () => ({
       "tabs.tableDesign": "Table Design",
       "tabs.searchCriteria": "Search Criteria",
       "tabs.results": "Results",
-      "content.timeframe":
-        "This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.",
-      "content.tableDesign":
-        "This page is under construction. In future, you will be able to choose which columns are visible and their order.",
-      "content.searchCriteria":
-        "This page is under construction. Define specific search criteria to filter the results below.",
     };
     return translations[key] || key;
   },
 }));
 
-// Mock navigation hooks
+const mockReplace = jest.fn();
+const mockUseSearchParams = jest.fn();
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
-    replace: jest.fn(),
+    replace: mockReplace,
   }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockUseSearchParams(),
   usePathname: () => '/',
 }));
 
-// Mock window.matchMedia to prevent errors in the JSDOM test environment
+jest.mock('@/utils/constants/common', () => ({
+  RESULTS_TABLE_COLUMNS:  [
+    { id: 'submittedAt', columnName: 'Submitted' },
+    { id: 'testRunName', columnName: 'Test Run Name' },
+    { id: 'requestor', columnName: 'Requestor' },
+    { id: 'testName', columnName: 'Test Name' },
+    { id: 'status', columnName: 'Status' },
+    { id: 'result', columnName: 'Result' },
+  ]
+}));
+
+// Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
@@ -69,6 +90,13 @@ describe('TestRunsTabs Component', () => {
   const mockRequestorNamesPromise = Promise.resolve([]);
   const mockResultsNamesPromise = Promise.resolve([]);
 
+  beforeEach(() => {
+    // Reset all mocks before each test
+    jest.clearAllMocks();
+    // Default to returning empty search params. Individual tests can override this.
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+  });
+
   test('renders all tabs correctly', () => {
     render(
       <TestRunsTabs
@@ -77,7 +105,6 @@ describe('TestRunsTabs Component', () => {
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
-
     const tabLabels = ['Timeframe', 'Table Design', 'Search Criteria', 'Results'];
     tabLabels.forEach(label => {
       expect(screen.getByText(label)).toBeInTheDocument();
@@ -92,21 +119,14 @@ describe('TestRunsTabs Component', () => {
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
-    // Act: Click on the 'Timeframe' tab
     const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
     fireEvent.click(timeframeTab);
 
-    // Assert: Check that the 'Timeframe' tab is now active
     expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
-    const resultsTab = screen.getByRole('tab', { name: 'Results' });
-    expect(resultsTab).toHaveAttribute('aria-selected', 'false');
-
-    // Assert: The content of the 'Timeframe' tab should be visible.
     expect(screen.getByText('Mocked Timeframe Content')).toBeVisible();
   });
 
   test('switches to the "Results" tab and displays its content on click', async () => {
-    // Arrange
     render(
       <TestRunsTabs
         runsListPromise={mockPromise}
@@ -114,18 +134,122 @@ describe('TestRunsTabs Component', () => {
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
-
-    // Act: Click on the 'Results' tab
     const resultsTab = screen.getByRole('tab', { name: 'Results' });
     fireEvent.click(resultsTab);
 
-    // Assert: Check that the 'Results' tab is now active
     expect(resultsTab).toHaveAttribute('aria-selected', 'true');
-    const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
-    expect(timeframeTab).toHaveAttribute('aria-selected', 'false');
-
-    // Assert: The content of the 'Results' tab should be visible.
     expect(screen.getByTestId('test-runs-table')).toBeVisible();
-    expect(screen.getByText('Mocked Test Runs Table')).toBeVisible();
+  });
+
+  describe('URL State Management', () => {
+    test('loads state from URL parameters on initial render', async () => {
+      // Arrange: Provide specific URL parameters for this test
+      const params = new URLSearchParams();
+      params.set('visibleColumns', 'status,result');
+      params.set('columnsOrder', 'result,status,testName');
+      mockUseSearchParams.mockReturnValue(params);
+  
+      // Act
+      render(
+        <TestRunsTabs
+          runsListPromise={mockPromise}
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+  
+      // Assert: Wait for the component to process the params and pass them as props
+      await waitFor(() => {
+        expect(TestRunsTableMock).toHaveBeenCalledWith(expect.objectContaining({
+          visibleColumns: ['status', 'result'],
+          orderedHeaders: [
+            { id: 'result', columnName: 'Result' },
+            { id: 'status', columnName: 'Status' },
+            { id: 'testName', columnName: 'Test Name' },
+          ]
+        }));
+      });
+    });
+
+    test('saves default state to URL when no parameters are present', async () => {
+      // Act
+      render(
+        <TestRunsTabs
+          runsListPromise={mockPromise}
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+  
+      // Assert: Wait for the initialization and save effect to run
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalledTimes(1);
+      });
+        
+      const expectedParams = new URLSearchParams();
+      const defaultVisible = "submittedAt,testRunName,requestor,testName,status,result";
+      const defaultOrder = "submittedAt,testRunName,requestor,testName,status,result";
+      expectedParams.set('visibleColumns', defaultVisible);
+      expectedParams.set('columnsOrder', defaultOrder);
+  
+      expect(mockReplace).toHaveBeenCalledWith(`/?${expectedParams.toString()}`, { scroll: false });
+    });
+
+    test('updates URL when selected visible columns are changed', async () => {
+      // Arrange
+      render(
+        <TestRunsTabs
+          runsListPromise={mockPromise}
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Wait for the initial save
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      mockReplace.mockClear();
+  
+      // Act: Simulate a child component updating the state
+      act(() => {
+        capturedSetSelectedVisibleColumns(['status', 'result']);
+      });
+  
+      // Assert: The save-to-URL effect runs again with the new state
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+  
+      const urlCall = mockReplace.mock.calls[0][0];
+      const params = new URLSearchParams(urlCall.split('?')[1]);
+      expect(params.get('visibleColumns')).toBe('status,result');
+      expect(params.get('columnsOrder')).toBe('submittedAt,testRunName,requestor,testName,status,result');
+    });
+
+    test('updates URL when column order is changed', async () => {
+      // Arrange
+      render(
+        <TestRunsTabs
+          runsListPromise={mockPromise}
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Wait for the initial save
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      mockReplace.mockClear();
+  
+      // Act: Simulate a child component updating the state
+      const newOrder = [ { id: 'result', columnName: 'Result' }, { id: 'status', columnName: 'Status' }];
+      act(() => {
+        capturedSetColumnsOrder(newOrder);
+      });
+  
+      // Assert
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+  
+      const urlCall = mockReplace.mock.calls[0][0];
+      const params = new URLSearchParams(urlCall.split('?')[1]);
+      expect(params.get('columnsOrder')).toBe('result,status');
+      expect(params.get('visibleColumns')).toBe('submittedAt,testRunName,requestor,testName,status,result');
+    });
   });
 });
