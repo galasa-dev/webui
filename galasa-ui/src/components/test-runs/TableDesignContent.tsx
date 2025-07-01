@@ -5,8 +5,8 @@
  */
 "use client";
 import { useState } from "react";
-import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
-import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { closestCorners, DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
@@ -70,12 +70,48 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     setActiveId(null);
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index > 0) {
+      console.log("Moving up", index);
+      setTableRows((rows) => {
+        const newRows = [...rows];
+        const temp = newRows[index - 1];
+        newRows[index - 1] = newRows[index];
+        newRows[index] = temp;
+        return newRows;
+      });
+    }
+  }
+
+  const handleMoveDown = (index: number) => {
+    if (index < tableRows.length - 1) {
+      console.log("Moving down", index);
+      setTableRows((rows) => {
+        const newRows = [...rows];
+        const temp = newRows[index + 1];
+        newRows[index + 1] = newRows[index];
+        newRows[index] = temp;
+        return newRows;
+      });
+    }
+  };
+
+  // All sensors used for drag and drop functionality (Pointer, Touch, and Keyboard)
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   return (
     <DndContext 
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
       collisionDetection={closestCorners}
+      sensors={sensors}
     >
       <p className={styles.titleText}>Adjust the column ordering, allowable values, and whether columns are visible or not</p>
         <div className={styles.tableDesignContainer}>
@@ -96,14 +132,16 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           </div>
           <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
           {
-            tableRows.map((row) => (
+            tableRows.map((row, index) => (
               <TableDesignRow 
               key={row.id} 
+              index={index}
               rowId={row.id} 
               value={row.columnName}
               isSelected={selectedRowIds.includes(row.id)}
               onSelect={handleRowSelect}
-              onSelectAll={handleSelectAll}
+              onClickArrowUp={() => handleMoveUp(index)}
+              onClickArrowDown={() => handleMoveDown(index)}
               />
             )) 
           }
