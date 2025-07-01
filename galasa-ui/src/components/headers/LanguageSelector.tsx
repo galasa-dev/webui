@@ -57,7 +57,7 @@ export default function LanguageSelector() {
           item: { id: string; text: string; value: string } | null,
         ) => item?.text || ""}
         size="sm"
-        classnName={styles.dropdown}
+        className={styles.dropdown}
         disabled={isPending}
       />
     </div>

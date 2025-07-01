@@ -96,7 +96,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
       collisionDetection={closestCorners}
       sensors={sensors}
     >
-      <p className={styles.titleText}>Adjust the column ordering, allowable values, and whether columns are visible or not</p>
+      <p className={styles.titleText}>Customize your table view by showing, hiding, and reordering columns.</p>
       <div className={styles.tableDesignContainer}>
         <div className={styles.tableDesignHeaderRow}>
           <div className={styles.cellDragHandle}>
