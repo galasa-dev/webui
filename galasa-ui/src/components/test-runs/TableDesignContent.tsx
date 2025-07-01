@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-import { useState } from "react";
 import { closestCorners, DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";

@@ -10,9 +10,10 @@ import TimeframeContent from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
 import SearchCriteriaContent from "./SearchCriteriaContent";
 import TableDesignContent from './TableDesignContent';
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
 
 interface TabConfig {
@@ -29,9 +30,53 @@ interface TestRunsTabProps {
 
 export default function TestRunsTabs({runsListPromise, requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(["submittedAt", "testRunName", "requestor", "testName", "status", "result"]);
   const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(RESULTS_TABLE_COLUMNS);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Load from URL parameters first (only on mount)
+  useEffect(() => {
+    const visibleColumnsParam = searchParams.get("visibleColumns");
+    const columnsOrderParam = searchParams.get("columnsOrder");
+
+    if (visibleColumnsParam) {
+      const visibleColumns = visibleColumnsParam.split(",");
+      setSelectedVisibleColumns(visibleColumns);
+    }
+
+    if (columnsOrderParam) {
+      const columnsOrder = columnsOrderParam.split(",").map(id => {
+        const column = RESULTS_TABLE_COLUMNS.find(col => col.id === id);
+        return column ? { id: column.id, columnName: column.columnName } : null;
+      }).filter(Boolean) as { id: string; columnName: string }[];
+
+      if (columnsOrder.length > 0) {
+        setColumnsOrder(columnsOrder);
+      }
+    }
+
+    // Mark as initialized after loading
+    setIsInitialized(true);
+  }, []); 
+
+  // Save to URL parameters (only after initialization)
+  useEffect(() => {
+    // Don't save until after initial load
+    if (!isInitialized) return; 
+
+    const visibleColumnsParam = selectedVisibleColumns.join(",");
+    const columnsOrderParam = columnsOrder.map(col => col.id).join(",");
+    
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("visibleColumns", visibleColumnsParam);
+    params.set("columnsOrder", columnsOrderParam);
+    
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, searchParams]);
+  
   // Define the tabs with their corresponding content.
   const TABS_CONFIG: TabConfig[] = [
     {
