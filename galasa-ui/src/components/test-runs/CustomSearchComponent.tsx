@@ -7,7 +7,7 @@
 import styles from "@/styles/TestRunsPage.module.css";
 import { Button, Search } from "@carbon/react";
 import { useTranslations } from "next-intl";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useRef, useEffect } from "react";
 
 interface CustomSearchComponentProps {
     title: string;
@@ -40,6 +40,8 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   const [isListVisible, setIsListVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const translations = useTranslations('CustomSearchComponent');
+  const suggestionListRef = useRef<HTMLUListElement>(null);
+  const activeItemRef = useRef<HTMLLIElement>(null);
 
   const filteredRequestors = useMemo(() => {
     let currentRequestors = allRequestors || [];
@@ -50,6 +52,26 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   
     return currentRequestors;
   }, [value, allRequestors]);
+
+  // Auto-scroll to active item when activeIndex changes
+  useEffect(() => {
+    if (activeItemRef.current && suggestionListRef.current && activeIndex >= 0) {
+      const listElement = suggestionListRef.current;
+      const activeElement = activeItemRef.current;
+      
+      const listRect = listElement.getBoundingClientRect();
+      const activeRect = activeElement.getBoundingClientRect();
+      
+      // Check if the active item is above the visible area
+      if (activeRect.top < listRect.top) {
+        activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      // Check if the active item is below the visible area
+      else if (activeRect.bottom > listRect.bottom) {
+        activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [activeIndex]);
   
   const handleSelectRequestor = (name: string) => {
     onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
@@ -61,7 +83,7 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
     onCancel();
     setIsListVisible(false);
     setActiveIndex(-1);
-  }
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event);
@@ -69,9 +91,9 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
     if (allRequestors && !isListVisible) {
       setIsListVisible(true);
     }
-  }
+  };
 
-  const handleClear = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClear = () => {
     onClear();
     setIsListVisible(false);
     setActiveIndex(-1);
@@ -81,35 +103,35 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
     if(isListVisible && filteredRequestors.length > 0) {
 
       switch(event.key) {
-        case 'ArrowDown':
-          event.preventDefault();
-          setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
-          break;
+      case 'ArrowDown':
+        event.preventDefault();
+        setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
+        break;
 
-        case 'ArrowUp':
-          event.preventDefault();
-          setActiveIndex((prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length);
-          break;
-        case 'Enter':
-          event.preventDefault();
-          if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
-            handleSelectRequestor(filteredRequestors[activeIndex]);
-          } else {
-            // If no active index, submit the form with the current value
-            onSubmit(event);
-          }
-          break;
-        case 'Escape':
-          event.preventDefault();
-          setIsListVisible(false);
-          setActiveIndex(-1);
-          break;
+      case 'ArrowUp':
+        event.preventDefault();
+        setActiveIndex((prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
+          handleSelectRequestor(filteredRequestors[activeIndex]);
+        } else {
+          // If no active index, submit the form with the current value
+          onSubmit(event);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsListVisible(false);
+        setActiveIndex(-1);
+        break;
 
-        default:
-          break;
+      default:
+        break;
       } 
     }
-  }
+  };
   
   return (
     <form data-testid="custom-search-form"  className={styles.filterInputContainer} onSubmit={onSubmit}>
@@ -126,17 +148,18 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
             onClear={handleClear}
             onKeyDown={handleKeyDown}
             onFocus={() => allRequestors && setIsListVisible(true)}
-            onBlur={() => setTimeout(() => setIsListVisible(false), 200)} 
+            onBlur={() => setTimeout(() => setIsListVisible(false))} 
           />
           {allRequestors && isListVisible && filteredRequestors.length > 0 && (
-            <ul className={styles.suggestionList}>
+            <ul ref={suggestionListRef} className={styles.suggestionList}>
               {filteredRequestors.map((name: string, index: number) => (
                 <li 
                   key={name} 
+                  ref={index === activeIndex ? activeItemRef : null}
                   className={index === activeIndex ? styles.activeSuggestion : ''}
                   onMouseDown={() => handleSelectRequestor(name)}
                   onMouseEnter={() => setActiveIndex(index)}
-                  >
+                >
                   {name}
                 </li>
               ))}
