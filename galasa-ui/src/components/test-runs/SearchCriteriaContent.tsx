@@ -174,7 +174,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
 
   const handleCancel = () => {
-   // Revert changes by re-running the selection logic
+    // Revert changes by re-running the selection logic
     handleFilterSelect(selectedFilter);
   };
 
@@ -196,31 +196,31 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     let finalValue = false;
 
     switch (selectedFilter.id) {
-      case 'result': {
-        const savedResults = savedValue ? savedValue.split(',').sort() : [];
-        const currentResults = [...selectedResults].sort();
-        finalValue = JSON.stringify(savedResults) === JSON.stringify(currentResults);
-        break;
-      }
+    case 'result': {
+      const savedResults = savedValue ? savedValue.split(',').sort() : [];
+      const currentResults = [...selectedResults].sort();
+      finalValue = JSON.stringify(savedResults) === JSON.stringify(currentResults);
+      break;
+    }
 
-      case 'status': {
-        const savedStatuses = savedValue ? savedValue.split(',').sort() : [];
-        const currentStatuses = [...selectedStatuses].sort();
-        finalValue = JSON.stringify(savedStatuses) === JSON.stringify(currentStatuses);
-        break;
-      }
+    case 'status': {
+      const savedStatuses = savedValue ? savedValue.split(',').sort() : [];
+      const currentStatuses = [...selectedStatuses].sort();
+      finalValue = JSON.stringify(savedStatuses) === JSON.stringify(currentStatuses);
+      break;
+    }
 
-      case 'tags': {
-        const savedTags = savedValue ? savedValue.split(',').sort() : [];
-        const currentTags = [...selectedTags].sort();
-        finalValue = JSON.stringify(savedTags) === JSON.stringify(currentTags);
-        break;
-      }
+    case 'tags': {
+      const savedTags = savedValue ? savedValue.split(',').sort() : [];
+      const currentTags = [...selectedTags].sort();
+      finalValue = JSON.stringify(savedTags) === JSON.stringify(currentTags);
+      break;
+    }
 
-      default: {
-        // For other fields, compare trimmed values
-        finalValue = savedValue.trim() === currentInputValue.trim();
-      }
+    default: {
+      // For other fields, compare trimmed values
+      finalValue = savedValue.trim() === currentInputValue.trim();
+    }
     }
     return finalValue;
   })();
@@ -263,7 +263,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     switch (field.id) {
     case 'requestor':
       customComponent = <CustomSearchComponent {...searchProps}
-       allRequestors={allRequestors} />;
+        allRequestors={allRequestors} />;
       break;
     case 'result':
     case 'status':

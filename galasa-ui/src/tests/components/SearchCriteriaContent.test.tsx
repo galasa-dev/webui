@@ -290,7 +290,7 @@ describe('SearchCriteriaContent', () => {
 
     // Save the new value
     await act(async () => {
-        fireEvent.click(submitButton);
+      fireEvent.click(submitButton);
     });
     expect(submitButton).toBeDisabled();
 

@@ -28,7 +28,7 @@
 
 .structuredListContainer {
   flex: 2; 
-  max-height: 450px;
+  max-height: 500px;
   overflow-y: auto;
   border: 1px solid var(--cds-border-subtle, #e0e0e0);
   min-width: 300px;

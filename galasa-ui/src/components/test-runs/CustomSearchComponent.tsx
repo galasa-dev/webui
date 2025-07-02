@@ -88,14 +88,14 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
           kind="secondary"
           disabled={disableSaveAndReset}
           onClick={onCancel}
-         >
+        >
           {translations("reset")}
         </Button>
         <Button 
           type="submit"
           disabled={disableSaveAndReset}
-          >
-            {translations("save")}
+        >
+          {translations("save")}
         </Button>
       </div>
     </form>
