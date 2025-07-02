@@ -54,6 +54,11 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
     onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
     setIsListVisible(false);
   };
+
+  const handleCancel = () => {
+    onCancel();
+    setIsListVisible(false);
+  }
   
   return (
     <form data-testid="custom-search-form"  className={styles.filterInputContainer} onSubmit={onSubmit}>
@@ -69,7 +74,7 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
             onChange={onChange}
             onClear={onClear}
             onFocus={() => allRequestors && setIsListVisible(true)}
-            onBlur={() => setTimeout(() => setIsListVisible(false), 100)} //
+            onBlur={() => setTimeout(() => setIsListVisible(false), 100)} 
           />
           {allRequestors && isListVisible && filteredRequestors.length > 0 && (
             <ul className={styles.suggestionList}>
@@ -87,7 +92,7 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
           type="button" 
           kind="secondary"
           disabled={disableSaveAndReset}
-          onClick={onCancel}
+          onClick={handleCancel}
         >
           {translations("reset")}
         </Button>
