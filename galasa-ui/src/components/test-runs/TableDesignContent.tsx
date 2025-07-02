@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-import { closestCorners, DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
@@ -45,13 +45,13 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
   const getRowPosition = (id: string) => tableRows.findIndex(row => row.id === id);
 
 
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active , over } = event;
 
     if (over && active.id !== over.id) {
       setTableRows((rows: { id: string; columnName: string }[]) => {
-        const originalPosition = getRowPosition(active.id);
-        const newPosition = getRowPosition(over.id);
+        const originalPosition = getRowPosition(String(active.id));
+        const newPosition = getRowPosition(String(over.id));
         return arrayMove(rows, originalPosition, newPosition);
       });
     }
