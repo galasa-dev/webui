@@ -27,7 +27,6 @@ jest.mock("next-intl", () => ({
       "pagination.forwardText": "Next page",
       "pagination.backwardText": "Previous page",
       "pagination.itemsPerPageText": "Items per page:",
-      "pagination.of": "of",
       "pagination.items": "items",
       "pagination.pages": "pages",
       "pagination.pageNumberText": "Page number",
@@ -38,8 +37,7 @@ jest.mock("next-intl", () => ({
       "requestor": "Requestor",
       "testName": "Test Name",
       "status": "Status",
-      "result": "Result"
-      "noTestRunsFound":"No test runs were found for the selected timeframe",
+      "result": "Result",
       "pagination.of": "of {total}"
     };
 
