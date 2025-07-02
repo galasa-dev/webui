@@ -364,7 +364,9 @@
     "description": "Customize the test run results view by showing, hiding, and reordering columns.",
     "dragAndDropHeader": "Drag columns to reorder",
     "columnName": "Column Name",
-    "showHideHeader": "Show/Hide Columns"
+    "showHideHeader": "Show/Hide Columns",
+    "warning": "Warning",
+    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",

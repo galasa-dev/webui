@@ -43,6 +43,7 @@ jest.mock("next-intl", () => ({
       "description": "Customize your table view by showing, hiding, and reordering columns.",
       "dragAndDropHeader": "Drag columns to reorder",
       "columnName": "Column Name",
+      "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
     };
     return translations[key] || key;
   },
@@ -121,6 +122,18 @@ describe("TableDesignContent Component", () => {
       expect(mockSetSelectedRowIds).toHaveBeenCalledWith([]);
     });
 
+    test("displays a warning message when no columns are selected", () => {
+      render(
+        <TableDesignContent 
+          selectedRowIds={[]}
+          setSelectedRowIds={mockSetSelectedRowIds}
+          tableRows={[]}
+          setTableRows={mockSetTableRows}
+        />
+      );
+
+      expect(screen.getByText(/No columns selected – nothing to display/i)).toBeInTheDocument();
+    })
 
     test('should call setSelectedRowIds with the correct row ID when a row checkbox is clicked', () => {
       const initialSelectedRowIds = ['testName'];

@@ -41,7 +41,7 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     COLUMNS_IDS.STATUS, 
     COLUMNS_IDS.RESULT
   ]);
-  
+
   const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(RESULTS_TABLE_COLUMNS);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -53,7 +53,7 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
     if (visibleColumnsParam) {
       const visibleColumns = visibleColumnsParam.split(",");
       setSelectedVisibleColumns(visibleColumns);
-    }
+    } 
 
     if (columnsOrderParam) {
       const columnsOrder = columnsOrderParam.split(",").map(id => {

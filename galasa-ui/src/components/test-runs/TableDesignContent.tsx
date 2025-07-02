@@ -10,6 +10,7 @@ import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
 import { useTranslations } from "next-intl";
+import { InlineNotification } from "@carbon/react";
 
 
 interface TableDesignContentProps {
@@ -132,6 +133,16 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
             )) 
           }
         </SortableContext>
+        {
+          selectedRowIds.length === 0 && 
+          <InlineNotification
+          className={styles.notification}
+          kind={"warning"} 
+          title={translations("warning")}
+          subtitle={translations("noColumnsSelected")}
+          hideCloseButton={true}
+        />
+        }
       </div>
     </DndContext>
   );

@@ -364,7 +364,9 @@
     "description": "Passen Sie die Ansicht der Testlaufergebnisse an, indem Sie Spalten ein-, ausblenden und neu anordnen.",
     "dragAndDropHeader": "Spalten ziehen, um die Reihenfolge zu ändern",
     "columnName": "Spaltenname",
-    "showHideHeader": "Spalten ein-/ausblenden"
+    "showHideHeader": "Spalten ein-/ausblenden",
+    "warning": "Warnung",
+    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus"    
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",
