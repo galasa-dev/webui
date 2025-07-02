@@ -124,4 +124,21 @@ describe('CustomSearchComponent', () => {
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
+  test('disables save button when input is empty and enables it when value is provided', () => {
+    const { rerender } = render(<CustomSearchComponent { ...defaultProps} value="" />);
+    const saveButton = screen.getByRole('button', { name: 'Save' });
+    expect(saveButton).toBeDisabled();
+
+    // Simulate parent component updating the value prop
+    rerender(<CustomSearchComponent { ...defaultProps } value="Test" />);
+    expect(saveButton).not.toBeDisabled();
+
+    // Rerender with a whitespace-only value to ensure it's disabled
+    rerender(<CustomSearchComponent { ...defaultProps } value="   " />);
+    expect(saveButton).toBeDisabled();
+
+    // Rerender with a valid value to ensure it's enabled again
+    rerender(<CustomSearchComponent { ...defaultProps } value="Valid Input" />);
+    expect(saveButton).toBeEnabled();
+  });
 });
