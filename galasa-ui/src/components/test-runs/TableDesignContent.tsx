@@ -104,11 +104,12 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           <div className={styles.cellDragHandle}>
             <strong>{translations("dragAndDropHeader")}</strong>
           </div>
-          <div className={styles.cellCheckbox}>
+          <div className={styles.tableDesignCheckboxHeader}>
+            <strong>{translations("showHideHeader")}</strong>
             <Checkbox
               aria-label="Select all rows" 
               id="checkbox-all"
-              checked={selectedRowIds.length === tableRows.length}
+              checked={selectedRowIds.length > 0 && selectedRowIds.length === tableRows.length}
               onChange={handleSelectAll}
             />
           </div>

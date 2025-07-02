@@ -361,9 +361,10 @@
     "save": "Save"
   },
   "TableDesignContent": {
-    "description": "Customize your table view by showing, hiding, and reordering columns.",
+    "description": "Customize the test run results view by showing, hiding, and reordering columns.",
     "dragAndDropHeader": "Drag columns to reorder",
-    "columnName": "Column Name"
+    "columnName": "Column Name",
+    "showHideHeader": "Show/Hide Columns"
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",

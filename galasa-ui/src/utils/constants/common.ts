@@ -27,6 +27,20 @@ const MAX_RANGE_MONTHS = 3;
 const TEST_RUNS_STATUS = ['Finished', 'Building', 'Generating', 'Running', 'Rundone',
   'Up', 'Started', 'Provstart', 'Ending'];
 
+const COLUMNS_IDS = {
+  SUBMITTED_AT: "submittedAt",
+  TEST_RUN_NAME: "testRunName",
+  REQUESTOR: "requestor",
+  SUBMISSION_ID: "submissionId",
+  GROUP: "group",
+  BUNDLE: "bundle",
+  PACKAGE: "package",
+  TEST_NAME: "testName",
+  STATUS: "status",
+  TAGS: "tags",
+  RESULT: "result"
+} as const;
+
 const RESULTS_TABLE_COLUMNS = [
   {id: "submittedAt", columnName: "Submitted at"},
   { id: "testRunName", columnName: "Test Run name" },
@@ -43,4 +57,6 @@ const RESULTS_TABLE_COLUMNS = [
   
   
 const BATCH_SIZE = 100;
-export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS, BATCH_SIZE, RESULTS_TABLE_COLUMNS};
+export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, 
+  HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS,
+   BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS};

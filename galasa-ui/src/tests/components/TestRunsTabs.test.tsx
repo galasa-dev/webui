@@ -69,7 +69,15 @@ jest.mock('@/utils/constants/common', () => ({
     { id: 'testName', columnName: 'Test Name' },
     { id: 'status', columnName: 'Status' },
     { id: 'result', columnName: 'Result' },
-  ]
+  ],
+  COLUMNS_IDS: {
+    SUBMITTED_AT: 'submittedAt',
+    TEST_RUN_NAME: 'testRunName',
+    REQUESTOR: 'requestor',
+    TEST_NAME: 'testName',
+    STATUS: 'status',
+    RESULT: 'result',
+  },
 }));
 
 // Mock window.matchMedia

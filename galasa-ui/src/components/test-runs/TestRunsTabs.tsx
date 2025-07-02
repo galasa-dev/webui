@@ -14,7 +14,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from 'react';
-import { RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS} from '@/utils/constants/common';
 
 interface TabConfig {
   label: string;
@@ -33,7 +33,15 @@ export default function TestRunsTabs({runsListPromise, requestorNamesPromise, re
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(["submittedAt", "testRunName", "requestor", "testName", "status", "result"]);
+  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>([
+    COLUMNS_IDS.SUBMITTED_AT, 
+    COLUMNS_IDS.TEST_RUN_NAME,
+    COLUMNS_IDS.REQUESTOR, 
+    COLUMNS_IDS.TEST_NAME,
+    COLUMNS_IDS.STATUS, 
+    COLUMNS_IDS.RESULT
+  ]);
+  
   const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(RESULTS_TABLE_COLUMNS);
   const [isInitialized, setIsInitialized] = useState(false);
 

@@ -361,9 +361,10 @@
     "save": "Speichern"
   }, 
   "TableDesignContent": {
-    "description": "Passen Sie Ihre Tabellenansicht an, indem Sie Spalten einblenden, ausblenden oder neu anordnen.",
+    "description": "Passen Sie die Ansicht der Testlaufergebnisse an, indem Sie Spalten ein-, ausblenden und neu anordnen.",
     "dragAndDropHeader": "Spalten ziehen, um die Reihenfolge zu ändern",
-    "columnName": "Spaltenname"
+    "columnName": "Spaltenname",
+    "showHideHeader": "Spalten ein-/ausblenden"
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",

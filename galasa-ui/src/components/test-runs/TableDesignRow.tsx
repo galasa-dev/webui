@@ -37,7 +37,6 @@ export default function TableDesignRow({ rowId, index, isSelected,  onSelect, on
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1, 
   };
 
   return ( 
@@ -45,14 +44,14 @@ export default function TableDesignRow({ rowId, index, isSelected,  onSelect, on
       ref={setNodeRef}
       style={style}
       {...attributes} 
-      className={styles.tableDesignRow}
+      className={`${styles.tableDesignRow} ${isDragging ? styles.dragging : ''}`}
       id={rowId}
     >
       <div className={styles.tableDesignIcons}>
         <IconButton 
           kind="ghost" 
           label={translations("dragAndDropLabel")}
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          className={styles.dragHandle}
           {...listeners} 
         >
           <Draggable size={20} />
@@ -61,8 +60,7 @@ export default function TableDesignRow({ rowId, index, isSelected,  onSelect, on
           kind="ghost"
           label={translations("moveUpLabel")}
           onClick={onClickArrowUp}
-          className={styles.arrowUpButton}
-          style={{ visibility: index === 0 ? 'hidden' : 'visible' }}
+          className={`${styles.arrowUpButton} ${index === 0 ? styles.hidden : ''}`}
         >
           <ChevronUpOutline size={19}/>  
         </IconButton>
@@ -70,8 +68,7 @@ export default function TableDesignRow({ rowId, index, isSelected,  onSelect, on
           kind="ghost"
           label={translations("moveDownLabel")}
           onClick={onClickArrowDown}
-          className={styles.arrowDownButton}
-          style={{ visibility: index === RESULTS_TABLE_COLUMNS.length - 1 ? 'hidden' : 'visible' }}
+          className={`${styles.arrowDownButton} ${index === RESULTS_TABLE_COLUMNS.length - 1 ? styles.hidden : ''}`}
         >
           <ChevronDownOutline size={19}/>
         </IconButton>
