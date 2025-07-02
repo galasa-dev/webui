@@ -41,9 +41,14 @@
   
 .checkBoxList {
   flex: 3;
-  padding: 2rem;
+  padding: 1rem;
   font-size: 2rem;
 }
+
+.customCheckboxAll {
+  padding-bottom: 1.5rem;
+}
+
 .rowWrapper {
   display: grid; 
   grid-template-columns: 40% 1fr;
@@ -126,6 +131,7 @@
         background-color: var(--cds-interactive-hover, #f4f4f4);
     }
 }
+
 
 .TimeFrameFilterContainer {
     display: flex;
