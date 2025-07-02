@@ -147,4 +147,25 @@ describe('CustomSearchComponent', () => {
     );
     expect(saveButton).toBeEnabled();
   });
+
+  test('selects a highlighted suggestion with Enter key using key down', () => {
+    render(<CustomSearchComponent {...defaultProps} allRequestors={allRequestors} />);
+
+    const searchInput = screen.getByPlaceholderText('Enter a requestor name');
+    fireEvent.focus(searchInput);
+
+    // Navigate to the second item
+    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
+    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
+    
+    // Press enter
+    fireEvent.keyDown(searchInput, {key: "Enter", code: "Enter"});
+
+    // Check that onchange was called with the selected value
+    expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({
+      target: { value: 'Jane Smith' }
+    }));
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+
+  });
 });
