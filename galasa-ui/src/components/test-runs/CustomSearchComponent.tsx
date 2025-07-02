@@ -18,7 +18,7 @@ interface CustomSearchComponentProps {
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
     allRequestors?: string[];
-    disableSave: boolean;
+    disableSaveAndReset: boolean;
 }
 
 /**
@@ -32,9 +32,11 @@ interface CustomSearchComponentProps {
  * @param onSubmit - Callback function to handle form submission.
  * @param onCancel - Callback function to handle cancellation.
  * @param allRequestors - Optional list of all requestors for suggestion.
+ * @param disableSaveAndReset - Flag to disable the save and reset buttons when no changes are made.
+ * 
  * @returns The Search component.
  */
-export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSave }: CustomSearchComponentProps) {
+export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSaveAndReset }: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
   const translations = useTranslations('CustomSearchComponent');
 
@@ -81,11 +83,20 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations("reset")}</Button>
+        <Button 
+          type="button" 
+          kind="secondary"
+          disabled={disableSaveAndReset}
+          onClick={onCancel}
+         >
+          {translations("reset")}
+        </Button>
         <Button 
           type="submit"
-          disabled={disableSave}
-          >{translations("save")}</Button>
+          disabled={disableSaveAndReset}
+          >
+            {translations("save")}
+        </Button>
       </div>
     </form>
   );

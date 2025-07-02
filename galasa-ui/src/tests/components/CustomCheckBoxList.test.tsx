@@ -30,6 +30,7 @@ describe('CustomCheckBoxList', () => {
     onChange: mockOnChange,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
+    disableSaveAndReset: false,
   };
 
   beforeEach(() => {

@@ -20,7 +20,7 @@ jest.mock('@/components/test-runs/CustomSearchComponent', () => {
           value={props.value}
           onChange={props.onChange}
         />
-        <button onClick={props.onSubmit} disabled={props.disableSave}>Submit</button>
+        <button onClick={props.onSubmit} disabled={props.disableSaveAndReset}>Submit</button>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={props.onClear}>Clear</button>
       </div>

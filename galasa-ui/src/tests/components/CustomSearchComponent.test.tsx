@@ -33,6 +33,7 @@ describe('CustomSearchComponent', () => {
     onClear: mockOnClear,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
+    disableSaveAndReset: false,
   };
 
   beforeEach(() => {
@@ -126,23 +127,23 @@ describe('CustomSearchComponent', () => {
 
   test('disables save button when input is unchanged and enables it when changed', () => {
     const { rerender } = render(
-      <CustomSearchComponent {...defaultProps} value="test" disableSave={false} />
+      <CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={false} />
     );
     const saveButton = screen.getByRole('button', { name: 'Save' });
     expect(saveButton).toBeEnabled();
 
     rerender(
-      <CustomSearchComponent {...defaultProps} value="test" disableSave={true} />
+      <CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={true} />
     );
     expect(saveButton).toBeDisabled();
 
     rerender(
-      <CustomSearchComponent {...defaultProps} value="new value" disableSave={false} />
+      <CustomSearchComponent {...defaultProps} value="new value" disableSaveAndReset={false} />
     );
     expect(saveButton).toBeEnabled();
 
     rerender(
-      <CustomSearchComponent {...defaultProps} value="" disableSave={false} />
+      <CustomSearchComponent {...defaultProps} value="" disableSaveAndReset={false} />
     );
     expect(saveButton).toBeEnabled();
   });

@@ -15,6 +15,7 @@ interface CustomTagsComponentProps {
     onChange: (tags: string[]) => void;
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
+    disableSaveAndReset: boolean;
 }
 
 /**
@@ -25,10 +26,11 @@ interface CustomTagsComponentProps {
  * @param onChange - Callback function to handle changes in the tags.
  * @param onSubmit - Callback function to handle form submission.
  * @param onCancel - Callback function to handle cancellation of the operation.
+ * @param disableSaveAndReset - Flag to disable the save and reset buttons when no changes are made.
  * 
  * @returns The CustomTagsComponent for managing tags.
  */
-export default function CustomTagsComponent({ title, tags, onChange, onSubmit, onCancel }: CustomTagsComponentProps) {
+export default function CustomTagsComponent({ title, tags, onChange, onSubmit, onCancel, disableSaveAndReset }: CustomTagsComponentProps) {
   const [currentTagInput, setCurrentTagInput] = useState('');
   const [selectedForRemoval, setSelectedForRemoval] = useState<string[]>([]);
   const translations = useTranslations("CustomTagsComponent");
@@ -100,8 +102,8 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
         </select>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations('reset')}</Button>
-        <Button type="submit">{translations('save')}</Button>
+        <Button type="button" disabled={disableSaveAndReset} kind="secondary" onClick={onCancel}>{translations('reset')}</Button>
+        <Button type="submit" disabled={disableSaveAndReset}>{translations('save')}</Button>
       </div>
     </form>
   );

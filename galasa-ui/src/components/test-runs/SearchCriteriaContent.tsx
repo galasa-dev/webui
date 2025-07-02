@@ -76,7 +76,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
           setSelectedStatuses(value.split(','));
         } else if (field.id === 'tags') {
           setSelectedTags(value.split(','));
-        }
+        } 
       } 
     });
 
@@ -108,6 +108,12 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     };
     loadResultsNames();
   }, [resultsNamesPromise]);
+
+  // Update the current input value on the first mount or when the selected filter changes
+  useEffect(() => {
+    handleFilterSelect(selectedFilter);
+  }, [selectedFilter]);
+
 
   // Update the current input value when the selected filter changes or when the query is updated
   const handleFilterSelect = (field: FilterableField) => {
@@ -184,7 +190,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   };
 
-  const isSaveDisabled: boolean = (() => {
+  const isSaveAndResetDisabled: boolean = (() => {
     // Get saved value from the query and compare it with the current input value
     const savedValue = query.get(selectedFilter.id) || '';
     let finalValue = false;
@@ -230,7 +236,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onClear: () => handleClearAndSave(field.id),
       onSubmit: handleSave,
       onCancel: handleCancel,
-      disableSave: isSaveDisabled,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     // Props for the checkbox list component
@@ -241,7 +247,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onChange: (field.id === 'result') ? setSelectedResults : setSelectedStatuses, 
       onSubmit: handleSave,
       onCancel: handleCancel,
-      disableSave: isSaveDisabled,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     const tagsProps = {
@@ -250,7 +256,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onChange: setSelectedTags,
       onSubmit: handleSave,
       onCancel: handleCancel,
-      disableSave: isSaveDisabled,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     let customComponent;
