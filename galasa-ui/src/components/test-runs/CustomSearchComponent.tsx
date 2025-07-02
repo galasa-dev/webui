@@ -18,6 +18,7 @@ interface CustomSearchComponentProps {
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
     allRequestors?: string[];
+    disableSave: boolean;
 }
 
 /**
@@ -33,7 +34,7 @@ interface CustomSearchComponentProps {
  * @param allRequestors - Optional list of all requestors for suggestion.
  * @returns The Search component.
  */
-export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
+export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSave }: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
   const translations = useTranslations('CustomSearchComponent');
 
@@ -80,10 +81,10 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations("cancel")}</Button>
+        <Button type="button" kind="secondary" onClick={onCancel}>{translations("reset")}</Button>
         <Button 
           type="submit"
-          disabled={!value.trim()}
+          disabled={disableSave}
           >{translations("save")}</Button>
       </div>
     </form>

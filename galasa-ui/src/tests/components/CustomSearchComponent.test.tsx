@@ -12,7 +12,7 @@ jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       "save": "Save",
-      "cancel": "Cancel",
+      "reset": "Reset",
     };
     return translations[key] || key;
   },
@@ -45,7 +45,7 @@ describe('CustomSearchComponent', () => {
     expect(screen.getByText('Search by Requestor')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Enter a requestor name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
 
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
@@ -116,29 +116,34 @@ describe('CustomSearchComponent', () => {
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
   });
     
-  test('calls onCancel when the cancel button is clicked', () => {
+  test('calls onCancel when the reset button is clicked', () => {
     render(<CustomSearchComponent {...defaultProps} />);
-    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+    const cancelButton = screen.getByRole('button', { name: 'Reset' });
 
     fireEvent.click(cancelButton);
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
-  test('disables save button when input is empty and enables it when value is provided', () => {
-    const { rerender } = render(<CustomSearchComponent { ...defaultProps} value="" />);
+  test('disables save button when input is unchanged and enables it when changed', () => {
+    const { rerender } = render(
+      <CustomSearchComponent {...defaultProps} value="test" disableSave={false} />
+    );
     const saveButton = screen.getByRole('button', { name: 'Save' });
+    expect(saveButton).toBeEnabled();
+
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="test" disableSave={true} />
+    );
     expect(saveButton).toBeDisabled();
 
-    // Simulate parent component updating the value prop
-    rerender(<CustomSearchComponent { ...defaultProps } value="Test" />);
-    expect(saveButton).not.toBeDisabled();
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="new value" disableSave={false} />
+    );
+    expect(saveButton).toBeEnabled();
 
-    // Rerender with a whitespace-only value to ensure it's disabled
-    rerender(<CustomSearchComponent { ...defaultProps } value="   " />);
-    expect(saveButton).toBeDisabled();
-
-    // Rerender with a valid value to ensure it's enabled again
-    rerender(<CustomSearchComponent { ...defaultProps } value="Valid Input" />);
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="" disableSave={false} />
+    );
     expect(saveButton).toBeEnabled();
   });
 });

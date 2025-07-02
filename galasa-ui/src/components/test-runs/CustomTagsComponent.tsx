@@ -100,7 +100,7 @@ export default function CustomTagsComponent({ title, tags, onChange, onSubmit, o
         </select>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations('cancel')}</Button>
+        <Button type="button" kind="secondary" onClick={onCancel}>{translations('reset')}</Button>
         <Button type="submit">{translations('save')}</Button>
       </div>
     </form>
