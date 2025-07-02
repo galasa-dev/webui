@@ -38,6 +38,7 @@ interface CustomSearchComponentProps {
  */
 export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSaveAndReset }: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const translations = useTranslations('CustomSearchComponent');
 
   const filteredRequestors = useMemo(() => {
@@ -53,11 +54,61 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   const handleSelectRequestor = (name: string) => {
     onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
     setIsListVisible(false);
+    setActiveIndex(-1);
   };
 
   const handleCancel = () => {
     onCancel();
     setIsListVisible(false);
+    setActiveIndex(-1);
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event);
+    setActiveIndex(-1);
+    if (allRequestors && !isListVisible) {
+      setIsListVisible(true);
+    }
+  }
+
+  const handleClear = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClear();
+    setIsListVisible(false);
+    setActiveIndex(-1);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if(isListVisible && filteredRequestors.length > 0) {
+
+      switch(event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
+          break;
+
+        case 'ArrowUp':
+          event.preventDefault();
+          setActiveIndex((prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length);
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
+            handleSelectRequestor(filteredRequestors[activeIndex]);
+          } else {
+            // If no active index, submit the form with the current value
+            onSubmit(event);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          setIsListVisible(false);
+          setActiveIndex(-1);
+          break;
+
+        default:
+          break;
+      } 
+    }
   }
   
   return (
@@ -71,15 +122,21 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
             size="md"
             type="text"
             value={value}
-            onChange={onChange}
-            onClear={onClear}
+            onChange={handleInputChange}
+            onClear={handleClear}
+            onKeyDown={handleKeyDown}
             onFocus={() => allRequestors && setIsListVisible(true)}
-            onBlur={() => setTimeout(() => setIsListVisible(false), 100)} 
+            onBlur={() => setTimeout(() => setIsListVisible(false), 200)} 
           />
           {allRequestors && isListVisible && filteredRequestors.length > 0 && (
             <ul className={styles.suggestionList}>
-              {filteredRequestors.map((name: string) => (
-                <li key={name} onMouseDown={() => handleSelectRequestor(name)}>
+              {filteredRequestors.map((name: string, index: number) => (
+                <li 
+                  key={name} 
+                  className={index === activeIndex ? styles.activeSuggestion : ''}
+                  onMouseDown={() => handleSelectRequestor(name)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  >
                   {name}
                 </li>
               ))}
