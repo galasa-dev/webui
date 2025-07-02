@@ -136,12 +136,12 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
         {
           selectedRowIds.length === 0 && 
           <InlineNotification
-          className={styles.notification}
-          kind={"warning"} 
-          title={translations("warning")}
-          subtitle={translations("noColumnsSelected")}
-          hideCloseButton={true}
-        />
+            className={styles.notification}
+            kind={"warning"} 
+            title={translations("warning")}
+            subtitle={translations("noColumnsSelected")}
+            hideCloseButton={true}
+          />
         }
       </div>
     </DndContext>

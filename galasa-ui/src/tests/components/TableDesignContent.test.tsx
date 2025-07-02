@@ -133,7 +133,7 @@ describe("TableDesignContent Component", () => {
       );
 
       expect(screen.getByText(/No columns selected – nothing to display/i)).toBeInTheDocument();
-    })
+    });
 
     test('should call setSelectedRowIds with the correct row ID when a row checkbox is clicked', () => {
       const initialSelectedRowIds = ['testName'];
