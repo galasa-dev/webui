@@ -39,6 +39,8 @@ jest.mock("next-intl", () => ({
       "testName": "Test Name",
       "status": "Status",
       "result": "Result"
+      "noTestRunsFound":"No test runs were found for the selected timeframe",
+      "pagination.of": "of {total}"
     };
 
     let text = translations[key] || key;
@@ -52,7 +54,6 @@ jest.mock("next-intl", () => ({
     return text;
   },
 }));
-
 
 jest.mock('@/app/error/page', () =>
   function MockErrorPage() {
@@ -176,6 +177,8 @@ describe('TestRunsTable Interactions', () => {
     
     // Assert initial state
     expect(within(table).getAllByRole('row')).toHaveLength(11); // 1 header + 10 data
+    // Assert correct page range text
+    expect(screen.getByText(/of 2/i)).toBeInTheDocument();
     expect(screen.queryByText('Test Run 11')).not.toBeInTheDocument();
 
     // Act

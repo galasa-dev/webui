@@ -250,7 +250,7 @@ export default function TestRunsTable({runsListPromise, visibleColumns, orderedH
           forwardText={translations("pagination.forwardText")}
           itemsPerPageText={translations("pagination.itemsPerPageText")}
           itemRangeText={(min:number, max:number, total:number) =>`${min}–${max} ${translations("pagination.of")} ${total} ${translations("pagination.items")}`}
-          pageRangeText={(total:number) =>`${translations("pagination.of")} ${total} ${translations("pagination.pages")}`}
+          pageRangeText={(current:number, total:number) =>`${translations("pagination.of")} ${total} ${translations("pagination.pages")}`}
           pageNumberText={translations("pagination.pageNumberText")}
           page={currentPage}
           pageSize={pageSize}
