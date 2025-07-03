@@ -20,6 +20,7 @@ interface CheckBoxListProps {
     onChange: (newSelectedItems: string[]) => void;
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
+    disableSaveAndReset: boolean;
   }
   
 /**
@@ -30,10 +31,11 @@ interface CheckBoxListProps {
  * @param onChange - Callback function to handle changes in selected items.
  * @param onSubmit - Callback function to handle form submission.
  * @param onCancel - Callback function to handle cancellation.
+ * @param disableSaveAndReset - Flag to disable the save and reset buttons when no changes are made.
  * 
  * @returns The CheckBoxList component.
  */
-export default function CheckBoxList({ title, items, selectedItems, onChange, onSubmit, onCancel }: CheckBoxListProps) {
+export default function CheckBoxList({ title, items, selectedItems, onChange, onSubmit, onCancel, disableSaveAndReset}: CheckBoxListProps) {
   const translations = useTranslations('CustomCheckBoxList');
   const areAllSelected = items.length > 0 && selectedItems.length === items.length;
 
@@ -61,6 +63,7 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
           labelText="All"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleAllChange(event.target.checked)} 
           checked={areAllSelected}
+          className={styles.customCheckboxAll}
         />
         {items.map((name: string) => (
           <Checkbox
@@ -73,8 +76,8 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
         ))}
       </CheckboxGroup>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations('cancel')}</Button>
-        <Button type="submit">{translations('save')}</Button>
+        <Button type="button" disabled={disableSaveAndReset} kind="secondary" onClick={onCancel}>{translations('reset')}</Button>
+        <Button type="submit" disabled={disableSaveAndReset}>{translations('save')}</Button>
       </div>
     </form>
   );

@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-// All imports related to data fetching move here
 import { ResultArchiveStoreAPIApi, Run, RunResults, UserData } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { CLIENT_API_VERSION, MAX_RECORDS, BATCH_SIZE } from "@/utils/constants/common";

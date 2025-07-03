@@ -12,7 +12,7 @@ jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       "save": "Save",
-      "cancel": "Cancel",
+      "reset": "Reset",
     };
     return translations[key] || key;
   },
@@ -33,6 +33,7 @@ describe('CustomSearchComponent', () => {
     onClear: mockOnClear,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
+    disableSaveAndReset: false,
   };
 
   beforeEach(() => {
@@ -45,7 +46,7 @@ describe('CustomSearchComponent', () => {
     expect(screen.getByText('Search by Requestor')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Enter a requestor name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
 
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
@@ -116,12 +117,55 @@ describe('CustomSearchComponent', () => {
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
   });
     
-  test('calls onCancel when the cancel button is clicked', () => {
+  test('calls onCancel when the reset button is clicked', () => {
     render(<CustomSearchComponent {...defaultProps} />);
-    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+    const cancelButton = screen.getByRole('button', { name: 'Reset' });
 
     fireEvent.click(cancelButton);
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
+  test('disables save button when input is unchanged and enables it when changed', () => {
+    const { rerender } = render(
+      <CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={false} />
+    );
+    const saveButton = screen.getByRole('button', { name: 'Save' });
+    expect(saveButton).toBeEnabled();
+
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={true} />
+    );
+    expect(saveButton).toBeDisabled();
+
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="new value" disableSaveAndReset={false} />
+    );
+    expect(saveButton).toBeEnabled();
+
+    rerender(
+      <CustomSearchComponent {...defaultProps} value="" disableSaveAndReset={false} />
+    );
+    expect(saveButton).toBeEnabled();
+  });
+
+  test('selects a highlighted suggestion with Enter key using key down', () => {
+    render(<CustomSearchComponent {...defaultProps} allRequestors={allRequestors} />);
+
+    const searchInput = screen.getByPlaceholderText('Enter a requestor name');
+    fireEvent.focus(searchInput);
+
+    // Navigate to the second item
+    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
+    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
+    
+    // Press enter
+    fireEvent.keyDown(searchInput, {key: "Enter", code: "Enter"});
+
+    // Check that onchange was called with the selected value
+    expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({
+      target: { value: 'Jane Smith' }
+    }));
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+
+  });
 });

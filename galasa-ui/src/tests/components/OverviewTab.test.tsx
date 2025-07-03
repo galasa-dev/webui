@@ -34,6 +34,7 @@ jest.mock("next-intl", () => ({
     const translations: Record<string, string> = {
       bundle: "Bundle",
       test: "Test",
+      package: "Package",
       group: "Group",
       submissionId: "Submission ID",
       requestor: "Requestor",
@@ -77,6 +78,7 @@ describe('OverviewTab', () => {
     [
       ['Bundle:', completeMetadata.bundle],
       ['Test:', completeMetadata.testName],
+      ['Package:', completeMetadata.package],
       ['Group:', completeMetadata.group],
       ['Submission ID:', completeMetadata.submissionId],
       ['Requestor:', completeMetadata.requestor],

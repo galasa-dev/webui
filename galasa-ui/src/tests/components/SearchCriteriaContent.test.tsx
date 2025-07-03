@@ -20,7 +20,7 @@ jest.mock('@/components/test-runs/CustomSearchComponent', () => {
           value={props.value}
           onChange={props.onChange}
         />
-        <button onClick={props.onSubmit}>Submit</button>
+        <button onClick={props.onSubmit} disabled={props.disableSaveAndReset}>Submit</button>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={props.onClear}>Clear</button>
       </div>
@@ -268,5 +268,34 @@ describe('SearchCriteriaContent', () => {
         
     // The component should still render its structure
     expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
+  });
+
+  test('save button is disabled when state is not changed, and enabled when changed', async () => {
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={requestorNamesPromise}
+        resultsNamesPromise={resultsNamesPromise}
+      />
+    );
+
+    const searchComponent = screen.getByTestId('mock-custom-search-component');
+    const input = within(searchComponent).getByTestId('search-input');
+    const submitButton = within(searchComponent).getByText('Submit');
+
+    expect(submitButton).toBeDisabled();
+
+    // Type a new value
+    fireEvent.change(input, { target: { value: 'New Value' } });
+    expect(submitButton).toBeEnabled();
+
+    // Save the new value
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+    expect(submitButton).toBeDisabled();
+
+    // Type new value, The button should be enabled.
+    fireEvent.change(input, { target: { value: 'Another Value' } });
+    expect(submitButton).toBeEnabled();
   });
 });

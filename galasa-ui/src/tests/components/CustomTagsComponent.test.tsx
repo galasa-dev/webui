@@ -32,7 +32,7 @@ describe('CustomTagsComponent', () => {
     onChange: mockOnChange,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
-
+    disableSaveAndReset: false,
   };
 
   beforeEach(() => {
