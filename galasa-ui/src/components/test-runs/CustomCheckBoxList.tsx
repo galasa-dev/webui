@@ -52,6 +52,7 @@ export default function CheckBoxList({ title, items, selectedItems, onChange, on
     onChange(checked ? items : []);
   };
   
+  console.log("Disable Save and Reset:", disableSaveAndReset);
   return (
     <form className={styles.filterInputContainer} onSubmit={onSubmit}>
       <p>{title}</p>
