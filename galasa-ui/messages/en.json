@@ -182,6 +182,7 @@
   "OverviewTab": {
     "bundle": "Bundle",
     "test": "Test",
+    "package": "Package",
     "group": "Group",
     "submissionId": "Submission ID",
     "requestor": "Requestor",
@@ -359,5 +360,29 @@
     "remove": "Remove",
     "reset": "Reset",
     "save": "Save"
+  },
+  "TableDesignContent": {
+    "description": "Customize the test run results view by showing, hiding, and reordering columns.",
+    "dragAndDropHeader": "Drag columns to reorder",
+    "columnName": "Column Name",
+    "showHideHeader": "Show/Hide Columns",
+    "warning": "Warning",
+    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
+  }, 
+  "TableDesignRow": {
+    "dragAndDropLabel": "Drag to reorder",
+    "moveUpLabel": "Move up",
+    "moveDownLabel": "Move down",
+    "submittedAt": "Submitted at",
+    "testRunName": "Test Run Name",
+    "requestor": "Requestor",
+    "group": "Group",
+    "bundle": "Bundle",
+    "package": "Package",
+    "testName": "Test Name",
+    "tags": "Tags",
+    "status": "Status",
+    "result": "Result",
+    "submissionId": "Submission ID"
   }
 }

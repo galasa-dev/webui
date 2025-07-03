@@ -13,7 +13,7 @@
     font-size: 1.2rem; 
 }
 
-.timeFrameText {
+.timeFrameText, .titleText {
     font-size: 1rem;
     margin: 0.5rem 0.5rem;
 }
@@ -168,4 +168,98 @@
         flex-direction: column; 
         gap: 0.5rem;
     }
+}
+
+/* Styles of the Table Design tab */
+
+.tableDesignContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #a8a8a8; 
+  border-radius: 0;
+  background-color: #ffffff;
+  width: 55%;
+  min-width: 400px;
+  overflow-x: auto; 
+}
+
+.tableDesignRow,
+.tableDesignHeaderRow {
+  display: flex;
+  align-items: center; 
+  border-bottom: 1px solid #a8a8a8;
+  padding: 0.2rem;
+}
+
+.tableDesignCheckboxHeader {
+  flex: 0 0 200px; 
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  gap: 0.25rem; 
+  text-align: center;
+  font-size: 0.9rem; 
+}
+
+.tableDesignIcons {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+  text-align: left;
+}
+
+.cellCheckbox {
+  flex: 0 0 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cellValue {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Remove border from the very last row */
+.tableDesignContainer > div:last-child > .tableDesignRow:last-child {
+  border-bottom: none;
+}
+
+.tableDesignHeaderRow {
+  background-color: #f4f4f4;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-bottom: 1px solid #393939; 
+}
+
+.tableDesignHeaderRow .cellDragHandle {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+  text-align: left;
+}
+
+.dragging {
+  opacity: 0.5;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dragHandle {
+  cursor: grab;
+}
+
+.tableDesignRow.dragging .dragHandle {
+  cursor: grabbing;
+}
+
+.hidden {
+  visibility: hidden;
 }
