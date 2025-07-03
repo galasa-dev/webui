@@ -174,6 +174,44 @@ export function getYesterday(): Date {
 };
 
 /**
+ * Gets the date and time for "two days ago" at midnight.
+ * 
+ * @returns A Date object representing two days ago at midnight.
+ */
+export function getAWeekBeforeSubmittedTime(submittedAt: string): string | null {
+
+  let result: string | null;
+  const submittedDate = new Date(submittedAt);
+
+  if(isNaN(submittedDate.getTime())) {
+    result = null;
+  } else {
+
+    const weekBefore = new Date();
+    weekBefore.setDate(weekBefore.getDate() - 7); 
+
+    // Reset time to midnight
+    weekBefore.setHours(0, 0, 0, 0); 
+    result = weekBefore.toISOString();
+  
+  }
+
+  return result;
+};
+
+/**
+ * Gets the date and time for "one month ago" at midnight.
+ * 
+ * @returns A Date object representing one month ago at midnight.
+ */
+export function getOneMonthAgo(): string {
+  const date = new Date();
+  date.setMonth(date.getMonth() - 1);
+  date.setHours(0, 0, 0, 0); // Reset time to midnight
+  return date.toISOString();
+}
+
+/**
  * Accurately adds a number of months to a date, handling end-of-month edge cases.
  * If the original day doesn't exist in the target month, it will use the last valid day.
  * 

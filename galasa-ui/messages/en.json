@@ -190,7 +190,9 @@
     "finished": "Finished",
     "duration": "Duration",
     "tags": "Tags",
-    "noTags": "No tags were associated with this test run."
+    "noTags": "No tags were associated with this test run.",
+    "recentRunsLink": "View other recent runs of the same test…",
+    "runRetriesLink": "View retries of this test run…"
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",

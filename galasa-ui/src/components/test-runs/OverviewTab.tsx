@@ -3,17 +3,42 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/OverviewTab.module.css";
 import InlineText from "./InlineText";
 import { Tag } from "@carbon/react";
 import { RunMetadata } from "@/utils/interfaces";
 import { useTranslations } from "next-intl";
+import { Link } from "@carbon/react";
+import { Launch } from "@carbon/icons-react";
+import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from "@/utils/timeOperations";
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const tags = metadata?.tags || [];
   const translations = useTranslations("OverviewTab");
+  const [weekBefore, setWeekBefore] = useState<string | null>(null);
+  
+  const MONTH_AGO = getOneMonthAgo();
+
+  const fullTestName = metadata?.package + "." + metadata?.testName;
+  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}`;
+  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}`;
+
+  useEffect(() => {
+
+    const validateTime = () => {
+
+      const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt!);
+      if (validatedTime !== null) {
+        setWeekBefore(validatedTime);
+      }
+      
+    };
+
+    validateTime();
+
+  },[metadata?.rawSubmittedAt]);
 
   return (
     <>
@@ -65,6 +90,21 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           ) : (
             <p>{translations("noTags")}</p>
           )}
+        </div>
+
+        <div className={styles.redirectLinks}>
+          <Link href={OTHER_RECENT_RUNS} renderIcon={Launch}>
+            {translations("recentRunsLink")}
+          </Link>
+
+          {/* Only show the link if date is valid */}
+          {
+            weekBefore !== null && (
+              <Link href={RETRIES_FOR_THIS_TEST_RUN} renderIcon={Launch}>
+                {translations("runRetriesLink")}
+              </Link>
+            )
+          }
         </div>
       </div>
     </>

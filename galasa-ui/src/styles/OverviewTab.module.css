@@ -44,3 +44,11 @@
   gap: 8px;
 }
 
+.redirectLinks {
+
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+
+}
+
