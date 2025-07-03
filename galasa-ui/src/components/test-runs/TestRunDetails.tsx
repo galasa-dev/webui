@@ -22,6 +22,7 @@ import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -32,6 +33,9 @@ interface TestRunDetailsProps {
 
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const translations = useTranslations("TestRunDetails");
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -39,8 +43,21 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const translations = useTranslations("TestRunDetails");
+  const [savedQuery, setSavedQuery] = useState<string>("");
 
+  // Get the query string from the sessionStorage if it exists
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedQuery = sessionStorage.getItem('testRunsQuery');
+      if (storedQuery) {
+        setSavedQuery(storedQuery);
+
+        // Clean up the sessionStorage
+        sessionStorage.removeItem('testRunsQuery');
+      }
+    }
+  }, []);
+  
   const extractRunDetails = useCallback((runDetails: Run) => {
 
     setMethods(runDetails.testStructure?.methods || []);
@@ -96,11 +113,14 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   if (isError) {
     return <ErrorPage />;
   }
-  
+
+  // Build the test runs route with the saved query string
+  const testRunsRoute = savedQuery ? `${TEST_RUNS.route}?${savedQuery}` : TEST_RUNS.route;
+  const testRunsBreadCrumb = { ...TEST_RUNS, route: testRunsRoute };
 
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME, TEST_RUNS]} />
+      <BreadCrumb breadCrumbItems={[HOME, testRunsBreadCrumb]} />
       <PageTile
         translationKey={translations("title", {
           runName: run?.runName || "Unknown Run Name",

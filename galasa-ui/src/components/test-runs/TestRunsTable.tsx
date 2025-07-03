@@ -29,12 +29,13 @@ import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead
 import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
 import StatusIndicator from "../common/StatusIndicator";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ErrorPage from "@/app/error/page";
 import { TestRunsData } from "@/utils/testRuns";
-import {MAX_RECORDS} from "@/utils/constants/common";
+import { MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+import { run } from "node:test";
 
 
 
@@ -93,6 +94,8 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   const translations = useTranslations("TestRunsTable");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [rawRuns, setRawRuns] = useState<Run[]>([]);
@@ -196,7 +199,15 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
 
   // Navigate to the test run details page using the runId
   const handleRowClick = (runId: string) => {
-    router.push(`/test-runs/${runId}`);
+    const queryString = searchParams.toString();
+
+    // Save the query string to the sessionStorage
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('testRunsQuery', queryString);
+    }
+
+    // Navigate to the test run details page
+    router.push(`/test-runs/${runId}`)
   };
 
   if ( !tableRows || tableRows.length === 0) {
