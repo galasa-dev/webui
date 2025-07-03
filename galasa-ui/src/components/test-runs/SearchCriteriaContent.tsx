@@ -122,12 +122,14 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // Update the local UI state to match the newly selected filter's saved value
     setCurrentInputValue(savedValue);
+
+    const splitSavedValue = savedValue ? savedValue.split(',') : [];
     if (field.id === 'result') {
-      setSelectedResults(savedValue ? savedValue.split(',') : []);
+      setSelectedResults(splitSavedValue);
     } else if (field.id === 'status') {
-      setSelectedStatuses(savedValue ? savedValue.split(',') : []);
+      setSelectedStatuses(splitSavedValue);
     } else if (field.id === 'tags') {
-      setSelectedTags(savedValue ? savedValue.split(',') : []);
+      setSelectedTags(splitSavedValue);
     }
   };
 
@@ -190,39 +192,41 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   };
 
+  // Determine if the Save and Reset button should be disabled
   const isSaveAndResetDisabled: boolean = (() => {
     // Get saved value from the query and compare it with the current input value
     const savedValue = query.get(selectedFilter.id) || '';
-    let finalValue = false;
+    let isDisabled = false;
 
+    const splitSavedValue = savedValue ? savedValue.split(',') : [];
     switch (selectedFilter.id) {
     case 'result': {
-      const savedResults = savedValue ? savedValue.split(',').sort() : [];
+      const savedResults = splitSavedValue;
       const currentResults = [...selectedResults].sort();
-      finalValue = JSON.stringify(savedResults) === JSON.stringify(currentResults);
+      isDisabled = JSON.stringify(savedResults) === JSON.stringify(currentResults);
       break;
     }
 
     case 'status': {
-      const savedStatuses = savedValue ? savedValue.split(',').sort() : [];
+      const savedStatuses = splitSavedValue;
       const currentStatuses = [...selectedStatuses].sort();
-      finalValue = JSON.stringify(savedStatuses) === JSON.stringify(currentStatuses);
+      isDisabled = JSON.stringify(savedStatuses) === JSON.stringify(currentStatuses);
       break;
     }
 
     case 'tags': {
-      const savedTags = savedValue ? savedValue.split(',').sort() : [];
+      const savedTags = splitSavedValue;
       const currentTags = [...selectedTags].sort();
-      finalValue = JSON.stringify(savedTags) === JSON.stringify(currentTags);
+      isDisabled = JSON.stringify(savedTags) === JSON.stringify(currentTags);
       break;
     }
 
     default: {
       // For other fields, compare trimmed values
-      finalValue = savedValue.trim() === currentInputValue.trim();
+      isDisabled = savedValue.trim() === currentInputValue.trim();
     }
     }
-    return finalValue;
+    return isDisabled;
   })();
 
   // Render the editor component based on the selected filter
