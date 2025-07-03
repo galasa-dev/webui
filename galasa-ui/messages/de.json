@@ -182,6 +182,7 @@
   "OverviewTab": {
     "bundle": "Bundle",
     "test": "Test",
+    "package": "Paket",
     "group": "Gruppe",
     "submissionId": "Übermittlungs-ID",
     "requestor": "Anforderer",
@@ -359,5 +360,29 @@
     "remove": "Entfernen",
     "cancel": "Abbrechen",
     "save": "Speichern"
+  }, 
+  "TableDesignContent": {
+    "description": "Passen Sie die Ansicht der Testlaufergebnisse an, indem Sie Spalten ein-, ausblenden und neu anordnen.",
+    "dragAndDropHeader": "Spalten ziehen, um die Reihenfolge zu ändern",
+    "columnName": "Spaltenname",
+    "showHideHeader": "Spalten ein-/ausblenden",
+    "warning": "Warnung",
+    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus"    
+  },
+  "TableDesignRow": {
+    "dragAndDropLabel": "Ziehen zum Neuordnen",
+    "moveUpLabel": "Nach oben verschieben",
+    "moveDownLabel": "Nach unten verschieben",
+    "submittedAt": "Eingereicht am",
+    "testRunName": "Name des Testlaufs",
+    "requestor": "Anforderer",
+    "group": "Gruppe",
+    "bundle": "Bundle",
+    "package": "Paket",
+    "testName": "Testname",
+    "tags": "Tags",
+    "status": "Status",
+    "result": "Ergebnis",
+    "submissionId":"Übermittlungs-ID"
   }
 }

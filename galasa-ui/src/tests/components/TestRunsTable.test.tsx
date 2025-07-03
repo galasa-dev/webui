@@ -9,8 +9,8 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
 import { TestRunsData } from '@/utils/testRuns';
-import { MAX_RECORDS } from '@/utils/constants/common';
 import { useSearchParams } from 'next/navigation';
+import { MAX_RECORDS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
 
 // Mock the useRouter hook from Next.js to return a mock router object.
 const mockRouterPush = jest.fn();
@@ -24,9 +24,22 @@ jest.mock('next/navigation', () => ({
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {
-      "timeFrameText.range": "Showing test runs submitted between Jan 1 and Jan 10",
+      "timeFrameText.range": "Showing test runs submitted between {from} and {to}",
+      "timeFrameText.default": "Showing test runs",
       "pagination.forwardText": "Next page",
-      "noTestRunsFound":"No test runs were found for the selected timeframe",
+      "pagination.backwardText": "Previous page",
+      "pagination.itemsPerPageText": "Items per page:",
+      "pagination.items": "items",
+      "pagination.pages": "pages",
+      "pagination.pageNumberText": "Page number",
+      "noTestRunsFound": "No test runs were found for the selected timeframe",
+      "isloading": "Loading...",
+      "submittedAt": "Submitted at",
+      "testRunName": "Test Run name",
+      "requestor": "Requestor",
+      "testName": "Test Name",
+      "status": "Status",
+      "result": "Result",
       "pagination.of": "of {total}"
     };
 
@@ -47,6 +60,7 @@ jest.mock('@/app/error/page', () =>
     return <div data-testid="error-page">Error Occurred</div>;
   }
 );
+
 jest.mock('@/components/common/StatusIndicator', () =>
   function StatusIndicator() {
     return <div data-testid="status-indicator">Status: {status}</div>;
@@ -67,9 +81,15 @@ const generateMockRuns = (count: number) => {
       testShortName: `testShort${index + 1}`,
       status: "finished",
       result: index % 2 === 0 ? "Passed" : "Failed",
-      submittedAt: new Date(Date.now() - index * 1000 * 60 * 60).toISOString(),
+      queued: new Date(Date.now() - index * 1000 * 60 * 60).toISOString(),
     },
   }));
+};
+
+// Default props for TestRunsTable component
+const defaultProps = {
+  visibleColumns: ["submittedAt", "testRunName", "requestor", "testName", "status", "result"],
+  orderedHeaders: RESULTS_TABLE_COLUMNS
 };
 
 
@@ -87,7 +107,7 @@ describe('TestRunsTable Component', () => {
       const runsPromise = Promise.resolve(mockData);
 
       // Act
-      render(<TestRunsTable runsListPromise={runsPromise}/>);
+      render(<TestRunsTable runsListPromise={runsPromise} {...defaultProps} />);
 
       // Assert: Check if the loading state is displayed
       expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
@@ -107,7 +127,7 @@ describe('TestRunsTable Component', () => {
     const emptyData: TestRunsData = { runs: [], limitExceeded: false };
     const runsPromise = Promise.resolve(emptyData);
     // Act
-    render(<TestRunsTable runsListPromise={runsPromise} />);
+    render(<TestRunsTable runsListPromise={runsPromise} {...defaultProps} />);
 
     // Assert: Check if the error state is displayed
     expect(await screen.findByText(/No test runs were found for the selected timeframe/i)).toBeInTheDocument();
@@ -120,7 +140,7 @@ describe('TestRunsTable Component', () => {
     const runsPromise = Promise.resolve(limitedData);
 
     // Act
-    render(<TestRunsTable runsListPromise={runsPromise} />);
+    render(<TestRunsTable runsListPromise={runsPromise} {...defaultProps} />);
 
     // Assert
     const warningMessage = await screen.findByText(`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`);
@@ -134,7 +154,7 @@ describe('TestRunsTable Interactions', () => {
     const mockData: TestRunsData = { runs: generateMockRuns(1), limitExceeded: false };
     const runsPromise = Promise.resolve(mockData);
 
-    render(<TestRunsTable runsListPromise={runsPromise} />);
+    render(<TestRunsTable runsListPromise={runsPromise} {...defaultProps} />);
     const tableRow = await screen.findByText('Test Run 1');
 
     // Act
@@ -150,7 +170,7 @@ describe('TestRunsTable Interactions', () => {
     const mockData: TestRunsData = { runs: generateMockRuns(15), limitExceeded: false };
     const runsPromise = Promise.resolve(mockData);
 
-    render(<TestRunsTable runsListPromise={runsPromise} />);
+    render(<TestRunsTable runsListPromise={runsPromise} {...defaultProps} />);
     
     // Wait for the table to finish loading
     const table = await screen.findByRole('table');

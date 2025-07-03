@@ -37,8 +37,6 @@ import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
 import { run } from "node:test";
 
-
-
 interface CustomCellProps {
   header: string;
   value: any;
@@ -90,7 +88,13 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
   return <TableCell>{value}</TableCell>;
 };
 
-export default function TestRunsTable({runsListPromise}: {runsListPromise: Promise<TestRunsData>}) {
+interface TestRunsTableProps {
+  runsListPromise: Promise<TestRunsData>;
+  visibleColumns: string[];
+  orderedHeaders?: { id: string; columnName: string }[];
+}
+
+export default function TestRunsTable({runsListPromise, visibleColumns, orderedHeaders}: TestRunsTableProps) {
   const translations = useTranslations("TestRunsTable");
 
   const router = useRouter();
@@ -103,19 +107,10 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
   const [isError, setIsError] = useState(false);
   const [limitExceeded, setLimitExceeded] = useState(false);
 
-  const headers = [
-    { key: "submittedAt", header: translations("submittedAt") },
-    { key: "testRunName", header: translations("testRunName") },
-    { key: "requestor", header: translations("requestor") },
-    { key: "submissionId", header: translations("submissionId") },
-    { key: "group", header: translations("group") },
-    { key: "bundle", header: translations("bundle") },
-    { key: "package", header: translations("package") },
-    { key: "testName", header: translations("testName") },
-    { key: "tags", header: translations("tags") },
-    { key: "status", header: translations("status") },
-    { key: "result", header: translations("result") },
-  ];
+  const headers = orderedHeaders?.filter(column => visibleColumns.includes(column.id)).map(column => ({
+    key: column.id,
+    header: translations(column.id)
+  })) || [];
 
   // Load the raw runs data from the promise
   useEffect(() => {
