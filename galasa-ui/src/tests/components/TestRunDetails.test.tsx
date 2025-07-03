@@ -29,9 +29,6 @@ const sessonStorageMock = (() => {
     getItem(key: string) {
       return store[key] || null;
     }, 
-    removeItem(key: string) {
-      delete store[key];
-    },
     clear() {
       store = {};
     },
@@ -315,9 +312,6 @@ describe('TestRunDetails', () => {
 
     // Check if the link is correc
     expect(breadcrumb).toHaveAttribute('data-route', `/test-runs?${queryString}`);
-
-    // Check that the sessionStorage was cleaned up after being read
-    expect(sessionStorage.getItem('testRunsQuery')).toBeNull();
 
     // Resolve the promises to ensure the component loads correctly
     await act(async () => {

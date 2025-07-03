@@ -48,9 +48,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       const storedQuery = sessionStorage.getItem('testRunsQuery');
       if (storedQuery) {
         setSavedQuery(storedQuery);
-
-        // Clean up the sessionStorage
-        sessionStorage.removeItem('testRunsQuery');
       }
     }
   }, []);
