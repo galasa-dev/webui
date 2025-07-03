@@ -7,7 +7,7 @@
 import styles from "@/styles/TestRunsPage.module.css";
 import { Button, Search } from "@carbon/react";
 import { useTranslations } from "next-intl";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useRef, useEffect } from "react";
 
 interface CustomSearchComponentProps {
     title: string;
@@ -18,6 +18,7 @@ interface CustomSearchComponentProps {
     onSubmit: (e: FormEvent) => void;
     onCancel: () => void;
     allRequestors?: string[];
+    disableSaveAndReset: boolean;
 }
 
 /**
@@ -31,11 +32,16 @@ interface CustomSearchComponentProps {
  * @param onSubmit - Callback function to handle form submission.
  * @param onCancel - Callback function to handle cancellation.
  * @param allRequestors - Optional list of all requestors for suggestion.
+ * @param disableSaveAndReset - Flag to disable the save and reset buttons when no changes are made.
+ * 
  * @returns The Search component.
  */
-export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors }: CustomSearchComponentProps) {
+export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSaveAndReset }: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const translations = useTranslations('CustomSearchComponent');
+  const suggestionListRef = useRef<HTMLUListElement>(null);
+  const activeItemRef = useRef<HTMLLIElement>(null);
 
   const filteredRequestors = useMemo(() => {
     let currentRequestors = allRequestors || [];
@@ -46,10 +52,85 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   
     return currentRequestors;
   }, [value, allRequestors]);
+
+  // Auto-scroll to active item when activeIndex changes
+  useEffect(() => {
+    if (activeItemRef.current && suggestionListRef.current && activeIndex >= 0) {
+      const listElement = suggestionListRef.current;
+      const activeElement = activeItemRef.current;
+      
+      const listRect = listElement.getBoundingClientRect();
+      const activeRect = activeElement.getBoundingClientRect();
+      
+      // Check if the active item is above the visible area
+      if (activeRect.top < listRect.top) {
+        activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      // Check if the active item is below the visible area
+      else if (activeRect.bottom > listRect.bottom) {
+        activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [activeIndex]);
   
   const handleSelectRequestor = (name: string) => {
     onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
     setIsListVisible(false);
+    setActiveIndex(-1);
+  };
+
+  const handleCancel = () => {
+    onCancel();
+    setIsListVisible(false);
+    setActiveIndex(-1);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event);
+    setActiveIndex(-1);
+    if (allRequestors && !isListVisible) {
+      setIsListVisible(true);
+    }
+  };
+
+  const handleClear = () => {
+    onClear();
+    setIsListVisible(false);
+    setActiveIndex(-1);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if(isListVisible && filteredRequestors.length > 0) {
+
+      switch(event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        setActiveIndex((prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
+          handleSelectRequestor(filteredRequestors[activeIndex]);
+        } else {
+          // If no active index, submit the form with the current value
+          onSubmit(event);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsListVisible(false);
+        setActiveIndex(-1);
+        break;
+
+      default:
+        break;
+      } 
+    }
   };
   
   return (
@@ -63,15 +144,22 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
             size="md"
             type="text"
             value={value}
-            onChange={onChange}
-            onClear={onClear}
+            onChange={handleInputChange}
+            onClear={handleClear}
+            onKeyDown={handleKeyDown}
             onFocus={() => allRequestors && setIsListVisible(true)}
-            onBlur={() => setTimeout(() => setIsListVisible(false), 100)} //
+            onBlur={() => setTimeout(() => setIsListVisible(false))} 
           />
           {allRequestors && isListVisible && filteredRequestors.length > 0 && (
-            <ul className={styles.suggestionList}>
-              {filteredRequestors.map((name: string) => (
-                <li key={name} onMouseDown={() => handleSelectRequestor(name)}>
+            <ul ref={suggestionListRef} className={styles.suggestionList}>
+              {filteredRequestors.map((name: string, index: number) => (
+                <li 
+                  key={name} 
+                  ref={index === activeIndex ? activeItemRef : null}
+                  className={index === activeIndex ? styles.activeSuggestion : ''}
+                  onMouseDown={() => handleSelectRequestor(name)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                >
                   {name}
                 </li>
               ))}
@@ -80,8 +168,20 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <Button type="button" kind="secondary" onClick={onCancel}>{translations("cancel")}</Button>
-        <Button type="submit">{translations("save")}</Button>
+        <Button 
+          type="button" 
+          kind="secondary"
+          disabled={disableSaveAndReset}
+          onClick={handleCancel}
+        >
+          {translations("reset")}
+        </Button>
+        <Button 
+          type="submit"
+          disabled={disableSaveAndReset}
+        >
+          {translations("save")}
+        </Button>
       </div>
     </form>
   );

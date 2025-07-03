@@ -60,7 +60,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-
   // Initialize the saved query  state directly from the URL
   const [query, setQuery] = useState(() => {
     const initialQuery : Map<string, string> = new Map();
@@ -77,7 +76,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
           setSelectedStatuses(value.split(','));
         } else if (field.id === 'tags') {
           setSelectedTags(value.split(','));
-        }
+        } 
       } 
     });
 
@@ -110,24 +109,29 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     loadResultsNames();
   }, [resultsNamesPromise]);
 
-  // Update the current input value when the selected filter changes or when the query is updated
+  // Update the current input value on the first mount or when the selected filter changes
   useEffect(() => {
-    const savedValue = query.get(selectedFilter.id) || '';
+    handleFilterSelect(selectedFilter);
+  }, [selectedFilter]);
+
+
+  // Update the current input value when the selected filter changes or when the query is updated
+  const handleFilterSelect = (field: FilterableField) => {
+    setSelectedFilter(field);
+    const savedValue = query.get(field.id) || '';
+
+    // Update the local UI state to match the newly selected filter's saved value
     setCurrentInputValue(savedValue);
 
-    // If the selected filter is 'result' or 'status' or 'tags', update the corresponding state
-    if (selectedFilter.id === 'result') {
-      const resultsFromQuery = query.get('result');
-      setSelectedResults(resultsFromQuery ? resultsFromQuery.split(','): []);
-    } else if (selectedFilter.id === 'status') {
-      const statusesFromQuery = query.get('status');
-      setSelectedStatuses(statusesFromQuery ? statusesFromQuery.split(',') : []);
-    } else if (selectedFilter.id === 'tags') {
-      const tagsFromQuery = query.get('tags');
-      setSelectedTags(tagsFromQuery ? tagsFromQuery.split(',') : []);
-    } 
-
-  }, [selectedFilter, query]);
+    const splitSavedValue = savedValue ? savedValue.split(',') : [];
+    if (field.id === 'result') {
+      setSelectedResults(splitSavedValue);
+    } else if (field.id === 'status') {
+      setSelectedStatuses(splitSavedValue);
+    } else if (field.id === 'tags') {
+      setSelectedTags(splitSavedValue);
+    }
+  };
 
   const updateQueryAndUrl = (newQuery: Map<string, string>) => {
     // Update the component's query state
@@ -156,41 +160,24 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       valueToSet = currentInputValue.trim();
     }
 
-    // Get the old value from the query state for comparison
-    const oldValue = query.get(selectedFilter.id) || '';
+    const newQuery = new Map(query);
 
-    // Only proceed if the value has actually changed.
-    if (valueToSet !== oldValue) {
-      const newQuery = new Map(query);
+    // If the new value is not empty, set it. Otherwise, delete the key.
+    if (valueToSet) {
+      newQuery.set(selectedFilter.id, valueToSet);
+    } else {
+      // If the value is empty, remove the key from the query
+      newQuery.delete(selectedFilter.id);
+    }
 
-      // If the new value is not empty, set it. Otherwise, delete the key.
-      if (valueToSet) {
-        newQuery.set(selectedFilter.id, valueToSet);
-      } else {
-        // If the value is empty, remove the key from the query
-        newQuery.delete(selectedFilter.id);
-      }
-  
-      // Update the URL with the new query parameters and set the query state
-      updateQueryAndUrl(newQuery);
-    };
+    // Update the URL with the new query parameters and set the query state
+    updateQueryAndUrl(newQuery);
   };
 
 
   const handleCancel = () => {
-    // Revert changes for the currently selected filter
-    if (selectedFilter.id === 'result') {
-      const resultsFromQuery = query.get('result');
-      setSelectedResults(resultsFromQuery ? resultsFromQuery.split(',') : []);
-    } else if (selectedFilter.id === 'status') {
-      const statusesFromQuery = query.get('status');
-      setSelectedStatuses(statusesFromQuery ? statusesFromQuery.split(',') : []);
-    } else if (selectedFilter.id === 'tags') {
-      const tagsFromQuery = query.get('tags');
-      setSelectedTags(tagsFromQuery ? tagsFromQuery.split(',') : []);
-    } else {
-      setCurrentInputValue(query.get(selectedFilter.id) || '');
-    }
+    // Revert changes by re-running the selection logic
+    handleFilterSelect(selectedFilter);
   };
 
   const handleClearAndSave = (fieldId: string) => {
@@ -205,6 +192,42 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   };
 
+  // Determine if the Save and Reset button should be disabled
+  const isSaveAndResetDisabled: boolean = (() => {
+    // Get saved value from the query and compare it with the current input value
+    const savedValue = query.get(selectedFilter.id) || '';
+    let isDisabled = false;
+
+    const splitSavedValue = savedValue ? savedValue.split(',') : [];
+    switch (selectedFilter.id) {
+    case 'result': {
+      const savedResults = splitSavedValue;
+      const currentResults = [...selectedResults].sort();
+      isDisabled = JSON.stringify(savedResults) === JSON.stringify(currentResults);
+      break;
+    }
+
+    case 'status': {
+      const savedStatuses = splitSavedValue;
+      const currentStatuses = [...selectedStatuses].sort();
+      isDisabled = JSON.stringify(savedStatuses) === JSON.stringify(currentStatuses);
+      break;
+    }
+
+    case 'tags': {
+      const savedTags = splitSavedValue;
+      const currentTags = [...selectedTags].sort();
+      isDisabled = JSON.stringify(savedTags) === JSON.stringify(currentTags);
+      break;
+    }
+
+    default: {
+      // For other fields, compare trimmed values
+      isDisabled = savedValue.trim() === currentInputValue.trim();
+    }
+    }
+    return isDisabled;
+  })();
 
   // Render the editor component based on the selected filter
   const renderComponent = (field: FilterableField) => {
@@ -217,6 +240,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onClear: () => handleClearAndSave(field.id),
       onSubmit: handleSave,
       onCancel: handleCancel,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     // Props for the checkbox list component
@@ -227,6 +251,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onChange: (field.id === 'result') ? setSelectedResults : setSelectedStatuses, 
       onSubmit: handleSave,
       onCancel: handleCancel,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     const tagsProps = {
@@ -235,12 +260,14 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       onChange: setSelectedTags,
       onSubmit: handleSave,
       onCancel: handleCancel,
+      disableSaveAndReset: isSaveAndResetDisabled,
     };
 
     let customComponent;
     switch (field.id) {
     case 'requestor':
-      customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+      customComponent = <CustomSearchComponent {...searchProps}
+        allRequestors={allRequestors} />;
       break;
     case 'result':
     case 'status':
@@ -275,7 +302,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
                 <StructuredListRow key={field.id}>
                   <div
                     key={field.id} 
-                    onClick={() => setSelectedFilter(field)} 
+                    onClick={() => handleFilterSelect(field)} 
                     className={`${styles.rowWrapper} ${selectedFilter.id === field.id ? styles.selectedRow : ''}`}
                   >
                     <StructuredListCell>{field.label}</StructuredListCell>

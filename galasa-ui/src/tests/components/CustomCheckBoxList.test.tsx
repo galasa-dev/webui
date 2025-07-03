@@ -12,7 +12,7 @@ jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       "save": "Save",
-      "cancel": "Cancel",
+      "reset": "Reset",
     };
     return translations[key] || key;
   },
@@ -30,6 +30,7 @@ describe('CustomCheckBoxList', () => {
     onChange: mockOnChange,
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
+    disableSaveAndReset: false,
   };
 
   beforeEach(() => {
@@ -112,7 +113,7 @@ describe('CustomCheckBoxList', () => {
     expect(screen.getByLabelText('All')).not.toBeChecked();
   });
 
-  test('clicking Cancel calls the onCancel prop and does not change selection', () => {
+  test('clicking Reset calls the onCancel prop and does not change selection', () => {
     const initialSelection = ['Item A'];
     const { rerender } = render(<CustomCheckBoxList {...defaultProps} selectedItems={initialSelection} />);
     
@@ -124,7 +125,7 @@ describe('CustomCheckBoxList', () => {
     expect(screen.getByLabelText('All')).toBeChecked();
 
     // Click "Cancel".
-    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+    const cancelButton = screen.getByRole('button', { name: 'Reset' });
     fireEvent.click(cancelButton);
     
     // Assert that onCancel was called.
