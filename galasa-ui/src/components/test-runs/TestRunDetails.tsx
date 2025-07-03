@@ -22,7 +22,6 @@ import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -33,8 +32,6 @@ interface TestRunDetailsProps {
 
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const translations = useTranslations("TestRunDetails");
 
   const [run, setRun] = useState<RunMetadata>();

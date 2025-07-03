@@ -207,7 +207,7 @@ export default function TestRunsTable({runsListPromise}: {runsListPromise: Promi
     }
 
     // Navigate to the test run details page
-    router.push(`/test-runs/${runId}`)
+    router.push(`/test-runs/${runId}`);
   };
 
   if ( !tableRows || tableRows.length === 0) {

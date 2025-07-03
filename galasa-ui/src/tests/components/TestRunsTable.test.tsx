@@ -10,6 +10,7 @@ import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
 import { TestRunsData } from '@/utils/testRuns';
 import { MAX_RECORDS } from '@/utils/constants/common';
+import { useSearchParams } from 'next/navigation';
 
 // Mock the useRouter hook from Next.js to return a mock router object.
 const mockRouterPush = jest.fn();
@@ -17,6 +18,7 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockRouterPush,
   }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock("next-intl", () => ({
