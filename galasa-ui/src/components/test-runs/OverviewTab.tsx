@@ -49,6 +49,10 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         title={`${translations("test")}:`}
         value={metadata?.testName}
       />
+      <InlineText
+        title={`${translations("package")}:`}
+        value={metadata?.package}
+      />
       <InlineText title={`${translations("group")}:`} value={metadata?.group} />
       <InlineText
         title={`${translations("submissionId")}:`}

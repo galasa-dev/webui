@@ -182,6 +182,7 @@
   "OverviewTab": {
     "bundle": "Bundle",
     "test": "Test",
+    "package": "Package",
     "group": "Group",
     "submissionId": "Submission ID",
     "requestor": "Requestor",

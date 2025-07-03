@@ -13,9 +13,9 @@ import {
   Filter,
   ChevronUp,
   ChevronDown,
-  CharacterSentenceCase,
-  TextUnderline,
   CloudDownload,
+  Term,
+  LetterAa,
 } from "@carbon/icons-react";
 import { handleDownload } from "@/utils/artifacts";
 import { useTranslations } from "next-intl";
@@ -448,7 +448,7 @@ export default function LogTab({ logs }: { logs: string }) {
                 kind={matchCase ? "primary" : "ghost"}
                 size="sm"
                 onClick={toggleMatchCase}
-                renderIcon={CharacterSentenceCase}
+                renderIcon={LetterAa}
                 iconDescription={translations("match_case")}
                 hasIconOnly
               />
@@ -456,7 +456,7 @@ export default function LogTab({ logs }: { logs: string }) {
                 kind={matchWholeWord ? "primary" : "ghost"}
                 size="sm"
                 onClick={toggleMatchWholeWord}
-                renderIcon={TextUnderline}
+                renderIcon={Term}
                 iconDescription={translations("match_whole_word")}
                 hasIconOnly
               />
