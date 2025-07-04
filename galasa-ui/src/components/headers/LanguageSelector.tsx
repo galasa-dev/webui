@@ -8,10 +8,9 @@
 
 import React, { useState, useTransition } from "react";
 import { Dropdown } from "@carbon/react";
-import { Language } from "@carbon/icons-react";
 import { setUserLocale } from "@/utils/locale";
-import styles from "@/styles/LanguageSelector.module.css";
-import { useLocale } from "next-intl";
+import styles from "@/styles/Selector.module.css";
+import { useLocale, useTranslations } from "next-intl";
 import { Locale } from "@/i18n/config";
 import { useRouter } from "next/navigation";
 
@@ -28,6 +27,7 @@ export default function LanguageSelector() {
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const translations = useTranslations('LanguageSelector');  
 
   const handleLanguageChange = ({
     selectedItem,
@@ -46,7 +46,7 @@ export default function LanguageSelector() {
 
   return (
     <div className={styles.container}>
-      <Language className={styles.language} />
+      <span className={styles.icon}>{translations('label')} :</span>
       <Dropdown
         id="language-selector"
         items={languages}

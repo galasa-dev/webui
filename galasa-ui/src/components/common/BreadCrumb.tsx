@@ -11,6 +11,7 @@ import { Breadcrumb, BreadcrumbItem, Theme } from "@carbon/react";
 import "@/styles/global.scss";
 import styles from "@/styles/BreadCrumb.module.css";
 import { useTranslations } from 'next-intl';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface BreadCrumbProps {
   title: string;
@@ -23,9 +24,21 @@ function BreadCrumb({
   breadCrumbItems: BreadCrumbProps[];
 }) {
   const translations = useTranslations("Breadcrumb");
+  const current = useTheme().theme;
+  let theme: 'g10' | 'g90';
+
+  if (current === 'light') {
+    theme = 'g10';
+  } else if (current === 'dark') {
+    theme = 'g90';
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    theme = 'g90';
+  } else {
+    theme = 'g10';
+  }
 
   return (
-    <Theme theme="g10">
+    <Theme theme={theme}>
       <Breadcrumb className={styles.crumbContainer}>
         {breadCrumbItems.map((item, idx) => {
           return (

@@ -75,6 +75,22 @@ describe('Layout', () => {
   afterEach(() => {
     delete process.env.GALASA_SERVICE_NAME;
   });
+  beforeAll(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: query.includes('dark'), // simulate system preference
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // for older APIs
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(), // for modern APIs
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }),
+    });
+  });
+  
 
   it('renders the web UI layout', async () => {
     const children = <>Hello, world!</>;

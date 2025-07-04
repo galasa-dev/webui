@@ -183,7 +183,6 @@
   flex-direction: column;
   border: 1px solid #a8a8a8; 
   border-radius: 0;
-  background-color: #ffffff;
   width: 55%;
   min-width: 400px;
   overflow-x: auto; 
@@ -238,7 +237,6 @@
 }
 
 .tableDesignHeaderRow {
-  background-color: #f4f4f4;
   font-size: 0.9rem;
   font-weight: bold;
   border-bottom: 1px solid #393939; 

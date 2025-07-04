@@ -1,0 +1,59 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+.container {
+  margin-right: 1rem;
+  display: flex; /* Removed the extra comma */
+  align-items: center;
+}
+
+.language {
+  margin-right: 0.5rem;
+  fill: white;
+}
+
+.dropdown {
+  background-color: transparent; /* Corrected to background-color */
+  color: white;
+  width: 120px;
+}
+
+.themeSwitcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  width: fit-content;
+  background-color: #262626;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.iconButton:hover {
+  background-color: #474747;
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.active {
+  background-color: #474747;
+  color: var(--cds-icon-on-color);
+}
+.themeContainer {
+  border-radius: 0.35rem;
+}

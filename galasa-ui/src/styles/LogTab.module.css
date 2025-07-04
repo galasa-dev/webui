@@ -67,7 +67,6 @@
 }
 
 .tabContent {
-  background-color: white;
   border: 1px solid var(--galasa-border);
   border-top: none;
   border-bottom-left-radius: var(--border-radius);
@@ -81,7 +80,6 @@
   font-family: 'IBM Plex Mono', monospace;
   height: 100vh;
   overflow-y: auto;
-  color: black;
 }
 
 .runLogContent {

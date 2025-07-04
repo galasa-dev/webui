@@ -8,11 +8,13 @@
 export const FEATURE_FLAGS = {
   TEST_RUNS: 'testRuns',
   INTERNATIONALIZATION: 'internationalization',
+  THEME:'theme'
   // Add other feature flags here
 } as const;
 
 export const DEFAULT_FEATURE_FLAGS = {
   testRuns: false, 
   internationalization: false,
+  theme: false
   // Add other feature flags here
 } as const;
