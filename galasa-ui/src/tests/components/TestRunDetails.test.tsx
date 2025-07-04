@@ -6,8 +6,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import TestRunDetails from '@/components/test-runs/TestRunDetails';
-import { get } from 'http';
-
 
 function setup<T>() {
   let resolve!: (value: T) => void;

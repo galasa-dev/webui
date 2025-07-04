@@ -35,7 +35,7 @@ import { TestRunsData } from "@/utils/testRuns";
 import { MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
-import { run } from "node:test";
+
 
 interface CustomCellProps {
   header: string;
