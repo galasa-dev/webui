@@ -346,19 +346,19 @@
     }
   },
   "CustomSearchComponent": {
-    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
     "save": "Speichern"
   },
   "CustomCheckBoxList": {
     "all": "Alle",
-    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
     "save": "Speichern"
   },
   "CustomTagsComponent": {
     "tagInputPlaceholder": "beliebig",
     "add": "Hinzufügen",
     "remove": "Entfernen",
-    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
     "save": "Speichern"
   }, 
   "TableDesignContent": {

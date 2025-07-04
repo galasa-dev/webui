@@ -28,7 +28,7 @@
 
 .structuredListContainer {
   flex: 2; 
-  max-height: 450px;
+  max-height: 500px;
   overflow-y: auto;
   border: 1px solid var(--cds-border-subtle, #e0e0e0);
   min-width: 300px;
@@ -41,14 +41,25 @@
   
 .checkBoxList {
   flex: 3;
-  padding: 2rem;
+  padding: 1rem;
   font-size: 2rem;
 }
+
+.customCheckboxAll {
+  padding-bottom: 1.5rem;
+}
+
 .rowWrapper {
   display: grid; 
   grid-template-columns: 40% 1fr;
   width: 100%;
   cursor: pointer;
+}
+
+.rowWrapper > * {
+  overflow-wrap: break-word;
+  word-wrap: break-word; 
+  min-width: 0;
 }
 
 .selectedRow {
@@ -86,7 +97,7 @@
   z-index: 1000; 
 }
 
-.suggestionList li {
+.suggestionList li, .activeSuggestion {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   cursor: pointer;
@@ -94,6 +105,12 @@
 
 .suggestionList li:hover {
   background-color: #f0f0f0;
+}
+
+
+.activeSuggestion {
+  background-color: #e0e0e0; 
+  cursor: pointer;
 }
 
 .buttonContainer, .tagsButtonContainer {
@@ -126,6 +143,7 @@
         background-color: var(--cds-interactive-hover, #f4f4f4);
     }
 }
+
 
 .TimeFrameFilterContainer {
     display: flex;
