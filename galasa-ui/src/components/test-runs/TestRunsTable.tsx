@@ -196,7 +196,7 @@ export default function TestRunsTable({runsListPromise, visibleColumns, orderedH
   const handleRowClick = (runId: string) => {
     const queryString = searchParams.toString();
 
-    // Save the query string to the sessionStorage
+    // Save the query string to the sessionStorage if the window object is available
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('testRunsQuery', queryString);
     }
