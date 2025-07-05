@@ -6,7 +6,7 @@
 import { ResultArchiveStoreAPIApi, Run, RunResults, UserData } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { CLIENT_API_VERSION, MAX_RECORDS, BATCH_SIZE } from "@/utils/constants/common";
-import { fetchAllUsersFromApiServer } from "@/app/users/page";
+import { fetchAllUsersFromApiServer } from "@/utils/users";
 
 /**
  * The structure returned by the data fetching function.
@@ -26,6 +26,7 @@ interface fetchAllTestRunsByPagingParams {
     bundle?: string;
     testName?: string;
     result?: string;
+    status?: string; 
     tags?: string;
 }
   
@@ -46,14 +47,14 @@ interface fetchAllTestRunsByPagingParams {
    * @param {string} [tags] - The tags to filter by (optional).
    * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
    */
-export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requestor, group, submissionId, bundle, testName, result, tags}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
+export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requestor, group, submissionId, bundle, testName, result,status, tags}: fetchAllTestRunsByPagingParams): Promise<TestRunsData> => {
   let allRuns = [] as Run[];
   let currentCursor: string | undefined = undefined;
   let hasMorePages = true;
   let limitExceeded = false;
   
   if (fromDate > toDate) return {runs: [] , limitExceeded};
-  
+
   try {
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
@@ -64,7 +65,7 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
         'from:desc',
         CLIENT_API_VERSION,
         result,
-        undefined, // status
+        status, 
         bundle,
         requestor, 
         fromDate, 
