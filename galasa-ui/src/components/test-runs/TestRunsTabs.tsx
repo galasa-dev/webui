@@ -107,7 +107,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     // Parameters that actually affect the data fetch
     const relevantParameters = [
       PARAMS.FROM, PARAMS.TO, PARAMS.RUN_NAME, PARAMS.REQUESTOR, PARAMS.GROUP,
-      PARAMS.SUBMISSION_ID, PARAMS.BUNDLE, PARAMS.TEST_NAME, PARAMS.RESULT, PARAMS.STATUS, PARAMS.STATUS
+      PARAMS.SUBMISSION_ID, PARAMS.BUNDLE, PARAMS.TEST_NAME, PARAMS.RESULT, PARAMS.STATUS, PARAMS.TAGS
     ];
 
     // Create a new URLSearchParams object with the data that actually affects data fetch
