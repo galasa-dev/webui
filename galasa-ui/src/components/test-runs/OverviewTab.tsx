@@ -22,8 +22,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const MONTH_AGO = getOneMonthAgo();
 
   const fullTestName = metadata?.package + "." + metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}`;
-  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}`;
+  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results`;
+  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}&tab=results`;
 
   useEffect(() => {
 
@@ -97,14 +97,14 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         </div>
 
         <div className={styles.redirectLinks}>
-          <Link href={OTHER_RECENT_RUNS} renderIcon={Launch}>
+          <Link href={OTHER_RECENT_RUNS} renderIcon={Launch} size="lg">
             {translations("recentRunsLink")}
           </Link>
 
           {/* Only show the link if date is valid */}
           {
             weekBefore !== null && (
-              <Link href={RETRIES_FOR_THIS_TEST_RUN} renderIcon={Launch}>
+              <Link href={RETRIES_FOR_THIS_TEST_RUN} renderIcon={Launch} size="lg">
                 {translations("runRetriesLink")}
               </Link>
             )
