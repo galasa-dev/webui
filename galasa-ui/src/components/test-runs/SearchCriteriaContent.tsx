@@ -48,9 +48,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     {id: 'bundle', label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
     {id: 'submissionId', label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
     {id: 'testName', label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
-    {id: 'status', label: translations("fields.status.label"), placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: translations("fields.status.description")},
+    {id: 'status', label: translations("fields.status.label"), placeHolder: 'any', description: translations("fields.status.description")},
     {id: 'tags', label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
-    {id: 'result', label: translations("fields.result.label"), placeHolder: 'Finished, Queued, RunDone, Waiting', description: translations("fields.result.description")},
+    {id: 'result', label: translations("fields.result.label"), placeHolder: 'any', description: translations("fields.result.description")},
   ];
 
   const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
@@ -202,7 +202,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // Update the query with default empty states
     updateQueryAndUrl(new Map());
-  }
+  };
 
   // Determine if the Save and Reset button should be disabled
   const isSaveAndResetDisabled: boolean = (() => {
@@ -328,12 +328,12 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         {renderComponent(selectedFilter)}
       </div>
       <Button 
-      type="button"
-      kind="secondary"
-      className={styles.resetToDefaultsButton}
-      onClick={handleResetToDefaults}
+        type="button"
+        kind="secondary"
+        className={styles.resetToDefaultsButton}
+        onClick={handleResetToDefaults}
       >
-        Reset to defaults
+        {translations("clearFilters")}
       </Button>
     </div>
   );

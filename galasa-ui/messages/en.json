@@ -297,6 +297,7 @@
       "columnName": "Column Name",
       "allowedValues": "Allowed Values"
     },
+    "clearFilters": "Clear Filters",
  "fields": {
       "runName": {
         "label": "Test Run Name",
