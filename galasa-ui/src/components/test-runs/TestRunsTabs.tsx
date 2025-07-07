@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 
+
 interface TabConfig {
   id: string;
   label: string;
@@ -32,7 +33,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results'];
 
   // Initialize selectedIndex based on URL parameters or default to first tab
@@ -148,6 +148,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     // Only refetch when the canonical query key changes
     staleTime: Infinity,
   });
+
 
   return (
     <Tabs 
