@@ -117,7 +117,16 @@ global.fetch = jest.fn(() =>
   })
 ) as jest.Mock;
 
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Turn off retries for tests to make them run faster
+      retry: false,
+    }
+  }
+});
+
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
@@ -133,6 +142,8 @@ describe('TestRunsTabs Component', () => {
     jest.clearAllMocks();
     // Default to returning empty search params. Individual tests can override this.
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    // Clear the react-query cache 
+    queryClient.clear();
   });
 
   test('renders all tabs correctly', () => {
@@ -371,6 +382,53 @@ describe('TestRunsTabs Component', () => {
       // Ensure no new fetch is triggered
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
+  });
 
+  test('check that we are sending an API request when we expect to', async() => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed"));
+    const {rerender} = render(
+      <TestRunsTabs
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />, { wrapper }
+    );
+
+    // Initial fetch 
+    fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+
+    // Change tags param
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag1,tag2"));
+    rerender(
+      <TestRunsTabs
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
+    // Ensure a new fetch is triggered
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+
+    // Change the tags order without changing the tags themselves
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag2,tag1"));
+    rerender(
+      <TestRunsTabs
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
+    // Ensure no fetch is triggered
+    await waitFor(() => expect(global.fetch).not.toHaveBeenCalledTimes(3));
+
+    // Delete a tag
+    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag2"));
+    rerender(
+      <TestRunsTabs
+        requestorNamesPromise={mockRequestorNamesPromise}
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
+
+    // Ensure a new fetch is triggered
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(3));
   });
 });
