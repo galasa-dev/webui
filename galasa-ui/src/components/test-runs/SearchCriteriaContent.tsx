@@ -16,7 +16,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
-import {PARAMS, TEST_RUNS_STATUS} from "@/utils/constants/common";
+import {RUN_QUERY_PARAMS, TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
 import { useTranslations } from "next-intl";
 
@@ -41,15 +41,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
 
   const filterableFields: FilterableField[] = [
-    {id: PARAMS.RUN_NAME, label: translations("fields.runName.label"), placeHolder: 'any', description: translations("fields.runName.description")},
-    {id: PARAMS.REQUESTOR, label: translations("fields.requestor.label"), placeHolder: 'any', description: translations("fields.requestor.description")},
-    {id: PARAMS.GROUP, label: translations("fields.group.label"), placeHolder: 'any', description: translations("fields.group.description")},
-    {id: PARAMS.BUNDLE, label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
-    {id: PARAMS.SUBMISSION_ID, label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
-    {id: PARAMS.TEST_NAME, label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
-    {id: PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: translations("fields.status.description")},
-    {id: PARAMS.TAGS, label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
-    {id: PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'Finished, Queued, RunDone, Waiting', description: translations("fields.result.description")},
+    {id: RUN_QUERY_PARAMS.RUN_NAME, label: translations("fields.runName.label"), placeHolder: 'any', description: translations("fields.runName.description")},
+    {id: RUN_QUERY_PARAMS.REQUESTOR, label: translations("fields.requestor.label"), placeHolder: 'any', description: translations("fields.requestor.description")},
+    {id: RUN_QUERY_PARAMS.GROUP, label: translations("fields.group.label"), placeHolder: 'any', description: translations("fields.group.description")},
+    {id: RUN_QUERY_PARAMS.BUNDLE, label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
+    {id: RUN_QUERY_PARAMS.SUBMISSION_ID, label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
+    {id: RUN_QUERY_PARAMS.TEST_NAME, label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
+    {id: RUN_QUERY_PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: translations("fields.status.description")},
+    {id: RUN_QUERY_PARAMS.TAGS, label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
+    {id: RUN_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'Finished, Queued, RunDone, Waiting', description: translations("fields.result.description")},
   ];
 
   const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
@@ -70,11 +70,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         initialQuery.set(field.id, value);
 
         // If the field is 'result' or 'status' or 'tags', split the value into an array and set the corresponding state
-        if (field.id === PARAMS.RESULT) {
+        if (field.id === RUN_QUERY_PARAMS.RESULT) {
           setSelectedResults(value.split(','));
-        } else if (field.id === PARAMS.STATUS) {
+        } else if (field.id === RUN_QUERY_PARAMS.STATUS) {
           setSelectedStatuses(value.split(','));
-        } else if (field.id === PARAMS.TAGS) {
+        } else if (field.id === RUN_QUERY_PARAMS.TAGS) {
           setSelectedTags(value.split(','));
         } 
       } 
@@ -124,11 +124,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     setCurrentInputValue(savedValue);
 
     const splitSavedValue = savedValue ? savedValue.split(',') : [];
-    if (field.id === PARAMS.RESULT) {
+    if (field.id === RUN_QUERY_PARAMS.RESULT) {
       setSelectedResults(splitSavedValue);
-    } else if (field.id === PARAMS.STATUS) {
+    } else if (field.id === RUN_QUERY_PARAMS.STATUS) {
       setSelectedStatuses(splitSavedValue);
-    } else if (field.id === PARAMS.TAGS) {
+    } else if (field.id === RUN_QUERY_PARAMS.TAGS) {
       setSelectedTags(splitSavedValue);
     }
   };
@@ -150,11 +150,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // Determine the new value for the currently selected filter
     let valueToSet = '';
-    if (selectedFilter.id === PARAMS.RESULT) {
+    if (selectedFilter.id === RUN_QUERY_PARAMS.RESULT) {
       valueToSet = selectedResults.join(',');
-    } else if (selectedFilter.id === PARAMS.STATUS) {
+    } else if (selectedFilter.id === RUN_QUERY_PARAMS.STATUS) {
       valueToSet = selectedStatuses.join(',');
-    } else if (selectedFilter.id === PARAMS.TAGS) {
+    } else if (selectedFilter.id === RUN_QUERY_PARAMS.TAGS) {
       valueToSet = selectedTags.join(',');
     } else {
       valueToSet = currentInputValue.trim();
@@ -246,9 +246,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     // Props for the checkbox list component
     const checkboxProps = {
       title: field.description,
-      items: (field.id === PARAMS.RESULT) ? resultsNames : TEST_RUNS_STATUS,
-      selectedItems: (field.id === PARAMS.RESULT) ? selectedResults : selectedStatuses,
-      onChange: (field.id === PARAMS.RESULT) ? setSelectedResults : setSelectedStatuses, 
+      items: (field.id === RUN_QUERY_PARAMS.RESULT) ? resultsNames : TEST_RUNS_STATUS,
+      selectedItems: (field.id === RUN_QUERY_PARAMS.RESULT) ? selectedResults : selectedStatuses,
+      onChange: (field.id === RUN_QUERY_PARAMS.RESULT) ? setSelectedResults : setSelectedStatuses, 
       onSubmit: handleSave,
       onCancel: handleCancel,
       disableSaveAndReset: isSaveAndResetDisabled,
@@ -265,15 +265,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     let customComponent;
     switch (field.id) {
-    case PARAMS.REQUESTOR:
+    case RUN_QUERY_PARAMS.REQUESTOR:
       customComponent = <CustomSearchComponent {...searchProps}
         allRequestors={allRequestors} />;
       break;
-    case PARAMS.RESULT:
-    case PARAMS.STATUS:
+    case RUN_QUERY_PARAMS.RESULT:
+    case RUN_QUERY_PARAMS.STATUS:
       customComponent = <CustomCheckBoxList {...checkboxProps} />;
       break;
-    case PARAMS.TAGS:
+    case RUN_QUERY_PARAMS.TAGS:
       customComponent = <CustomTagsComponent {...tagsProps} />;
       break;
     default:

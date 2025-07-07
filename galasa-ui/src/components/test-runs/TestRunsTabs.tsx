@@ -14,7 +14,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, PARAMS} from '@/utils/constants/common';
+import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 
 
@@ -44,7 +44,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
   // Initialize selectedVisibleColumns  based on URL parameters or default values
   const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(
-    () => searchParams.get(PARAMS.VISIBLE_COLUMNS)?.split(',') || [
+    () => searchParams.get(RUN_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') || [
       COLUMNS_IDS.SUBMITTED_AT,
       COLUMNS_IDS.TEST_RUN_NAME,
       COLUMNS_IDS.REQUESTOR,
@@ -56,7 +56,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
   // Initialize columnsOrder based on URL parameters or default to RESULTS_TABLE_COLUMNS
   const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(() => {
-    const orderParam = searchParams.get(PARAMS.COLUMNS_ORDER);
+    const orderParam = searchParams.get(RUN_QUERY_PARAMS.COLUMNS_ORDER);
     let correctOrder = RESULTS_TABLE_COLUMNS;
 
     // Parse the order from the URL parameter
@@ -90,9 +90,9 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const columnsOrderParam = columnsOrder.map(col => col.id).join(",");
     
     const params = new URLSearchParams(searchParams.toString());
-    params.set(PARAMS.TAB, currentTab.id);
-    params.set(PARAMS.VISIBLE_COLUMNS, visibleColumnsParam);
-    params.set(PARAMS.COLUMNS_ORDER, columnsOrderParam);
+    params.set(RUN_QUERY_PARAMS.TAB, currentTab.id);
+    params.set(RUN_QUERY_PARAMS.VISIBLE_COLUMNS, visibleColumnsParam);
+    params.set(RUN_QUERY_PARAMS.COLUMNS_ORDER, columnsOrderParam);
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, selectedIndex]);
@@ -106,8 +106,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   const queryKey = useMemo(() => {
     // Parameters that actually affect the data fetch
     const relevantParameters = [
-      PARAMS.FROM, PARAMS.TO, PARAMS.RUN_NAME, PARAMS.REQUESTOR, PARAMS.GROUP,
-      PARAMS.SUBMISSION_ID, PARAMS.BUNDLE, PARAMS.TEST_NAME, PARAMS.RESULT, PARAMS.STATUS, PARAMS.TAGS
+      RUN_QUERY_PARAMS.FROM, RUN_QUERY_PARAMS.TO, RUN_QUERY_PARAMS.RUN_NAME, RUN_QUERY_PARAMS.REQUESTOR, RUN_QUERY_PARAMS.GROUP,
+      RUN_QUERY_PARAMS.SUBMISSION_ID, RUN_QUERY_PARAMS.BUNDLE, RUN_QUERY_PARAMS.TEST_NAME, RUN_QUERY_PARAMS.RESULT, RUN_QUERY_PARAMS.STATUS, RUN_QUERY_PARAMS.TAGS
     ];
 
     // Create a new URLSearchParams object with the data that actually affects data fetch
@@ -117,10 +117,10 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         let value = searchParams.get(key) || '';
 
         // Normalize order-independent parameters
-        if (key === PARAMS.TAGS ||
-            key === PARAMS.RESULT || 
-            key === PARAMS.STATUS || 
-            key === PARAMS.REQUESTOR) {
+        if (key === RUN_QUERY_PARAMS.TAGS ||
+            key === RUN_QUERY_PARAMS.RESULT || 
+            key === RUN_QUERY_PARAMS.STATUS || 
+            key === RUN_QUERY_PARAMS.REQUESTOR) {
           value = value?.split(',').sort().join(',');
         }
 

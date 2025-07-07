@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { PARAMS } from '@/utils/constants/common';
+import { RUN_QUERY_PARAMS } from '@/utils/constants/common';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => <div data-testid="test-runs-table">Mocked Test Runs Table</div>);
@@ -79,7 +79,7 @@ jest.mock('@/utils/constants/common', () => ({
     TEST_NAME: 'testName',
     STATUS: 'status',
     RESULT: 'result',
-  },  PARAMS: {
+  },  RUN_QUERY_PARAMS: {
     FROM: 'from',
     TO: 'to',
     RUN_NAME: 'runName',
