@@ -24,8 +24,8 @@ const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
 const MAX_RANGE_MONTHS = 3;
 
-const TEST_RUNS_STATUS = ['Submitted','Queued','Allocated', 'Started', 'Generating', 
-  'Building', 'Provstart', 'Running', 'Rundone', 'Ending', 'Waiting', 'Finished',];
+const TEST_RUNS_STATUS = ['Queued', 'Started', 'Generating', 
+  'Building', 'Provstart', 'Running', 'Rundone', 'Ending', 'Finished',];
 
 const COLUMNS_IDS = {
   SUBMITTED_AT: "submittedAt",
