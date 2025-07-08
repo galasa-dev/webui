@@ -5,7 +5,8 @@
   "Breadcrumb": {
     "home": "Home",
     "users": "Users",
-    "testRuns": "Test Runs"
+    "testRuns": "Test Runs",
+    "testRunName": "Test Run: {runName}"
   },
   "PageHeaderMenu": {
     "profile": "My Profile",

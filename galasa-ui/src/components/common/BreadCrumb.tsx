@@ -16,6 +16,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 interface BreadCrumbProps {
   title: string;
   route: string;
+  values?: Record<string, string>;
 }
 
 function BreadCrumb({
@@ -41,9 +42,11 @@ function BreadCrumb({
     <Theme theme={theme}>
       <Breadcrumb className={styles.crumbContainer}>
         {breadCrumbItems.map((item, idx) => {
+          const translatedTitle = translations(item.title, item.values);
+          const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle; 
           return (
             <BreadcrumbItem key={idx} isCurrentPage={false} href={item.route}>
-              {translations(item.title)}
+              {displayText}
             </BreadcrumbItem>
           );
         })}
