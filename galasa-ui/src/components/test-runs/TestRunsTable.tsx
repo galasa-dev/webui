@@ -172,15 +172,19 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
   // Navigate to the test run details page using the runId
   const handleRowClick = (runId: string) => {
-    const queryString = searchParams.toString();
+    // Don't change the actual query string
+    if(searchParams.get('fromRunId')) {
+      const queryString = searchParams.toString();
+      console.log("Query String:", queryString);
 
-    // Save the query string to the sessionStorage if the window object is available
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('testRunsQuery', queryString);
+      // Save the query string to the sessionStorage if the window object is available
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('testRunsQuery', queryString);
+      }
     }
 
-    // Navigate to the test run details page
-    router.push(`/test-runs/${runId}`);
+      // Navigate to the test run details page
+      router.push(`/test-runs/${runId}`);
   };
 
   if ( !tableRows || tableRows.length === 0) {
