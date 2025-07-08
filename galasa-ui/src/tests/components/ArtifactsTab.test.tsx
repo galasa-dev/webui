@@ -26,6 +26,12 @@ jest.mock('@carbon/react', () => ({
       {children}
     </div>
   ),
+  Tooltip: ({ label, children }: any) => (
+    <div data-testid="tooltip">
+      {label}
+      {children}
+    </div>
+  ),
   TreeNode: ({ children, label, onSelect, onToggle, isExpanded, renderIcon }: any) => {
     const IconComponent = renderIcon;
     return (

@@ -14,6 +14,7 @@ import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
+import { Tooltip } from '@carbon/react';
 
 interface FileNode {
   name: string;
@@ -337,14 +338,16 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
                       </p>
                     </div>
                     <div className={styles.toolbarOptions}>
-                      <button
-                        type="button"
-                        onClick={handleDownloadClick}
-                        role='download-button'
-                        className={styles.downloadButton}
-                      >
-                        <CloudDownload size={22} className={styles.clouddownload} />
-                      </button>
+                      <Tooltip label={translations("download_button")} align="bottom">
+                        <button
+                          type="button"
+                          onClick={handleDownloadClick}
+                          role='download-button'
+                          className={styles.downloadButton}
+                        >
+                          <CloudDownload size={22} className={styles.clouddownload} />
+                        </button>
+                      </Tooltip>
                     </div>
                   </Tile>
                 )}
