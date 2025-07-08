@@ -135,7 +135,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     // Cache data based on search parameters
     queryKey: queryKey,
     queryFn: async () => {
-      const response = await fetch(`/api/test-runs?${searchParams.toString()}`);
+      const response = await fetch(`/internal-api/test-runs?${searchParams.toString()}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch test runs');
