@@ -48,9 +48,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     {id: RUN_QUERY_PARAMS.BUNDLE, label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
     {id: RUN_QUERY_PARAMS.SUBMISSION_ID, label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
     {id: RUN_QUERY_PARAMS.TEST_NAME, label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
-    {id: RUN_QUERY_PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'Cancelled, Requeued, Passed, Failed, Error', description: translations("fields.status.description")},
+    {id: RUN_QUERY_PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'any', description: translations("fields.status.description")},
     {id: RUN_QUERY_PARAMS.TAGS, label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
-    {id: RUN_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'Finished, Queued, RunDone, Waiting', description: translations("fields.result.description")},
+    {id: RUN_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'any', description: translations("fields.result.description")},
   ];
 
   const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
