@@ -33,13 +33,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <NextIntlClientProvider>
           <FeatureFlagProvider initialFlags={featureFlagsCookie}>
-         <ThemeProvider>
-            <PageHeader galasaServiceName={galasaServiceName} />
-            <ReactQueryProvider>
-              {children}
-            </ReactQueryProvider>
-            <Footer serviceHealthyPromise={getServiceHealthStatus()} clientVersionPromise={getClientApiVersion()}/>
-          </ThemeProvider>
+            <ThemeProvider>
+              <PageHeader galasaServiceName={galasaServiceName} />
+              <ReactQueryProvider>
+                {children}
+              </ReactQueryProvider>
+              <Footer serviceHealthyPromise={getServiceHealthStatus()} clientVersionPromise={getClientApiVersion()}/>
+            </ThemeProvider>
           </FeatureFlagProvider>
         </NextIntlClientProvider>
       </body>
