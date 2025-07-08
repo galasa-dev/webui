@@ -304,6 +304,7 @@
       "columnName": "Spaltenname",
       "allowedValues": "Zulässige Werte"
     },
+    "clearFilters": "Filter löschen",
 "fields": {
       "runName": {
         "label": "Testlaufname",

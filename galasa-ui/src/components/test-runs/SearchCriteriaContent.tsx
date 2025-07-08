@@ -19,6 +19,7 @@ import CustomCheckBoxList from "./CustomCheckBoxList";
 import {RUN_QUERY_PARAMS, TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
 import { useTranslations } from "next-intl";
+import { Button } from "@carbon/react";
 
 interface FilterableField {
     id: string;
@@ -60,7 +61,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Initialize the saved query  state directly from the URL
+  // Initialize the saved query state directly from the URL
   const [query, setQuery] = useState(() => {
     const initialQuery : Map<string, string> = new Map();
     filterableFields.forEach(field => {
@@ -192,6 +193,17 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     }
   };
 
+  const handleResetToDefaults = () => {
+    // Clear states
+    setCurrentInputValue('');
+    setSelectedResults([]);
+    setSelectedTags([]);
+    setSelectedStatuses([]);
+
+    // Update the query with default empty states
+    updateQueryAndUrl(new Map());
+  };
+
   // Determine if the Save and Reset button should be disabled
   const isSaveAndResetDisabled: boolean = (() => {
     // Get saved value from the query and compare it with the current input value
@@ -283,6 +295,8 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     return customComponent;
   };
 
+  const isClearFiltersDisabled = query.size === 0;
+
   return (
     <div>
       <p>{translations('description')}</p>
@@ -315,6 +329,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         </div>
         {renderComponent(selectedFilter)}
       </div>
+      <Button 
+        type="button"
+        kind="secondary"
+        className={styles.resetToDefaultsButton}
+        onClick={handleResetToDefaults}
+        disabled={isClearFiltersDisabled}
+      >
+        {translations("clearFilters")}
+      </Button>
     </div>
   );
 };
