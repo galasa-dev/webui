@@ -295,6 +295,8 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     return customComponent;
   };
 
+  const isClearFiltersDisabled = query.size === 0;
+
   return (
     <div>
       <p>{translations('description')}</p>
@@ -332,6 +334,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         kind="secondary"
         className={styles.resetToDefaultsButton}
         onClick={handleResetToDefaults}
+        disabled={isClearFiltersDisabled}
       >
         {translations("clearFilters")}
       </Button>

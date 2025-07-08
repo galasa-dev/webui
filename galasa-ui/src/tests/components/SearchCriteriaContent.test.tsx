@@ -7,6 +7,7 @@
 import SearchCriteriaContent from "@/components/test-runs/SearchCriteriaContent";
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from "@testing-library/user-event";
 
 // Mock child components 
 jest.mock('@/components/test-runs/CustomSearchComponent', () => {
@@ -331,5 +332,37 @@ describe('SearchCriteriaContent', () => {
     expect(within(testRunNameRow).queryByText('InitialValue')).not.toBeInTheDocument();
     expect(within(testRunNameRow).getByText('any')).toBeInTheDocument();
     expect(within(resultRow).getByText('any')).toBeInTheDocument();
+  });
+
+  test('"Clear Filters" button is enabled with filters and becomes disabled after being clicked', async () => {
+    const user = userEvent.setup();
+    mockSearchParams = 'runName=MyRun&status=Passed,Failed';
+    
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={requestorNamesPromise}
+        resultsNamesPromise={resultsNamesPromise}
+      />
+    );
+
+    const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
+    expect(clearFiltersButton).toBeEnabled();
+    
+    // Check that the filter value is displayed
+    expect(screen.getByText('MyRun')).toBeInTheDocument();
+    expect(screen.getByText('Passed,Failed')).toBeInTheDocument();
+
+    //The user clicks the button to clear filters
+    await user.click(clearFiltersButton);
+
+    // The button should now be disabled because the state was cleared
+    expect(clearFiltersButton).toBeDisabled();
+    
+    // Assert that the router was called to clear the URL params
+    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+    
+    // Assert the filter values are cleared from the UI
+    expect(screen.queryByText('MyRun')).not.toBeInTheDocument();
+    expect(screen.queryByText('Passed,Failed')).not.toBeInTheDocument();
   });
 });
