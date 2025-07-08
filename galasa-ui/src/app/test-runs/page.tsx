@@ -12,13 +12,29 @@ import { Suspense } from "react";
 import { getRequestorList, getResultsNames } from '@/utils/testRuns';
 
 
-export default async function TestRunsPage() {
+export default async function TestRunsPage({searchParams}: {searchParams: { [key: string]: string }}) {
   const requestorNamesPromise = getRequestorList();
   const resultsNamesPromise = getResultsNames();
 
+  const fromRunName = searchParams.fromRunName || "";
+  const fromRunId = searchParams.fromRunId || "";
+  
+  const breadCrumbItems = fromRunName && fromRunId ? 
+    [HOME, 
+      {
+        title: "testRuns",
+        route: `/test-runs?${new URLSearchParams(searchParams).toString()}`,
+      },
+      {
+        title: "testRunName",
+        values: { runName: fromRunName },
+        route: `/test-runs/${fromRunId}`,
+      }
+    ] : [HOME];
+
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME]} />
+      <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile translationKey={"TestRun.title"} />
       <div className={styles.testRunsContentWrapper}>
         <Suspense fallback={<p>Loading...</p>}>
