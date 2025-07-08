@@ -149,6 +149,14 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     staleTime: Infinity,
   });
 
+  const filteredRuns = useMemo(() => {
+    const fromRunId = searchParams.get("fromRunId")?.trim();
+    
+    if (!runsData?.runs || !fromRunId) {
+      return runsData?.runs || [];
+    }
+    return runsData.runs.filter(run => run.runId !== fromRunId);
+  }, [runsData, searchParams]);
 
   return (
     <Tabs 
@@ -186,7 +194,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         <TabPanel>
           <div className={styles.tabContent}>
             <TestRunsTable
-              runsList={runsData?.runs ?? []}
+              runsList={filteredRuns}
               limitExceeded={runsData?.limitExceeded ?? false}
               visibleColumns={selectedVisibleColumns}
               orderedHeaders={columnsOrder}

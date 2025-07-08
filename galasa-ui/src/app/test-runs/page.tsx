@@ -19,7 +19,7 @@ export default async function TestRunsPage({searchParams}: {searchParams: { [key
   const fromRunName = searchParams.fromRunName || "";
   const fromRunId = searchParams.fromRunId || "";
   
-  const breadCrumbItems = fromRunName && fromRunId ? 
+  const breadCrumbItems = fromRunName ? 
     [HOME, 
       {
         title: "testRuns",
