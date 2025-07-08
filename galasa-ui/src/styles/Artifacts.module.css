@@ -51,3 +51,6 @@
   border: none;
   background-color: transparent;
 }
+.clouddownload{
+  color: var(--cds-text-primary);
+}

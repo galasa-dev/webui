@@ -343,7 +343,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
                         role='download-button'
                         className={styles.downloadButton}
                       >
-                        <CloudDownload size={22} color="#0043ce" />
+                        <CloudDownload size={22} className={styles.clouddownload} />
                       </button>
                     </div>
                   </Tile>
