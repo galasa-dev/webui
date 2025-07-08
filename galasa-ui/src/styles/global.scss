@@ -3,8 +3,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-@use '@carbon/react';
-
+ @use '@carbon/react';
+ @use '@carbon/themes/scss/themes' as *;
+ @use '@carbon/themes';
+ @use '@carbon/styles';
+ 
+ :root {
+   @include themes.theme($white); /*Set default to white theme*/}
+ @media (prefers-color-scheme: white) {
+   :root {
+     @include themes.theme($g100); /*Use dark theme for dark system preference*/}}
+ 
+ [data-carbon-theme='light'] {
+   @include themes.theme($white);
+ }
+ 
+ [data-carbon-theme='dark'] {
+   @include themes.theme($g100);
+ }
+ 
+ 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
