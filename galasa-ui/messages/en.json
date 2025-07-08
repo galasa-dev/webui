@@ -12,6 +12,12 @@
     "settings": "My Settings",
     "logout": "Log out"
   },
+  "LanguageSelector":{
+    "label": "Language"
+  },
+  "ThemeSelector": {
+    "label": "Theme"
+  },
   "PageHeader": {
     "users": "Users",
     "testRuns": "Test runs"
@@ -25,7 +31,8 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "Internationalization": "Internationalization/Multiple language support"
+      "internationalization": "Internationalization/Multiple language support",
+      "theme":"Theme support"
     }
   },
   "AccessTokensSection": {

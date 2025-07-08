@@ -12,6 +12,12 @@
     "settings": "Meine Einstellungen",
     "logout": "Abmelden"
   },
+  "LanguageSelector":{
+    "label": "Sprache"
+  },
+  "ThemeSelector": {
+    "label": "Thema"
+  },
   "PageHeader": {
     "users": "Benutzer",
     "testRuns": "Testläufe"
@@ -25,7 +31,8 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "Internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
+      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
+      "theme": "Designunterstützung"
     }
   },
   "AccessTokensSection": {
