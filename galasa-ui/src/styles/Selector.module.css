@@ -30,7 +30,7 @@
 }
 
 .iconButton {
-  background: none;
+  background:#262626;
   border: none;
   padding: 0.5rem;
   cursor: pointer;
@@ -51,7 +51,6 @@
 }
 
 .active {
-  background-color: #474747;
   color: var(--cds-icon-on-color);
 }
 .themeContainer {
