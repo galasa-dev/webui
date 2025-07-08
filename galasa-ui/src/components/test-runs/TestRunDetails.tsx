@@ -51,7 +51,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
         const queryParams = new URLSearchParams(storedQuery);
         
         // Delete the parameters that should not persist in the breadcrumb
-        queryParams.delete('fromRunId');
         queryParams.delete('fromRunName');
         
         // Set the cleaned query string to the state
