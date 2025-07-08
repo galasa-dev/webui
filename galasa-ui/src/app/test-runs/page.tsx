@@ -19,18 +19,15 @@ export default async function TestRunsPage({searchParams}: {searchParams: { [key
   const fromRunName = searchParams.fromRunName || "";
   const fromRunId = searchParams.fromRunId || "";
   
-  const breadCrumbItems = fromRunName ? 
-    [HOME, 
-      {
-        title: "testRuns",
-        route: `/test-runs?${new URLSearchParams(searchParams).toString()}`,
-      },
-      {
-        title: "testRunName",
-        values: { runName: fromRunName },
-        route: `/test-runs/${fromRunId}`,
-      }
-    ] : [HOME];
+  const breadCrumbItems = fromRunName ? [
+    HOME, 
+    {
+      // This is the link back to the originating run
+      title: "testRunName",
+      values: { runName: fromRunName },
+      route: `/test-runs/${fromRunId}`,
+    },
+  ] : [HOME];
 
   return (
     <main id="content">
