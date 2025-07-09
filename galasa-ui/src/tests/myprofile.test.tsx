@@ -34,6 +34,20 @@ describe('MyProfilePage', () => {
     jest.clearAllMocks();
   });
 
+  beforeAll(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: query.includes('dark'),
+        media: query,
+        onchange: null,
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }),
+    });
+  });
+  
   test('renders loading spinner initially', async () => {
     // When...
     render(<MyProfilePage />);

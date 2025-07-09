@@ -7,6 +7,7 @@
 import SearchCriteriaContent from "@/components/test-runs/SearchCriteriaContent";
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from "@testing-library/user-event";
 
 // Mock child components 
 jest.mock('@/components/test-runs/CustomSearchComponent', () => {
@@ -74,6 +75,7 @@ jest.mock("next-intl", () => ({
       "fields.tags.description": "Description for Tags",
       "fields.result.label": "Result",
       "fields.result.description": "Description for Result",
+      "clearFilters": "Clear Filters",
     };
     return translations[key] || key;
   },
@@ -297,5 +299,70 @@ describe('SearchCriteriaContent', () => {
     // Type new value, The button should be enabled.
     fireEvent.change(input, { target: { value: 'Another Value' } });
     expect(submitButton).toBeEnabled();
+  });
+
+  test('clear all filters when the "Clear Filters" button is clicked', async () => {
+    // Start with some search params to ensure we have something to clear
+    mockSearchParams = 'runName=InitialValue&result=Passed';
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={requestorNamesPromise}
+        resultsNamesPromise={resultsNamesPromise}
+      />
+    );
+
+    const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
+
+    const testRunNameRow = screen.getByText('Test Run Name').closest('[role="row"]') as HTMLElement;
+    const resultRow = screen.getByText('Result').closest('[role="row"]') as HTMLElement;
+
+    await waitFor(() => {
+      expect(within(testRunNameRow).getByText('InitialValue')).toBeInTheDocument(); 
+      expect(within(resultRow).getByText('Passed')).toBeInTheDocument();
+    });
+
+    // Clear all filters
+    fireEvent.click(clearFiltersButton);
+
+    // Assert that the URL has been cleared
+    await waitFor(() => {
+      expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+    });
+
+    expect(within(testRunNameRow).queryByText('InitialValue')).not.toBeInTheDocument();
+    expect(within(testRunNameRow).getByText('any')).toBeInTheDocument();
+    expect(within(resultRow).getByText('any')).toBeInTheDocument();
+  });
+
+  test('"Clear Filters" button is enabled with filters and becomes disabled after being clicked', async () => {
+    const user = userEvent.setup();
+    mockSearchParams = 'runName=MyRun&status=Passed,Failed';
+    
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={requestorNamesPromise}
+        resultsNamesPromise={resultsNamesPromise}
+      />
+    );
+
+    const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
+    expect(clearFiltersButton).toBeEnabled();
+    
+    // Check that the filter value is displayed
+    expect(screen.getByText('MyRun')).toBeInTheDocument();
+    expect(screen.getByText('Passed,Failed')).toBeInTheDocument();
+
+    //The user clicks the button to clear filters
+    await user.click(clearFiltersButton);
+
+    // The button should now be disabled because the state was cleared
+    expect(clearFiltersButton).toBeDisabled();
+    
+    // Assert that the router was called to clear the URL params
+    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+    
+    // Assert the filter values are cleared from the UI
+    expect(screen.queryByText('MyRun')).not.toBeInTheDocument();
+    expect(screen.queryByText('Passed,Failed')).not.toBeInTheDocument();
   });
 });
