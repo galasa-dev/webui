@@ -171,16 +171,12 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
   };
 
   // Navigate to the test run details page using the runId
-  const handleRowClick = (runId: string) => {
-    // Don't change the actual query string
-    if(searchParams.get('fromRunId')) {
-      const queryString = searchParams.toString();
-      console.log("Query String:", queryString);
+  const handleRowClick = (runId: string, runName: string) => {
+    const queryString = searchParams.toString();
 
-      // Save the query string to the sessionStorage if the window object is available
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('testRunsQuery', queryString);
-      }
+    // Store the query string in sessionStorage with a key based on the runName
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(`${runName}-testRunsQuery`, queryString);
     }
 
     // Navigate to the test run details page
@@ -232,7 +228,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
                 </TableHead>
                 <TableBody>
                   {rows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
+                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id, row.cells.find(cell => cell.info.header === 'testRunName')?.value as string)}>
                       {row.cells.map((cell) => 
                         <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
                     </TableRow>
