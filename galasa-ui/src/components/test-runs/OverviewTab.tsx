@@ -22,10 +22,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const MONTH_AGO = getOneMonthAgo();
 
   const fullTestName = metadata?.package + "." + metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results&fromRunId=${metadata?.runId}
-  &fromRunName=${metadata?.runName}`;
+  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results&fromRunId=${metadata?.runId}&fromRunName=${metadata?.runName}`;
   const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}&tab=results&fromRunId=${metadata?.runId}&fromRunName=${metadata?.runName}`;
-
   useEffect(() => {
 
     const validateTime = () => {
