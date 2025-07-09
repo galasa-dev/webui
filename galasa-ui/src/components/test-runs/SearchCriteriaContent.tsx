@@ -53,7 +53,9 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     {id: RUN_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'any', description: translations("fields.result.description")},
   ];
 
-  const [selectedFilter, setSelectedFilter] = useState(filterableFields[0]);
+  const [selectedFilterId, setSelectedFilterId] = useState(filterableFields[0].id);
+  const selectedFilter = filterableFields.find(field => field.id === selectedFilterId) || filterableFields[0];
+
   const [currentInputValue, setCurrentInputValue] = useState('');
   const [allRequestors, setAllRequestors] = useState<string[]>([]);
   const [resultsNames, setResultsNames] = useState<string[]>([]);
@@ -113,12 +115,12 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   // Update the current input value on the first mount or when the selected filter changes
   useEffect(() => {
     handleFilterSelect(selectedFilter);
-  }, [selectedFilter]);
+  }, [selectedFilterId]);
 
 
   // Update the current input value when the selected filter changes or when the query is updated
   const handleFilterSelect = (field: FilterableField) => {
-    setSelectedFilter(field);
+    setSelectedFilterId(field.id);
     const savedValue = query.get(field.id) || '';
 
     // Update the local UI state to match the newly selected filter's saved value
@@ -207,11 +209,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   // Determine if the Save and Reset button should be disabled
   const isSaveAndResetDisabled: boolean = (() => {
     // Get saved value from the query and compare it with the current input value
-    const savedValue = query.get(selectedFilter.id) || '';
+    const savedValue = query.get(selectedFilterId) || '';
     let isDisabled = false;
 
     const splitSavedValue = savedValue ? savedValue.split(',').sort() : [];
-    switch (selectedFilter.id) {
+    switch (selectedFilterId) {
     case 'result': {
       const savedResults = splitSavedValue;
       const currentResults = [...selectedResults].sort();
