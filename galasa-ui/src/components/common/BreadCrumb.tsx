@@ -12,12 +12,7 @@ import "@/styles/global.scss";
 import styles from "@/styles/BreadCrumb.module.css";
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
-
-interface BreadCrumbProps {
-  title: string;
-  route: string;
-  values?: Record<string, string>;
-}
+import { BreadCrumbProps } from '@/utils/interfaces/components';
 
 function BreadCrumb({
   breadCrumbItems,
