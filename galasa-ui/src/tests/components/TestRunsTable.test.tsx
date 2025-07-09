@@ -33,6 +33,7 @@ jest.mock("next-intl", () => ({
       "pagination.pages": "pages",
       "pagination.pageNumberText": "Page number",
       "noTestRunsFound": "No test runs were found for the selected timeframe",
+      "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible.",
       "isloading": "Loading...",
       "submittedAt": "Submitted at",
       "testRunName": "Test Run name",
@@ -146,6 +147,18 @@ describe('TestRunsTable Component', () => {
     // Assert
     const warningMessage = await screen.findByText(`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`);
     expect(warningMessage).toBeInTheDocument();
+  });
+
+  test('displays no visible columns message when no columns are selected', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(2);
+
+    // Act
+    render(<TestRunsTable {...defaultProps} runsList={mockRuns} visibleColumns={[]} />);
+
+    // Assert
+    const noColumnsMessage = await screen.findByText('All of the columns have been hidden in the table design tab, so no result details will be visible.');
+    expect(noColumnsMessage).toBeInTheDocument();
   });
 });
 

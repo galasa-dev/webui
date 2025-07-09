@@ -295,6 +295,32 @@ describe('TestRunsTabs Component', () => {
       expect(params.get('columnsOrder')).toBe('result,status');
       expect(params.get('visibleColumns')).toBe('submittedAt,testRunName,requestor,testName,status,result');
     });
+
+    test('clear visible columns in URL when none are selected', async () => {
+      // Arrange
+      render(
+        <TestRunsTabs
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        /> , { wrapper }
+      );
+
+      // Wait for the initial save
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      mockReplace.mockClear();
+  
+      // Act: Simulate a child component clearing the visible columns
+      act(() => {
+        capturedSetSelectedVisibleColumns([]);
+      });
+  
+      // Assert: The save-to-URL effect runs again with the new state
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+  
+      const urlCall = mockReplace.mock.calls[0][0];
+      const params = new URLSearchParams(urlCall.split('?')[1]);
+      expect(params.get('visibleColumns')).toBeNull();
+    });
   });
 
   describe('Data Fetching with useQuery', () => {
