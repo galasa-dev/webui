@@ -54,8 +54,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   ];
 
   const [selectedFilterId, setSelectedFilterId] = useState(filterableFields[0].id);
-  const selectedFilter = filterableFields.find(field => field.id === selectedFilterId) || filterableFields[0];
-
   const [currentInputValue, setCurrentInputValue] = useState('');
   const [allRequestors, setAllRequestors] = useState<string[]>([]);
   const [resultsNames, setResultsNames] = useState<string[]>([]);
@@ -114,24 +112,24 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
   // Update the current input value on the first mount or when the selected filter changes
   useEffect(() => {
-    handleFilterSelect(selectedFilter);
+    handleFilterSelect(selectedFilterId);
   }, [selectedFilterId]);
 
 
   // Update the current input value when the selected filter changes or when the query is updated
-  const handleFilterSelect = (field: FilterableField) => {
-    setSelectedFilterId(field.id);
-    const savedValue = query.get(field.id) || '';
+  const handleFilterSelect = (fieldId: string) => {
+    setSelectedFilterId(fieldId);
+    const savedValue = query.get(fieldId) || '';
 
     // Update the local UI state to match the newly selected filter's saved value
     setCurrentInputValue(savedValue);
 
     const splitSavedValue = savedValue ? savedValue.split(',') : [];
-    if (field.id === RUN_QUERY_PARAMS.RESULT) {
+    if (fieldId === RUN_QUERY_PARAMS.RESULT) {
       setSelectedResults(splitSavedValue);
-    } else if (field.id === RUN_QUERY_PARAMS.STATUS) {
+    } else if (fieldId === RUN_QUERY_PARAMS.STATUS) {
       setSelectedStatuses(splitSavedValue);
-    } else if (field.id === RUN_QUERY_PARAMS.TAGS) {
+    } else if (fieldId === RUN_QUERY_PARAMS.TAGS) {
       setSelectedTags(splitSavedValue);
     }
   };
@@ -153,11 +151,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // Determine the new value for the currently selected filter
     let valueToSet = '';
-    if (selectedFilter.id === RUN_QUERY_PARAMS.RESULT) {
+    if (selectedFilterId === RUN_QUERY_PARAMS.RESULT) {
       valueToSet = selectedResults.join(',');
-    } else if (selectedFilter.id === RUN_QUERY_PARAMS.STATUS) {
+    } else if (selectedFilterId === RUN_QUERY_PARAMS.STATUS) {
       valueToSet = selectedStatuses.join(',');
-    } else if (selectedFilter.id === RUN_QUERY_PARAMS.TAGS) {
+    } else if (selectedFilterId === RUN_QUERY_PARAMS.TAGS) {
       valueToSet = selectedTags.join(',');
     } else {
       valueToSet = currentInputValue.trim();
@@ -167,10 +165,10 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     // If the new value is not empty, set it. Otherwise, delete the key.
     if (valueToSet) {
-      newQuery.set(selectedFilter.id, valueToSet);
+      newQuery.set(selectedFilterId, valueToSet);
     } else {
       // If the value is empty, remove the key from the query
-      newQuery.delete(selectedFilter.id);
+      newQuery.delete(selectedFilterId);
     }
 
     // Update the URL with the new query parameters and set the query state
@@ -180,11 +178,11 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
   const handleCancel = () => {
     // Revert changes by re-running the selection logic
-    handleFilterSelect(selectedFilter);
+    handleFilterSelect(selectedFilterId);
   };
 
   const handleClearAndSave = (fieldId: string) => {
-    if (selectedFilter.id === fieldId) {
+    if (selectedFilterId === fieldId) {
       setCurrentInputValue('');
     }
   
@@ -298,6 +296,8 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
   };
 
   const isClearFiltersDisabled = query.size === 0;
+  const selectedFilterField = filterableFields.find(field => field.id === selectedFilterId) || filterableFields[0];
+
 
   return (
     <div>
@@ -318,8 +318,8 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
                 <StructuredListRow key={field.id}>
                   <div
                     key={field.id} 
-                    onClick={() => handleFilterSelect(field)} 
-                    className={`${styles.rowWrapper} ${selectedFilter.id === field.id ? styles.selectedRow : ''}`}
+                    onClick={() => handleFilterSelect(field.id)} 
+                    className={`${styles.rowWrapper} ${selectedFilterId === field.id ? styles.selectedRow : ''}`}
                   >
                     <StructuredListCell>{field.label}</StructuredListCell>
                     <StructuredListCell>{query.get(field.id) || field.placeHolder}</StructuredListCell>
@@ -329,7 +329,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
             </StructuredListBody>
           </StructuredListWrapper>
         </div>
-        {renderComponent(selectedFilter)}
+        {renderComponent(selectedFilterField)}
       </div>
       <Button 
         type="button"
