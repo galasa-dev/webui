@@ -246,6 +246,7 @@
       "default": "Zeige Testläufe der letzten 24 Stunden",
       "range": "Zeige Testläufe von {from} bis {to}"
     },
+    "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
       "backwardText": "Vorherige Seite",
       "forwardText": "Nächste Seite",

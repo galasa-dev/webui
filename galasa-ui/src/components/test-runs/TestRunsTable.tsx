@@ -187,6 +187,10 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
     router.push(`/test-runs/${runId}`);
   };
 
+  if (visibleColumns.length === 0) {
+    return <p>{translations('noColumnsSelected')}</p>;
+  }
+
   if ( !tableRows || tableRows.length === 0) {
     return <p>{translations('noTestRunsFound')}</p>;
   }

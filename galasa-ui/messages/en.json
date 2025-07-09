@@ -246,6 +246,7 @@
       "default": "Showing test runs submitted in the last 24 hours",
       "range": "Showing test runs submitted between {from} and {to}"
     },
+    "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible. Please adjust the table design to show the columns that you would like to see.",
     "pagination": {
       "backwardText": "Previous page",
       "forwardText": "Next page",

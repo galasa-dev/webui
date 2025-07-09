@@ -249,6 +249,11 @@
   border-bottom: 1px solid #393939; 
 }
 
+.tableDesignHeaderRow .cellValue {
+  justify-content: center;
+  padding-right: 1.5rem;
+}
+
 .tableDesignHeaderRow .cellDragHandle {
   flex: 2;
   display: flex;
