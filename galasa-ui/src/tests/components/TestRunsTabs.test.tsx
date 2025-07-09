@@ -479,5 +479,5 @@ describe('TestRunsTabs Component', () => {
     // You can also add a check to ensure isLoading is false in the final state
     const finalProps = TestRunsTableMock.mock.lastCall?.[0];
     expect(finalProps?.isLoading).toBe(false);
-  })
+  });
 });

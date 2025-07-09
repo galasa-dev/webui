@@ -42,8 +42,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isError, setIsError] = useState(false);
   const [savedQuery, setSavedQuery] = useState<string>("");
 
-   // Get the query string from the sessionStorage if it exists
-   useEffect(() => {
+  // Get the query string from the sessionStorage if it exists
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedQuery = sessionStorage.getItem('testRunsQuery');
       if (storedQuery) {

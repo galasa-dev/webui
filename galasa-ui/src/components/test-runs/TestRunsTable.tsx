@@ -183,8 +183,8 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
       }
     }
 
-      // Navigate to the test run details page
-      router.push(`/test-runs/${runId}`);
+    // Navigate to the test run details page
+    router.push(`/test-runs/${runId}`);
   };
 
   if ( !tableRows || tableRows.length === 0) {
