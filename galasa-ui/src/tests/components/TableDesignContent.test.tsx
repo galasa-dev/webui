@@ -180,28 +180,6 @@ describe("TableDesignContent Component", () => {
       expect(newOrderIds).toEqual(['status', 'testName', 'requestor']);
     });
 
-    test('should move a row up when its up arrow is clicked', () => {
-      render(
-        <TableDesignContent 
-          selectedRowIds={[]}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
-      );
-
-      // Click the up arrow on 'requestor' (index 1)
-      const arrowUpButton = screen.getByTestId('arrow-up-requestor'); 
-      fireEvent.click(arrowUpButton);
-
-      expect(mockSetTableRows).toHaveBeenCalledWith(expect.any(Function));
-
-      const updaterFunction = mockSetTableRows.mock.calls[0][0];
-      const newOrder = updaterFunction(mockTableRows);
-      const newOrderIds = newOrder.map((row: any) => row.id);
-      expect(newOrderIds).toEqual(['requestor', 'testName', 'status']);
-    });
-
     test('should not move the top row up', () => {
       render(
         <TableDesignContent 

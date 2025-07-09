@@ -9,20 +9,16 @@ import { Checkbox } from "@carbon/react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IconButton } from "@carbon/react";
-import { ChevronDownOutline, ChevronUpOutline, Draggable } from "@carbon/icons-react";
-import { RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
+import {  Draggable } from "@carbon/icons-react";
 import { useTranslations } from "next-intl";
 
 interface TableDesignRowProps {
   rowId: string;
-  index: number;
   isSelected: boolean;
   onSelect: (rowId: string) => void;
-  onClickArrowUp: () => void;
-  onClickArrowDown: () => void;
 }
 
-export default function TableDesignRow({ rowId, index, isSelected,  onSelect, onClickArrowUp, onClickArrowDown }: TableDesignRowProps) {
+export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableDesignRowProps) {
   const translations = useTranslations("TableDesignRow");
 
   const {
@@ -55,22 +51,6 @@ export default function TableDesignRow({ rowId, index, isSelected,  onSelect, on
           {...listeners} 
         >
           <Draggable size={20} />
-        </IconButton>
-        <IconButton
-          kind="ghost"
-          label={translations("moveUpLabel")}
-          onClick={onClickArrowUp}
-          className={`${styles.arrowUpButton} ${index === 0 ? styles.hidden : ''}`}
-        >
-          <ChevronUpOutline size={19}/>  
-        </IconButton>
-        <IconButton
-          kind="ghost"
-          label={translations("moveDownLabel")}
-          onClick={onClickArrowDown}
-          className={`${styles.arrowDownButton} ${index === RESULTS_TABLE_COLUMNS.length - 1 ? styles.hidden : ''}`}
-        >
-          <ChevronDownOutline size={19}/>
         </IconButton>
       </div>
     
