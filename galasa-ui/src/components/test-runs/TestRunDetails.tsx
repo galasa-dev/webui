@@ -18,10 +18,10 @@ import { getIsoTimeDifference, parseIsoDateTime } from '@/utils/timeOperations';
 import MethodsTab from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
-import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
+import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -33,6 +33,7 @@ interface TestRunDetailsProps {
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
   const translations = useTranslations("TestRunDetails");
+  const {breadCrumbItems, pushBreadCrumb} = useHistoryBreadCrumbs();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -40,25 +41,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [savedQuery, setSavedQuery] = useState<string>("");
 
-  // Get the query string from the sessionStorage if it exists
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedQuery = sessionStorage.getItem('testRunsQuery');
-      if (storedQuery) {
-        // Parse the query string to easily manipulate it
-        const queryParams = new URLSearchParams(storedQuery);
-        
-        // Delete the parameters that should not persist in the breadcrumb
-        queryParams.delete('fromRunId');
-        queryParams.delete('fromRunName');
-        
-        // Set the cleaned query string to the state
-        setSavedQuery(queryParams.toString());
-      }
-    }
-  }, []);
   
   const extractRunDetails = useCallback((runDetails: Run) => {
 
@@ -116,13 +99,9 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     return <ErrorPage />;
   }
 
-  // Build the test runs route with the saved query string
-  const testRunsRoute = savedQuery ? `${TEST_RUNS.route}?${savedQuery}` : TEST_RUNS.route;
-  const testRunsBreadCrumb = { ...TEST_RUNS, route: testRunsRoute };
-  
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME, testRunsBreadCrumb]} />
+      <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile
         translationKey={translations("title", {
           runName: run?.runName || "Unknown Run Name",

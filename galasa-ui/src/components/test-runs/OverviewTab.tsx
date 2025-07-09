@@ -13,17 +13,21 @@ import { useTranslations } from "next-intl";
 import { Link } from "@carbon/react";
 import { Launch } from "@carbon/icons-react";
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from "@/utils/timeOperations";
+import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
+import { TEST_RUN } from "@/utils/constants/breadcrumb";
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const tags = metadata?.tags || [];
   const translations = useTranslations("OverviewTab");
+  const {pushBreadCrumb} = useHistoryBreadCrumbs();
+  
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
   
   const MONTH_AGO = getOneMonthAgo();
 
   const fullTestName = metadata?.package + "." + metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results&fromRunId=${metadata?.runId}&fromRunName=${metadata?.runName}`;
-  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}&tab=results&fromRunId=${metadata?.runId}&fromRunName=${metadata?.runName}`;
+  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results`;
+  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}&tab=results`;
   useEffect(() => {
 
     const validateTime = () => {
@@ -38,6 +42,16 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     validateTime();
 
   },[metadata?.rawSubmittedAt]);
+
+  const handleNavigationClick = () => {
+    // Push the current URL to the breadcrumb history
+    pushBreadCrumb({
+      ...TEST_RUN, 
+      route: `/test-runs/${metadata.runId}`,
+      values: {runName: metadata.runName}
+    })
+
+  }
 
   return (
     <>
@@ -96,16 +110,19 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         </div>
 
         <div className={styles.redirectLinks}>
-          <Link href={OTHER_RECENT_RUNS} renderIcon={Launch} size="lg">
-            {translations("recentRunsLink")}
-          </Link>
-
+          <div className={styles.linkWrapper} onClick={handleNavigationClick}>
+            <Link href={OTHER_RECENT_RUNS} renderIcon={Launch} size="lg">
+              {translations("recentRunsLink")}
+            </Link>
+          </div>
           {/* Only show the link if date is valid */}
           {
             weekBefore !== null && (
-              <Link href={RETRIES_FOR_THIS_TEST_RUN} renderIcon={Launch} size="lg">
-                {translations("runRetriesLink")}
-              </Link>
+              <div className={styles.linkWrapper} onClick={handleNavigationClick}>
+                <Link href={RETRIES_FOR_THIS_TEST_RUN} renderIcon={Launch} size="lg">
+                  {translations("runRetriesLink")}
+                </Link>
+              </div>
             )
           }
         </div>

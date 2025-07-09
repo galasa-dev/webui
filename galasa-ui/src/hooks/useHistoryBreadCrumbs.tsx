@@ -1,8 +1,14 @@
-'use client';
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+"use client";
 import { useCallback, useEffect, useState } from "react";
 import { BreadCrumbProps } from "@/utils/interfaces";
 import { HOME } from "@/utils/constants/breadcrumb";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+
 
 const SESSION_STORAGE_KEY = 'breadCrumbHistory';
 
@@ -13,9 +19,10 @@ const SESSION_STORAGE_KEY = 'breadCrumbHistory';
  * @returns pushBreadCrumb - function to add bread crumb to the history
  * @returns resetBreadCrumbs - function to reset all breadcrumbs to HOME
  */
-export default function useHistoryBreadCrubs() {
+export default function useHistoryBreadCrumbs() {
     const [items, setItems] = useState<BreadCrumbProps[]>([]);
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     // Load items initially from session storage
     useEffect(() => {
@@ -49,18 +56,21 @@ export default function useHistoryBreadCrubs() {
 
     // Handle browser backward/forward navigation
     useEffect(() => {
+        const queryString = searchParams.toString();
+        const fullPath = queryString ? `${pathname}?${queryString}` : pathname;
+        
         setItems((prevItems) => {
-            const currentPathIndex = prevItems.findIndex(item => item.route === pathname);
+            const currentPathIndex = prevItems.findIndex(item => (item.route === fullPath));
 
             // If the current path is found in our history, truncate the list to that point
             if (currentPathIndex > -1) {
-                const newItems = prevItems.slice(0, currentPathIndex + 1);
+                const newItems = prevItems.slice(0, currentPathIndex);
                 sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newItems));
                 return newItems;
             }
             return prevItems;
         });
-    }, [pathname])
+    }, [pathname, searchParams])
 
     return {breadCrumbItems: items, pushBreadCrumb, resetBreadCrumbs}
 }

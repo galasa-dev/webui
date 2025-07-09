@@ -34,6 +34,8 @@ import ErrorPage from "@/app/error/page";
 import { MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
+import { TEST_RUNS } from "@/utils/constants/breadcrumb";
 
 
 interface CustomCellProps {
@@ -98,6 +100,7 @@ interface TestRunsTableProps {
 
 export default function TestRunsTable({runsList,limitExceeded, visibleColumns, orderedHeaders, isLoading, isError}: TestRunsTableProps) {
   const translations = useTranslations("TestRunsTable");
+  const { pushBreadCrumb } = useHistoryBreadCrumbs();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -172,12 +175,10 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
   // Navigate to the test run details page using the runId
   const handleRowClick = (runId: string, runName: string) => {
-    const queryString = searchParams.toString();
-
-    // Store the query string in sessionStorage with a key based on the runName
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(`${runName}-testRunsQuery`, queryString);
-    }
+    // Push the current page URL to the breadcrumb history
+    pushBreadCrumb({
+      ...TEST_RUNS , route: `/test-runs?${searchParams.toString()}`
+    });
 
     // Navigate to the test run details page
     router.push(`/test-runs/${runId}`);
