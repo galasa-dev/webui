@@ -24,8 +24,8 @@ const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
 const MAX_RANGE_MONTHS = 3;
 
-const TEST_RUNS_STATUS = ['Submitted','Queued','Allocated', 'Started', 'Generating', 
-  'Building', 'Provstart', 'Running', 'Rundone', 'Ending', 'Waiting', 'Finished',];
+const TEST_RUNS_STATUS = ['Queued', 'Started', 'Generating', 
+  'Building', 'Provstart', 'Running', 'Rundone', 'Ending', 'Finished',];
 
 const COLUMNS_IDS = {
   SUBMITTED_AT: "submittedAt",
@@ -55,9 +55,26 @@ const RESULTS_TABLE_COLUMNS = [
   { id: "result", columnName: "Result" },
 ];
   
+const RUN_QUERY_PARAMS = {
+  FROM: "from",
+  TO: "to",
+  RUN_NAME: "runName",
+  REQUESTOR: "requestor",
+  GROUP: "group",
+  BUNDLE: "bundle",
+  PACKAGE: "package",
+  TEST_NAME: "testName",
+  SUBMISSION_ID: "submissionId",
+  STATUS: "status",
+  RESULT: "result",
+  TAGS: "tags",
+  VISIBLE_COLUMNS: "visibleColumns",
+  COLUMNS_ORDER: "columnsOrder",
+  TAB: "tab"
+};
   
 const BATCH_SIZE = 100;
 
 export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, 
   HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS,
-  BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS};
+  BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS};

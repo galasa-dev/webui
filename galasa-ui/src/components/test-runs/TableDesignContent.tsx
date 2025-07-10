@@ -58,32 +58,6 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     }
   };
 
-  const handleMoveUp = (index: number) => {
-    if (index > 0) {
-      console.log("Moving up", index);
-      setTableRows((rows) => {
-        const newRows = [...rows];
-        const temp = newRows[index - 1];
-        newRows[index - 1] = newRows[index];
-        newRows[index] = temp;
-        return newRows;
-      });
-    }
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index < tableRows.length - 1) {
-      console.log("Moving down", index);
-      setTableRows((rows) => {
-        const newRows = [...rows];
-        const temp = newRows[index + 1];
-        newRows[index + 1] = newRows[index];
-        newRows[index] = temp;
-        return newRows;
-      });
-    }
-  };
-
   // All sensors used for drag and drop functionality (Pointer, Touch, and Keyboard)
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -120,15 +94,12 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
         </div>
         <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
           {
-            tableRows.map((row, index) => (
+            tableRows.map((row) => (
               <TableDesignRow 
                 key={row.id} 
-                index={index}
                 rowId={row.id} 
                 isSelected={selectedRowIds.includes(row.id)}
                 onSelect={handleRowSelect}
-                onClickArrowUp={() => handleMoveUp(index)}
-                onClickArrowDown={() => handleMoveDown(index)}
               />
             )) 
           }
