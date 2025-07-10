@@ -151,7 +151,7 @@
     "title": "Artefakte",
     "description": "Ein Artefakt ist ein Zustand, der nach einem Lauf erhalten bleibt. Artefakte können heruntergeladen und angezeigt werden.",
     "downloading": "Artefakt wird heruntergeladen",
-    "download_button": "Herunterladen",
+    "download_button": "Dieses Artefakt herunterladen",
     "error_title": "Fehler",
     "error_subtitle": "Fehler beim Herunterladen. Versuchen Sie es erneut oder verwenden Sie das CLI-Tool:\ngalasactl runs download --name {runName}",
     "select_file": "Datei auswählen, um Inhalt anzuzeigen",

@@ -14,7 +14,6 @@ import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
-import { Tooltip } from '@carbon/react';
 import { Button } from '@carbon/react';
 
 interface FileNode {
