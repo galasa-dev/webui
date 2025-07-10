@@ -24,6 +24,8 @@ export default function useHistoryBreadCrumbs() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
+    const [isInitialized, setIsInitialized] = useState(false);
+
     // Load items initially from session storage
     useEffect(() => {
         const storedItems = sessionStorage.getItem(SESSION_STORAGE_KEY);
@@ -33,6 +35,7 @@ export default function useHistoryBreadCrumbs() {
             // Default starting point
             setItems([HOME]);
         }
+        setIsInitialized(true);
     }, []);
 
     // Function to add a new breadcrumb item
@@ -56,6 +59,8 @@ export default function useHistoryBreadCrumbs() {
 
     // Handle browser backward/forward navigation
     useEffect(() => {
+        if(!isInitialized) return;
+        
         const queryString = searchParams.toString();
         const fullPath = queryString ? `${pathname}?${queryString}` : pathname;
         

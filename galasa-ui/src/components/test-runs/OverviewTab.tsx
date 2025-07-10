@@ -28,7 +28,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   const fullTestName = metadata?.package + "." + metadata?.testName;
   const OTHER_RECENT_RUNS = `/test-runs?${RUN_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${RUN_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${RUN_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${RUN_QUERY_PARAMS.FROM}=${MONTH_AGO}&${RUN_QUERY_PARAMS.TAB}=results&${RUN_QUERY_PARAMS.EXCLUDE_RUN}=${metadata?.runId}`;
-  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${RUN_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${RUN_QUERY_PARAMS.FROM}=${weekBefore}&${RUN_QUERY_PARAMS.TAB}=results&${RUN_QUERY_PARAMS.EXCLUDE_RUN}${metadata?.runId}`;
+  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${RUN_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${RUN_QUERY_PARAMS.FROM}=${weekBefore}&${RUN_QUERY_PARAMS.TAB}=results&${RUN_QUERY_PARAMS.EXCLUDE_RUN}=${metadata?.runId}`;
   useEffect(() => {
 
     const validateTime = () => {

@@ -9,6 +9,7 @@ import { render, screen } from '@testing-library/react';
 import OverviewTab from '@/components/test-runs/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 // Mock the Carbon Tag component to simplify assertions
 jest.mock('@carbon/react', () => ({
@@ -47,6 +48,14 @@ jest.mock("next-intl", () => ({
     };
     return translations[key] || key;
   },
+}));
+
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    pushBreadCrumb: jest.fn(),
+    resetBreadCrumbs: jest.fn(),
+  }),
 }));
 
 const completeMetadata: RunMetadata = {
@@ -144,7 +153,7 @@ describe('OverviewTab - Time and Link Logic', () => {
       link.getAttribute('href')?.includes('testName=')
     );
     
-    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results&fromRunId=${completeMetadata.runId}&fromRunName=${completeMetadata.runName}`;
+    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results&excludeRun=${completeMetadata.runId}`;
     
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
@@ -169,7 +178,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     );
     expect(retriesLink).toHaveAttribute(
       'href', 
-      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results&fromRunId=${completeMetadata.runId}&fromRunName=${completeMetadata.runName}`
+      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results&excludeRun=${completeMetadata.runId}`
     );
   });
 

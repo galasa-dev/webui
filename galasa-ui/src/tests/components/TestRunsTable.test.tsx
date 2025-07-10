@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
+import React, { use } from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
@@ -19,6 +19,15 @@ jest.mock('next/navigation', () => ({
     push: mockRouterPush,
   }),
   useSearchParams: () => new URLSearchParams(),
+}));
+
+// Mock the useHistoryBreadCrumbs hook to return a mock history breadcrumbs.
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    pushBreadCrumb: jest.fn(),
+    resetBreadCrumbs: jest.fn(),
+  }),
 }));
 
 jest.mock("next-intl", () => ({

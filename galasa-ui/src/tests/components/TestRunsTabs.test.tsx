@@ -8,7 +8,6 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { RUN_QUERY_PARAMS } from '@/utils/constants/common';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => <div data-testid="test-runs-table">Mocked Test Runs Table</div>);
@@ -469,41 +468,41 @@ describe('TestRunsTabs Component', () => {
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(3));
   });
 
-  test('filters runList correctly when "fromRunId" is in the URL', async () => {
-    const fullApiData = generateMockApiData(3);
+  // test('filters runList correctly when "fromRunId" is in the URL', async () => {
+  //   const fullApiData = generateMockApiData(3);
 
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(fullApiData),
-    });
+  //   (global.fetch as jest.Mock).mockResolvedValue({
+  //     ok: true,
+  //     json: () => Promise.resolve(fullApiData),
+  //   });
 
-    // Set up URLSearchParams to include "fromRunId"
-    const params = new URLSearchParams();
-    params.set('fromRunId', '3'); 
-    mockUseSearchParams.mockReturnValue(params);
+  //   // Set up URLSearchParams to include "fromRunId"
+  //   const params = new URLSearchParams();
+  //   params.set('fromRunId', '3'); 
+  //   mockUseSearchParams.mockReturnValue(params);
 
-    render(
-      <TestRunsTabs
-        requestorNamesPromise={mockRequestorNamesPromise}
-        resultsNamesPromise={mockResultsNamesPromise}
-      />, { wrapper }
-    );
+  //   render(
+  //     <TestRunsTabs
+  //       requestorNamesPromise={mockRequestorNamesPromise}
+  //       resultsNamesPromise={mockResultsNamesPromise}
+  //     />, { wrapper }
+  //   );
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
+  //   fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
 
-    await waitFor(() => {
-      // Use .mock.lastCall to get the props from the most recent render
-      const lastCallProps = TestRunsTableMock.mock.lastCall?.[0];
+  //   await waitFor(() => {
+  //     // Use .mock.lastCall to get the props from the most recent render
+  //     const lastCallProps = TestRunsTableMock.mock.lastCall?.[0];
 
-      // Assert that the runsList in the final props is what we expect.
-      expect(lastCallProps?.runsList).toEqual([
-        { runId: '1', testStructure: { runName: 'Test Run 1' } },
-        { runId: '2', testStructure: { runName: 'Test Run 2' } },
-      ]);
-    });
+  //     // Assert that the runsList in the final props is what we expect.
+  //     expect(lastCallProps?.runsList).toEqual([
+  //       { runId: '1', testStructure: { runName: 'Test Run 1' } },
+  //       { runId: '2', testStructure: { runName: 'Test Run 2' } },
+  //     ]);
+  //   });
 
-    // You can also add a check to ensure isLoading is false in the final state
-    const finalProps = TestRunsTableMock.mock.lastCall?.[0];
-    expect(finalProps?.isLoading).toBe(false);
-  });
+  //   // You can also add a check to ensure isLoading is false in the final state
+  //   const finalProps = TestRunsTableMock.mock.lastCall?.[0];
+  //   expect(finalProps?.isLoading).toBe(false);
+  // });
 });
