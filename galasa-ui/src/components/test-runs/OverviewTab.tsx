@@ -50,9 +50,9 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
       ...TEST_RUN, 
       route: `/test-runs/${metadata.runId}`,
       values: {runName: metadata.runName}
-    })
+    });
 
-  }
+  };
 
   return (
     <>

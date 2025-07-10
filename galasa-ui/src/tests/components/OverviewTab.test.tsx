@@ -50,10 +50,11 @@ jest.mock("next-intl", () => ({
   },
 }));
 
+const pushBreadCrumbMock = jest.fn();
 jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
   __esModule: true,
   default: () => ({
-    pushBreadCrumb: jest.fn(),
+    pushBreadCrumb: pushBreadCrumbMock,
     resetBreadCrumbs: jest.fn(),
   }),
 }));
@@ -271,5 +272,15 @@ describe('OverviewTab - Time and Link Logic', () => {
       link.getAttribute('href')?.includes('submissionId')
     );
     expect(retriesLink).toBeUndefined();
+  });
+
+  it('push link bread crumb when any of the links is clicked', () => {
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const links = screen.getAllByTestId('mock-link');
+    links.forEach(link => {
+      link.click();
+      expect(pushBreadCrumbMock).toHaveBeenCalledWith(expect.anything());
+    });
   });
 });

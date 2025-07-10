@@ -24,7 +24,7 @@ function BreadCrumb({
   const router = useRouter();
   let theme: 'g10' | 'g90';
 
- const BREADCRUMB_THRESHOLD = 4;
+  const BREADCRUMB_THRESHOLD = 4;
 
   if (current === 'light') {
     theme = 'g10';
@@ -35,6 +35,8 @@ function BreadCrumb({
   } else {
     theme = 'g10';
   }
+
+  console.log("BreadCrumb items:", breadCrumbItems);
 
   // Helper to render a single breadcrumb item correctly
   const renderItem = (item: BreadCrumbProps, isCurrent: boolean) => {
@@ -48,21 +50,22 @@ function BreadCrumb({
         {displayText}
       </BreadcrumbItem>
     );
-  }
+  };
 
   const renderOverflowItems = (items: BreadCrumbProps[]) => {
-    return items.map((item) => {
+    return items.map((item, idx) => {
       const translatedTitle = translations(item.title, item.values);
       const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
       
       return (
         <OverflowMenuItem
+          key={idx}
           itemText={displayText} 
           onClick={() => router.push(item.route)}
         />
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <Theme theme={theme}>
@@ -75,26 +78,26 @@ function BreadCrumb({
               </React.Fragment>
             ))
           ) : 
-          <>
-            {/* Render the first and second items */}
-            {renderItem(breadCrumbItems[0], false)}
-            {renderItem(breadCrumbItems[1], false)}
+            <>
+              {/* Render the first and second items */}
+              {renderItem(breadCrumbItems[0], false)}
+              {renderItem(breadCrumbItems[1], false)}
 
-            {/* Render the overflow menu with the middle terms */}
-            <BreadcrumbItem>
-              <OverflowMenu 
-                align="bottom"
-                aria-label="More navigation links" 
-                data-testid="breadcrumb-overflow-menu"
-              >
-                {renderOverflowItems(breadCrumbItems.slice(2, -2))}
-              </OverflowMenu>
-            </BreadcrumbItem>
+              {/* Render the overflow menu with the middle terms */}
+              <BreadcrumbItem>
+                <OverflowMenu 
+                  align="bottom"
+                  aria-label="More navigation links" 
+                  data-testid="breadcrumb-overflow-menu"
+                >
+                  {renderOverflowItems(breadCrumbItems.slice(2, -2))}
+                </OverflowMenu>
+              </BreadcrumbItem>
 
-            {/* Render the last 2 items */}
-            {renderItem(breadCrumbItems[breadCrumbItems.length - 2], false)}
-            {renderItem(breadCrumbItems[breadCrumbItems.length - 1], false)}
-          </>
+              {/* Render the last 2 items */}
+              {renderItem(breadCrumbItems[breadCrumbItems.length - 2], false)}
+              {renderItem(breadCrumbItems[breadCrumbItems.length - 1], false)}
+            </>
         }
       </Breadcrumb>
     </Theme>

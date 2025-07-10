@@ -20,23 +20,23 @@ const SESSION_STORAGE_KEY = 'breadCrumbHistory';
  * @returns resetBreadCrumbs - function to reset all breadcrumbs to HOME
  */
 export default function useHistoryBreadCrumbs() {
-    const [items, setItems] = useState<BreadCrumbProps[]>([]);
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [isInitialized, setIsInitialized] = useState(false);
-
     // Load items initially from session storage
-    useEffect(() => {
-        const storedItems = sessionStorage.getItem(SESSION_STORAGE_KEY);
-        if (storedItems) {
-            setItems(JSON.parse(storedItems));
-        } else {
-            // Default starting point
-            setItems([HOME]);
+    const [items, setItems] = useState<BreadCrumbProps[]>(() => {
+        if (typeof window !== 'undefined') {
+            const storedItems = sessionStorage.getItem(SESSION_STORAGE_KEY);
+            if (storedItems) {
+                try {
+                    return JSON.parse(storedItems);
+                } catch (e) {
+                    console.error("Failed to parse breadcrumbs from sessionStorage", e);
+                }
+            }
         }
-        setIsInitialized(true);
-    }, []);
+        return [HOME];
+    }); 
 
     // Function to add a new breadcrumb item
     const pushBreadCrumb = useCallback((item: BreadCrumbProps) => {
@@ -53,29 +53,29 @@ export default function useHistoryBreadCrumbs() {
 
     // Funtion to reset the breadcrumbs (e.g. when clicking HOME) 
     const resetBreadCrumbs = useCallback((baseItems: BreadCrumbProps[] = [HOME]) => {
-        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(baseItems));
         setItems(baseItems);
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(baseItems));
     }, []);
 
     // Handle browser backward/forward navigation
     useEffect(() => {
-        if(!isInitialized) return;
-        
         const queryString = searchParams.toString();
         const fullPath = queryString ? `${pathname}?${queryString}` : pathname;
-        
-        setItems((prevItems) => {
-            const currentPathIndex = prevItems.findIndex(item => (item.route === fullPath));
 
-            // If the current path is found in our history, truncate the list to that point
-            if (currentPathIndex > -1) {
-                const newItems = prevItems.slice(0, currentPathIndex);
-                sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newItems));
-                return newItems;
-            }
-            return prevItems;
-        });
-    }, [pathname, searchParams])
+        console.log("Current Path:", fullPath);
+        // Find if the current path exists in our history
+        const currentPathIndex = items.findIndex(item => item.route === fullPath);
+
+        // If the current path is found in our history (meaning the user navigated back),
+        // truncate the breadcrumb list to that point.
+        if (currentPathIndex > -1 && currentPathIndex < items.length - 1) {
+            const newItems = items.slice(0, currentPathIndex);
+            console.log("Truncating breadcrumbs to:", newItems);
+            setItems(newItems.length <= 0 ? [HOME] : newItems);
+            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newItems));
+        }
+        
+    }, [pathname, searchParams]); 
 
     return {breadCrumbItems: items, pushBreadCrumb, resetBreadCrumbs}
-}
+  }

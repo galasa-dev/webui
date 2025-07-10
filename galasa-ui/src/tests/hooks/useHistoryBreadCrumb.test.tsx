@@ -4,28 +4,28 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { renderHook, act, waitFor } from '@testing-library/react';
-import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs'
+import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { HOME } from '@/utils/constants/breadcrumb'; 
 import { BreadCrumbProps } from '@/utils/interfaces'; 
 
 // Mock sessionStorage
 const sessionStorageMock = (() => {
-    let store: { [key: string]: string } = {};
-    return {
-      setItem(key: string, value: string) {
-        store[key] = value;
-      },
-      getItem(key: string) {
-        return store[key] || null;
-      }, 
-      clear() {
-        store = {};
-      },
-    };
+  let store: { [key: string]: string } = {};
+  return {
+    setItem(key: string, value: string) {
+      store[key] = value;
+    },
+    getItem(key: string) {
+      return store[key] || null;
+    }, 
+    clear() {
+      store = {};
+    },
+  };
 })();
 
 Object.defineProperty(window, 'sessionStorage', {
-    value: sessionStorageMock,
+  value: sessionStorageMock,
 });
 
 // Mock next/navigation
@@ -33,8 +33,8 @@ const usePathnameMock = jest.fn();
 const useSearchParamsMock = jest.fn();
 
 jest.mock('next/navigation', () => ({
-    usePathname: () => usePathnameMock(),
-    useSearchParams: () => useSearchParamsMock(),
+  usePathname: () => usePathnameMock(),
+  useSearchParams: () => useSearchParamsMock(),
 }));
 
 const PAGE_1: BreadCrumbProps = { title: 'Page 1', route: '/page-1' };
@@ -42,40 +42,33 @@ const PAGE_2: BreadCrumbProps = { title: 'Page 2', route: '/page-2' };
 const PAGE_2_WITH_QUERY: BreadCrumbProps = { title: 'Page 2 with Query', route: '/page-2?id=123' };
 
 describe('useHistoryBreadCrumbs', () => {
-   // Reset mocks and sessionStorage before each test
+  // Reset mocks and sessionStorage before each test
   beforeEach(() => {
     jest.clearAllMocks();
     sessionStorageMock.clear();
-    // Default mock return values
     usePathnameMock.mockReturnValue('/');
     useSearchParamsMock.mockReturnValue(new URLSearchParams());
   });
 
-  test('should initialize from sessionStorage', async () => {
+  test('should initialize from sessionStorage', () => {
     const storedItems = [HOME, PAGE_1];
     sessionStorage.setItem('breadCrumbHistory', JSON.stringify(storedItems));
 
     const {result} = renderHook(() => useHistoryBreadCrumbs());
-    await waitFor(() => {
-      expect(result.current.breadCrumbItems).toEqual(storedItems);
-    });
+    expect(result.current.breadCrumbItems).toEqual(storedItems);
   });
 
-  test('should initialize with HOME if no sessionStorage', async () => {
+  test('should initialize with HOME if no sessionStorage', () => {
     const {result} = renderHook(() => useHistoryBreadCrumbs());
 
-    await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
-    });
   });
 
-  test('should push new breadcrumb item', async () => {
+  test('should push new breadcrumb item', () => {
     const {result} = renderHook(() =>  useHistoryBreadCrumbs());
     const { pushBreadCrumb } = result.current;
 
-    await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
-  });
 
     act(() => {
       pushBreadCrumb(PAGE_1);
@@ -116,7 +109,7 @@ describe('useHistoryBreadCrumbs', () => {
 
     act(() => {
       resetBreadCrumbs();
-    })
+    });
 
     expect(result.current.breadCrumbItems).toEqual([HOME]);
     expect(sessionStorageMock.getItem('breadCrumbHistory')).toEqual(JSON.stringify([HOME]));

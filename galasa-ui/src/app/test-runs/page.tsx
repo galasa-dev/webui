@@ -13,9 +13,9 @@ export default async function TestRunsPage() {
 
 
   return (
-   <TestRunsDetails 
-    requestorNamesPromise={requestorNamesPromise} 
-    resultsNamesPromise={resultsNamesPromise}
+    <TestRunsDetails 
+      requestorNamesPromise={requestorNamesPromise} 
+      resultsNamesPromise={resultsNamesPromise}
     />
   );
 }

@@ -63,23 +63,23 @@ describe('TestRunsPage', () => {
   });
 
   test('should call data fetching functions and render TestRunsDetails', async () => {
-        // Arrange: Set up mock return values for the promises
-        const mockRequestors = Promise.resolve(['user1', 'user2']);
-        const mockResults = Promise.resolve(['Passed', 'Failed']);
-        mockedGetRequestorList.mockReturnValue(mockRequestors);
-        mockedGetResultsNames.mockReturnValue(mockResults);
+    // Arrange: Set up mock return values for the promises
+    const mockRequestors = Promise.resolve(['user1', 'user2']);
+    const mockResults = Promise.resolve(['Passed', 'Failed']);
+    mockedGetRequestorList.mockReturnValue(mockRequestors);
+    mockedGetResultsNames.mockReturnValue(mockResults);
     
-        // Act
-        const Page = await TestRunsPage();
-        render(Page);
+    // Act
+    const Page = await TestRunsPage();
+    render(Page);
     
-        // Check that the data fetching functions were called
-        expect(mockedGetRequestorList).toHaveBeenCalledTimes(1);
-        expect(mockedGetResultsNames).toHaveBeenCalledTimes(1);
+    // Check that the data fetching functions were called
+    expect(mockedGetRequestorList).toHaveBeenCalledTimes(1);
+    expect(mockedGetResultsNames).toHaveBeenCalledTimes(1);
     
-        // Check that the child component was rendered
-        await waitFor(() => {
-          expect(screen.getByTestId('mock-test-runs-details')).toBeInTheDocument();
-        });
-  })
+    // Check that the child component was rendered
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-test-runs-details')).toBeInTheDocument();
+    });
+  });
 });

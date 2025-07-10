@@ -21,7 +21,7 @@ const TEST_RUNS = {
 
 const TEST_RUN = {
   title: "testRunName",
-  route: "/"
-}
+  route: "/test-runs/[testRunName]",
+};
 
 export { HOME, EDIT_USER, TEST_RUNS, TEST_RUN };

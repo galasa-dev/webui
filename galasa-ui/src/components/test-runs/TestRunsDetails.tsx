@@ -17,20 +17,20 @@ interface TestRunsDetailsProps {
 }
 
 export default function TestRunsDetails({requestorNamesPromise, resultsNamesPromise}: TestRunsDetailsProps) {
-    const {breadCrumbItems } = useHistoryBreadCrumbs();
+  const { breadCrumbItems } = useHistoryBreadCrumbs();
       
-    return(
-        <main id="content">
-        <BreadCrumb breadCrumbItems={breadCrumbItems} />
-        <PageTile translationKey={"TestRun.title"} />
-        <div className={styles.testRunsContentWrapper}>
-          <Suspense fallback={<p>Loading...</p>}>
-            <TestRunsTabs
-              requestorNamesPromise={requestorNamesPromise}
-              resultsNamesPromise={resultsNamesPromise}
-            />
-          </Suspense>
-        </div>
-      </main>
-    )
+  return(
+    <main id="content">
+      <BreadCrumb breadCrumbItems={breadCrumbItems} />
+      <PageTile translationKey={"TestRun.title"} />
+      <div className={styles.testRunsContentWrapper}>
+        <Suspense fallback={<p>Loading...</p>}>
+          <TestRunsTabs
+            requestorNamesPromise={requestorNamesPromise}
+            resultsNamesPromise={resultsNamesPromise}
+          />
+        </Suspense>
+      </div>
+    </main>
+  );
 }
