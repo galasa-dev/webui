@@ -85,6 +85,7 @@ function BreadCrumb({
               <OverflowMenu 
                 align="bottom"
                 aria-label="More navigation links" 
+                data-testid="breadcrumb-overflow-menu"
               >
                 {renderOverflowItems(breadCrumbItems.slice(2, -2))}
               </OverflowMenu>
