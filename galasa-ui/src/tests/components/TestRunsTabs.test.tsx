@@ -467,42 +467,4 @@ describe('TestRunsTabs Component', () => {
     // Ensure a new fetch is triggered
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(3));
   });
-
-  // test('filters runList correctly when "fromRunId" is in the URL', async () => {
-  //   const fullApiData = generateMockApiData(3);
-
-  //   (global.fetch as jest.Mock).mockResolvedValue({
-  //     ok: true,
-  //     json: () => Promise.resolve(fullApiData),
-  //   });
-
-  //   // Set up URLSearchParams to include "fromRunId"
-  //   const params = new URLSearchParams();
-  //   params.set('fromRunId', '3'); 
-  //   mockUseSearchParams.mockReturnValue(params);
-
-  //   render(
-  //     <TestRunsTabs
-  //       requestorNamesPromise={mockRequestorNamesPromise}
-  //       resultsNamesPromise={mockResultsNamesPromise}
-  //     />, { wrapper }
-  //   );
-
-  //   fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
-
-  //   await waitFor(() => {
-  //     // Use .mock.lastCall to get the props from the most recent render
-  //     const lastCallProps = TestRunsTableMock.mock.lastCall?.[0];
-
-  //     // Assert that the runsList in the final props is what we expect.
-  //     expect(lastCallProps?.runsList).toEqual([
-  //       { runId: '1', testStructure: { runName: 'Test Run 1' } },
-  //       { runId: '2', testStructure: { runName: 'Test Run 2' } },
-  //     ]);
-  //   });
-
-  //   // You can also add a check to ensure isLoading is false in the final state
-  //   const finalProps = TestRunsTableMock.mock.lastCall?.[0];
-  //   expect(finalProps?.isLoading).toBe(false);
-  // });
 });

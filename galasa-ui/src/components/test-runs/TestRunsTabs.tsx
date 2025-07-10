@@ -154,15 +154,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     staleTime: Infinity,
   });
 
-  const filteredRuns = useMemo(() => {
-    const excludedRunId = searchParams.get(RUN_QUERY_PARAMS.EXCLUDE_RUN)?.trim();
-    
-    if (!runsData?.runs || !excludedRunId) {
-      return runsData?.runs || [];
-    }
-    return runsData.runs.filter(run => run.runId !== excludedRunId);
-  }, [runsData, searchParams]);
-
   return (
     <Tabs 
       className={styles.tabs}
@@ -199,7 +190,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         <TabPanel>
           <div className={styles.tabContent}>
             <TestRunsTable
-              runsList={filteredRuns}
+              runsList={runsData?.runs || []}
               limitExceeded={runsData?.limitExceeded ?? false}
               visibleColumns={selectedVisibleColumns}
               orderedHeaders={columnsOrder}

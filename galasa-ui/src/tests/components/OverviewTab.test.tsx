@@ -154,7 +154,7 @@ describe('OverviewTab - Time and Link Logic', () => {
       link.getAttribute('href')?.includes('testName=')
     );
     
-    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results&excludeRun=${completeMetadata.runId}`;
+    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results`;
     
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
@@ -179,7 +179,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     );
     expect(retriesLink).toHaveAttribute(
       'href', 
-      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results&excludeRun=${completeMetadata.runId}`
+      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results`
     );
   });
 

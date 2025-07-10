@@ -71,7 +71,6 @@ const RUN_QUERY_PARAMS = {
   VISIBLE_COLUMNS: "visibleColumns",
   COLUMNS_ORDER: "columnsOrder",
   TAB: "tab",
-  EXCLUDE_RUN: "excludeRun"
 };
   
 const BATCH_SIZE = 100;
