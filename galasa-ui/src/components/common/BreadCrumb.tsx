@@ -36,8 +36,6 @@ function BreadCrumb({
     theme = 'g10';
   }
 
-  console.log("BreadCrumb items:", breadCrumbItems);
-
   // Helper to render a single breadcrumb item correctly
   const renderItem = (item: BreadCrumbProps, isCurrent: boolean) => {
     const translatedTitle = translations(item.title, item.values);
@@ -53,13 +51,13 @@ function BreadCrumb({
   };
 
   const renderOverflowItems = (items: BreadCrumbProps[]) => {
-    return items.map((item, idx) => {
+    return items.map((item) => {
       const translatedTitle = translations(item.title, item.values);
       const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
       
       return (
         <OverflowMenuItem
-          key={idx}
+          key={item.route}
           itemText={displayText} 
           onClick={() => router.push(item.route)}
         />

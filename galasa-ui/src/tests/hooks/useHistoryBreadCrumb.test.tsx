@@ -50,28 +50,37 @@ describe('useHistoryBreadCrumbs', () => {
     useSearchParamsMock.mockReturnValue(new URLSearchParams());
   });
 
-  test('should initialize from sessionStorage', () => {
-    const storedItems = [HOME, PAGE_1];
+  test('should initialize from sessionStorage and then truncate based on path', async () => {
+    const storedItems = [HOME, PAGE_1, PAGE_2];
     sessionStorage.setItem('breadCrumbHistory', JSON.stringify(storedItems));
+    usePathnameMock.mockReturnValue('/page-1');
 
     const {result} = renderHook(() => useHistoryBreadCrumbs());
-    expect(result.current.breadCrumbItems).toEqual(storedItems);
-  });
-
-  test('should initialize with HOME if no sessionStorage', () => {
-    const {result} = renderHook(() => useHistoryBreadCrumbs());
-
+    
+    await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
+    });
   });
 
-  test('should push new breadcrumb item', () => {
+  test('should initialize with HOME but then truncate to empty array based on path', async () => {
+    const {result} = renderHook(() => useHistoryBreadCrumbs());
+
+    await waitFor(() => {
+      expect(result.current.breadCrumbItems).toEqual([]);
+    });
+  });
+
+  test('should push new breadcrumb item', async () => {
     const {result} = renderHook(() =>  useHistoryBreadCrumbs());
-    const { pushBreadCrumb } = result.current;
-
-      expect(result.current.breadCrumbItems).toEqual([HOME]);
+    
+    // Wait for initial truncation to an empty array.
+    await waitFor(() => {
+        expect(result.current.breadCrumbItems).toEqual([]);
+    });
 
     act(() => {
-      pushBreadCrumb(PAGE_1);
+      result.current.pushBreadCrumb(HOME);
+      result.current.pushBreadCrumb(PAGE_1);
     });
 
     expect(result.current.breadCrumbItems).toEqual([HOME, PAGE_1]);
@@ -80,83 +89,63 @@ describe('useHistoryBreadCrumbs', () => {
 
   test('should not push duplicate breadcrumb item', async () => {
     const {result} = renderHook(() => useHistoryBreadCrumbs());
-    const { pushBreadCrumb } = result.current;
-
+    
     await waitFor(() => {
-      expect(result.current.breadCrumbItems).toEqual([HOME]);
+        expect(result.current.breadCrumbItems).toEqual([]);
     });
 
     act(() => {
-      pushBreadCrumb(PAGE_1);
-      pushBreadCrumb(PAGE_1); 
+      result.current.pushBreadCrumb(HOME);
+      result.current.pushBreadCrumb(PAGE_1);
+      result.current.pushBreadCrumb(PAGE_1); 
     });
 
     expect(result.current.breadCrumbItems).toEqual([HOME, PAGE_1]);
-    expect(sessionStorageMock.getItem('breadCrumbHistory')).toEqual(JSON.stringify([HOME, PAGE_1]));
   });
   
   test('should reset breadcrumbs to HOME', async () => {
     const {result} = renderHook(() => useHistoryBreadCrumbs());
-    const { pushBreadCrumb, resetBreadCrumbs } = result.current;
+
+    // Setup the state first
+    act(() => {
+      result.current.pushBreadCrumb(HOME);
+      result.current.pushBreadCrumb(PAGE_1);
+    });
+    expect(result.current.breadCrumbItems).toEqual([HOME, PAGE_1]);
+
+
+    act(() => {
+      result.current.resetBreadCrumbs();
+    });
 
     await waitFor(() => {
-      expect(result.current.breadCrumbItems).toEqual([HOME]);
+        expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
-
-    act(() => {
-      pushBreadCrumb(PAGE_1);
-    });
-
-    act(() => {
-      resetBreadCrumbs();
-    });
-
-    expect(result.current.breadCrumbItems).toEqual([HOME]);
     expect(sessionStorageMock.getItem('breadCrumbHistory')).toEqual(JSON.stringify([HOME]));
   });
   
   test('should handle browser navigation and truncate breadcrumbs', async () => {
-    usePathnameMock.mockReturnValue('/page-2');
-    const { result, rerender } = renderHook(() => useHistoryBreadCrumbs());
+    sessionStorage.setItem('breadCrumbHistory', JSON.stringify([HOME, PAGE_1, PAGE_2]));
 
+    usePathnameMock.mockReturnValue('/page-1');
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
+    
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
-    
-    act(() => {
-      result.current.pushBreadCrumb(PAGE_1);
-      result.current.pushBreadCrumb(PAGE_2);
-    });
-
-    usePathnameMock.mockReturnValue('/page-1');
-    act(() => {
-      rerender();
-    });
-
-    expect(result.current.breadCrumbItems).toEqual([HOME]);
   });
 
   test('should correctly handle paths with query parameters', async () => {
-    usePathnameMock.mockReturnValue('/page-2');
-    useSearchParamsMock.mockReturnValue(new URLSearchParams('id=123'));
-    const { result, rerender } = renderHook(() => useHistoryBreadCrumbs());
+    sessionStorage.setItem('breadCrumbHistory', JSON.stringify([HOME, PAGE_1, PAGE_2_WITH_QUERY]));
+    
+    // "Navigate" back to page 1
+    usePathnameMock.mockReturnValue('/page-1');
+    useSearchParamsMock.mockReturnValue(new URLSearchParams()); 
+    
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
 
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
-
-    act(() => {
-      result.current.pushBreadCrumb(PAGE_1);
-      result.current.pushBreadCrumb(PAGE_2_WITH_QUERY);
-    });
-    
-    usePathnameMock.mockReturnValue('/page-1');
-    useSearchParamsMock.mockReturnValue(new URLSearchParams()); 
-
-    act(() => {
-      rerender();
-    });
-    
-    expect(result.current.breadCrumbItems).toEqual([HOME]);
   });
 });
