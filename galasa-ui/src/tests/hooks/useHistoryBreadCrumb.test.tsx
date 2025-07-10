@@ -108,7 +108,7 @@ describe('useHistoryBreadCrumbs', () => {
 
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
-  });
+    });
 
     act(() => {
       pushBreadCrumb(PAGE_1);
@@ -166,5 +166,4 @@ describe('useHistoryBreadCrumbs', () => {
     
     expect(result.current.breadCrumbItems).toEqual([HOME]);
   });
-
-})
+});

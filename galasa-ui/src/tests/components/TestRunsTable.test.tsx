@@ -8,8 +8,6 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
-import { TestRunsData } from '@/utils/testRuns';
-import { useSearchParams } from 'next/navigation';
 import { MAX_RECORDS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
 
 // Mock the useRouter hook from Next.js to return a mock router object.

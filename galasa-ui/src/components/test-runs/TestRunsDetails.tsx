@@ -11,12 +11,12 @@ import styles from "@/styles/TestRunsPage.module.css";
 import { Suspense } from "react";
 import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
 
-interface testRunsDetailsProps {
+interface TestRunsDetailsProps {
     requestorNamesPromise: Promise<string[]>;
     resultsNamesPromise: Promise<string[]>;
 }
 
-export default function TestRunsDetails({requestorNamesPromise, resultsNamesPromise}: testRunsDetailsProps) {
+export default function TestRunsDetails({requestorNamesPromise, resultsNamesPromise}: TestRunsDetailsProps) {
     const {breadCrumbItems } = useHistoryBreadCrumbs();
       
     return(
