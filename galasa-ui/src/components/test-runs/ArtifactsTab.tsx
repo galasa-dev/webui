@@ -345,7 +345,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
                         hasIconOnly
                         iconDescription={translations("download_button")}
                         onClick={handleDownloadClick}
-                        />
+                      />
             
                     </div>
                   </Tile>
