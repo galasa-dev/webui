@@ -6,7 +6,7 @@
     "home": "Home",
     "users": "Users",
     "testRuns": "Test Runs",
-    "testRunName": "Test Run: {runName}"
+    "testRunName": "Test Run {runName}"
   },
   "PageHeaderMenu": {
     "profile": "My Profile",

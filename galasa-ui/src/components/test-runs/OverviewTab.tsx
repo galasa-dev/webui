@@ -15,6 +15,7 @@ import { Launch } from "@carbon/icons-react";
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from "@/utils/timeOperations";
 import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
 import { TEST_RUN } from "@/utils/constants/breadcrumb";
+import { RUN_QUERY_PARAMS } from "@/utils/constants/common";
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const tags = metadata?.tags || [];
@@ -26,8 +27,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const MONTH_AGO = getOneMonthAgo();
 
   const fullTestName = metadata?.package + "." + metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?testName=${fullTestName}&bundle=${metadata?.bundle}&package=${metadata?.package}&from=${MONTH_AGO}&tab=results`;
-  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?submissionId=${metadata?.submissionId}&from=${weekBefore}&tab=results`;
+  const OTHER_RECENT_RUNS = `/test-runs?${RUN_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${RUN_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${RUN_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${RUN_QUERY_PARAMS.FROM}=${MONTH_AGO}&${RUN_QUERY_PARAMS.TAB}=results&${RUN_QUERY_PARAMS.EXCLUDE_RUN}=${metadata?.runId}`;
+  const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${RUN_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${RUN_QUERY_PARAMS.FROM}=${weekBefore}&${RUN_QUERY_PARAMS.TAB}=results&${RUN_QUERY_PARAMS.EXCLUDE_RUN}${metadata?.runId}`;
   useEffect(() => {
 
     const validateTime = () => {

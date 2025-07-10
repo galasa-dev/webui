@@ -8,8 +8,7 @@ import PageTile from "@/components/PageTile";
 import BreadCrumb from "@/components/common/BreadCrumb";
 import TestRunsTabs from "@/components/test-runs/TestRunsTabs";
 import styles from "@/styles/TestRunsPage.module.css";
-import { Suspense, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
 
 interface testRunsDetailsProps {
@@ -18,8 +17,7 @@ interface testRunsDetailsProps {
 }
 
 export default function TestRunsDetails({requestorNamesPromise, resultsNamesPromise}: testRunsDetailsProps) {
-    const searchParams = useSearchParams();
-    const {breadCrumbItems, pushBreadCrumb, resetBreadCrumbs} = useHistoryBreadCrumbs();
+    const {breadCrumbItems } = useHistoryBreadCrumbs();
       
     return(
         <main id="content">

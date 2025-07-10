@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 'use client';
 
 import React from 'react';
