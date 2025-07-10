@@ -19,9 +19,5 @@ const TEST_RUNS = {
   route: "/test-runs",
 };
 
-const TEST_RUN = {
-  title: "testRunName",
-  route: "/test-runs/[testRunName]",
-};
 
-export { HOME, EDIT_USER, TEST_RUNS, TEST_RUN };
+export { HOME, EDIT_USER, TEST_RUNS };

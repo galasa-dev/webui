@@ -75,7 +75,7 @@ describe('useHistoryBreadCrumbs', () => {
     
     // Wait for initial truncation to an empty array.
     await waitFor(() => {
-        expect(result.current.breadCrumbItems).toEqual([]);
+      expect(result.current.breadCrumbItems).toEqual([]);
     });
 
     act(() => {
@@ -91,7 +91,7 @@ describe('useHistoryBreadCrumbs', () => {
     const {result} = renderHook(() => useHistoryBreadCrumbs());
     
     await waitFor(() => {
-        expect(result.current.breadCrumbItems).toEqual([]);
+      expect(result.current.breadCrumbItems).toEqual([]);
     });
 
     act(() => {
@@ -119,7 +119,7 @@ describe('useHistoryBreadCrumbs', () => {
     });
 
     await waitFor(() => {
-        expect(result.current.breadCrumbItems).toEqual([HOME]);
+      expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
     expect(sessionStorageMock.getItem('breadCrumbHistory')).toEqual(JSON.stringify([HOME]));
   });

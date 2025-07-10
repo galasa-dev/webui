@@ -14,11 +14,14 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { BreadCrumbProps } from '@/utils/interfaces/components';
 import { useRouter } from 'next/navigation';
 
+// Update props to accept the reset function
+interface CustomBreadCrumbProps {
+  breadCrumbItems: BreadCrumbProps[];
+}
+
 function BreadCrumb({
   breadCrumbItems,
-}: {
-  breadCrumbItems: BreadCrumbProps[];
-}) {
+}: CustomBreadCrumbProps) {
   const translations = useTranslations("Breadcrumb");
   const current = useTheme().theme;
   const router = useRouter();
@@ -36,30 +39,33 @@ function BreadCrumb({
     theme = 'g10';
   }
 
-  // Helper to render a single breadcrumb item correctly
-  const renderItem = (item: BreadCrumbProps, isCurrent: boolean) => {
-    const translatedTitle = translations(item.title, item.values);
-    const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
-    return (
-      <BreadcrumbItem
-        href={isCurrent ? undefined : item.route}
-        isCurrentPage={isCurrent}
-      >
-        {displayText}
-      </BreadcrumbItem>
-    );
+  const renderBreadCrumbItems = (items: BreadCrumbProps[]) => {
+    return items.map((item) => {
+      const translatedTitle = translations(item.title);
+      const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
+      
+      return (
+        // Use onClick instead of href
+        <BreadcrumbItem
+          key={item.route}
+          href={item.route}
+        >
+          {displayText}
+        </BreadcrumbItem>
+      );
+    });
   };
 
   const renderOverflowItems = (items: BreadCrumbProps[]) => {
     return items.map((item) => {
-      const translatedTitle = translations(item.title, item.values);
+      const translatedTitle = translations(item.title);
       const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
       
       return (
         <OverflowMenuItem
           key={item.route}
           itemText={displayText} 
-          onClick={() => router.push(item.route)}
+          href={item.route}
         />
       );
     });
@@ -69,17 +75,10 @@ function BreadCrumb({
     <Theme theme={theme}>
       <Breadcrumb className={styles.crumbContainer} noTrailingSlash>
         {
-          breadCrumbItems.length <= BREADCRUMB_THRESHOLD ? (
-            breadCrumbItems.map((item, idx) => (
-              <React.Fragment key={idx}>
-                {renderItem(item, false)}
-              </React.Fragment>
-            ))
-          ) : 
+          breadCrumbItems.length <= BREADCRUMB_THRESHOLD ? renderBreadCrumbItems(breadCrumbItems) : 
             <>
-              {/* Render the first and second items */}
-              {renderItem(breadCrumbItems[0], false)}
-              {renderItem(breadCrumbItems[1], false)}
+              {/* Render the first 2 items */}
+              {renderBreadCrumbItems(breadCrumbItems.slice(0, 2))}
 
               {/* Render the overflow menu with the middle terms */}
               <BreadcrumbItem>
@@ -93,8 +92,7 @@ function BreadCrumb({
               </BreadcrumbItem>
 
               {/* Render the last 2 items */}
-              {renderItem(breadCrumbItems[breadCrumbItems.length - 2], false)}
-              {renderItem(breadCrumbItems[breadCrumbItems.length - 1], false)}
+              {renderBreadCrumbItems(breadCrumbItems.slice(-2))}
             </>
         }
       </Breadcrumb>

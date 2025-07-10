@@ -33,7 +33,7 @@ interface TestRunDetailsProps {
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
   const translations = useTranslations("TestRunDetails");
-  const {breadCrumbItems, pushBreadCrumb} = useHistoryBreadCrumbs();
+  const {breadCrumbItems } = useHistoryBreadCrumbs();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);

@@ -14,7 +14,6 @@ import { Link } from "@carbon/react";
 import { Launch } from "@carbon/icons-react";
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from "@/utils/timeOperations";
 import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
-import { TEST_RUN } from "@/utils/constants/breadcrumb";
 import { RUN_QUERY_PARAMS } from "@/utils/constants/common";
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
@@ -47,9 +46,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const handleNavigationClick = () => {
     // Push the current URL to the breadcrumb history
     pushBreadCrumb({
-      ...TEST_RUN, 
+      title: `${metadata.runName}`,
       route: `/test-runs/${metadata.runId}`,
-      values: {runName: metadata.runName}
     });
 
   };

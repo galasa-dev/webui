@@ -23,5 +23,4 @@ export interface DateTimePickerProps {
 export interface BreadCrumbProps {
   title: string;
   route: string;
-  values?: Record<string, string>;
 }
