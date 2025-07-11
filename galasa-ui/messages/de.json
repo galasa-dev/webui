@@ -199,8 +199,8 @@
     "duration": "Dauer",
     "tags": "Tags",
     "noTags": "Keine Tags vorhanden.",
-    "recentRunsLink": "Alle Versuche dieses Testlaufs anzeigen...",
-    "runRetriesLink": "Neueste Durchläufe desselben Tests anzeigen..."
+    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
+    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
   },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",

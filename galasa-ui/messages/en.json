@@ -199,8 +199,8 @@
     "duration": "Duration",
     "tags": "Tags",
     "noTags": "No tags were associated with this test run.",
-    "recentRunsLink": "View all attempts of this test run...",
-    "runRetriesLink": "View recent runs of the same test..."
+    "recentRunsLink": "View recent runs of the same test...",
+    "runRetriesLink": "View all attempts of this test run..."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
