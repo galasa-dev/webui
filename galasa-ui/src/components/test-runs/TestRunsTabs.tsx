@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
-import { sortOrder } from '@/utils/interfaces';
+import { sortOrderType } from '@/utils/interfaces';
 
 
 interface TabConfig {
@@ -72,13 +72,13 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
   // Initialize sortOrder based on URL parameters or default to an empty array
   // URL should look like this sortOrder?result:asc,status:desc
-  const [sortOrder, setSortOrder] = useState<{id: string; order: sortOrder}[]>(() => {
+  const [sortOrder, setSortOrder] = useState<{id: string; order: sortOrderType}[]>(() => {
     const sortOrderParam = searchParams.get(RUN_QUERY_PARAMS.SORT_ORDER);
-    let sortOrderArray: {id: string; order: sortOrder}[] = [];
+    let sortOrderArray: {id: string; order: sortOrderType}[] = [];
     if (sortOrderParam) {
       sortOrderArray = sortOrderParam.split(',').map((item) => {
         const [id, order] = item.split(':');
-        return { id, order: order as sortOrder };
+        return { id, order: order as sortOrderType };
       });
     }
     return sortOrderArray;
@@ -127,7 +127,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     params.set(RUN_QUERY_PARAMS.COLUMNS_ORDER, columnsOrderParam);
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, selectedIndex]);
+  }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, selectedIndex, sortOrder]);
 
   const handleTabChange = (event: {selectedIndex : number}) => {
     const currentIndex = event.selectedIndex;

@@ -12,14 +12,17 @@ import { IconButton } from "@carbon/react";
 import {  Draggable } from "@carbon/icons-react";
 import { useTranslations } from "next-intl";
 import { Dropdown } from "@carbon/react";
+import { sortOrderType } from "@/utils/interfaces";
 
 interface TableDesignRowProps {
   rowId: string;
   isSelected: boolean;
+  currentSortOrder: sortOrderType,
   onSelect: (rowId: string) => void;
+  onSortOrderChange: (rowId: string, sortOrder: sortOrderType) => void;
 }
 
-export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableDesignRowProps) {
+export default function TableDesignRow({ rowId,  isSelected, currentSortOrder, onSelect, onSortOrderChange }: TableDesignRowProps) {
   const translations = useTranslations("TableDesignRow");
 
   const {
@@ -35,6 +38,14 @@ export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableD
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const sortItems = [
+    {text: translations('none'), value: 'none'}, 
+    {text: translations('asc'), value: 'asc'},
+    {text: translations('desc'), value: 'desc'}
+  ];
+
+  const initialItem = sortItems.find(item => item.value === currentSortOrder) || sortItems[0];
 
   return ( 
     <div 
@@ -68,14 +79,16 @@ export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableD
       <div className={styles.cellDropdown}>   
         <Dropdown 
           id={`dropdown-${rowId}`}
-          initialSelectedItem={{text: 'none'}}
-          items={[
-            translations('none'), 
-            translations('asc'),
-            translations('desc')
-          ]}
+          initialSelectedItem={initialItem}
+          items={sortItems}
           label="Sort Order"
           type="inline"
+          itemToString={(item: {text: string, value: string}) => item.text}
+          onChange={({ selectedItem }: {selectedItem: {text: string, value: sortOrderType}}) => {
+            if (selectedItem) {
+              onSortOrderChange(rowId, selectedItem.value);
+            }
+          }}
         />
       </div>
     </div>

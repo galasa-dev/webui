@@ -14,7 +14,7 @@ export interface MarkdownResponse {
 }
 
 export type AmPm = 'AM' | 'PM';
-export type sortOrder = 'asc' | 'desc' | 'none';
+export type sortOrderType = 'asc' | 'desc' | 'none';
 
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
 export interface DataTableHeader {

@@ -201,7 +201,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
       />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable isSortable rows={paginatedRows} headers={headers}>
+        <DataTable rows={paginatedRows} headers={headers}>
           {({
             rows,
             headers,
