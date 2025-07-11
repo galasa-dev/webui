@@ -28,3 +28,22 @@
     gap: 0.5rem;
     text-transform: capitalize;
 }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+.shareButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cds-text-primary, #161616);
+  }
+.buttonContainer{
+    margin-right: 2rem;
+  }

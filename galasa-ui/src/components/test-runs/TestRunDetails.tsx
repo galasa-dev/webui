@@ -9,7 +9,7 @@ import PageTile from '@/components/PageTile';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
-import { Dashboard, Code, CloudLogging, RepoArtifact } from '@carbon/icons-react';
+import { Dashboard, Code, CloudLogging, RepoArtifact, Share } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
@@ -22,6 +22,8 @@ import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
+import { Tile } from '@carbon/react';
+import { Tooltip } from '@carbon/react';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -41,6 +43,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [savedQuery, setSavedQuery] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   // Get the query string from the sessionStorage if it exists
   useEffect(() => {
@@ -112,15 +115,35 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const testRunsRoute = savedQuery ? `${TEST_RUNS.route}?${savedQuery}` : TEST_RUNS.route;
   const testRunsBreadCrumb = { ...TEST_RUNS, route: testRunsRoute };
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); 
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME, testRunsBreadCrumb]} />
-      <PageTile
-        translationKey={translations("title", {
-          runName: run?.runName || "Unknown Run Name",
-        })}
-      />
+      <Tile id="tile" className={styles.toolbar}>
+        {translations("title", { runName: run?.runName || "Unknown Run Name" })}
+        <div className={styles.buttonContainer}>
+          <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
 
+            <button
+              onClick={handleShare}
+              className={styles.shareButton}
+              data-testid="icon-Share"
+            >
+              <Share size={20}/>
+            </button>
+          </Tooltip>
+        </div>
+      </Tile>
+ 
       {isLoading ? (
         <TestRunSkeleton />
       ) : (
