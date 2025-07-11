@@ -26,6 +26,12 @@ jest.mock('@carbon/react', () => ({
       {children}
     </div>
   ),
+  Tooltip: ({ label, children }: any) => (
+    <div data-testid="tooltip">
+      {label}
+      {children}
+    </div>
+  ),
   TreeNode: ({ children, label, onSelect, onToggle, isExpanded, renderIcon }: any) => {
     const IconComponent = renderIcon;
     return (
@@ -58,6 +64,15 @@ jest.mock('@carbon/react', () => ({
     <div className={className} data-testid="tile">
       {children}
     </div>
+  ),
+  Button: ({ onClick, iconDescription, renderIcon: Icon }: any) => (
+    <button
+      data-testid="mock-carbon-button"
+      aria-label={iconDescription}
+      onClick={onClick}
+    >
+      {Icon && <Icon />}
+    </button>
   ),
 }));
 
@@ -398,7 +413,7 @@ describe('ArtifactsTab', () => {
         expect(screen.getByTestId('cloud-download-icon')).toBeInTheDocument();
       });
 
-      const downloadButton = screen.getByRole('download-button');
+      const downloadButton = screen.getByRole("button", { name: /download/i });
       
       await act(async () => {
         fireEvent.click(downloadButton);

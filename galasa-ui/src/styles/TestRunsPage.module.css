@@ -86,7 +86,7 @@
   top: 100%; 
   left: 0;
   right: 0;
-  background-color: white;
+  background-color: var(--cds-background,#161616);
   border: 1px solid #ccc;
   border-top: none;
   list-style-type: none;
@@ -104,12 +104,12 @@
 }
 
 .suggestionList li:hover {
-  background-color: #f0f0f0;
+  background-color:  rgba(136, 136, 136, 0.2);
 }
 
 
 .activeSuggestion {
-  background-color: #e0e0e0; 
+  background-color: var(--cds-background,rgba(136, 136, 136, 0.2)); 
   cursor: pointer;
 }
 
@@ -192,7 +192,6 @@
   border-radius: 0;
   width: 55%;
   min-width: 400px;
-  overflow-x: auto; 
 }
 
 .tableDesignRow,
@@ -270,7 +269,9 @@
 
 .dragHandle {
   cursor: grab;
+
 }
+
 
 .tableDesignRow.dragging .dragHandle {
   cursor: grabbing;
