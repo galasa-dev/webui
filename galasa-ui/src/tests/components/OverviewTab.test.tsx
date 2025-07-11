@@ -9,6 +9,7 @@ import { render, screen } from '@testing-library/react';
 import OverviewTab from '@/components/test-runs/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 // Mock the Carbon Tag component to simplify assertions
 jest.mock('@carbon/react', () => ({
@@ -47,6 +48,15 @@ jest.mock("next-intl", () => ({
     };
     return translations[key] || key;
   },
+}));
+
+const pushBreadCrumbMock = jest.fn();
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    pushBreadCrumb: pushBreadCrumbMock,
+    resetBreadCrumbs: jest.fn(),
+  }),
 }));
 
 const completeMetadata: RunMetadata = {
@@ -144,7 +154,7 @@ describe('OverviewTab - Time and Link Logic', () => {
       link.getAttribute('href')?.includes('testName=')
     );
     
-    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}`;
+    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results`;
     
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
@@ -169,7 +179,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     );
     expect(retriesLink).toHaveAttribute(
       'href', 
-      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}`
+      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results`
     );
   });
 
@@ -262,5 +272,18 @@ describe('OverviewTab - Time and Link Logic', () => {
       link.getAttribute('href')?.includes('submissionId')
     );
     expect(retriesLink).toBeUndefined();
+  });
+
+  it('push link bread crumb when any of the links is clicked', () => {
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const links = screen.getAllByTestId('mock-link');
+    links.forEach(link => {
+      link.click();
+      expect(pushBreadCrumbMock).toHaveBeenCalledWith({
+        title: `${completeMetadata.runName}`,
+        route: `/test-runs/${completeMetadata.runId}`,
+      });
+    });
   });
 });

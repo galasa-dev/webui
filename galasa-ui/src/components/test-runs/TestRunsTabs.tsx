@@ -13,7 +13,7 @@ import TableDesignContent from './TableDesignContent';
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 
@@ -154,7 +154,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     staleTime: Infinity,
   });
 
-
   return (
     <Tabs 
       className={styles.tabs}
@@ -191,7 +190,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         <TabPanel>
           <div className={styles.tabContent}>
             <TestRunsTable
-              runsList={runsData?.runs ?? []}
+              runsList={runsData?.runs || []}
               limitExceeded={runsData?.limitExceeded ?? false}
               visibleColumns={selectedVisibleColumns}
               orderedHeaders={columnsOrder}

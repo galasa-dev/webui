@@ -8,17 +8,23 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
-import { TestRunsData } from '@/utils/testRuns';
-import { useSearchParams } from 'next/navigation';
 import { MAX_RECORDS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-// Mock the useRouter hook from Next.js to return a mock router object.
 const mockRouterPush = jest.fn();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockRouterPush,
+jest.mock('next/navigation');
+
+const mockUseSearchParams = useSearchParams as jest.Mock;
+const mockUseRouter = useRouter as jest.Mock;
+
+// Mock the useHistoryBreadCrumbs hook to return a mock history breadcrumbs.
+const pushBreadCrumbMock = jest.fn();
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    pushBreadCrumb: pushBreadCrumbMock,
+    resetBreadCrumbs: jest.fn(),
   }),
-  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock("next-intl", () => ({
@@ -102,6 +108,9 @@ describe('TestRunsTable Component', () => {
     mockRouterPush.mockClear();
     // Suppress console.error for rejected promise tests
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    mockUseRouter.mockReturnValue({ push: mockRouterPush });
+    pushBreadCrumbMock.mockClear();
   });
 
   describe('Rendering Logic', () => {
@@ -202,5 +211,26 @@ describe('TestRunsTable Interactions', () => {
       expect(screen.getByText('Test Run 11')).toBeInTheDocument();
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
+  });
+
+  test('pushes test runs breadcrumb with current search params when a run is clicked', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(1);
+    // Provide a specific set of search params for this test's context
+    const specificSearchParams = new URLSearchParams('status=finished&requestor=user1');
+    mockUseSearchParams.mockReturnValue(specificSearchParams);
+
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Act
+    const tableRow = await screen.findByText('Test Run 1');
+    fireEvent.click(tableRow);
+
+    // Assert
+    // Check that the breadcrumb route is built from the mocked search params
+    expect(pushBreadCrumbMock).toHaveBeenCalledWith({
+      title: 'testRuns',
+      route: `/test-runs?${specificSearchParams.toString()}`,
+    });
   });
 });

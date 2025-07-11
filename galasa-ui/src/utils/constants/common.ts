@@ -70,7 +70,7 @@ const RUN_QUERY_PARAMS = {
   TAGS: "tags",
   VISIBLE_COLUMNS: "visibleColumns",
   COLUMNS_ORDER: "columnsOrder",
-  TAB: "tab"
+  TAB: "tab",
 };
   
 const BATCH_SIZE = 100;
