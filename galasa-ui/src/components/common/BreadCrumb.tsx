@@ -28,6 +28,8 @@ function BreadCrumb({
   let theme: 'g10' | 'g90';
 
   const BREADCRUMB_THRESHOLD = 4;
+  const NUM_START_ITEM = 2;
+  const NUM_END_ITEM = 2;
 
   if (current === 'light') {
     theme = 'g10';
@@ -45,7 +47,6 @@ function BreadCrumb({
       const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
       
       return (
-        // Use onClick instead of href
         <BreadcrumbItem
           key={item.route}
           href={item.route}
@@ -65,7 +66,9 @@ function BreadCrumb({
         <OverflowMenuItem
           key={item.route}
           itemText={displayText} 
-          href={item.route}
+          onClick={() => {
+            router.push(item.route);
+          }}
         />
       );
     });
@@ -73,7 +76,7 @@ function BreadCrumb({
 
   return (
     <Theme theme={theme}>
-      <Breadcrumb className={styles.crumbContainer} noTrailingSlash>
+      <Breadcrumb className={styles.crumbContainer}>
         {
           breadCrumbItems.length <= BREADCRUMB_THRESHOLD ? renderBreadCrumbItems(breadCrumbItems) : 
             <>
@@ -87,12 +90,12 @@ function BreadCrumb({
                   aria-label="More navigation links" 
                   data-testid="breadcrumb-overflow-menu"
                 >
-                  {renderOverflowItems(breadCrumbItems.slice(2, -2))}
+                  {renderOverflowItems(breadCrumbItems.slice(NUM_START_ITEM, -NUM_END_ITEM))}
                 </OverflowMenu>
               </BreadcrumbItem>
 
               {/* Render the last 2 items */}
-              {renderBreadCrumbItems(breadCrumbItems.slice(-2))}
+              {renderBreadCrumbItems(breadCrumbItems.slice(-NUM_END_ITEM))}
             </>
         }
       </Breadcrumb>

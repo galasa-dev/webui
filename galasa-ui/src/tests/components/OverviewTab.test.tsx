@@ -280,7 +280,10 @@ describe('OverviewTab - Time and Link Logic', () => {
     const links = screen.getAllByTestId('mock-link');
     links.forEach(link => {
       link.click();
-      expect(pushBreadCrumbMock).toHaveBeenCalledWith(expect.anything());
+      expect(pushBreadCrumbMock).toHaveBeenCalledWith({
+        title: `${completeMetadata.runName}`,
+        route: `/test-runs/${completeMetadata.runId}`,
+      });
     });
   });
 });

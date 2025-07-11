@@ -68,15 +68,16 @@ export default function useHistoryBreadCrumbs() {
     setItems((prevItems) => {
       const currentPathIndex = prevItems.findIndex(item => (item.route === fullPath));
 
+      let finalItems = prevItems;
       // If the current path is found in our history, truncate the list to that point
       if (currentPathIndex > -1) {
-        const newItems = prevItems.slice(0, currentPathIndex);
-        sessionStorage.setItem(SESSION_STORAGE_KEY, newItems.length <= 0 ? JSON.stringify([HOME]):  JSON.stringify(newItems));
-        return newItems;
+        const truncatedItems = prevItems.slice(0, currentPathIndex);
+        sessionStorage.setItem(SESSION_STORAGE_KEY, truncatedItems.length <= 0 ? JSON.stringify([HOME]):  JSON.stringify(truncatedItems));
+        finalItems = truncatedItems;
       }
-      return prevItems;
+      return finalItems;
     });
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, resetBreadCrumbs]);
 
   return {breadCrumbItems: items, pushBreadCrumb, resetBreadCrumbs};
 }

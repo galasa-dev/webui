@@ -12,9 +12,6 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 // Mock useTranslations hook to return a mock translation function
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
-    if (key.startsWith("Breadcrumb.")) {
-      return key; // Return the key as is for testing
-    }
     return key;
   },
 }));

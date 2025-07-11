@@ -130,18 +130,6 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-const generateMockApiData = (count: number) => {
-  return {
-    limitExceeded: false,
-    runs: Array.from({ length: count }, (_, index) => ({
-      runId: `${index + 1}`, 
-      testStructure: { runName: `Test Run ${index + 1}` },
-    })),
-  };
-};
-
-
-
 describe('TestRunsTabs Component', () => {
   const mockPromise = Promise.resolve({ runs: [], limitExceeded: false });
   const mockRequestorNamesPromise = Promise.resolve([]);
