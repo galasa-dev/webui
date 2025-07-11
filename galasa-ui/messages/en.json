@@ -384,7 +384,7 @@
     "moveUpLabel": "Move up",
     "moveDownLabel": "Move down",
     "submittedAt": "Submitted at",
-    "testRunName": "Test Run Name",
+    "runName": "Test Run Name",
     "requestor": "Requestor",
     "group": "Group",
     "bundle": "Bundle",

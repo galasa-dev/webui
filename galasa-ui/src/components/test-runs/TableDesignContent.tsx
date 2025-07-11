@@ -11,14 +11,14 @@ import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
-import { sortOrderType } from "@/utils/interfaces";
+import { ColumnDefinition, sortOrderType } from "@/utils/interfaces";
 
 
 interface TableDesignContentProps {
     selectedRowIds: string[];
     setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
-    tableRows: { id: string; columnName: string }[];
-    setTableRows: React.Dispatch<React.SetStateAction<{ id: string; columnName: string }[]>>;
+    tableRows: ColumnDefinition[];
+    setTableRows: React.Dispatch<React.SetStateAction<ColumnDefinition[]>>;
     sortOrder?: { id: string; order: sortOrderType }[];
     setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrderType }[]>>;
 }
@@ -53,7 +53,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     const { active , over } = event;
 
     if (over && active.id !== over.id) {
-      setTableRows((rows: { id: string; columnName: string }[]) => {
+      setTableRows((rows: ColumnDefinition[]) => {
         const originalPosition = getRowPosition(String(active.id));
         const newPosition = getRowPosition(String(over.id));
         return arrayMove(rows, originalPosition, newPosition);

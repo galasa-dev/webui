@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+import { TestStructure } from "@/generated/galasaapi";
+import { ColumnDefinition } from "../interfaces";
+
 const CLIENT_API_VERSION = "0.43.0";
 
 const COLORS = {
@@ -29,7 +32,7 @@ const TEST_RUNS_STATUS = ['Queued', 'Started', 'Generating',
 
 const COLUMNS_IDS = {
   SUBMITTED_AT: "submittedAt",
-  TEST_RUN_NAME: "testRunName",
+  TEST_RUN_NAME: "runName",
   REQUESTOR: "requestor",
   SUBMISSION_ID: "submissionId",
   GROUP: "group",
@@ -41,9 +44,9 @@ const COLUMNS_IDS = {
   RESULT: "result"
 } as const;
 
-const RESULTS_TABLE_COLUMNS = [
-  {id: "submittedAt", columnName: "Submitted at"},
-  { id: "testRunName", columnName: "Test Run name" },
+const RESULTS_TABLE_COLUMNS: ColumnDefinition[] = [
+  { id: "submittedAt", columnName: "Submitted at" },
+  { id: "runName", columnName: "Test Run name" },
   { id: "requestor", columnName: "Requestor" },
   { id: "submissionId", columnName: "Submission ID" },
   { id: "group", columnName: "Group" },
