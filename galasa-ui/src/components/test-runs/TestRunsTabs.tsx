@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
+import { sortOrder } from '@/utils/interfaces';
 
 
 interface TabConfig {
@@ -68,6 +69,20 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
     return correctOrder;
   });
+
+  // Initialize sortOrder based on URL parameters or default to an empty array
+  // URL should look like this sortOrder?result:asc,status:desc
+  const [sortOrder, setSortOrder] = useState<{id: string; order: sortOrder}[]>(() => {
+    const sortOrderParam = searchParams.get(RUN_QUERY_PARAMS.SORT_ORDER);
+    let sortOrderArray: {id: string; order: sortOrder}[] = [];
+    if (sortOrderParam) {
+      sortOrderArray = sortOrderParam.split(',').map((item) => {
+        const [id, order] = item.split(':');
+        return { id, order: order as sortOrder };
+      });
+    }
+    return sortOrderArray;
+  })
     
   // State to track if the component has been initialized
   const [isInitialized, setIsInitialized] = useState(false);
@@ -88,15 +103,27 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const currentTab = TABS_CONFIG[selectedIndex];
     const visibleColumnsParam = selectedVisibleColumns.join(",");
     const columnsOrderParam = columnsOrder.map(col => col.id).join(",");
-    
+    const sortOrderParam = sortOrder.map(item => `${item.id}:${item.order}`).join(",");
+
     const params = new URLSearchParams(searchParams.toString());
+
+    // Set current tab, visible columns, columns order, and sort order
     params.set(RUN_QUERY_PARAMS.TAB, currentTab.id);
+
     if(selectedVisibleColumns.length > 0) {
       params.set(RUN_QUERY_PARAMS.VISIBLE_COLUMNS, visibleColumnsParam);
     } else {
       // If no columns are selected, we can clear the parameter
       params.delete(RUN_QUERY_PARAMS.VISIBLE_COLUMNS);
     }
+
+    if (sortOrder.length > 0) {
+      params.set(RUN_QUERY_PARAMS.SORT_ORDER, sortOrderParam);
+    } else {
+      // If no sort order is set, we can clear the parameter
+      params.delete(RUN_QUERY_PARAMS.SORT_ORDER);
+    }
+
     params.set(RUN_QUERY_PARAMS.COLUMNS_ORDER, columnsOrderParam);
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -177,6 +204,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
               setSelectedRowIds={setSelectedVisibleColumns}
               tableRows={columnsOrder}
               setTableRows={setColumnsOrder}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
             />
           </div>
         </TabPanel>

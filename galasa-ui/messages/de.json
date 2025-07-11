@@ -376,7 +376,8 @@
     "columnName": "Spaltenname",
     "showHideHeader": "Spalten ein-/ausblenden",
     "warning": "Warnung",
-    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus"    
+    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus",
+    "sortOrderHeader": "Sortierreihenfolge"
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",
@@ -392,6 +393,9 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
-    "submissionId":"Übermittlungs-ID"
+    "submissionId":"Übermittlungs-ID",
+    "none": "Keine",
+    "asc": "Aufsteigend",
+    "desc": "Absteigend"
   }
 }

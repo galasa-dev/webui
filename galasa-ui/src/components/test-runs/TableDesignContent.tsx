@@ -11,6 +11,7 @@ import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+import { sortOrder } from "@/utils/interfaces";
 
 
 interface TableDesignContentProps {
@@ -18,6 +19,8 @@ interface TableDesignContentProps {
     setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
     tableRows: { id: string; columnName: string }[];
     setTableRows: React.Dispatch<React.SetStateAction<{ id: string; columnName: string }[]>>;
+    sortOrder?: { id: string; order: sortOrder}[];
+    setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrder }[]>>;
 }
 
 export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows}: TableDesignContentProps) {
@@ -90,6 +93,9 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           </div>
           <div className={styles.cellValue}>
             <strong>{translations("columnName")}</strong>
+          </div>
+          <div className={styles.cellDropdownHeader}>
+            <strong>{translations("sortOrderHeader")}</strong>
           </div>
         </div>
         <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>

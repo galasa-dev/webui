@@ -376,7 +376,8 @@
     "columnName": "Column Name",
     "showHideHeader": "Show/Hide Columns",
     "warning": "Warning",
-    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
+    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
+    "sortOrderHeader": "Sort Order"
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",
@@ -392,6 +393,9 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
-    "submissionId": "Submission ID"
+    "submissionId": "Submission ID",
+    "none": "None",
+    "asc": "Ascending",
+    "desc": "Descending"
   }
 }

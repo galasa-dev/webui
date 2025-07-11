@@ -18,7 +18,6 @@
     margin: 0.5rem 0.5rem;
 }
 
-  
 .searchCriteriaContainer {
   display: flex;
   flex-direction: row; 
@@ -191,7 +190,7 @@
   border: 1px solid #a8a8a8; 
   border-radius: 0;
   width: 55%;
-  min-width: 400px;
+  min-width: 500px;
 }
 
 .tableDesignRow,
@@ -237,6 +236,15 @@
   font-size: 0.9rem;
 }
 
+.cellDropdown {
+  flex: 0 0 120px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+}
+
 /* Remove border from the very last row */
 .tableDesignContainer > div:last-child > .tableDesignRow:last-child {
   border-bottom: none;
@@ -261,6 +269,15 @@
   padding-left: 0.5rem;
   text-align: left;
 }
+
+.cellDropdownHeader {
+  flex: 0 0 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+}
+
 
 .dragging {
   opacity: 0.5;

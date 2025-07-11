@@ -11,6 +11,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { IconButton } from "@carbon/react";
 import {  Draggable } from "@carbon/icons-react";
 import { useTranslations } from "next-intl";
+import { Dropdown } from "@carbon/react";
 
 interface TableDesignRowProps {
   rowId: string;
@@ -63,6 +64,20 @@ export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableD
       </div>
 
       <p className={styles.cellValue}>{translations(rowId)}</p>
+
+      <div className={styles.cellDropdown}>   
+        <Dropdown 
+          id={`dropdown-${rowId}`}
+          initialSelectedItem={{text: 'none'}}
+          items={[
+            translations('none'), 
+            translations('asc'),
+            translations('desc')
+          ]}
+          label="Sort Order"
+          type="inline"
+        />
+      </div>
     </div>
   );
 };
