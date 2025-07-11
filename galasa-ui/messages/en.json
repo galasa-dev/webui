@@ -151,7 +151,7 @@
     "title": "Artifacts",
     "description": "An artifact is a piece of captured state left behind once a Run has completed. Artifacts can also be downloaded and viewed.",
     "downloading": "Downloading Artifact",
-    "download_button": "Download",
+    "download_button": "Download this artifact",
     "error_title": "Something went wrong",
     "error_subtitle": "There was an error downloading the artifact. It may be that the artifact is too big for this web application, try refreshing the page or downloading the test run using the 'galasactl' command-line tool.\nFor example:\ngalasactl runs download --name {runName}",
     "select_file": "Select a file to display its content",
