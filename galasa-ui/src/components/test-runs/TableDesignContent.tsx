@@ -123,7 +123,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
         <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
           {
             tableRows.map((row) => {
-               const currentSort = sortOrder?.find(order => order.id === row.id);
+              const currentSort = sortOrder?.find(order => order.id === row.id);
               return <TableDesignRow 
                 key={row.id} 
                 rowId={row.id} 
@@ -131,7 +131,7 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
                 isSelected={selectedRowIds.includes(row.id)}
                 onSelect={handleRowSelect}
                 onSortOrderChange={handleSortOrderChange}
-              />
+              />;
             }) 
           }
         </SortableContext>

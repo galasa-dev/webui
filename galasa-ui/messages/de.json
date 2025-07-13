@@ -227,7 +227,7 @@
   },
   "TestRunsTable": {
     "submittedAt": "Eingereicht am",
-    "testRunName": "Name des Testlaufs",
+    "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",

@@ -13,11 +13,11 @@ import TableDesignContent from './TableDesignContent';
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TestRunsData } from "@/utils/testRuns";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDefinition, runStructure, sortOrderType } from '@/utils/interfaces';
-import { Run, TestStructure } from '@/generated/galasaapi';
+import { Run } from '@/generated/galasaapi';
 
 
 interface TabConfig {
@@ -84,7 +84,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
       });
     }
     return sortOrderArray;
-  })
+  });
     
   // State to track if the component has been initialized
   const [isInitialized, setIsInitialized] = useState(false);
@@ -221,7 +221,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const runsToSort = runsData?.runs ? transformRunsforTable(runsData.runs) : [];
 
     if (sortOrder.length !== 0 && runsToSort.length !== 0) {
-      return runsToSort.sort((runA, runB) => {
+      return [...runsToSort].sort((runA, runB) => {
         // Sort based on the order of columns in columnsOrder (Assumption: Leftmost has higher priority)
         for (const {id} of columnsOrder) {
           const sortConfig = sortOrder.find(order => order.id === id);
@@ -233,24 +233,19 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
           const valueA = runA[id] ?? '';
           const valueB = runB[id] ?? '';
-          console.log(`Sorting by ${id}: ${valueA} vs ${valueB}`);
 
-          // Handle tags array specifically if needed
-          const valA = Array.isArray(valueA) ? valueA.join(',') : valueA;
-          const valB = Array.isArray(valueB) ? valueB.join(',') : valueB;
+          const comparison = String(valueA).localeCompare(String(valueB));
 
-          if (valA < valB) {
-            return sortConfig.order === 'asc' ? -1 : 1;
-          } else if (valueA > valueB) {
-            return sortConfig.order === 'asc' ? 1 : -1;
+          if (comparison !== 0) {
+            return sortConfig.order === 'asc' ? comparison : -comparison;
           }
         }
         // If all compared columns are equal, maintain original order
         return 0;
-      })
+      });
     }
     return runsToSort;
-  }, [runsData, sortOrder, columnsOrder])
+  }, [runsData, sortOrder, columnsOrder]);
 
 
   return (
