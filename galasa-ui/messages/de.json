@@ -31,8 +31,7 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
-      "theme": "Designunterstützung"
+      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
     }
   },
   "AccessTokensSection": {
@@ -151,7 +150,7 @@
     "title": "Artefakte",
     "description": "Ein Artefakt ist ein Zustand, der nach einem Lauf erhalten bleibt. Artefakte können heruntergeladen und angezeigt werden.",
     "downloading": "Artefakt wird heruntergeladen",
-    "download_button": "Herunterladen",
+    "download_button": "Dieses Artefakt herunterladen",
     "error_title": "Fehler",
     "error_subtitle": "Fehler beim Herunterladen. Versuchen Sie es erneut oder verwenden Sie das CLI-Tool:\ngalasactl runs download --name {runName}",
     "select_file": "Datei auswählen, um Inhalt anzuzeigen",
@@ -199,8 +198,8 @@
     "duration": "Dauer",
     "tags": "Tags",
     "noTags": "Keine Tags vorhanden.",
-    "recentRunsLink": "Andere kürzlich durchgeführte Durchläufe desselben Tests anzeigen…",
-    "runRetriesLink": "Erneute Versuche dieses Testlaufs anzeigen…"
+    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
+    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
   },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
@@ -229,7 +228,7 @@
   },
   "TestRunsTable": {
     "submittedAt": "Eingereicht am",
-    "testRunName": "Name des Testlaufs",
+    "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",
@@ -378,14 +377,15 @@
     "columnName": "Spaltenname",
     "showHideHeader": "Spalten ein-/ausblenden",
     "warning": "Warnung",
-    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus"    
+    "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus",
+    "sortOrderHeader": "Sortierreihenfolge"
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",
     "moveUpLabel": "Nach oben verschieben",
     "moveDownLabel": "Nach unten verschieben",
     "submittedAt": "Eingereicht am",
-    "testRunName": "Name des Testlaufs",
+    "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",
@@ -394,6 +394,9 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
-    "submissionId":"Übermittlungs-ID"
+    "submissionId":"Übermittlungs-ID",
+    "none": "Keine",
+    "asc": "Aufsteigend",
+    "desc": "Absteigend"
   }
 }

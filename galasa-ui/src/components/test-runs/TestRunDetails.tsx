@@ -5,7 +5,6 @@
  */
 "use client";
 import BreadCrumb from '@/components/common/BreadCrumb';
-import PageTile from '@/components/PageTile';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
@@ -18,12 +17,12 @@ import { getIsoTimeDifference, parseIsoDateTime } from '@/utils/timeOperations';
 import MethodsTab from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
-import { HOME, TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
 import { Tooltip } from '@carbon/react';
+import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -35,6 +34,7 @@ interface TestRunDetailsProps {
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
   const translations = useTranslations("TestRunDetails");
+  const {breadCrumbItems } = useHistoryBreadCrumbs();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -45,15 +45,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [savedQuery, setSavedQuery] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
-  // Get the query string from the sessionStorage if it exists
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedQuery = sessionStorage.getItem('testRunsQuery');
-      if (storedQuery) {
-        setSavedQuery(storedQuery);
-      }
-    }
-  }, []);
   
   const extractRunDetails = useCallback((runDetails: Run) => {
 
@@ -111,10 +102,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     return <ErrorPage />;
   }
 
-  // Build the test runs route with the saved query string
-  const testRunsRoute = savedQuery ? `${TEST_RUNS.route}?${savedQuery}` : TEST_RUNS.route;
-  const testRunsBreadCrumb = { ...TEST_RUNS, route: testRunsRoute };
-
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -127,12 +114,11 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
 
   return (
     <main id="content">
-      <BreadCrumb breadCrumbItems={[HOME, testRunsBreadCrumb]} />
+      <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <Tile id="tile" className={styles.toolbar}>
         {translations("title", { runName: run?.runName || "Unknown Run Name" })}
         <div className={styles.buttonContainer}>
           <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
-
             <button
               onClick={handleShare}
               className={styles.shareButton}

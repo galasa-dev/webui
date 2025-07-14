@@ -30,14 +30,13 @@
 }
 
 .iconButton {
-  background: none;
+  background:#262626;
   border: none;
-  padding: 0.5rem;
+  padding: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -51,9 +50,5 @@
 }
 
 .active {
-  background-color: #474747;
   color: var(--cds-icon-on-color);
-}
-.themeContainer {
-  border-radius: 0.35rem;
 }

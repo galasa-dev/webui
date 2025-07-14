@@ -17,26 +17,6 @@ function setup<T>() {
   return { promise, resolve, reject };
 }
 
-// Mock sessionStorage
-const sessonStorageMock = (() => {
-  let store: { [key: string]: string } = {};
-  return {
-    setItem(key: string, value: string) {
-      store[key] = value;
-    },
-    getItem(key: string) {
-      return store[key] || null;
-    }, 
-    clear() {
-      store = {};
-    },
-  };
-})();
-
-Object.defineProperty(window, 'sessionStorage', {
-  value: sessonStorageMock,
-  writable: true,
-});
 
 // Mocking next-intl
 jest.mock('next-intl', () => ({
@@ -174,7 +154,6 @@ jest.mock('@carbon/react', () => {
   return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, };
 });
 
-
 beforeAll(() => {
   Object.assign(navigator, {
     clipboard: {
@@ -183,13 +162,15 @@ beforeAll(() => {
   });
 });
 
+// Mock for 'next/navigation'
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(() => '/mock/path/run-123'), // Return a mock path
+  useSearchParams: jest.fn(() => new URLSearchParams('from=test&tab=overview')), // Return a real URLSearchParams instance
+}));
+
 
 describe('TestRunDetails', () => {
   const runId = 'run-123';
-
-  beforeEach(() => {
-    sessonStorageMock.clear();
-  });
 
   it('shows the skeleton while loading', async () => {
     const runDetailsDeferred = setup<any>();
@@ -303,59 +284,6 @@ describe('TestRunDetails', () => {
     expect(await screen.findByText('ErrorPage')).toBeInTheDocument();
   });
 
-  it('build savedQuery from the sessionStorage and clears it', async () => {
-    const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
-    const runLogDeferred = setup<string>();
-
-    // Set a query string in sessionStorage
-    const queryString = 'status=Finished&result=Success';
-    sessionStorage.setItem('testRunsQuery', queryString);
-
-    // Verify it is set correctly
-    expect(sessionStorage.getItem('testRunsQuery')).toBe(queryString);
-
-    render(
-      <TestRunDetails
-        runId={runId}
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
-
-    // Check the breadcrumb props
-    const breadcrumb = screen.getByTestId('breadcrumb');
-
-    // Check if the link is correc
-    expect(breadcrumb).toHaveAttribute('data-route', `/test-runs?${queryString}`);
-
-    // Resolve the promises to ensure the component loads correctly
-    await act(async () => {
-      runDetailsDeferred.resolve({
-        testStructure: {
-          methods: [],
-          result: 'PASS',
-          status: 'OK',
-          runName: 'r1',
-          testShortName: 't1',
-          bundle: 'b1',
-          submissionId: 's1',
-          group: 'g1',
-          requestor: 'u1',
-          queued: '2025-01-01T00:00:00Z',
-          startTime: '2025-01-01T00:00:00Z',
-          endTime: '2025-01-01T01:00:00Z',
-          tags: [],
-        },
-      });
-      runArtifactsDeferred.resolve([]);
-      runLogDeferred.resolve('');
-    });
-
-    // Final check to ensure breadcrumb still has the correct route after loading
-    expect(breadcrumb).toHaveAttribute('data-route', `/test-runs?${queryString}`);
-  });
   it('copies the URL when share button is clicked', async () => {
     const runDetailsDeferred = setup<any>();
     const runArtifactsDeferred = setup<any[]>();
@@ -382,6 +310,4 @@ describe('TestRunDetails', () => {
     expect(spy).toHaveBeenCalledWith(window.location.href);
     spy.mockRestore();
   });
-  
-
 });

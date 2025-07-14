@@ -8,17 +8,23 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/TestRunsTable';
-import { TestRunsData } from '@/utils/testRuns';
-import { useSearchParams } from 'next/navigation';
 import { MAX_RECORDS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-// Mock the useRouter hook from Next.js to return a mock router object.
 const mockRouterPush = jest.fn();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockRouterPush,
+jest.mock('next/navigation');
+
+const mockUseSearchParams = useSearchParams as jest.Mock;
+const mockUseRouter = useRouter as jest.Mock;
+
+// Mock the useHistoryBreadCrumbs hook to return a mock history breadcrumbs.
+const pushBreadCrumbMock = jest.fn();
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    pushBreadCrumb: pushBreadCrumbMock,
+    resetBreadCrumbs: jest.fn(),
   }),
-  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock("next-intl", () => ({
@@ -36,7 +42,7 @@ jest.mock("next-intl", () => ({
       "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible.",
       "isloading": "Loading...",
       "submittedAt": "Submitted at",
-      "testRunName": "Test Run name",
+      "runName": "Test Run name",
       "requestor": "Requestor",
       "testName": "Test Name",
       "status": "Status",
@@ -63,33 +69,35 @@ jest.mock('@/app/error/page', () =>
 );
 
 jest.mock('@/components/common/StatusIndicator', () =>
-  function StatusIndicator() {
+  function StatusIndicator({status}: {status: string}) {
     return <div data-testid="status-indicator">Status: {status}</div>;
   }
 );
 
 // Helper function to generate mock test runs data
 const generateMockRuns = (count: number) => {
-  return Array.from({length: count}, (_, index) => ({
-    runId: `${index + 1}`,
-    testStructure: {
-      runName: `Test Run ${index + 1}`,
-      requestor: `user${index + 1}`,
-      group: `group${index + 1}`,
-      bundle: `bundle${index + 1}`,
-      package: `package${index + 1}`,
-      testName: `test${index + 1}`,
-      testShortName: `testShort${index + 1}`,
+  return Array.from({ length: count }, (_, index) => {
+    const i = index + 1;
+    return {
+      id: `${i}`,
+      runName: `Test Run ${i}`,
+      requestor: `user${i}`,
+      group: `group${i}`,
+      bundle: `bundle${i}`,
+      package: `package${i}`,
+      testName: `test${i}`,
       status: "finished",
-      result: index % 2 === 0 ? "Passed" : "Failed",
-      queued: new Date(Date.now() - index * 1000 * 60 * 60).toISOString(),
-    },
-  }));
+      result: i % 2 === 0 ? "Failed" : "Passed", 
+      submittedAt: new Date(Date.now() - i * 1000 * 60 * 60).toISOString(),
+      tags: `tag${i}`,
+      submissionId: `submission${i}`,
+    };
+  });
 };
 
 // Default props for TestRunsTable component
 const defaultProps = {
-  visibleColumns: ["submittedAt", "testRunName", "requestor", "testName", "status", "result"],
+  visibleColumns: ["submittedAt", "runName", "requestor", "testName", "status", "result"],
   orderedHeaders: RESULTS_TABLE_COLUMNS,
   limitExceeded: false,
   isLoading: false,
@@ -102,6 +110,9 @@ describe('TestRunsTable Component', () => {
     mockRouterPush.mockClear();
     // Suppress console.error for rejected promise tests
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    mockUseRouter.mockReturnValue({ push: mockRouterPush });
+    pushBreadCrumbMock.mockClear();
   });
 
   describe('Rendering Logic', () => {
@@ -202,5 +213,26 @@ describe('TestRunsTable Interactions', () => {
       expect(screen.getByText('Test Run 11')).toBeInTheDocument();
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
+  });
+
+  test('pushes test runs breadcrumb with current search params when a run is clicked', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(1);
+    // Provide a specific set of search params for this test's context
+    const specificSearchParams = new URLSearchParams('status=finished&requestor=user1');
+    mockUseSearchParams.mockReturnValue(specificSearchParams);
+
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Act
+    const tableRow = await screen.findByText('Test Run 1');
+    fireEvent.click(tableRow);
+
+    // Assert
+    // Check that the breadcrumb route is built from the mocked search params
+    expect(pushBreadCrumbMock).toHaveBeenCalledWith({
+      title: 'testRuns',
+      route: `/test-runs?${specificSearchParams.toString()}`,
+    });
   });
 });

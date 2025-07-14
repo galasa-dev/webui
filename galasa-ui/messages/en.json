@@ -31,8 +31,7 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "internationalization": "Internationalization/Multiple language support",
-      "theme":"Theme support"
+      "internationalization": "Internationalization/Multiple language support"
     }
   },
   "AccessTokensSection": {
@@ -151,7 +150,7 @@
     "title": "Artifacts",
     "description": "An artifact is a piece of captured state left behind once a Run has completed. Artifacts can also be downloaded and viewed.",
     "downloading": "Downloading Artifact",
-    "download_button": "Download",
+    "download_button": "Download this artifact",
     "error_title": "Something went wrong",
     "error_subtitle": "There was an error downloading the artifact. It may be that the artifact is too big for this web application, try refreshing the page or downloading the test run using the 'galasactl' command-line tool.\nFor example:\ngalasactl runs download --name {runName}",
     "select_file": "Select a file to display its content",
@@ -199,8 +198,8 @@
     "duration": "Duration",
     "tags": "Tags",
     "noTags": "No tags were associated with this test run.",
-    "recentRunsLink": "View other recent runs of the same test…",
-    "runRetriesLink": "View retries of this test run…"
+    "recentRunsLink": "View recent runs of the same test...",
+    "runRetriesLink": "View all attempts of this test run..."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
@@ -229,7 +228,7 @@
   },
   "TestRunsTable": {
     "submittedAt": "Submitted at",
-    "testRunName": "Test Run Name",
+    "runName": "Test Run Name",
     "requestor": "Requestor",
     "group": "Group",
     "bundle": "Bundle",
@@ -378,14 +377,15 @@
     "columnName": "Column Name",
     "showHideHeader": "Show/Hide Columns",
     "warning": "Warning",
-    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
+    "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
+    "sortOrderHeader": "Sort Order"
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",
     "moveUpLabel": "Move up",
     "moveDownLabel": "Move down",
     "submittedAt": "Submitted at",
-    "testRunName": "Test Run Name",
+    "runName": "Test Run Name",
     "requestor": "Requestor",
     "group": "Group",
     "bundle": "Bundle",
@@ -394,6 +394,9 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
-    "submissionId": "Submission ID"
+    "submissionId": "Submission ID",
+    "none": "None",
+    "asc": "Ascending",
+    "desc": "Descending"
   }
 }

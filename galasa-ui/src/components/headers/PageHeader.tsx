@@ -17,7 +17,6 @@ import { useTranslations } from 'next-intl';
 export default function PageHeader({ galasaServiceName }: { galasaServiceName: string }) {
   const {isFeatureEnabled} = useFeatureFlags();
   const translations = useTranslations('PageHeader');
-
   return (
     <Theme theme="g90">
       <Header aria-label="Galasa Ecosystem">

@@ -11,14 +11,18 @@ import { CSS } from "@dnd-kit/utilities";
 import { IconButton } from "@carbon/react";
 import {  Draggable } from "@carbon/icons-react";
 import { useTranslations } from "next-intl";
+import { Dropdown } from "@carbon/react";
+import { sortOrderType } from "@/utils/interfaces";
 
 interface TableDesignRowProps {
   rowId: string;
   isSelected: boolean;
+  currentSortOrder: sortOrderType,
   onSelect: (rowId: string) => void;
+  onSortOrderChange: (rowId: string, sortOrder: sortOrderType) => void;
 }
 
-export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableDesignRowProps) {
+export default function TableDesignRow({ rowId,  isSelected, currentSortOrder, onSelect, onSortOrderChange }: TableDesignRowProps) {
   const translations = useTranslations("TableDesignRow");
 
   const {
@@ -34,6 +38,14 @@ export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableD
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const sortItems = [
+    {text: translations('none'), value: 'none'}, 
+    {text: translations('asc'), value: 'asc'},
+    {text: translations('desc'), value: 'desc'}
+  ];
+
+  const selectedItem = sortItems.find(item => item.value === currentSortOrder) || sortItems[0];
 
   return ( 
     <div 
@@ -63,6 +75,22 @@ export default function TableDesignRow({ rowId,  isSelected,  onSelect }: TableD
       </div>
 
       <p className={styles.cellValue}>{translations(rowId)}</p>
+
+      <div className={styles.cellDropdown}>   
+        <Dropdown 
+          id={`dropdown-${rowId}`}
+          selectedItem={selectedItem}
+          items={sortItems}
+          label="Sort Order"
+          type="inline"
+          itemToString={(item: {text: string, value: string}) => item.text}
+          onChange={({ selectedItem }: {selectedItem: {text: string, value: sortOrderType}}) => {
+            if (selectedItem) {
+              onSortOrderChange(rowId, selectedItem.value);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };
