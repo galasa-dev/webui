@@ -158,6 +158,14 @@ test('clicking log out button calls handleDeleteCookieApiOperation, RESPONSE OK'
 
 });
 
+// Mock matchMedia
+beforeAll(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({})),
+  });
+});
+
 test('renders Galasa Service header title when env GALASA_SERVICE_NAME is null or blank string', () => {
 
   render(<FeatureFlagProvider>

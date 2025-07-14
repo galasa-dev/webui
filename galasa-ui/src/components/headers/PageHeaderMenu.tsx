@@ -33,21 +33,17 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const {isFeatureEnabled} = useFeatureFlags();
 
   const isInternationalizationEnabled = isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION);
-  const isThemeEnabled = isFeatureEnabled(FEATURE_FLAGS.THEME);
-  const { theme, setTheme } = useTheme();
-
   
   useEffect(() => {
     if (!isInternationalizationEnabled) {
       setUserLocale("en");
     }
-    setTheme(isFeatureEnabled(FEATURE_FLAGS.THEME) ? theme : 'light'); 
-  }, [isInternationalizationEnabled,isThemeEnabled]);
+  }, [isInternationalizationEnabled]);
 
   return (
     <HeaderGlobalBar data-testid="header-menu">
       {isInternationalizationEnabled && (<LanguageSelector/>)}
-      {isThemeEnabled && <ThemeSelector />}
+      <ThemeSelector />
       <HeaderName prefix="">{galasaServiceName}</HeaderName>
       <OverflowMenu
         data-floating-menu-container
