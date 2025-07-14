@@ -8,7 +8,6 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { stat } from 'fs';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) =>
@@ -146,7 +145,6 @@ const queryClient = new QueryClient({
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
-
 
 describe('TestRunsTabs Component', () => {
   const mockRequestorNamesPromise = Promise.resolve([]);

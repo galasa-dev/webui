@@ -214,8 +214,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     staleTime: Infinity,
   });
 
-
-
   // Memoized sorting logic for multi-level sorting based on column order
   const sortedRuns = useMemo(() => {
     const runsToSort = runsData?.runs ? transformRunsforTable(runsData.runs) : [];
@@ -246,7 +244,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     }
     return runsToSort;
   }, [runsData, sortOrder, columnsOrder]);
-
 
   return (
     <Tabs 

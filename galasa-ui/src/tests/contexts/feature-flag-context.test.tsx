@@ -73,8 +73,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   
     const expectedCookieVal = JSON.stringify({
       [FEATURE_FLAGS.TEST_RUNS]: true,
-      [FEATURE_FLAGS.INTERNATIONALIZATION]: false,
-      [FEATURE_FLAGS.THEME]: false
+      [FEATURE_FLAGS.INTERNATIONALIZATION]: false
     });
   
     expect(cookieSpy).toHaveBeenCalledTimes(1);

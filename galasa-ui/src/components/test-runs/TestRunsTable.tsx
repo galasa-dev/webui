@@ -34,6 +34,8 @@ import ErrorPage from "@/app/error/page";
 import { MAX_RECORDS} from "@/utils/constants/common";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
+import { TEST_RUNS } from "@/utils/constants/breadcrumb";
 
 
 interface CustomCellProps {
@@ -68,6 +70,7 @@ interface TestRunsTableProps {
 
 export default function TestRunsTable({runsList,limitExceeded, visibleColumns, orderedHeaders, isLoading, isError}: TestRunsTableProps) {
   const translations = useTranslations("TestRunsTable");
+  const { pushBreadCrumb } = useHistoryBreadCrumbs();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -138,13 +141,11 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
   };
 
   // Navigate to the test run details page using the runId
-  const handleRowClick = (runId: string) => {
-    const queryString = searchParams.toString();
-
-    // Save the query string to the sessionStorage if the window object is available
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('testRunsQuery', queryString);
-    }
+  const handleRowClick = (runId: string, runName: string) => {
+    // Push the current page URL to the breadcrumb history
+    pushBreadCrumb({
+      ...TEST_RUNS , route: `/test-runs?${searchParams.toString()}`
+    });
 
     // Navigate to the test run details page
     router.push(`/test-runs/${runId}`);
@@ -195,7 +196,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
                 </TableHead>
                 <TableBody>
                   {rows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id)}>
+                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id, row.cells.find(cell => cell.info.header === 'testRunName')?.value as string)}>
                       {row.cells.map((cell) => 
                         <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
                     </TableRow>

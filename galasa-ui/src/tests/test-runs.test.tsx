@@ -5,7 +5,8 @@
  */
 import { render, screen, waitFor } from '@testing-library/react';
 import { Run } from '@/generated/galasaapi';
-import TestRunsPage, { fetchAllTestRunsByPaging } from '@/app/test-runs/page';
+import TestRunsPage from '@/app/test-runs/page'; 
+import { getRequestorList, getResultsNames } from '@/utils/testRuns';
 
 jest.mock('@/app/test-runs/page', () => {
   const originalModule = jest.requireActual('@/app/test-runs/page');
@@ -39,41 +40,46 @@ jest.mock('@/components/common/BreadCrumb', () =>
   }
 );
 
-const mockedFetch = fetchAllTestRunsByPaging as jest.Mock;
+jest.mock('@/utils/testRuns', () => ({
+  getRequestorList: jest.fn(),
+  getResultsNames: jest.fn(),
+}));
+
+jest.mock('@/components/test-runs/TestRunsDetails', () => {
+  return function MockTestRunsDetails({ requestorNamesPromise, resultsNamesPromise }: any) {
+    return <div data-testid="mock-test-runs-details" />;
+  };
+});
+
+const mockedGetRequestorList = getRequestorList as jest.Mock;
+const mockedGetResultsNames = getResultsNames as jest.Mock;
+
 
 describe('TestRunsPage', () => {
   beforeEach(() => {
-    // Clear the mock before each test.
-    mockedFetch.mockClear();
+    // Clear mocks before each test.
+    mockedGetRequestorList.mockClear();
+    mockedGetResultsNames.mockClear();
   });
 
-  test('renders the final content after data is successfully fetched', async () => {
-    // Arrange
-    const mockRuns = [{ runId: '1' }, { runId: '2' }] as Run[];
-    mockedFetch.mockResolvedValue(mockRuns);
-
+  test('should call data fetching functions and render TestRunsDetails', async () => {
+    // Arrange: Set up mock return values for the promises
+    const mockRequestors = Promise.resolve(['user1', 'user2']);
+    const mockResults = Promise.resolve(['Passed', 'Failed']);
+    mockedGetRequestorList.mockReturnValue(mockRequestors);
+    mockedGetResultsNames.mockReturnValue(mockResults);
+    
     // Act
-    const page = await TestRunsPage({searchParams: { from: '', to: '' } });
-    render(page);
-
-    // Assert
-    await waitFor(() => {
-      expect(screen.getByRole('main')).toBeInTheDocument();
-      expect(screen.getByTestId('mock-test-runs-tabs')).toBeInTheDocument();
-    });
-  });
-
-  test('renders the main content structure', async () => {
-    // Arrange
-    mockedFetch.mockResolvedValue([]);
-
-    // Act
-    const Page = await TestRunsPage({searchParams: { from: '', to: '' } });
+    const Page = await TestRunsPage();
     render(Page);
-
-    // Assert
-    expect(screen.getByRole('main')).toBeInTheDocument();
-    expect(screen.getByTestId('page-tile')).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
+    
+    // Check that the data fetching functions were called
+    expect(mockedGetRequestorList).toHaveBeenCalledTimes(1);
+    expect(mockedGetResultsNames).toHaveBeenCalledTimes(1);
+    
+    // Check that the child component was rendered
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-test-runs-details')).toBeInTheDocument();
+    });
   });
 });

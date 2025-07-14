@@ -29,6 +29,13 @@ jest.mock('next-intl', () => ({
   }
 }));
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(() => ({
+    push: jest.fn(), 
+    replace: jest.fn(),
+  })),
+}));
+
 describe('MyProfilePage', () => {
   afterEach(() => {
     jest.clearAllMocks();

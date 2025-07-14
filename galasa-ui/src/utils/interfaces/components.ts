@@ -19,3 +19,8 @@ export interface DateTimePickerProps {
   onTimeChange: (time: string) => void;
   onAmPmChange: (amPm: AmPm) => void;
 }
+
+export interface BreadCrumbProps {
+  title: string;
+  route: string;
+}

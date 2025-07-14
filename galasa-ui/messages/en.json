@@ -31,8 +31,7 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "internationalization": "Internationalization/Multiple language support",
-      "theme":"Theme support"
+      "internationalization": "Internationalization/Multiple language support"
     }
   },
   "AccessTokensSection": {
@@ -199,8 +198,8 @@
     "duration": "Duration",
     "tags": "Tags",
     "noTags": "No tags were associated with this test run.",
-    "recentRunsLink": "View other recent runs of the same test…",
-    "runRetriesLink": "View retries of this test run…"
+    "recentRunsLink": "View recent runs of the same test...",
+    "runRetriesLink": "View all attempts of this test run..."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
