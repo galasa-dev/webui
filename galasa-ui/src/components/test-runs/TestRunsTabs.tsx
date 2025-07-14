@@ -16,6 +16,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from 'react';
 import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
+import { ColumnDefinition, runStructure, sortOrderType } from '@/utils/interfaces';
+import { Run } from '@/generated/galasaapi';
 
 
 interface TabConfig {
@@ -27,6 +29,7 @@ interface TestRunsTabProps {
   requestorNamesPromise: Promise<string[]>;
   resultsNamesPromise: Promise<string[]>;
 }
+
 
 export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
   const translations = useTranslations("TestRunsTabs");
@@ -55,18 +58,32 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   );
 
   // Initialize columnsOrder based on URL parameters or default to RESULTS_TABLE_COLUMNS
-  const [columnsOrder, setColumnsOrder] = useState<{ id: string; columnName: string }[]>(() => {
+  const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>(() => {
     const orderParam = searchParams.get(RUN_QUERY_PARAMS.COLUMNS_ORDER);
-    let correctOrder = RESULTS_TABLE_COLUMNS;
+    let correctOrder: ColumnDefinition[] = RESULTS_TABLE_COLUMNS;
 
     // Parse the order from the URL parameter
     if (orderParam) {
       correctOrder = orderParam.split(',')
         .map(id => RESULTS_TABLE_COLUMNS.find(col => col.id === id))
-        .filter(Boolean) as { id: string; columnName: string }[];
+        .filter(Boolean) as ColumnDefinition[];
     }
 
     return correctOrder;
+  });
+
+  // Initialize sortOrder based on URL parameters or default to an empty array
+  // URL should look like this sortOrder?result:asc,status:desc
+  const [sortOrder, setSortOrder] = useState<{id: string; order: sortOrderType}[]>(() => {
+    const sortOrderParam = searchParams.get(RUN_QUERY_PARAMS.SORT_ORDER);
+    let sortOrderArray: {id: string; order: sortOrderType}[] = [];
+    if (sortOrderParam) {
+      sortOrderArray = sortOrderParam.split(',').map((item) => {
+        const [id, order] = item.split(':');
+        return { id, order: order as sortOrderType };
+      });
+    }
+    return sortOrderArray;
   });
     
   // State to track if the component has been initialized
@@ -88,24 +105,67 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const currentTab = TABS_CONFIG[selectedIndex];
     const visibleColumnsParam = selectedVisibleColumns.join(",");
     const columnsOrderParam = columnsOrder.map(col => col.id).join(",");
-    
+    const sortOrderParam = sortOrder.map(item => `${item.id}:${item.order}`).join(",");
+
     const params = new URLSearchParams(searchParams.toString());
+
+    // Set current tab, visible columns, columns order, and sort order
     params.set(RUN_QUERY_PARAMS.TAB, currentTab.id);
+
     if(selectedVisibleColumns.length > 0) {
       params.set(RUN_QUERY_PARAMS.VISIBLE_COLUMNS, visibleColumnsParam);
     } else {
       // If no columns are selected, we can clear the parameter
       params.delete(RUN_QUERY_PARAMS.VISIBLE_COLUMNS);
     }
+
+    if (sortOrder.length > 0) {
+      params.set(RUN_QUERY_PARAMS.SORT_ORDER, sortOrderParam);
+    } else {
+      // If no sort order is set, we can clear the parameter
+      params.delete(RUN_QUERY_PARAMS.SORT_ORDER);
+    }
+
     params.set(RUN_QUERY_PARAMS.COLUMNS_ORDER, columnsOrderParam);
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, selectedIndex]);
+  }, [selectedVisibleColumns, columnsOrder, isInitialized, pathname, router, selectedIndex, sortOrder]);
+
+  /**
+   * Transforms and flattens the raw API data for Carbon DataTable.
+   * @param runs - The array of run objects from the API.
+   * @returns A new array of flat objects, each with a unique `id` and properties matching the headers.
+   */
+  const transformRunsforTable = (runs: Run[]) : runStructure[] => {
+    if (!runs) {
+      return [];
+    }
+  
+    return runs.map((run) => {
+      const structure = run.testStructure || {};
+  
+      return {
+        id: run.runId,
+        submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
+        runName: structure.runName || 'N/A',
+        requestor: structure.requestor || 'N/A',
+        group: structure.group || 'N/A',
+        bundle: structure.bundle || 'N/A',
+        package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
+        testName: structure.testShortName || structure.testName || 'N/A',
+        tags: structure.tags ? structure.tags.join(', ') : 'N/A',
+        status: structure.status || 'N/A',
+        result: structure.result || 'N/A',
+        submissionId: structure.submissionId || 'N/A',
+      };
+    });
+  };
 
   const handleTabChange = (event: {selectedIndex : number}) => {
     const currentIndex = event.selectedIndex;
     setSelectedIndex(currentIndex);
   };
+
 
   // Create a canonical query key based on the search parameters so that it won't refetch unnecessarily
   const queryKey = useMemo(() => {
@@ -154,6 +214,37 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     staleTime: Infinity,
   });
 
+  // Memoized sorting logic for multi-level sorting based on column order
+  const sortedRuns = useMemo(() => {
+    const runsToSort = runsData?.runs ? transformRunsforTable(runsData.runs) : [];
+
+    if (sortOrder.length !== 0 && runsToSort.length !== 0) {
+      return [...runsToSort].sort((runA, runB) => {
+        // Sort based on the order of columns in columnsOrder (Assumption: Leftmost has higher priority)
+        for (const {id} of columnsOrder) {
+          const sortConfig = sortOrder.find(order => order.id === id);
+
+          // Skip this column if its sort is 'none' or not set.
+          if (!sortConfig) {
+            continue;
+          }
+
+          const valueA = runA[id] ?? '';
+          const valueB = runB[id] ?? '';
+
+          const comparison = String(valueA).localeCompare(String(valueB));
+
+          if (comparison !== 0) {
+            return sortConfig.order === 'asc' ? comparison : -comparison;
+          }
+        }
+        // If all compared columns are equal, maintain original order
+        return 0;
+      });
+    }
+    return runsToSort;
+  }, [runsData, sortOrder, columnsOrder]);
+
   return (
     <Tabs 
       className={styles.tabs}
@@ -176,6 +267,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
               setSelectedRowIds={setSelectedVisibleColumns}
               tableRows={columnsOrder}
               setTableRows={setColumnsOrder}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
             />
           </div>
         </TabPanel>
@@ -190,7 +283,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         <TabPanel>
           <div className={styles.tabContent}>
             <TestRunsTable
-              runsList={runsData?.runs || []}
+              runsList={sortedRuns ?? []}
               limitExceeded={runsData?.limitExceeded ?? false}
               visibleColumns={selectedVisibleColumns}
               orderedHeaders={columnsOrder}

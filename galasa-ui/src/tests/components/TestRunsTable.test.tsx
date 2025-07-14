@@ -42,7 +42,7 @@ jest.mock("next-intl", () => ({
       "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible.",
       "isloading": "Loading...",
       "submittedAt": "Submitted at",
-      "testRunName": "Test Run name",
+      "runName": "Test Run name",
       "requestor": "Requestor",
       "testName": "Test Name",
       "status": "Status",
@@ -69,33 +69,35 @@ jest.mock('@/app/error/page', () =>
 );
 
 jest.mock('@/components/common/StatusIndicator', () =>
-  function StatusIndicator() {
+  function StatusIndicator({status}: {status: string}) {
     return <div data-testid="status-indicator">Status: {status}</div>;
   }
 );
 
 // Helper function to generate mock test runs data
 const generateMockRuns = (count: number) => {
-  return Array.from({length: count}, (_, index) => ({
-    runId: `${index + 1}`,
-    testStructure: {
-      runName: `Test Run ${index + 1}`,
-      requestor: `user${index + 1}`,
-      group: `group${index + 1}`,
-      bundle: `bundle${index + 1}`,
-      package: `package${index + 1}`,
-      testName: `test${index + 1}`,
-      testShortName: `testShort${index + 1}`,
+  return Array.from({ length: count }, (_, index) => {
+    const i = index + 1;
+    return {
+      id: `${i}`,
+      runName: `Test Run ${i}`,
+      requestor: `user${i}`,
+      group: `group${i}`,
+      bundle: `bundle${i}`,
+      package: `package${i}`,
+      testName: `test${i}`,
       status: "finished",
-      result: index % 2 === 0 ? "Passed" : "Failed",
-      queued: new Date(Date.now() - index * 1000 * 60 * 60).toISOString(),
-    },
-  }));
+      result: i % 2 === 0 ? "Failed" : "Passed", 
+      submittedAt: new Date(Date.now() - i * 1000 * 60 * 60).toISOString(),
+      tags: `tag${i}`,
+      submissionId: `submission${i}`,
+    };
+  });
 };
 
 // Default props for TestRunsTable component
 const defaultProps = {
-  visibleColumns: ["submittedAt", "testRunName", "requestor", "testName", "status", "result"],
+  visibleColumns: ["submittedAt", "runName", "requestor", "testName", "status", "result"],
   orderedHeaders: RESULTS_TABLE_COLUMNS,
   limitExceeded: false,
   isLoading: false,

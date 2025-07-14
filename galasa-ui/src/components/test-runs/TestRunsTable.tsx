@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 "use client";
-
-import { Run } from "@/generated/galasaapi";
 import {
   DataTable,
   Table,
@@ -19,9 +17,11 @@ import {
   DataTableSkeleton,
 } from "@carbon/react";
 import {
+  ColumnDefinition,
   DataTableHeader,
   DataTableRow,
   DataTableCell as IDataTableCell,
+  runStructure,
 } from "@/utils/interfaces";
 import styles from "@/styles/TestRunsPage.module.css";
 import { TableRowProps } from "@carbon/react/lib/components/DataTable/TableRow";
@@ -44,36 +44,6 @@ interface CustomCellProps {
 }
 
 /**
- * Transforms and flattens the raw API data for Carbon DataTable.
- * @param runs - The array of run objects from the API.
- * @returns A new array of flat objects, each with a unique `id` and properties matching the headers.
- */
-const transformRunsforTable = (runs: Run[]) => {
-  if (!runs) {
-    return [];
-  }
-
-  return runs.map((run) => {
-    const structure = run.testStructure || {};
-
-    return {
-      id: run.runId,
-      submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
-      testRunName: structure.runName || 'N/A',
-      requestor: structure.requestor || 'N/A',
-      group: structure.group || 'N/A',
-      bundle: structure.bundle || 'N/A',
-      package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
-      testName: structure.testShortName || structure.testName || 'N/A',
-      tags: structure.tags ? structure.tags.join(', ') : 'N/A',
-      status: structure.status || 'N/A',
-      result: structure.result || 'N/A',
-      submissionId: structure.submissionId || 'N/A',
-    };
-  });
-};
-
-/**
  * This component encapsulates the logic for rendering a cell.
  * It renders a special layout for the 'result' column and a default for all others.
  */
@@ -90,10 +60,10 @@ const CustomCell = ({ header, value }: CustomCellProps) => {
 };
 
 interface TestRunsTableProps {
-  runsList: Run[];
+  runsList: runStructure[];
   limitExceeded: boolean;
   visibleColumns: string[];
-  orderedHeaders?: { id: string; columnName: string }[];
+  orderedHeaders?: ColumnDefinition[];
   isLoading?: boolean;
   isError?: boolean;
 }
@@ -113,15 +83,12 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
     header: translations(column.id)
   })) || [];
 
-  // Transform the raw runs data into a format suitable for the DataTable
-  const tableRows = useMemo(() => transformRunsforTable(runsList), [runsList]);
-
   // Calculate the paginated rows based on the current page and page size
   const paginatedRows = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return tableRows.slice(startIndex, endIndex);
-  }, [tableRows, currentPage, pageSize]);
+    return runsList.slice(startIndex, endIndex);
+  }, [runsList, currentPage, pageSize]);
 
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
@@ -131,7 +98,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
     let text = translations("timeFrameText.default");
     const dates = runsList.map((run) =>
-      new Date(run.testStructure?.queued || 0).getTime(),
+      new Date(run.submittedAt || 0).getTime(),
     );
     const earliestDate = new Date(Math.min(...dates));
     const latestDate = new Date(Math.max(...dates));
@@ -188,7 +155,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
     return <p>{translations('noColumnsSelected')}</p>;
   }
 
-  if ( !tableRows || tableRows.length === 0) {
+  if ( !runsList || runsList.length === 0) {
     return <p>{translations('noTestRunsFound')}</p>;
   }
 
@@ -202,7 +169,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
       />}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable isSortable rows={paginatedRows} headers={headers}>
+        <DataTable rows={paginatedRows} headers={headers}>
           {({
             rows,
             headers,
@@ -249,7 +216,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
           page={currentPage}
           pageSize={pageSize}
           pageSizes={[10, 20, 30, 40, 50]}
-          totalItems={tableRows.length}
+          totalItems={runsList.length}
           onChange={handlePaginationChange}
         />
       </div>

@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+import { TestStructure } from "@/generated/galasaapi";
+
 /**
  * Common interfaces used across multiple components and utilities
  */
@@ -14,6 +16,7 @@ export interface MarkdownResponse {
 }
 
 export type AmPm = 'AM' | 'PM';
+export type sortOrderType = 'asc' | 'desc' | 'none';
 
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
 export interface DataTableHeader {
@@ -39,4 +42,24 @@ export interface DataTableRow {
   disabled?: boolean;
   isExpanded?: boolean;
   isSelected?: boolean;
+}
+
+export interface runStructure {
+  submittedAt: string;
+  runName: string;
+  requestor: string;
+  group: string;
+  bundle: string;
+  package: string;
+  testName: string;
+  tags:  string;
+  status: string;
+  result: string;
+  submissionId: string;
+}
+
+
+export interface ColumnDefinition {
+  id: keyof runStructure;
+  columnName: string;
 }

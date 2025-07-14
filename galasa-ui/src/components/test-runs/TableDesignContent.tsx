@@ -11,16 +11,19 @@ import TableDesignRow from "./TableDesignRow";
 import { Checkbox } from "@carbon/react";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
+import { ColumnDefinition, sortOrderType } from "@/utils/interfaces";
 
 
 interface TableDesignContentProps {
     selectedRowIds: string[];
     setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
-    tableRows: { id: string; columnName: string }[];
-    setTableRows: React.Dispatch<React.SetStateAction<{ id: string; columnName: string }[]>>;
+    tableRows: ColumnDefinition[];
+    setTableRows: React.Dispatch<React.SetStateAction<ColumnDefinition[]>>;
+    sortOrder?: { id: string; order: sortOrderType }[];
+    setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrderType }[]>>;
 }
 
-export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows}: TableDesignContentProps) {
+export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows, sortOrder, setSortOrder}: TableDesignContentProps) {
   const translations = useTranslations("TableDesignContent"); 
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
@@ -50,10 +53,31 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     const { active , over } = event;
 
     if (over && active.id !== over.id) {
-      setTableRows((rows: { id: string; columnName: string }[]) => {
+      setTableRows((rows: ColumnDefinition[]) => {
         const originalPosition = getRowPosition(String(active.id));
         const newPosition = getRowPosition(String(over.id));
         return arrayMove(rows, originalPosition, newPosition);
+      });
+    }
+  };
+
+  // Handle sort order change for each row
+  const handleSortOrderChange = (rowId: string, newSortOrder: sortOrderType) => {
+    if (setSortOrder) {
+      setSortOrder((prev) => {
+        let updatedSortOrder = [...prev];
+        if (newSortOrder !== 'none') {
+          const existingIndex = updatedSortOrder.findIndex(item => item.id === rowId);
+          if (existingIndex !== -1) {
+            updatedSortOrder[existingIndex].order = newSortOrder;
+          } else {
+            updatedSortOrder.push({ id: rowId, order: newSortOrder });
+          }
+        } else {
+          // If the new order is 'none', remove the item from the sort array
+          updatedSortOrder = prev.filter(order => order.id !== rowId);
+        }
+        return updatedSortOrder;
       });
     }
   };
@@ -91,17 +115,23 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           <div className={styles.cellValue}>
             <strong>{translations("columnName")}</strong>
           </div>
+          <div className={styles.cellDropdownHeader}>
+            <strong>{translations("sortOrderHeader")}</strong>
+          </div>
         </div>
         <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
           {
-            tableRows.map((row) => (
-              <TableDesignRow 
+            tableRows.map((row) => {
+              const currentSort = sortOrder?.find(order => order.id === row.id);
+              return <TableDesignRow 
                 key={row.id} 
                 rowId={row.id} 
+                currentSortOrder={currentSort?.order || 'none'}
                 isSelected={selectedRowIds.includes(row.id)}
                 onSelect={handleRowSelect}
-              />
-            )) 
+                onSortOrderChange={handleSortOrderChange}
+              />;
+            }) 
           }
         </SortableContext>
         {
