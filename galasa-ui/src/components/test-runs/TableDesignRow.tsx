@@ -45,7 +45,7 @@ export default function TableDesignRow({ rowId,  isSelected, currentSortOrder, o
     {text: translations('desc'), value: 'desc'}
   ];
 
-  const initialItem = sortItems.find(item => item.value === currentSortOrder) || sortItems[0];
+  const selectedItem = sortItems.find(item => item.value === currentSortOrder) || sortItems[0];
 
   return ( 
     <div 
@@ -79,7 +79,7 @@ export default function TableDesignRow({ rowId,  isSelected, currentSortOrder, o
       <div className={styles.cellDropdown}>   
         <Dropdown 
           id={`dropdown-${rowId}`}
-          initialSelectedItem={initialItem}
+          selectedItem={selectedItem}
           items={sortItems}
           label="Sort Order"
           type="inline"

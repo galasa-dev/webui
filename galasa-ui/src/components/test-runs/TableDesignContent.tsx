@@ -77,7 +77,6 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
           // If the new order is 'none', remove the item from the sort array
           updatedSortOrder = prev.filter(order => order.id !== rowId);
         }
-        console.log("Updated Sort Order", updatedSortOrder);
         return updatedSortOrder;
       });
     }

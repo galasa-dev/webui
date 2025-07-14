@@ -384,7 +384,7 @@
     "moveUpLabel": "Nach oben verschieben",
     "moveDownLabel": "Nach unten verschieben",
     "submittedAt": "Eingereicht am",
-    "testRunName": "Name des Testlaufs",
+    "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
     "group": "Gruppe",
     "bundle": "Bundle",
