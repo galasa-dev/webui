@@ -659,6 +659,44 @@ describe('TestRunsTabs Component', () => {
       });
     });
 
+    test('sorts by date in ascending order', async () => {
+      const mockedRuns = [
+        { runId: '1', testStructure: { queued: '2023-10-11T12:00:00Z', runName: 'Run A', status: 'Passed', requestor: 'A User', tags: ['A tag'] }},
+        { runId: '2', testStructure: { queued: '2023-10-02T12:00:00Z', runName: 'Run B', status: 'Failed', requestor: 'B User', tags: ['B tag'] }},
+        { runId: '3', testStructure: { queued: '2023-10-03T12:00:00Z', runName: 'Run C', status: 'Passed', requestor: 'C User', tags: ['C tag'] }},
+      ];
+
+      (global.fetch as jest.Mock).mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ runs: mockedRuns, limitExceeded: false }),
+        })
+      );
+
+      const params = new URLSearchParams();
+      params.set('sortOrder', 'submittedAt:asc');
+      mockUseSearchParams.mockReturnValue(params);
+
+      render(
+        <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />, 
+        { wrapper }
+      );
+      fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
+
+      await waitFor(() => {
+        const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
+
+        const expectedDateRun2 = new Date('2023-10-02T12:00:00Z').toLocaleString().replace(',', '');
+        const expectedDateRun3 = new Date('2023-10-03T12:00:00Z').toLocaleString().replace(',', '');
+        const expectedDateRun1 = new Date('2023-10-11T12:00:00Z').toLocaleString().replace(',', '');
+
+        expect(lastCallArgs.runsList).toEqual([
+          { ...defaultTransformedRun, id: '2', submittedAt: expectedDateRun2, runName: 'Run B', status: 'Failed', requestor: 'B User', tags: 'B tag' },
+          { ...defaultTransformedRun, id: '3', submittedAt: expectedDateRun3, runName: 'Run C', status: 'Passed', requestor: 'C User', tags: 'C tag' },
+          { ...defaultTransformedRun, id: '1', submittedAt: expectedDateRun1, runName: 'Run A', status: 'Passed', requestor: 'A User', tags: 'A tag' }
+        ]);
+      });
+    });
 
     test('sorts correctly with three keys and handles ties at each level', async () => {
       const mockedRuns = [

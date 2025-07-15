@@ -232,7 +232,14 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
           const valueA = runA[id] ?? '';
           const valueB = runB[id] ?? '';
 
-          const comparison = String(valueA).localeCompare(String(valueB));
+          let comparison = String(valueA).localeCompare(String(valueB));
+
+          if (id === COLUMNS_IDS.SUBMITTED_AT) {
+            // Special handling for date fields to ensure correct comparison
+            const dateA = new Date(valueA);
+            const dateB = new Date(valueB);
+            comparison = dateA.getTime() - dateB.getTime();
+          }
 
           if (comparison !== 0) {
             return sortConfig.order === 'asc' ? comparison : -comparison;
