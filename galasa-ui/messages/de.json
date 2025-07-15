@@ -204,6 +204,8 @@
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
     "status": "Status",
+    "copymessage": "Seiten-URL kopieren",
+    "copiedmessage": "Kopiert",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {

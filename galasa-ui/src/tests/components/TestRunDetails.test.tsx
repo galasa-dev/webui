@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import TestRunDetails from '@/components/test-runs/TestRunDetails';
 
 function setup<T>() {
@@ -134,6 +134,13 @@ jest.mock('@carbon/react', () => {
   const TabPanels = ({ children }: any) => <div>{children}</div>;
   const TabPanel = ({ children }: any) => <div>{children}</div>;
   const Loading = () => <div>Loading</div>;
+  const Tile = ({ children }: any) => <div data-testid="tile">{children}</div>;
+  const Tooltip = ({ label, children }: any) => (
+    <div data-testid="tooltip">
+      {label}
+      {children}
+    </div>
+  );
 
   [Tab, Tabs, TabList, TabPanels, TabPanel, Loading].forEach(c => {
     // @ts-ignore
@@ -141,8 +148,18 @@ jest.mock('@carbon/react', () => {
     // TypeScript does not allow this by default, so we suppress the error.
     c.displayName = c.name || 'Anonymous';
   });
+  Tile.displayName = 'Tile';
+  Tooltip.displayName = 'Tooltip';
 
-  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading };
+  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, };
+});
+
+beforeAll(() => {
+  Object.assign(navigator, {
+    clipboard: {
+      writeText: jest.fn(),
+    },
+  });
 });
 
 // Mock for 'next/navigation'
@@ -150,6 +167,7 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/mock/path/run-123'), // Return a mock path
   useSearchParams: jest.fn(() => new URLSearchParams('from=test&tab=overview')), // Return a real URLSearchParams instance
 }));
+
 
 describe('TestRunDetails', () => {
   const runId = 'run-123';
@@ -264,5 +282,32 @@ describe('TestRunDetails', () => {
     });
 
     expect(await screen.findByText('ErrorPage')).toBeInTheDocument();
+  });
+
+  it('copies the URL when share button is clicked', async () => {
+    const runDetailsDeferred = setup<any>();
+    const runArtifactsDeferred = setup<any[]>();
+    const runLogDeferred = setup<string>();
+
+    render(
+      <TestRunDetails
+        runId="run-123"
+        runDetailsPromise={runDetailsDeferred.promise}
+        runArtifactsPromise={runArtifactsDeferred.promise}
+        runLogPromise={runLogDeferred.promise}
+      />
+    );
+  
+    await act(async () => {
+      runDetailsDeferred.resolve({ testStructure: { methods: [], result: 'PASS', status: 'OK', runName: 'X', testShortName: 't', bundle: '', submissionId: '', group: '', requestor: '', queued: '', startTime: '', endTime: '', tags: [] } });
+      runArtifactsDeferred.resolve([]);
+      runLogDeferred.resolve('');
+    });
+  
+    const spy = jest.spyOn(navigator.clipboard, 'writeText');
+    fireEvent.click(screen.getByTestId('icon-Share'));
+  
+    expect(spy).toHaveBeenCalledWith(window.location.href);
+    spy.mockRestore();
   });
 });

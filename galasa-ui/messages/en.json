@@ -203,6 +203,8 @@
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
+    "copymessage":"Copy page URL",
+    "copiedmessage":"Copied",
     "status": "Status",
     "result": "Result",
     "test": "Test",

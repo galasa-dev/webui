@@ -5,11 +5,10 @@
  */
 "use client";
 import BreadCrumb from '@/components/common/BreadCrumb';
-import PageTile from '@/components/PageTile';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
-import { Dashboard, Code, CloudLogging, RepoArtifact } from '@carbon/icons-react';
+import { Dashboard, Code, CloudLogging, RepoArtifact, Share } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
@@ -21,6 +20,8 @@ import LogTab from './LogTab';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
+import { Tile } from '@carbon/react';
+import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 interface TestRunDetailsProps {
@@ -41,6 +42,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [savedQuery, setSavedQuery] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   
   const extractRunDetails = useCallback((runDetails: Run) => {
@@ -99,15 +102,34 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     return <ErrorPage />;
   }
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); 
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
-      <PageTile
-        translationKey={translations("title", {
-          runName: run?.runName || "Unknown Run Name",
-        })}
-      />
-
+      <Tile id="tile" className={styles.toolbar}>
+        {translations("title", { runName: run?.runName || "Unknown Run Name" })}
+        <div className={styles.buttonContainer}>
+          <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
+            <button
+              onClick={handleShare}
+              className={styles.shareButton}
+              data-testid="icon-Share"
+            >
+              <Share size={20}/>
+            </button>
+          </Tooltip>
+        </div>
+      </Tile>
+ 
       {isLoading ? (
         <TestRunSkeleton />
       ) : (
