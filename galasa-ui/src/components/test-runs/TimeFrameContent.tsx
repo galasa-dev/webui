@@ -10,7 +10,6 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback, useEffect } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/timeOperations';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { InlineNotification } from '@carbon/react';
 import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
@@ -84,29 +83,14 @@ export function applyTimeFrameRules(fromDate: Date, toDate: Date,
   return { correctedFrom, correctedTo, notification };
 }
 
-export default function TimeFrameContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+interface TimeFrameContentProps {
+  values: TimeFrameValues;
+  setValues: (values: TimeFrameValues) => void;
+}
+
+export default function TimeFrameContent({ values, setValues }: TimeFrameContentProps) {
   const translations = useTranslations('TimeFrame');
-
-  const initializeState = (): TimeFrameValues => {
-    const fromParam = searchParams.get('from');
-    const toParam = searchParams.get('to');
-    const initialToDate = toParam ? new Date(toParam) : new Date();
-    const initialFromDate = fromParam ? new Date(fromParam) : new Date(initialToDate.getTime() - DAY_MS);
-    return calculateSynchronizedState(initialFromDate, initialToDate);
-  };
-
-  const [values, setValues] = useState<TimeFrameValues>(initializeState);
   const [notification, setNotification] = useState<Notification | null>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set('from', values.fromDate.toISOString());
-    params.set('to', values.toDate.toISOString());
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [values, pathname, router, searchParams]);
 
   const handleValueChange = useCallback((field: keyof TimeFrameValues, value: any) => {
     if ((field === 'fromDate' || field === 'toDate') && !value) {
@@ -138,7 +122,7 @@ export default function TimeFrameContent() {
       const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
       setValues(finalState);
     }
-  }, [values, translations]);
+  }, [values, translations, setValues]);
 
   return (
     <div className={styles.TimeFrameContainer}>

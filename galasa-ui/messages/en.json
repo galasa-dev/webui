@@ -378,7 +378,8 @@
     "showHideHeader": "Show/Hide Columns",
     "warning": "Warning",
     "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
-    "sortOrderHeader": "Sort Order"
+    "sortOrderHeader": "Sort Order",
+    "resetToDefaults": "Reset to Defaults"
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",

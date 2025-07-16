@@ -378,7 +378,8 @@
     "showHideHeader": "Spalten ein-/ausblenden",
     "warning": "Warnung",
     "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus",
-    "sortOrderHeader": "Sortierreihenfolge"
+    "sortOrderHeader": "Sortierreihenfolge",
+    "resetToDefaults": "Auf Standard zurücksetzen"
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",

@@ -8,6 +8,7 @@ import SearchCriteriaContent from "@/components/test-runs/SearchCriteriaContent"
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 
 // Mock child components 
 jest.mock('@/components/test-runs/CustomSearchComponent', () => {
@@ -81,18 +82,28 @@ jest.mock("next-intl", () => ({
   },
 }));
 
+// Helper function to render a stateful wrapper. 
+const SearchCriteriaTestWrapper = ({ initialCriteria = {} }: { initialCriteria?: Record<string, string> }) => {
+  const [criteria, setCriteria] = useState(initialCriteria);
+  const requestorNamesPromise = Promise.resolve(['req1', 'req2']);
+  const resultsNamesPromise = Promise.resolve(['result1', 'result2']);
 
-// Mock next/mavigation router
-const mockRouter = {
-  replace: jest.fn(),
+  return (
+    <SearchCriteriaContent
+      requestorNamesPromise={requestorNamesPromise}
+      resultsNamesPromise={resultsNamesPromise}
+      searchCriteria={criteria}
+      setSearchCriteria={setCriteria} 
+    />
+  );
 };
-jest.mock('next/navigation', () => ({
-  useRouter: () => mockRouter,
-  usePathname: () => '/test-runs',
-  useSearchParams: () => new URLSearchParams(mockSearchParams),
-}));
-let mockSearchParams = '';
 
+// Mock searchCriteria
+const mockSearchCriteria = {
+  runName: 'MyRun',
+  status: 'Passed, Failed',
+};
+const mockSetSearchCriteria = jest.fn();
 
 describe('SearchCriteriaContent', () => {
   const requestorNamesPromise = Promise.resolve(['req1', 'req2']);
@@ -101,7 +112,6 @@ describe('SearchCriteriaContent', () => {
   // Reset mocks and params for each test
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSearchParams = ''; 
   });
     
 
@@ -110,6 +120,8 @@ describe('SearchCriteriaContent', () => {
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
 
@@ -129,13 +141,13 @@ describe('SearchCriteriaContent', () => {
   });
 
     
-  test('initialize state from URL search parameters' , async () => {
-    mockSearchParams = 'runName=MyRun&status=Passed, Failed';
-
+  test('initialize state from Search Criteria props' , async () => {
     render(
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
 
@@ -150,6 +162,8 @@ describe('SearchCriteriaContent', () => {
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
 
@@ -165,11 +179,13 @@ describe('SearchCriteriaContent', () => {
     expect(checkBoxComponent).toBeInTheDocument();
   });
 
-  test('saves a new value and updates the URL', async () => {
+  test('saves a new value and updates the parent props', async () => {
     render(
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
 
@@ -184,42 +200,42 @@ describe('SearchCriteriaContent', () => {
     // Simulate form submission
     fireEvent.click(submitButton);
 
-    // Check the router is called with the new URL
-    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?runName=New+Test+Run', { scroll: false });
+    // Check that the parent function was called with the new value
+    expect(mockSetSearchCriteria).toHaveBeenCalledWith({
+      ...mockSearchCriteria,
+      runName: "New Test Run"
+    });
   });
 
   test('cancels an edit and reverts the input value', async () => {
     render(
-      <SearchCriteriaContent
-        requestorNamesPromise={requestorNamesPromise}
-        resultsNamesPromise={resultsNamesPromise}
-      />
+      <SearchCriteriaTestWrapper initialCriteria={mockSearchCriteria} />
     );
 
     // Find the input and buttons within the mocked component
     const searchComponent = screen.getByTestId('mock-custom-search-component');
     const input = within(searchComponent).getByTestId('search-input');
     const cancelButton = within(searchComponent).getByText('Cancel');
-    const saveButton = within(searchComponent).getByText('Submit');
 
-    // Simulate user typing a value and save it
-    fireEvent.change(input, {target: {value: "Save this value"}});
-    fireEvent.click(saveButton);
+    expect(input).toHaveValue('MyRun');
 
     // Simulate user tyuping a value and canel it
     fireEvent.change(input, {target: {value: "Cancel this value"}});
     fireEvent.click(cancelButton);
 
     // Check that the input is reverted
-    expect(input).toHaveValue('Save this value');
+    await waitFor(() => {
+      expect(input).toHaveValue('MyRun');
+    });
   });
 
-  test('removes a parameter from the URL when the clear action is triggered', () => {
-    mockSearchParams = 'runName=OldValue';
+  test('removes a parameter from the search criteria props when the clear action is triggered', () => {
     render(
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
 
@@ -229,15 +245,20 @@ describe('SearchCriteriaContent', () => {
 
     fireEvent.click(clearButton);
 
-    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+    // Check that the parent function was called to clear the search criteria
+    expect(mockSetSearchCriteria).toHaveBeenCalledWith({
+      ...mockSearchCriteria,
+      runName: undefined, 
+    });
   });
 
-  test('removes a parameter from the URL if its value is cleared and saved', () => {
-    mockSearchParams = 'runName=OldValue';
+  test('removes a parameter from the search criteria props if its value is cleared and saved', () => {
     render(
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
         resultsNamesPromise={resultsNamesPromise}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
       />
     );
     
@@ -250,8 +271,11 @@ describe('SearchCriteriaContent', () => {
     fireEvent.change(input, { target: { value: '' } });
     fireEvent.click(submitButton);
 
-    // The parameter should be gone from the URL
-    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+    // Check that the parent function was called to remove the parameter
+    expect(mockSetSearchCriteria).toHaveBeenCalledWith({
+      ...mockSearchCriteria,
+      runName: undefined, 
+    });
   });
 
   test('handles pending promises without crashing', () => {
@@ -259,7 +283,12 @@ describe('SearchCriteriaContent', () => {
     const pendingRequestors: Promise<string[]> = new Promise(() => {});
     const pendingResults: Promise<string[]> = new Promise(() => {});
 
-    render(<SearchCriteriaContent requestorNamesPromise={pendingRequestors} resultsNamesPromise={pendingResults} />);
+    render(<SearchCriteriaContent 
+      requestorNamesPromise={pendingRequestors} 
+      resultsNamesPromise={pendingResults}
+      searchCriteria={mockSearchCriteria}
+      setSearchCriteria={mockSetSearchCriteria}
+    />);
 
     // Check that the UI renders correctly even with pending promises
     expect(screen.getByText('Edit search criteria to describe the test results you wish to view')).toBeInTheDocument();
@@ -273,12 +302,7 @@ describe('SearchCriteriaContent', () => {
   });
 
   test('save button is disabled when state is not changed, and enabled when changed', async () => {
-    render(
-      <SearchCriteriaContent
-        requestorNamesPromise={requestorNamesPromise}
-        resultsNamesPromise={resultsNamesPromise}
-      />
-    );
+    render(<SearchCriteriaTestWrapper initialCriteria={{ runName: 'InitialValue' }} />);
 
     const searchComponent = screen.getByTestId('mock-custom-search-component');
     const input = within(searchComponent).getByTestId('search-input');
@@ -294,7 +318,10 @@ describe('SearchCriteriaContent', () => {
     await act(async () => {
       fireEvent.click(submitButton);
     });
-    expect(submitButton).toBeDisabled();
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+    });
 
     // Type new value, The button should be enabled.
     fireEvent.change(input, { target: { value: 'Another Value' } });
@@ -302,14 +329,8 @@ describe('SearchCriteriaContent', () => {
   });
 
   test('clear all filters when the "Clear Filters" button is clicked', async () => {
-    // Start with some search params to ensure we have something to clear
-    mockSearchParams = 'runName=InitialValue&result=Passed';
-    render(
-      <SearchCriteriaContent
-        requestorNamesPromise={requestorNamesPromise}
-        resultsNamesPromise={resultsNamesPromise}
-      />
-    );
+    render(<SearchCriteriaTestWrapper 
+      initialCriteria={{ runName: 'InitialValue', result: "Passed" }} />);
 
     const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
 
@@ -324,45 +345,36 @@ describe('SearchCriteriaContent', () => {
     // Clear all filters
     fireEvent.click(clearFiltersButton);
 
-    // Assert that the URL has been cleared
     await waitFor(() => {
-      expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
+      expect(within(testRunNameRow).queryByText('InitialValue')).not.toBeInTheDocument();
+      expect(within(testRunNameRow).getByText('any')).toBeInTheDocument();
+      expect(within(resultRow).getByText('any')).toBeInTheDocument();
     });
-
-    expect(within(testRunNameRow).queryByText('InitialValue')).not.toBeInTheDocument();
-    expect(within(testRunNameRow).getByText('any')).toBeInTheDocument();
-    expect(within(resultRow).getByText('any')).toBeInTheDocument();
   });
 
   test('"Clear Filters" button is enabled with filters and becomes disabled after being clicked', async () => {
     const user = userEvent.setup();
-    mockSearchParams = 'runName=MyRun&status=Passed,Failed';
-    
-    render(
-      <SearchCriteriaContent
-        requestorNamesPromise={requestorNamesPromise}
-        resultsNamesPromise={resultsNamesPromise}
-      />
-    );
+
+    render(<SearchCriteriaTestWrapper 
+      initialCriteria={{ runName: 'MyRun', status: 'Passed, Failed' }} />);
 
     const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
     expect(clearFiltersButton).toBeEnabled();
     
     // Check that the filter value is displayed
     expect(screen.getByText('MyRun')).toBeInTheDocument();
-    expect(screen.getByText('Passed,Failed')).toBeInTheDocument();
+    expect(screen.getByText('Passed, Failed')).toBeInTheDocument();
 
     //The user clicks the button to clear filters
     await user.click(clearFiltersButton);
 
     // The button should now be disabled because the state was cleared
-    expect(clearFiltersButton).toBeDisabled();
-    
-    // Assert that the router was called to clear the URL params
-    expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs?', { scroll: false });
-    
+    await waitFor(() => {
+      expect(clearFiltersButton).toBeDisabled();
+    });
+
     // Assert the filter values are cleared from the UI
     expect(screen.queryByText('MyRun')).not.toBeInTheDocument();
-    expect(screen.queryByText('Passed,Failed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Passed, Failed')).not.toBeInTheDocument();
   });
 });
