@@ -8,7 +8,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
-import { Dashboard, Code, CloudLogging, RepoArtifact, Share } from '@carbon/icons-react';
+import { Dashboard, Code, CloudLogging, RepoArtifact, Share, CloudDownload } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
@@ -23,6 +23,10 @@ import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
 import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
+import { downloadArtifactFromServer } from '@/actions/runsAction';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -30,6 +34,9 @@ interface TestRunDetailsProps {
   runLogPromise: Promise<string>;
   runArtifactsPromise: Promise<ArtifactIndexEntry[]>;
 }
+
+type DownloadResult = { contentType: string; data: string; size: number; base64: string; };
+
 
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
@@ -42,7 +49,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [savedQuery, setSavedQuery] = useState<string>("");
+  const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   
@@ -112,12 +119,59 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     }
   };
 
+  const handleDownloadAll = async () => {
+    if (!run) return;
+    
+    setIsDownloading(true);
+
+    try {
+      const zip = new JSZip();
+
+      // 1. Add the run log to the zip
+      zip.file("run.log", logs);
+
+      // 2. Fetch all artifacts in parallel
+      const artifactPromises = artifacts.map(async (artifact) => {
+        if (artifact.path) {
+          const artifactDetails = await downloadArtifactFromServer(runId, artifact.path);
+
+          // Clean the path and add it to the zip
+          const cleanedPath = cleanArtifactPath(artifact.path);
+          // JSZip can handle base64 encoded data
+          zip.file(cleanedPath, artifactDetails?.base64, {base64: true});
+        }
+      });
+
+      await Promise.all(artifactPromises);
+
+      // 3. Generate the zip file and trigger download
+      const content = await zip.generateAsync({type: "blob"});
+      handleDownload(content, `${run.runName || 'test-run'}.zip`);
+    } catch (err) {
+      console.error("Failed to create zip file:", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <Tile id="tile" className={styles.toolbar}>
         {translations("title", { runName: run?.runName || "Unknown Run Name" })}
         <div className={styles.buttonContainer}>
+          <Tooltip label={isDownloading ? translations("downloading") : translations('downloadArtifacts')} align="top">
+            <button
+              onClick={handleDownloadAll}
+              className={styles.shareButton}
+              data-testid="icon-download-all"
+            >
+              {isDownloading ? <Loading small withOverlay={false}/> 
+                : 
+                <CloudDownload size={20}/>}
+            </button>
+          </Tooltip>
           <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
             <button
               onClick={handleShare}

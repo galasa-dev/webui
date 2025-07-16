@@ -206,6 +206,8 @@
     "status": "Status",
     "copymessage": "Seiten-URL kopieren",
     "copiedmessage": "Kopiert",
+    "downloadArtifacts": "Alle Artefakte herunterladen",
+    "downloading": "Herunterladen...",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {

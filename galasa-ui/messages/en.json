@@ -205,6 +205,8 @@
     "title": "Test Run: {runName}",
     "copymessage":"Copy page URL",
     "copiedmessage":"Copied",
+    "downloadArtifacts": "Download all Artifacts",
+    "downloading": "Downloading...",
     "status": "Status",
     "result": "Result",
     "test": "Test",
