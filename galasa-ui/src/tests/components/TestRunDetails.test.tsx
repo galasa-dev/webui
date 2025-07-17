@@ -9,8 +9,6 @@ import TestRunDetails from '@/components/test-runs/TestRunDetails';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import JSZip from 'jszip';
-import { mock } from 'node:test';
-import exp from 'constants';
 
 function setup<T>() {
   let resolve!: (value: T) => void;
@@ -147,8 +145,15 @@ jest.mock('@carbon/react', () => {
       {children}
     </div>
   );
+  const InlineNotification = ({ title, subtitle, kind, className }: any) => (
+    <div className={className}>
+      <strong>{title}</strong>
+      <p>{subtitle}</p>
+      <span>{kind}</span>
+    </div>
+  );
 
-  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading].forEach(c => {
+  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification].forEach(c => {
     // @ts-ignore
     // Assigning displayName to function components for better debugging in React DevTools.
     // TypeScript does not allow this by default, so we suppress the error.
@@ -157,7 +162,7 @@ jest.mock('@carbon/react', () => {
   Tile.displayName = 'Tile';
   Tooltip.displayName = 'Tooltip';
 
-  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, };
+  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, InlineNotification };
 });
 
 beforeAll(() => {
@@ -437,6 +442,52 @@ describe('TestRunDetails', () => {
 
       // Ensure loading state is gone
       expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+    });
+
+    test('shows an error notification if download fails', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
+
+      render(
+        <TestRunDetails
+          runId={runId}
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      // Resolve promises to load the component's data
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: {
+            methods: [],
+            result: 'PASS',
+            status: 'OK',
+            runName: 'TestRun',
+            testShortName: 'Test',
+            bundle: 'Bundle',
+            submissionId: 'Submission',
+            group: 'Group',
+            requestor: 'Requestor',
+            queued: '2025-01-01T00:00:00Z',
+            startTime: '2025-01-01T00:00:00Z',
+            endTime: '2025-01-01T01:00:00Z',
+            tags: [],
+          },
+        });
+        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
+        runLogDeferred.resolve('Log content');
+      });
+      mockDownloadArtifactFromServer.mockRejectedValue(new Error('Download failed'));
+
+      const downloadButton = screen.getByTestId('icon-download-all');
+      fireEvent.click(downloadButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/downloadError/i)).toBeInTheDocument();
+      });
     });
   });
 });
