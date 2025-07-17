@@ -25,7 +25,6 @@ import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 
