@@ -12,8 +12,10 @@ import { handleDownload } from '@/utils/artifacts';
 
 // Mock dependencies
 jest.mock('@/actions/runsAction');
-jest.mock('@/utils/artifacts');
-
+jest.mock('@/utils/artifacts', () => ({
+  ...jest.requireActual('@/utils/artifacts'),
+  handleDownload: jest.fn(),                
+}));
 // Mock next-intl completely
 jest.mock('next-intl', () => ({
   useTranslations: jest.fn(),

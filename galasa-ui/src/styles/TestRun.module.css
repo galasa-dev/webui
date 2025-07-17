@@ -44,6 +44,15 @@
     justify-content: center;
     color: var(--cds-text-primary, #161616);
   }
+
 .buttonContainer{
-    margin-right: 2rem;
-  }
+    display: flex;
+    gap: 1rem; 
+    margin-right: 4rem;
+}
+
+.notification {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
