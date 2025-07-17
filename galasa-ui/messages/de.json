@@ -208,6 +208,7 @@
     "copiedmessage": "Kopiert",
     "downloadArtifacts": "Alle Artefakte herunterladen",
     "downloading": "Herunterladen...",
+    "downloadError": "Fehler beim Herunterladen der Artefakte. Bitte versuchen Sie es später erneut.",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {
@@ -215,7 +216,8 @@
       "methods": "Methoden",
       "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
-    }
+    },
+    "errorTitle": "Fehler"
   },
   "TestRunSkeleton": {
     "status": "Status",

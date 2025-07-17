@@ -50,3 +50,9 @@
     gap: 1rem; 
     margin-right: 4rem;
 }
+
+.notification {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}

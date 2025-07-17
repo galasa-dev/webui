@@ -207,6 +207,7 @@
     "copiedmessage":"Copied",
     "downloadArtifacts": "Download all Artifacts",
     "downloading": "Downloading...",
+    "downloadError": "Failed to download artifacts. Please try again later.",
     "status": "Status",
     "result": "Result",
     "test": "Test",
@@ -215,7 +216,8 @@
       "methods": "Methods",
       "runLog": "Run Log",
       "artifacts": "Artifacts"
-    }
+    },
+    "errorTitle": "Error"
   },
   "TestRunSkeleton": {
     "status": "Status",

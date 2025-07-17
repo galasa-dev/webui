@@ -27,6 +27,7 @@ import { downloadArtifactFromServer } from '@/actions/runsAction';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
+import { InlineNotification } from '@carbon/react';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -51,6 +52,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [notificationError, setNotificationError] = useState<string | null>(null);
 
   
   const extractRunDetails = useCallback((runDetails: Run) => {
@@ -123,6 +125,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     if (!run) return;
     
     setIsDownloading(true);
+    setNotificationError(null); 
 
     try {
       const zip = new JSZip();
@@ -133,10 +136,12 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       // 2. Fetch all artifacts in parallel
       const artifactPromises = artifacts.map(async (artifact) => {
         if (artifact.path) {
+          // Download the artifact from the server
           const artifactDetails = await downloadArtifactFromServer(runId, artifact.path);
 
           // Clean the path and add it to the zip
           const cleanedPath = cleanArtifactPath(artifact.path);
+
           // JSZip can handle base64 encoded data
           zip.file(cleanedPath, artifactDetails?.base64, {base64: true});
         }
@@ -148,6 +153,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       const content = await zip.generateAsync({type: "blob"});
       handleDownload(content, `${run.runName || 'test-run'}.zip`);
     } catch (err) {
+      setNotificationError("downloadError");
       console.error("Failed to create zip file:", err);
     } finally {
       setIsDownloading(false);
@@ -183,6 +189,14 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
           </Tooltip>
         </div>
       </Tile>
+      {notificationError && (
+        <InlineNotification
+          title={translations("errorTitle")}
+          subtitle={translations(notificationError) || "An unexpected error occurred."}
+          className={styles.notification}
+          kind="error"
+        />
+      )}    
  
       {isLoading ? (
         <TestRunSkeleton />
