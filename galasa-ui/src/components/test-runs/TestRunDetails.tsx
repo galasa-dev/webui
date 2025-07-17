@@ -173,7 +173,11 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
               className={styles.shareButton}
               data-testid="icon-download-all"
             >
-              {isDownloading ? <Loading small withOverlay={false}/> 
+              {isDownloading ? 
+                <Loading 
+                  small
+                  withOverlay={false}
+                /> 
                 : 
                 <CloudDownload size={20}/>}
             </button>
