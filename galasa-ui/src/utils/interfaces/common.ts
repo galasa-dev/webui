@@ -45,6 +45,7 @@ export interface DataTableRow {
 }
 
 export interface runStructure {
+  id: string;
   submittedAt: string;
   runName: string;
   requestor: string;
