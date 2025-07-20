@@ -6,6 +6,7 @@
 
 import { TestStructure } from "@/generated/galasaapi";
 import { ColumnDefinition } from "../interfaces";
+import { format } from "path";
 
 const CLIENT_API_VERSION = "0.43.0";
 
@@ -106,7 +107,20 @@ const DEFAULT_VISIBLE_COLUMNS: string[] = [
   
 const BATCH_SIZE = 100;
 
+const SUPPORTED_LOCALES = [
+  { code: 'en-US', format: 'MM-DD-YYYY', example: '07-20-2025' },     
+  { code: 'en-GB', format: 'DD/MM/YYYY', example: '20/07/2025' },
+  { code: 'fr-FR', format: 'DD/MM/YYYY', example: '20/07/2025' },    
+  { code: 'de-DE', format: 'DD.MM.YYYY', example: '20.07.2025' },     
+];
+
+const TIME_FORMATS = [
+  {label: '12-hour', format: 'hh:mm:ss A'},
+  {label: '24-hour', format: 'HH:mm'}
+];
+
 export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, 
   HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS, 
   BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS,
-  TABS_IDS, SEARCH_CRITERIA_KEYS, DEFAULT_VISIBLE_COLUMNS};
+  TABS_IDS, SEARCH_CRITERIA_KEYS, DEFAULT_VISIBLE_COLUMNS, 
+  SUPPORTED_LOCALES, TIME_FORMATS};

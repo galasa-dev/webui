@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
+import ExperimentalFeaturesSection from '@/components/mysettings/ExperimentalFeaturesSection';
 import { FeatureFlagContext } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 

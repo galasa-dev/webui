@@ -14,8 +14,9 @@ import * as Constants from "@/utils/constants/common";
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
-import ExperimentalFeaturesSection from '@/components/ExperimentalFeaturesSection';
+import ExperimentalFeaturesSection from '@/components/mysettings/ExperimentalFeaturesSection';
 import { HOME } from '@/utils/constants/breadcrumb';
+import DateTimeFormatSection from '@/components/mysettings/DateTimeFormatSection';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -59,6 +60,7 @@ export default async function MySettings() {
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <ExperimentalFeaturesSection />
+      <DateTimeFormatSection />
     </main>
   );
 };
