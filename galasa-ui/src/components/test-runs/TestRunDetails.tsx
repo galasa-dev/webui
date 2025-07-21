@@ -23,6 +23,7 @@ import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
 import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -42,8 +43,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [savedQuery, setSavedQuery] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const { formatDate } = useDateTimeFormat();
 
   
   const extractRunDetails = useCallback((runDetails: Run) => {
@@ -63,9 +64,9 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: parseIsoDateTime(runDetails.testStructure?.queued!),
-      startedAt: parseIsoDateTime(runDetails.testStructure?.startTime!),
-      finishedAt: parseIsoDateTime(runDetails.testStructure?.endTime!),
+      submitted: formatDate(new Date(runDetails.testStructure?.queued!)),
+      startedAt: formatDate(new Date(runDetails.testStructure?.startTime!)),
+      finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
       duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
       tags: runDetails.testStructure?.tags!
 
