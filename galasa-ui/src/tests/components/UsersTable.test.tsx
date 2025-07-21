@@ -27,8 +27,14 @@ jest.mock('@carbon/react', () => {
 // Mock the useDateTimeFormat context
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
-    formatDate: (date: Date) => date.toLocaleString(), 
-  })
+    formatDate: (date: Date) => 
+      new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'UTC', 
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(date),
+  }),
 }));
 
 
