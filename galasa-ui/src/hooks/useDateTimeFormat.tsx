@@ -20,6 +20,12 @@ interface UseDateTimeFormatReturn {
   updatePreferences: (newPreferences: Partial<UseDateTimeFormatReturn['preferences']>) => void;
 }
 
+/**
+ * Custom Hook to manage date and time format preferences and save them to local storage
+ * 
+ * @returns preferences - current date/time format preferences
+ * @returns updatePreferences - function to update the preferences
+ */
 export default function useDateTimeFormat() : UseDateTimeFormatReturn {
   const [preferences, setPreferences] = useState<UseDateTimeFormatReturn['preferences']>(() => {
     // Load preferences from local storage or set default values
