@@ -54,30 +54,37 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedPreferences));
   };
 
-  const formatDate = useCallback((date: Date) => {
-    console.log(`Formatting date: ${date}`);
-    const { dateTimeFormatType, locale, timeFormat } = preferences;
-    
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      hour12: timeFormat === '12-hour',
-    };
+  const formatDate = useCallback((date: Date): string => {
+    let formattedDate: string = '';
+    try {
 
-    let formattedDate;
-    if (dateTimeFormatType === 'browser') {
-      // Pass undefined to use the browser's default locale
-      formattedDate = new Intl.DateTimeFormat(undefined, options).format(date);
-      console.log(formattedDate);
-    } else {
-      // Use the custom locale
-      formattedDate = new Intl.DateTimeFormat(locale, options).format(date);
-      console.log(formattedDate);
-    }
+      if(!(date instanceof Date)) {
+        throw new Error("Invalid date provided to formatDate");
+      }
+
+      const { dateTimeFormatType, locale, timeFormat } = preferences;
+        
+      const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: timeFormat === '12-hour',
+      };
+
+      if (dateTimeFormatType === 'browser') {
+        // Pass undefined to use the browser's default locale
+        formattedDate = new Intl.DateTimeFormat(undefined, options).format(date);
+      } else {
+        // Use the custom locale
+        formattedDate = new Intl.DateTimeFormat(locale, options).format(date);
+      }
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      formattedDate = '';
+    }  
 
     return formattedDate;
   }, [preferences]);

@@ -21,7 +21,6 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import { ColumnDefinition, runStructure, sortOrderType } from '@/utils/interfaces';
 import { Run } from '@/generated/galasaapi';
 
-
 interface TabConfig {
   id: string;
   label: string;
