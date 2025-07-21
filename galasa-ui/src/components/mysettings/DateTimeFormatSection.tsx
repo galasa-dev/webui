@@ -9,13 +9,15 @@ import styles from "@/styles/DateTimeFormatSection.module.css";
 import { PREFERENCE_KEYS, SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
 import { Dropdown } from "@carbon/react";
 import { RadioButton, RadioButtonGroup } from '@carbon/react';
+import { useTranslations } from "next-intl";
 
 type DateTimeFormats = 'custom' | 'browser'
 type Locale = { code: string; format: string; };
 type TimeFormat = { label: string; format: string };
 
 export default function DateTimeFormatSection() {
-  const {preferences, updatePreferences} = useDateTimeFormat();
+  const { preferences, updatePreferences } = useDateTimeFormat();
+  const translations = useTranslations("DateTimeFormatSection");
 
   const handleChange = (key: keyof typeof preferences, value: string) => {
     updatePreferences({ [key]: value });
@@ -23,29 +25,29 @@ export default function DateTimeFormatSection() {
 
   return (
     <section  className={styles.section}>
-      <h3>Date/Time Format</h3>
+      <h3>{translations("title")}</h3>
       <div className={styles.container}>
-        <p className={styles.title}>Configure the format for displaying date and time.</p>
+        <p className={styles.title}>{translations("description")}</p>
         <RadioButtonGroup 
-          legendText="Date/Time Format"
+          legendText={translations("dateTimeFormat")}
           name="date-time-format"
           orientation="vertical"
           valueSelected={preferences.dateTimeFormatType}
           onChange={(value: string) => handleChange(PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE, value as DateTimeFormats)}
         >
           <RadioButton 
-            labelText="Show dates and times based on the browser locale"
+            labelText={translations("showDatesInBrowserLocale")}
             value="browser"
             id="browser-date-time-format"
           />
           <RadioButton 
-            labelText="Show dates and times based on a custom locale"
+            labelText={translations("showDatesInCustomLocale")}
             value="custom"
             id="custom-date-time-format"
           />
           <div className={styles.dropdownContainer}>
             <Dropdown 
-              helperText="Select a locale"
+              helperText={translations("selectLocale")}
               id="custom-locale-dropdown"
               items={SUPPORTED_LOCALES}
               itemToString={(item: Locale) => (item ? `${item.code} ${item.format}` : '')}
@@ -55,10 +57,10 @@ export default function DateTimeFormatSection() {
               disabled={preferences.dateTimeFormatType !== 'custom'}
             />
             <Dropdown
-              helperText="Select a time format"
+              helperText={translations("selectTimeFormat")}
               id="custom-time-format-dropdown"
               items={TIME_FORMATS}
-              itemToString={(item: TimeFormat) => (item ? `${item.label} ${item.format}` : '')}
+              itemToString={(item: TimeFormat) => (item ? `${translations(item.label)} ${item.format}` : '')}
               selectedItem={TIME_FORMATS.find(item => item.label === preferences.timeFormat)}
               onChange={(e: {selectedItem: TimeFormat}) => handleChange(PREFERENCE_KEYS.TIME_FORMAT, e.selectedItem?.label || TIME_FORMATS[0].label)}
               size="lg"

@@ -34,6 +34,17 @@
       "internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
     }
   },
+  "DateTimeFormatSection": {
+    "title": "Datums-/Zeitformat",
+    "description": "Konfigurieren Sie das Format zur Anzeige von Datum und Uhrzeit.",
+    "dateTimeFormat": "Datums-/Zeitformat",
+    "showDatesInBrowserLocale": "Datum und Uhrzeit basierend auf der Browsersprache anzeigen",
+    "showDatesInCustomLocale": "Datum und Uhrzeit in einem benutzerdefinierten Format anzeigen",
+    "selectLocale": "Sprache auswählen",
+    "selectTimeFormat": "Zeitformat auswählen",
+    "12-hour": "12-Stunden-Format",
+    "24-hour": "24-Stunden-Format"
+  },
   "AccessTokensSection": {
     "title": "Zugriffstoken",
     "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, der von einem Client-Programm gehalten wird, um Zugriff auf den Galasa-Dienst zu erhalten.",
