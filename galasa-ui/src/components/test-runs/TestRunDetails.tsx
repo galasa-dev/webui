@@ -73,7 +73,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     setRun(runMetadata);
-  },[runId]);
+  },[runId, formatDate]);
 
   useEffect(() => {
     const loadRunDetails = async () => {
