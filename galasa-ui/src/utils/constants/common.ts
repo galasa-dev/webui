@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { TestStructure } from "@/generated/galasaapi";
 import { ColumnDefinition } from "../interfaces";
-import { format } from "path";
 
 const CLIENT_API_VERSION = "0.43.0";
 
@@ -119,8 +117,14 @@ const TIME_FORMATS = [
   {label: '24-hour', format: 'HH:mm'}
 ];
 
+const PREFERENCE_KEYS = {
+  DATE_TIME_FORMAT_TYPE: 'dateTimeFormatType' as const,
+  LOCALE: 'locale' as const,
+  TIME_FORMAT: 'timeFormat' as const,
+} as const;
+
 export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS, 
   HOUR_MS, DAY_MS, MAX_RANGE_MONTHS, TEST_RUNS_STATUS, 
   BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS,
   TABS_IDS, SEARCH_CRITERIA_KEYS, DEFAULT_VISIBLE_COLUMNS, 
-  SUPPORTED_LOCALES, TIME_FORMATS};
+  SUPPORTED_LOCALES, TIME_FORMATS, PREFERENCE_KEYS };

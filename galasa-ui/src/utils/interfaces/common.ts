@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { TestStructure } from "@/generated/galasaapi";
-
 /**
  * Common interfaces used across multiple components and utilities
  */

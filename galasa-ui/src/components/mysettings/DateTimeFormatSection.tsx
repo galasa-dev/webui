@@ -4,16 +4,22 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
+import useDateTimeFormat from "@/hooks/useDateTimeFormat";
 import styles from "@/styles/DateTimeFormatSection.module.css";
-import { SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
+import { PREFERENCE_KEYS, SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
 import { Dropdown } from "@carbon/react";
 import { RadioButton, RadioButtonGroup } from '@carbon/react';
-import { useState } from "react";
 
-type dateTimeFormats = 'custom' | 'browser'
+type DateTimeFormats = 'custom' | 'browser'
+type Locale = { code: string; format: string; example: string };
+type TimeFormat = { label: string; format: string };
 
 export default function DateTimeFormatSection() {
-  const [dateTimeFormatType, setDateTimeFormatType] = useState<dateTimeFormats>('browser');
+  const {preferences, updatePreferences} = useDateTimeFormat();
+
+  const handleChange = (key: keyof typeof preferences, value: string) => {
+    updatePreferences({ [key]: value });
+  };
 
   return (
     <section  className={styles.section}>
@@ -24,8 +30,8 @@ export default function DateTimeFormatSection() {
           legendText="Date/Time Format"
           name="date-time-format"
           orientation="vertical"
-          valueSelected={dateTimeFormatType}
-          onChange={(value: string) => setDateTimeFormatType(value as dateTimeFormats)}
+          valueSelected={preferences.dateTimeFormatType}
+          onChange={(value: string) => handleChange(PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE, value as DateTimeFormats)}
         >
           <RadioButton 
             labelText="Show dates and times based on the browser locales"
@@ -40,21 +46,23 @@ export default function DateTimeFormatSection() {
           <div className={styles.dropdownContainer}>
             <Dropdown 
               helperText="Select a locale"
-              label="Locale"
               id="custom-locale-dropdown"
               items={SUPPORTED_LOCALES}
-              itemToString={(item: {code: string, format: string, example: string}) => (item ? `${item.code} ${item.example} ${item.format}` : '')}
+              itemToString={(item: Locale) => (item ? `${item.code} ${item.example} ${item.format}` : '')}
+              selectedItem={SUPPORTED_LOCALES.find(item => item.code === preferences.locale)}
+              onChange={(e: {selectedItem: Locale}) => handleChange(PREFERENCE_KEYS.LOCALE, e.selectedItem?.code || SUPPORTED_LOCALES[0].code)}
               size="lg"
-              disabled={dateTimeFormatType !== 'custom'}
+              disabled={preferences.dateTimeFormatType !== 'custom'}
             />
             <Dropdown
               helperText="Select a time format"
-              label="Time Format"
-              id="time-format-dropdown"
+              id="custom-time-format-dropdown"
               items={TIME_FORMATS}
-              itemToString={(item: {label: string, format: string}) => (item ? `${item.label} ${item.format}` : '')}
+              itemToString={(item: TimeFormat) => (item ? `${item.label} ${item.format}` : '')}
+              selectedItem={TIME_FORMATS.find(item => item.label === preferences.timeFormat)}
+              onChange={(e: {selectedItem: TimeFormat}) => handleChange(PREFERENCE_KEYS.TIME_FORMAT, e.selectedItem?.label || TIME_FORMATS[0].label)}
               size="lg"
-              disabled={dateTimeFormatType !== 'custom'}
+              disabled={preferences.dateTimeFormatType !== 'custom'}
             />
           </div>
 
