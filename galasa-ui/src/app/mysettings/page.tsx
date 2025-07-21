@@ -5,7 +5,7 @@
  */
 import AuthCookies from '@/utils/authCookies';
 import { cookies } from 'next/headers';
-import AccessTokensSection from '@/components/AccessTokensSection';
+import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import TokenResponseModal from '@/components/tokens/TokenResponseModal';
 import PageTile from '@/components/PageTile';
 import { UsersAPIApi } from '@/generated/galasaapi';
@@ -59,8 +59,8 @@ export default async function MySettings() {
       <PageTile translationKey="MySettings.title" />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
-      <ExperimentalFeaturesSection />
       <DateTimeFormatSection />
+      <ExperimentalFeaturesSection />
     </main>
   );
 };

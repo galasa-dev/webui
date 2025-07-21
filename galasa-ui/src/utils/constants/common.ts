@@ -106,15 +106,15 @@ const DEFAULT_VISIBLE_COLUMNS: string[] = [
 const BATCH_SIZE = 100;
 
 const SUPPORTED_LOCALES = [
-  { code: 'en-US', format: 'MM-DD-YYYY', example: '07-20-2025' },     
-  { code: 'en-GB', format: 'DD/MM/YYYY', example: '20/07/2025' },
-  { code: 'fr-FR', format: 'DD/MM/YYYY', example: '20/07/2025' },    
-  { code: 'de-DE', format: 'DD.MM.YYYY', example: '20.07.2025' },     
+  { code: 'en-US', format: 'MM/DD/YYYY' },     
+  { code: 'en-GB', format: 'DD/MM/YYYY' },
+  { code: 'fr-FR', format: 'DD/MM/YYYY' },    
+  { code: 'de-DE', format: 'DD.MM.YYYY' },     
 ];
 
 const TIME_FORMATS = [
   {label: '12-hour', format: 'hh:mm:ss A'},
-  {label: '24-hour', format: 'HH:mm'}
+  {label: '24-hour', format: 'HH:mm:ss'}
 ];
 
 const PREFERENCE_KEYS = {

@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import useDateTimeFormat from "@/hooks/useDateTimeFormat";
+import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
 import styles from "@/styles/DateTimeFormatSection.module.css";
 import { PREFERENCE_KEYS, SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
 import { Dropdown } from "@carbon/react";
 import { RadioButton, RadioButtonGroup } from '@carbon/react';
 
 type DateTimeFormats = 'custom' | 'browser'
-type Locale = { code: string; format: string; example: string };
+type Locale = { code: string; format: string; };
 type TimeFormat = { label: string; format: string };
 
 export default function DateTimeFormatSection() {
@@ -25,7 +25,7 @@ export default function DateTimeFormatSection() {
     <section  className={styles.section}>
       <h3>Date/Time Format</h3>
       <div className={styles.container}>
-        <p className={styles.title}>Configure the format for displaying date and time. Default: <code>MM-DD-YYYY HH:mm:ss AM/PM</code></p>
+        <p className={styles.title}>Configure the format for displaying date and time.</p>
         <RadioButtonGroup 
           legendText="Date/Time Format"
           name="date-time-format"
@@ -34,7 +34,7 @@ export default function DateTimeFormatSection() {
           onChange={(value: string) => handleChange(PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE, value as DateTimeFormats)}
         >
           <RadioButton 
-            labelText="Show dates and times based on the browser locales"
+            labelText="Show dates and times based on the browser locale"
             value="browser"
             id="browser-date-time-format"
           />
@@ -48,7 +48,7 @@ export default function DateTimeFormatSection() {
               helperText="Select a locale"
               id="custom-locale-dropdown"
               items={SUPPORTED_LOCALES}
-              itemToString={(item: Locale) => (item ? `${item.code} ${item.example} ${item.format}` : '')}
+              itemToString={(item: Locale) => (item ? `${item.code} ${item.format}` : '')}
               selectedItem={SUPPORTED_LOCALES.find(item => item.code === preferences.locale)}
               onChange={(e: {selectedItem: Locale}) => handleChange(PREFERENCE_KEYS.LOCALE, e.selectedItem?.code || SUPPORTED_LOCALES[0].code)}
               size="lg"
