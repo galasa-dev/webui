@@ -48,7 +48,9 @@ export default function DateTimeFormatSection() {
           <div className={styles.dropdownContainer}>
             <Dropdown 
               helperText={translations("selectLocale")}
+              label={translations("selectLocale")}
               id="custom-locale-dropdown"
+              data-testid="custom-locale-dropdown-test"
               items={SUPPORTED_LOCALES}
               itemToString={(item: Locale) => (item ? `${item.code} ${item.format}` : '')}
               selectedItem={SUPPORTED_LOCALES.find(item => item.code === preferences.locale)}
@@ -58,6 +60,7 @@ export default function DateTimeFormatSection() {
             />
             <Dropdown
               helperText={translations("selectTimeFormat")}
+              label={translations("selectTimeFormat")}
               id="custom-time-format-dropdown"
               items={TIME_FORMATS}
               itemToString={(item: TimeFormat) => (item ? `${translations(item.label)} ${item.format}` : '')}
