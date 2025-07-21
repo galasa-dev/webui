@@ -48,7 +48,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
 
   
   const extractRunDetails = useCallback((runDetails: Run) => {
-
     setMethods(runDetails.testStructure?.methods || []);
 
     // Build run metadata object
@@ -69,7 +68,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
       duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
       tags: runDetails.testStructure?.tags!
-
     };
 
     setRun(runMetadata);

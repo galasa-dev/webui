@@ -24,6 +24,15 @@ jest.mock('next-intl', () => ({
     opts?.runName ? `title:${opts.runName}` : key,
 }));
 
+// Mock the useDateTimeFormat context
+const mockFormatDate = (date: Date) => date.toLocaleString();
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    formatDate: mockFormatDate, 
+  })
+}));
+
+
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => {
     const testRunsItem = breadCrumbItems.find(
