@@ -12,6 +12,14 @@ import { useCallback, useState, createContext, useContext } from "react";
 
 const LOCAL_STORAGE_KEY = 'dateTimeFormatSettings';
 
+/**
+ * DateTimeFormatContextType defines the structure of the context used for date and time formatting preferences.
+ * 
+ * It includes:
+ * - preferences: An object containing the current date and time formatting preferences.
+ * - updatePreferences: A function to update the preferences.
+ * - formatDate: A function to format a given date based on the current preferences.
+ */
 interface DateTimeFormatContextType {
   preferences: {
     [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: DateTimeFormats;
@@ -24,6 +32,12 @@ interface DateTimeFormatContextType {
 
 const DateTimeFormatContext = createContext<DateTimeFormatContextType | undefined>(undefined);
 
+/**
+ * DateTimeFormatProvider component provides the context for date and time formatting preferences.
+ * It manages the preferences state and provides methods to update preferences and format dates.
+ * 
+ * @param { children } - The child components that will have access to the DateTimeFormatContext.
+ */
 export function DateTimeFormatProvider({ children }: { children: React.ReactNode }) {
   const defaultPreferences = {
     [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: 'browser',
@@ -98,6 +112,11 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
   );
 };
 
+/**
+ * useDateTimeFormat is a custom hook that provides access to the DateTimeFormatContext.
+ * 
+ * @returns {DateTimeFormatContextType} - The context value for date and time formatting preferences.
+ */
 export function useDateTimeFormat() {
   const context = useContext(DateTimeFormatContext);
   if (context === undefined) {
