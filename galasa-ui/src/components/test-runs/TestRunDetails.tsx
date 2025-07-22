@@ -127,30 +127,29 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     setNotificationError(null); 
 
     try {
-      const zip = new JSZip();
+      const url = new URL(`/internal-api/test-runs/${run.runId}/zip`, window.location.origin);
+      url.searchParams.append('runName', run.runName);
+      const response = await fetch(url.toString());
 
-      // 1. Add the run log to the zip
-      zip.file("run.log", logs);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Server responded with status ${response.status}`);
+      }
 
-      // 2. Fetch all artifacts in parallel
-      const artifactPromises = artifacts.map(async (artifact) => {
-        if (artifact.path) {
-          // Download the artifact from the server
-          const artifactDetails = await downloadArtifactFromServer(runId, artifact.path);
-
-          // Clean the path and add it to the zip
-          const cleanedPath = cleanArtifactPath(artifact.path);
-
-          // JSZip can handle base64 encoded data
-          zip.file(cleanedPath, artifactDetails?.base64, {base64: true});
+      // The server provides the correct filename in the response header
+      const disposition = response.headers.get('Content-Disposition');
+      let filename = `${run.runName || 'test-run'}.zip`; // Fallback filename
+      if (disposition?.includes('attachment')) {
+        const filenameMatch = /filename="([^"]+)"/.exec(disposition);
+        if (filenameMatch?.[1]) {
+          filename = filenameMatch[1];
         }
-      });
+      }
 
-      await Promise.all(artifactPromises);
+      // Read the response as a Blob
+      const blob = await response.blob();
+      handleDownload(blob, filename);
 
-      // 3. Generate the zip file and trigger download
-      const content = await zip.generateAsync({type: "blob"});
-      handleDownload(content, `${run.runName || 'test-run'}.zip`);
     } catch (err) {
       setNotificationError("downloadError");
       console.error("Failed to create zip file:", err);

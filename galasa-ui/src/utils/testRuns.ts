@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { ResultArchiveStoreAPIApi, Run, RunResults, UserData } from "@/generated/galasaapi";
+import { ArtifactIndexEntry, ResultArchiveStoreAPIApi, Run, RunResults, UserData } from "@/generated/galasaapi";
 import { createAuthenticatedApiConfiguration } from "@/utils/api";
 import { CLIENT_API_VERSION, MAX_RECORDS, BATCH_SIZE } from "@/utils/constants/common";
 import { fetchAllUsersFromApiServer } from "@/utils/users";
@@ -29,6 +29,10 @@ interface fetchAllTestRunsByPagingParams {
     status?: string; 
     tags?: string;
 }
+
+const apiConfig = createAuthenticatedApiConfiguration();
+const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+
   
   
 /**
@@ -56,9 +60,6 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
   if (fromDate > toDate) return {runs: [] , limitExceeded};
 
   try {
-    const apiConfig = createAuthenticatedApiConfiguration();
-    const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
-  
     while (hasMorePages && allRuns.length < MAX_RECORDS) {
       // Fetch runs based on the provided date range
       const response: RunResults = await rasApiClient.getRasSearchRuns(
@@ -142,10 +143,7 @@ export async function getRequestorList(): Promise<string[]> {
  * @returns {Promise<string[]>} - A promise that resolves to an array of result names.
  */
 export async function getResultsNames(): Promise<string[]> {
-  try {
-    const apiConfig = createAuthenticatedApiConfiguration();
-    const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
-      
+  try {   
     const resultsNamesResponse = await rasApiClient.getRasResultNames(
       CLIENT_API_VERSION,
       'results:asc'
@@ -159,3 +157,30 @@ export async function getResultsNames(): Promise<string[]> {
     return [];
   }
 }
+
+export const fetchRunDetailsFromApiServer = async (slug: string) => {
+  try {
+    const rasRunsResponse = await rasApiClient.getRasRunById(slug);
+    return structuredClone(rasRunsResponse);
+  } catch (error: any) {
+    console.error("Error fetching run details:", error);
+    throw error;
+  }
+};
+
+export const fetchRunDetailLogs = async (slug: string) => {
+  const rasRunLogsResponse = await rasApiClient.getRasRunLog(slug);
+  return rasRunLogsResponse;
+};
+
+export const fetchTestArtifacts = async (slug: string): Promise<ArtifactIndexEntry[]> => {
+  let runArtifacts: ArtifactIndexEntry[] = [];
+
+  const rasArtifactResponse = await rasApiClient.getRasRunArtifactList(slug);
+
+  if (rasArtifactResponse) {
+    runArtifacts = structuredClone(Array.from(rasArtifactResponse)); //Convert the set into array
+  }
+
+  return runArtifacts;
+};
