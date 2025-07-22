@@ -352,15 +352,28 @@ describe('TestRunDetails', () => {
   });
 
   describe('download artifacts', () => {
-    test('correctly fetches artifacts, zips them, and initiates download', async () => {
+    beforeEach(() => {
+      global.fetch = jest.fn();
+    });
+    
+    afterEach(() => {
+      (global.fetch as jest.Mock).mockRestore();
+    });
+
+    test('correctly calls the zip endpoint and initiates download on success', async () => {
       const runDetailsDeferred = setup<any>();
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      const mockArtifacts = [
-        { path: '/logs/debug.log' },
-        { path: './images/screenshot.png' },
-      ];
+      // Mock the successful fetch response
+      const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        headers: {
+          get: jest.fn().mockReturnValue('attachment; filename="TestRun-from-server.zip"'),
+        },
+        blob: jest.fn().mockResolvedValue(mockBlob),
+      });
 
       render(
         <TestRunDetails
@@ -390,56 +403,29 @@ describe('TestRunDetails', () => {
             tags: [],
           },
         });
-        runArtifactsDeferred.resolve(mockArtifacts);
+        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
         runLogDeferred.resolve('Log content');
       });
-
-      // Mock the return value for the artifact download
-      const mockDownloadResult = {
-        contentType: 'text/plain',
-        data: 'file-content',
-        size: 12,
-        base64: 'base64-file-content',
-      };
-
-      (downloadArtifactFromServer as jest.Mock).mockResolvedValue(mockDownloadResult);
-      mockGenerateAsync.mockResolvedValue('mock-zip-blob');
 
       // Act
       const downloadButton = screen.getByTestId('icon-download-all');
       fireEvent.click(downloadButton);
 
       // Check for loading state
-      expect(screen.getByText('Loading')).toBeInTheDocument();
+      expect(await screen.findByText('Loading')).toBeInTheDocument();
 
       // Wait for all async operations in handleDownloadAll to complete
       await waitFor(() => {
         expect(handleDownload).toHaveBeenCalled();
       });
 
-      // Verify JSZip was used correctly
-      expect(JSZip).toHaveBeenCalled();
-      expect(mockZipFile).toHaveBeenCalledTimes(3); 
-      expect(mockZipFile).toHaveBeenCalledWith('run.log', 'Log content');
-      expect(mockZipFile).toHaveBeenCalledWith(
-        'logs/debug.log',
-        'base64-file-content',
-        { base64: true }
+      // Verify the correct API endpoint was called
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(
+        `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`
       );
-
-      // Verify API calls
-      expect(mockDownloadArtifactFromServer).toHaveBeenCalledTimes(2);
-      expect(mockDownloadArtifactFromServer).toHaveBeenCalledWith(runId, '/logs/debug.log');
-      expect(mockDownloadArtifactFromServer).toHaveBeenCalledWith(runId, './images/screenshot.png');
-
-      // Verify path cleaning utility was called
-      expect(mockCleanArtifactPath).toHaveBeenCalledWith('/logs/debug.log');
-      expect(mockCleanArtifactPath).toHaveBeenCalledWith('./images/screenshot.png');
-
-      // Verify the final zip generation and download trigger
-      expect(mockGenerateAsync).toHaveBeenCalledWith({ type: 'blob' });
-      expect(mockHandleDownload).toHaveBeenCalledWith('mock-zip-blob', 'TestRun.zip');
-
+      
+      expect(handleDownload).toHaveBeenCalledWith(mockBlob, 'TestRun-from-server.zip');
       // Ensure loading state is gone
       expect(screen.queryByText('Loading')).not.toBeInTheDocument();
     });

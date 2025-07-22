@@ -30,10 +30,14 @@ interface fetchAllTestRunsByPagingParams {
     tags?: string;
 }
 
-const apiConfig = createAuthenticatedApiConfiguration();
-const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
-  
+/**
+ * Internal helper function to get an initialized API client.
+ */
+const getRasApiClient = () => {
+  const apiConfig = createAuthenticatedApiConfiguration();
+  return new ResultArchiveStoreAPIApi(apiConfig);
+};
   
 /**
    * Fetches all test runs from the Result Archive Store API within a specified date range
@@ -58,6 +62,8 @@ export const fetchAllTestRunsByPaging  = async ({fromDate, toDate, runName, requ
   let limitExceeded = false;
   
   if (fromDate > toDate) return {runs: [] , limitExceeded};
+
+  const rasApiClient = getRasApiClient();
 
   try {
     while (hasMorePages && allRuns.length < MAX_RECORDS) {
@@ -143,6 +149,8 @@ export async function getRequestorList(): Promise<string[]> {
  * @returns {Promise<string[]>} - A promise that resolves to an array of result names.
  */
 export async function getResultsNames(): Promise<string[]> {
+  const rasApiClient = getRasApiClient();
+
   try {   
     const resultsNamesResponse = await rasApiClient.getRasResultNames(
       CLIENT_API_VERSION,
@@ -159,6 +167,8 @@ export async function getResultsNames(): Promise<string[]> {
 }
 
 export const fetchRunDetailsFromApiServer = async (slug: string) => {
+  const rasApiClient = getRasApiClient();
+
   try {
     const rasRunsResponse = await rasApiClient.getRasRunById(slug);
     return structuredClone(rasRunsResponse);
@@ -169,6 +179,8 @@ export const fetchRunDetailsFromApiServer = async (slug: string) => {
 };
 
 export const fetchRunDetailLogs = async (slug: string) => {
+  const rasApiClient = getRasApiClient();
+
   const rasRunLogsResponse = await rasApiClient.getRasRunLog(slug);
   return rasRunLogsResponse;
 };
@@ -176,6 +188,8 @@ export const fetchRunDetailLogs = async (slug: string) => {
 export const fetchTestArtifacts = async (slug: string): Promise<ArtifactIndexEntry[]> => {
   let runArtifacts: ArtifactIndexEntry[] = [];
 
+  const rasApiClient = getRasApiClient();
+  
   const rasArtifactResponse = await rasApiClient.getRasRunArtifactList(slug);
 
   if (rasArtifactResponse) {
