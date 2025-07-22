@@ -141,7 +141,7 @@ function generate_rest_client {
         rm -fr ${BASEDIR}/galasa-ui/src/generated/*
     fi
 
-    gradle --warning-mode all --info --debug generateTypeScriptClient
+    gradle --warning-mode all --info --debug -PsourceMaven="https://development.galasa.dev/main/maven-repo/obr" generateTypeScriptClient
     rc=$? 
     check_exit_code $rc  "Failed to generate the TypeScript client code from the openapi.yaml file. rc=${rc}"
     success "Code generation OK"

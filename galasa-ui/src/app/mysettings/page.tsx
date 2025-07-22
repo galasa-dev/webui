@@ -17,6 +17,8 @@ import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/mysettings/ExperimentalFeaturesSection';
 import { HOME } from '@/utils/constants/breadcrumb';
 import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
+import { fetchUserFromApiServer } from '@/actions/userServerActions';
+import ProfileRole from '@/components/users/UserRole';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -57,6 +59,7 @@ export default async function MySettings() {
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
       <PageTile translationKey="MySettings.title" />
+      <ProfileRole userProfilePromise={fetchUserFromApiServer("me")} />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeSettings />
