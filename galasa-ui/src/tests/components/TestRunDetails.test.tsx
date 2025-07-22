@@ -8,7 +8,6 @@ import { render, screen, act, fireEvent, waitFor } from '@testing-library/react'
 import TestRunDetails from '@/components/test-runs/TestRunDetails';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
-import JSZip from 'jszip';
 
 function setup<T>() {
   let resolve!: (value: T) => void;
@@ -184,15 +183,6 @@ jest.mock('@/utils/artifacts', () => ({
   cleanArtifactPath: jest.fn((path: string) => path.replace(/^\//, '')),
 }));
 
-// Mock the JSZip library
-const mockZipFile = jest.fn();
-const mockGenerateAsync = jest.fn().mockResolvedValue('mock-zip=blob');
-jest.mock('jszip', () => {
-  return jest.fn().mockImplementation(() => ({
-    file: mockZipFile,
-    generateAsync: mockGenerateAsync,
-  }));
-});
 
 const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.Mock;
 const mockHandleDownload = handleDownload as jest.Mock;
@@ -208,7 +198,6 @@ describe('TestRunDetails', () => {
     mockDownloadArtifactFromServer.mockClear();
     mockHandleDownload.mockClear();
     mockCleanArtifactPath.mockClear();
-    mockGenerateAsync.mockClear();
   });
 
 

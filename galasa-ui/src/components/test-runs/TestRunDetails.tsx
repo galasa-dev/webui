@@ -23,9 +23,7 @@ import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
 import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
-import { downloadArtifactFromServer } from '@/actions/runsAction';
-import JSZip from 'jszip';
-import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
+import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 
 interface TestRunDetailsProps {

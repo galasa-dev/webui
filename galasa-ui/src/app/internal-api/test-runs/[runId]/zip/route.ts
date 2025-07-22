@@ -5,7 +5,7 @@
  */
 
 import { downloadArtifactFromServer } from "@/actions/runsAction";
-import { cleanArtifactPath, handleDownload } from "@/utils/artifacts";
+import { cleanArtifactPath } from "@/utils/artifacts";
 import { fetchRunDetailLogs, fetchTestArtifacts } from "@/utils/testRuns";
 import JSZip from "jszip";
 import { NextRequest, NextResponse } from "next/server";
@@ -22,13 +22,13 @@ export async function GET(
   // Get runName from the URL's query parameters
   const runName = request.nextUrl.searchParams.get('runName');
 
-  // Fetch logs and artifacts in parallel
-  const [logs, artifacts] = await Promise.all([
-    fetchRunDetailLogs(runId),
-    fetchTestArtifacts(runId)
-  ]);
-
   try {
+    // Fetch logs and artifacts in parallel
+    const [logs, artifacts] = await Promise.all([
+      fetchRunDetailLogs(runId),
+      fetchTestArtifacts(runId)
+    ]);
+
     const zip = new JSZip();
 
     // 1. Add the run log to the zip
@@ -70,6 +70,11 @@ export async function GET(
     });
   } catch (err) {
     console.error(`Failed to create zip for run ${runId}:`, err);
-    return NextResponse.json({ error: 'Failed to generate the zip file on the server.' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Failed to generate the zip file on the server.' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } 
 }
