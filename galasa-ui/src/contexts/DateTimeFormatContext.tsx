@@ -80,11 +80,11 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
         
       const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
         hour12: timeFormat === '12-hour',
       };
 

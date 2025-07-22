@@ -113,8 +113,8 @@ const SUPPORTED_LOCALES = [
 ];
 
 const TIME_FORMATS = [
-  {label: '12-hour', format: 'hh:mm:ss A'},
-  {label: '24-hour', format: 'HH:mm:ss'}
+  { label: '12-hour', format: 'hh:mm:ss AM/PM' },
+  { label: '24-hour', format: 'HH:mm:ss' }
 ];
 
 const PREFERENCE_KEYS = {

@@ -58,19 +58,20 @@ export default function DateTimeFormatSection() {
               size="lg"
               disabled={preferences.dateTimeFormatType !== 'custom'}
             />
-            <Dropdown
-              helperText={translations("selectTimeFormat")}
-              label={translations("selectTimeFormat")}
-              id="custom-time-format-dropdown"
-              items={TIME_FORMATS}
-              itemToString={(item: TimeFormat) => (item ? `${translations(item.label)} ${item.format}` : '')}
-              selectedItem={TIME_FORMATS.find(item => item.label === preferences.timeFormat)}
-              onChange={(e: {selectedItem: TimeFormat}) => handleChange(PREFERENCE_KEYS.TIME_FORMAT, e.selectedItem?.label || TIME_FORMATS[0].label)}
-              size="lg"
-              disabled={preferences.dateTimeFormatType !== 'custom'}
-            />
+            <div className={styles.timeFormatDropdown}>
+              <Dropdown
+                helperText={translations("selectTimeFormat")}
+                label={translations("selectTimeFormat")}
+                id="custom-time-format-dropdown"
+                items={TIME_FORMATS}
+                itemToString={(item: TimeFormat) => (item ? `${translations(item.label)} ${item.format}` : '')}
+                selectedItem={TIME_FORMATS.find(item => item.label === preferences.timeFormat)}
+                onChange={(e: {selectedItem: TimeFormat}) => handleChange(PREFERENCE_KEYS.TIME_FORMAT, e.selectedItem?.label || TIME_FORMATS[0].label)}
+                size="lg"
+                disabled={preferences.dateTimeFormatType !== 'custom'}
+              />
+            </div>    
           </div>
-
         </RadioButtonGroup>
       </div>
     </section>
