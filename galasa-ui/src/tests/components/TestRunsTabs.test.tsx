@@ -780,9 +780,9 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
 
-        const expectedDateRun2 = new Date('2023-10-02T12:00:00Z').toLocaleString().replace(',', '');
-        const expectedDateRun3 = new Date('2023-10-03T12:00:00Z').toLocaleString().replace(',', '');
-        const expectedDateRun1 = new Date('2023-10-11T12:00:00Z').toLocaleString().replace(',', '');
+        const expectedDateRun2 = '2023-10-02T12:00:00Z';
+        const expectedDateRun3 = '2023-10-03T12:00:00Z';
+        const expectedDateRun1 = '2023-10-11T12:00:00Z';
 
         expect(lastCallArgs.runsList).toEqual([
           { ...defaultTransformedRun, id: '2', submittedAt: expectedDateRun2, runName: 'Run B', status: 'Failed', requestor: 'B User', tags: 'B tag' },

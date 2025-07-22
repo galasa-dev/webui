@@ -142,18 +142,24 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
  * It renders a special layout for the 'result' column and a default for all others.
  */
   const CustomCell = ({ header, value }: CustomCellProps) => {
+    let cellComponent =  <TableCell>{value}</TableCell>;
+
+    if (value === 'N/A' || !value) {
+      return <TableCell>N/A</TableCell>;
+    }
+
     if (header === "result") {
-      return (
+      cellComponent = (
         <TableCell>
           <StatusIndicator status={value as string} />
         </TableCell>
       );
     } else if (header === "submittedAt") {
       // Format the date using the context's formatDate function
-      return <TableCell>{formatDate(new Date(value))}</TableCell>;
+      cellComponent = <TableCell>{formatDate(new Date(value))}</TableCell>;
     }
 
-    return <TableCell>{value}</TableCell>;
+    return cellComponent;
   };
 
   if (visibleColumns.length === 0) {

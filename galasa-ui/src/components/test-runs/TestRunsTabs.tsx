@@ -184,10 +184,10 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   
     return runs.map((run) => {
       const structure = run.testStructure || {};
-  
+      console.log(structure.queued);
       return {
         id: run.runId,
-        submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
+        submittedAt: structure.queued ? structure.queued : 'N/A',
         runName: structure.runName || 'N/A',
         requestor: structure.requestor || 'N/A',
         group: structure.group || 'N/A',
