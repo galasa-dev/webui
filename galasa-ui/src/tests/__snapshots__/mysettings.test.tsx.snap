@@ -17,6 +17,9 @@ exports[`MySettings Component renders correctly when user login id is found 1`] 
   <PageTile
     translationKey="MySettings.title"
   />
+  <ProfileRole
+    userProfilePromise={Promise {}}
+  />
   <AccessTokensSection
     accessTokensPromise={Promise {}}
     isAddBtnVisible={true}
