@@ -11,7 +11,8 @@ import TableDesignRow from "./TableDesignRow";
 import { Checkbox, Button } from "@carbon/react";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
-import { ColumnDefinition, sortOrderType } from "@/utils/interfaces";
+import { ColumnDefinition } from "@/utils/interfaces";
+import { sortOrderType } from "@/utils/types/common";
 import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
 import { Dispatch, SetStateAction } from "react";
 

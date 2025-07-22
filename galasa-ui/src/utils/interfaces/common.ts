@@ -13,9 +13,6 @@ export interface MarkdownResponse {
   responseStatusCode: number;
 }
 
-export type AmPm = 'AM' | 'PM';
-export type sortOrderType = 'asc' | 'desc' | 'none';
-
 // DataTableHeader, DataTableCell, DataTableRow are IBM Carbon interfaces
 export interface DataTableHeader {
   key: string;

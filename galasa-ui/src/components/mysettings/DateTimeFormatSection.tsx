@@ -23,6 +23,8 @@ export default function DateTimeFormatSection() {
     updatePreferences({ [key]: value });
   };
 
+  const isDropdownDisabled = preferences.dateTimeFormatType !== 'custom';
+
   return (
     <section  className={styles.section}>
       <h3>{translations("title")}</h3>
@@ -56,7 +58,7 @@ export default function DateTimeFormatSection() {
               selectedItem={SUPPORTED_LOCALES.find(item => item.code === preferences.locale)}
               onChange={(e: {selectedItem: Locale}) => handleChange(PREFERENCE_KEYS.LOCALE, e.selectedItem?.code || SUPPORTED_LOCALES[0].code)}
               size="lg"
-              disabled={preferences.dateTimeFormatType !== 'custom'}
+              disabled={isDropdownDisabled}
             />
             <div className={styles.timeFormatDropdown}>
               <Dropdown
@@ -68,7 +70,7 @@ export default function DateTimeFormatSection() {
                 selectedItem={TIME_FORMATS.find(item => item.label === preferences.timeFormat)}
                 onChange={(e: {selectedItem: TimeFormat}) => handleChange(PREFERENCE_KEYS.TIME_FORMAT, e.selectedItem?.label || TIME_FORMATS[0].label)}
                 size="lg"
-                disabled={preferences.dateTimeFormatType !== 'custom'}
+                disabled={isDropdownDisabled}
               />
             </div>    
           </div>

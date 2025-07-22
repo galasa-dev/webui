@@ -39,21 +39,22 @@ const DateTimeFormatContext = createContext<DateTimeFormatContextType | undefine
  * @param { children } - The child components that will have access to the DateTimeFormatContext.
  */
 export function DateTimeFormatProvider({ children }: { children: React.ReactNode }) {
-  const defaultPreferences = {
-    [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: 'browser',
+  const defaultPreferences: DateTimeFormatContextType['preferences'] = {
+    [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: 'browser' as DateTimeFormats,
     [PREFERENCE_KEYS.LOCALE]: 'en-US',
     [PREFERENCE_KEYS.TIME_FORMAT]: '12-hour'
   };
 
   const [preferences, setPreferences] = useState<DateTimeFormatContextType['preferences']>(() => {
-    if (typeof window === 'undefined') {
-      // Return default state during SSR
-      return defaultPreferences;
+    let currentPreferences: DateTimeFormatContextType['preferences'] = defaultPreferences;
+    if (typeof window !== 'undefined') {
+      // Load preferences from local storage or set default values
+      const storedPreferences = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (storedPreferences) {
+        currentPreferences = JSON.parse(storedPreferences);
+      }
     }
-
-    // Load preferences from local storage or set default values
-    const storedPreferences = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return storedPreferences ? JSON.parse(storedPreferences) : defaultPreferences;
+    return currentPreferences;
   });
 
   const updatePreferences = (newPreferences: Partial<typeof preferences>) => {
