@@ -86,6 +86,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
     const dates = runsList.map((run) =>
       new Date(run.submittedAt || 0).getTime(),
     );
+
     const earliestDate = new Date(Math.min(...dates));
     const latestDate = new Date(Math.max(...dates));
 
