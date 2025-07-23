@@ -51,7 +51,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [notificationError, setNotificationError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const { formatDate } = useDateTimeFormat();
   
   const extractRunDetails = useCallback((runDetails: Run) => {
