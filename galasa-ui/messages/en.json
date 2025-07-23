@@ -34,6 +34,17 @@
       "internationalization": "Internationalization/Multiple language support"
     }
   },
+  "DateTimeFormatSection": {
+    "title": "Date/Time Format",
+    "description": "Configure the format for displaying date and time.",
+    "dateTimeFormat": "Date/Time Format",
+    "showDatesInBrowserLocale": "Show dates and times based on the browser locale",
+    "showDatesInCustomLocale": "Show dates and times in a custom format",
+    "selectLocale": "Select a locale",
+    "selectTimeFormat": "Select a time format",
+    "12-hour": "12-hour",
+    "24-hour": "24-hour"
+  },
   "AccessTokensSection": {
     "title": "Access Tokens",
     "descriptionline1": "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.",

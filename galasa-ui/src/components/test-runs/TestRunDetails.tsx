@@ -25,6 +25,7 @@ import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -50,10 +51,10 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [notificationError, setNotificationError] = useState<string | null>(null);
-
+  const [copied, setCopied] = useState(false);
+  const { formatDate } = useDateTimeFormat();
   
   const extractRunDetails = useCallback((runDetails: Run) => {
-
     setMethods(runDetails.testStructure?.methods || []);
 
     // Build run metadata object
@@ -69,16 +70,15 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: parseIsoDateTime(runDetails.testStructure?.queued!),
-      startedAt: parseIsoDateTime(runDetails.testStructure?.startTime!),
-      finishedAt: parseIsoDateTime(runDetails.testStructure?.endTime!),
+      submitted: formatDate(new Date(runDetails.testStructure?.queued!)),
+      startedAt: formatDate(new Date(runDetails.testStructure?.startTime!)),
+      finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
       duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
       tags: runDetails.testStructure?.tags!
-
     };
 
     setRun(runMetadata);
-  },[runId]);
+  },[runId, formatDate]);
 
   useEffect(() => {
     const loadRunDetails = async () => {

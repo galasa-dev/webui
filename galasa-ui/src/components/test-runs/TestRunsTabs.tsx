@@ -18,9 +18,9 @@ import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, RUN_QUERY_PARAMS, DAY_MS, TABS_IDS,
 import { useQuery } from '@tanstack/react-query';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues } from '@/utils/interfaces';
-import { ColumnDefinition, runStructure, sortOrderType } from '@/utils/interfaces';
+import { ColumnDefinition, runStructure } from '@/utils/interfaces';
+import { sortOrderType } from '@/utils/types/common';
 import { Run } from '@/generated/galasaapi';
-
 
 interface TabConfig {
   id: string;
@@ -185,10 +185,9 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   
     return runs.map((run) => {
       const structure = run.testStructure || {};
-  
       return {
         id: run.runId,
-        submittedAt: structure.queued ? new Date(structure.queued).toLocaleString().replace(',', '') : 'N/A',
+        submittedAt: structure.queued ? structure.queued : 'N/A',
         runName: structure.runName || 'N/A',
         requestor: structure.requestor || 'N/A',
         group: structure.group || 'N/A',

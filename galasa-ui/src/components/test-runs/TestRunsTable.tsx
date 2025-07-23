@@ -36,28 +36,13 @@ import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
 import useHistoryBreadCrumbs from "@/hooks/useHistoryBreadCrumbs";
 import { TEST_RUNS } from "@/utils/constants/breadcrumb";
+import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
 
 
 interface CustomCellProps {
   header: string;
   value: any;
 }
-
-/**
- * This component encapsulates the logic for rendering a cell.
- * It renders a special layout for the 'result' column and a default for all others.
- */
-const CustomCell = ({ header, value }: CustomCellProps) => {
-  if (header === "result") {
-    return (
-      <TableCell>
-        <StatusIndicator status={value as string} />
-      </TableCell>
-    );
-  }
-
-  return <TableCell>{value}</TableCell>;
-};
 
 interface TestRunsTableProps {
   runsList: runStructure[];
@@ -71,6 +56,7 @@ interface TestRunsTableProps {
 export default function TestRunsTable({runsList,limitExceeded, visibleColumns, orderedHeaders, isLoading, isError}: TestRunsTableProps) {
   const translations = useTranslations("TestRunsTable");
   const { pushBreadCrumb } = useHistoryBreadCrumbs();
+  const { formatDate } = useDateTimeFormat();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -105,12 +91,12 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
     if (earliestDate && latestDate) {
       text = translations('timeFrameText.range', {
-        from: earliestDate.toLocaleString().replace(',', ''),
-        to: latestDate.toLocaleString().replace(',', '')
+        from: formatDate(earliestDate),
+        to: formatDate(latestDate)
       });
     }
     return text;
-  }, [runsList, translations]);
+  }, [runsList, translations, formatDate]);
 
   if (isError) {
     return <ErrorPage />;
@@ -149,6 +135,31 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
     // Navigate to the test run details page
     router.push(`/test-runs/${runId}`);
+  };
+
+  /**
+ * This component encapsulates the logic for rendering a cell.
+ * It renders a special layout for the 'result' column and a default for all others.
+ */
+  const CustomCell = ({ header, value }: CustomCellProps) => {
+    let cellComponent =  <TableCell>{value}</TableCell>;
+
+    if (value === 'N/A' || !value) {
+      return <TableCell>N/A</TableCell>;
+    }
+
+    if (header === "result") {
+      cellComponent = (
+        <TableCell>
+          <StatusIndicator status={value as string} />
+        </TableCell>
+      );
+    } else if (header === "submittedAt") {
+      // Format the date using the context's formatDate function
+      cellComponent = <TableCell>{formatDate(new Date(value))}</TableCell>;
+    }
+
+    return cellComponent;
   };
 
   if (visibleColumns.length === 0) {

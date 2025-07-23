@@ -12,7 +12,7 @@ import { IconButton } from "@carbon/react";
 import {  Draggable } from "@carbon/icons-react";
 import { useTranslations } from "next-intl";
 import { Dropdown } from "@carbon/react";
-import { sortOrderType } from "@/utils/interfaces";
+import { sortOrderType } from "@/utils/types/common";
 
 interface TableDesignRowProps {
   rowId: string;

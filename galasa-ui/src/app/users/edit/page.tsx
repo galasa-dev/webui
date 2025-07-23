@@ -8,7 +8,7 @@ import UserRoleSection from '@/components/users/UserRoleSection';
 import React from 'react';
 import { RBACRole, RoleBasedAccessControlAPIApi} from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
-import AccessTokensSection from '@/components/AccessTokensSection';
+import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import { fetchAccessTokens } from '@/actions/getUserAccessTokens';
 import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import BreadCrumb from '@/components/common/BreadCrumb';

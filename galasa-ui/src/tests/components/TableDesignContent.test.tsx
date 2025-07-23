@@ -191,7 +191,7 @@ describe("TableDesignContent Component", () => {
         ...defaultProps,
         visibleColumns: ['testName'],
         columnsOrder: [...RESULTS_TABLE_COLUMNS].reverse(),
-        sortOrdere: [{ id: 'testName', order: 'asc' }],
+        sortOrder: [{ id: 'testName', order: 'asc' }],
       };
 
       render(<TableDesignContent {...modifiedProps} />);
