@@ -185,7 +185,6 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   
     return runs.map((run) => {
       const structure = run.testStructure || {};
-      console.log(structure.queued);
       return {
         id: run.runId,
         submittedAt: structure.queued ? structure.queued : 'N/A',
