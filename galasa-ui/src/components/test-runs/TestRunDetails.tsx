@@ -21,10 +21,10 @@ import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
-import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
+import { Button } from '@carbon/react';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -163,30 +163,23 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       <Tile id="tile" className={styles.toolbar}>
         {translations("title", { runName: run?.runName || "Unknown Run Name" })}
         <div className={styles.buttonContainer}>
-          <Tooltip label={isDownloading ? translations("downloading") : translations('downloadArtifacts')} align="top">
-            <button
-              onClick={handleDownloadAll}
-              className={styles.shareButton}
-              data-testid="icon-download-all"
-            >
-              {isDownloading ? 
-                <Loading 
-                  small
-                  withOverlay={false}
-                /> 
-                : 
-                <CloudDownload size={20}/>}
-            </button>
-          </Tooltip>
-          <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
-            <button
-              onClick={handleShare}
-              className={styles.shareButton}
-              data-testid="icon-Share"
-            >
-              <Share size={20}/>
-            </button>
-          </Tooltip>
+          <Button
+            kind="ghost"
+            hasIconOnly
+            onClick={handleDownloadAll}
+            disabled={isDownloading}
+            renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
+            iconDescription={isDownloading ? translations('downloading') : translations('downloadArtifacts')}
+            data-testid="icon-download-all"
+          />
+          <Button
+            kind="ghost"
+            hasIconOnly
+            renderIcon={Share}
+            iconDescription={copied ? translations("copiedmessage") : translations("copymessage")}
+            onClick={handleShare}
+            data-testid="icon-Share"
+          />
         </div>
       </Tile>
       {notificationError && (

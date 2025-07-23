@@ -138,12 +138,6 @@ jest.mock('@carbon/react', () => {
   const TabPanel = ({ children }: any) => <div>{children}</div>;
   const Loading = () => <div>Loading</div>;
   const Tile = ({ children }: any) => <div data-testid="tile">{children}</div>;
-  const Tooltip = ({ label, children }: any) => (
-    <div data-testid="tooltip">
-      {label}
-      {children}
-    </div>
-  );
   const InlineNotification = ({ title, subtitle, kind, className }: any) => (
     <div className={className}>
       <strong>{title}</strong>
@@ -151,17 +145,23 @@ jest.mock('@carbon/react', () => {
       <span>{kind}</span>
     </div>
   );
-
-  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification].forEach(c => {
+  const Button = ({ children, renderIcon, ...props }: any) => {
+    const Icon = renderIcon;
+    return (
+      <button {...props}>
+        {Icon && <Icon />}
+        {children}
+      </button>
+    );
+  };
+  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification, Button].forEach(c => {
     // @ts-ignore
     // Assigning displayName to function components for better debugging in React DevTools.
     // TypeScript does not allow this by default, so we suppress the error.
     c.displayName = c.name || 'Anonymous';
   });
   Tile.displayName = 'Tile';
-  Tooltip.displayName = 'Tooltip';
-
-  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, InlineNotification };
+  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, InlineNotification, Button };
 });
 
 beforeAll(() => {

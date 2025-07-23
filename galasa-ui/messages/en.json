@@ -205,7 +205,7 @@
     "title": "Test Run: {runName}",
     "copymessage":"Copy page URL",
     "copiedmessage":"Copied",
-    "downloadArtifacts": "Download all Artifacts",
+    "downloadArtifacts": "Download all artifacts",
     "downloading": "Downloading...",
     "downloadError": "Failed to download artifacts. Please try again later.",
     "status": "Status",
