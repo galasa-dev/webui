@@ -13,7 +13,7 @@ import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
 import { RunMetadata } from '@/utils/interfaces';
-import { getIsoTimeDifference, parseIsoDateTime } from '@/utils/timeOperations';
+import { getIsoTimeDifference } from '@/utils/timeOperations';
 import MethodsTab from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
@@ -26,6 +26,7 @@ import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -34,13 +35,12 @@ interface TestRunDetailsProps {
   runArtifactsPromise: Promise<ArtifactIndexEntry[]>;
 }
 
-type DownloadResult = { contentType: string; data: string; size: number; base64: string; };
-
-
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
   const translations = useTranslations("TestRunDetails");
   const {breadCrumbItems } = useHistoryBreadCrumbs();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -52,10 +52,12 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [copied, setCopied] = useState(false);
   const [notificationError, setNotificationError] = useState<string | null>(null);
   const { formatDate } = useDateTimeFormat();
-  
+
+  // Get the selected tab index from the URL or default to the first tab
+  const [selectedTabIndex, setSelectedTabIndex] = useState(searchParams.get('tab') ? parseInt(searchParams.get('tab')!) : 0);
+
   const extractRunDetails = useCallback((runDetails: Run) => {
     setMethods(runDetails.testStructure?.methods || []);
-
     // Build run metadata object
     const runMetadata: RunMetadata = {
       runId: runId,
@@ -154,7 +156,19 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       setIsDownloading(false);
     }
   };
-  
+
+  const handleTabChange = (event: {selectedIndex : number}) => {
+    const newIndex = event.selectedIndex;
+    setSelectedTabIndex(newIndex);
+    
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', newIndex.toString());
+
+    const newUrl = `${pathname}?${params.toString()}`;
+
+    // Update the URL without triggering a page reload/re-mount
+    window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+  };
 
   return (
     <main id="content">
@@ -207,7 +221,10 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
               {translations("test")}: {run?.testName}
             </span>
           </div>
-          <Tabs>
+          <Tabs
+            selectedIndex={selectedTabIndex}
+            onChange={handleTabChange}
+          >
             <TabList iconSize="lg" className={styles.tabs}>
               <Tab renderIcon={Dashboard} href="#">
                 {translations("tabs.overview")}
