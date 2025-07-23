@@ -8,7 +8,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
-import { Dashboard, Code, CloudLogging, RepoArtifact, Share } from '@carbon/icons-react';
+import { Dashboard, Code, CloudLogging, RepoArtifact, Share, CloudDownload } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
@@ -21,8 +21,11 @@ import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
 import StatusIndicator from '../common/StatusIndicator';
 import { Tile } from '@carbon/react';
-import { Tooltip } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
+import { handleDownload } from '@/utils/artifacts';
+import { InlineNotification } from '@carbon/react';
+import { Button } from '@carbon/react';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -30,6 +33,9 @@ interface TestRunDetailsProps {
   runLogPromise: Promise<string>;
   runArtifactsPromise: Promise<ArtifactIndexEntry[]>;
 }
+
+type DownloadResult = { contentType: string; data: string; size: number; base64: string; };
+
 
 // Type the props directly on the function's parameter
 const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
@@ -42,12 +48,12 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [logs, setLogs] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [savedQuery, setSavedQuery] = useState<string>("");
+  const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
-
+  const [notificationError, setNotificationError] = useState<string | null>(null);
+  const { formatDate } = useDateTimeFormat();
   
   const extractRunDetails = useCallback((runDetails: Run) => {
-
     setMethods(runDetails.testStructure?.methods || []);
 
     // Build run metadata object
@@ -63,16 +69,15 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: parseIsoDateTime(runDetails.testStructure?.queued!),
-      startedAt: parseIsoDateTime(runDetails.testStructure?.startTime!),
-      finishedAt: parseIsoDateTime(runDetails.testStructure?.endTime!),
+      submitted: formatDate(new Date(runDetails.testStructure?.queued!)),
+      startedAt: formatDate(new Date(runDetails.testStructure?.startTime!)),
+      finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
       duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
       tags: runDetails.testStructure?.tags!
-
     };
 
     setRun(runMetadata);
-  },[runId]);
+  },[runId, formatDate]);
 
   useEffect(() => {
     const loadRunDetails = async () => {
@@ -112,23 +117,78 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     }
   };
 
+  const handleDownloadAll = async () => {
+    if (!run) return;
+    
+    setIsDownloading(true);
+    setNotificationError(null); 
+
+    try {
+      const url = new URL(`/internal-api/test-runs/${run.runId}/zip`, window.location.origin);
+      url.searchParams.append('runName', run.runName);
+      const response = await fetch(url.toString());
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Server responded with status ${response.status}`);
+      }
+
+      // The server provides the correct filename in the response header
+      const disposition = response.headers.get('Content-Disposition');
+      let filename = `${run.runName || 'test-run'}.zip`; // Fallback filename
+      if (disposition?.includes('attachment')) {
+        const filenameMatch = /filename="([^"]+)"/.exec(disposition);
+        if (filenameMatch?.[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Read the response as a Blob
+      const blob = await response.blob();
+      handleDownload(blob, filename);
+
+    } catch (err) {
+      setNotificationError("downloadError");
+      console.error("Failed to create zip file:", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <Tile id="tile" className={styles.toolbar}>
         {translations("title", { runName: run?.runName || "Unknown Run Name" })}
         <div className={styles.buttonContainer}>
-          <Tooltip label={copied ? translations('copiedmessage') : translations('copymessage')} align="top">
-            <button
-              onClick={handleShare}
-              className={styles.shareButton}
-              data-testid="icon-Share"
-            >
-              <Share size={20}/>
-            </button>
-          </Tooltip>
+          <Button
+            kind="ghost"
+            hasIconOnly
+            onClick={handleDownloadAll}
+            disabled={isDownloading}
+            renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
+            iconDescription={isDownloading ? translations('downloading') : translations('downloadArtifacts')}
+            data-testid="icon-download-all"
+          />
+          <Button
+            kind="ghost"
+            hasIconOnly
+            renderIcon={Share}
+            iconDescription={copied ? translations("copiedmessage") : translations("copymessage")}
+            onClick={handleShare}
+            data-testid="icon-Share"
+          />
         </div>
       </Tile>
+      {notificationError && (
+        <InlineNotification
+          title={translations("errorTitle")}
+          subtitle={translations(notificationError) || "An unexpected error occurred."}
+          className={styles.notification}
+          kind="error"
+        />
+      )}    
  
       {isLoading ? (
         <TestRunSkeleton />

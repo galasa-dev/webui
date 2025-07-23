@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import React from 'react';
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import TestRunDetails from '@/components/test-runs/TestRunDetails';
+import { downloadArtifactFromServer } from '@/actions/runsAction';
+import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 
 function setup<T>() {
   let resolve!: (value: T) => void;
@@ -17,12 +19,22 @@ function setup<T>() {
   return { promise, resolve, reject };
 }
 
+jest.mock('@/actions/runsAction');
 
 // Mocking next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, opts?: any) =>
     opts?.runName ? `title:${opts.runName}` : key,
 }));
+
+// Mock the useDateTimeFormat context
+const mockFormatDate = (date: Date) => date.toLocaleString();
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    formatDate: mockFormatDate, 
+  })
+}));
+
 
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => {
@@ -135,23 +147,30 @@ jest.mock('@carbon/react', () => {
   const TabPanel = ({ children }: any) => <div>{children}</div>;
   const Loading = () => <div>Loading</div>;
   const Tile = ({ children }: any) => <div data-testid="tile">{children}</div>;
-  const Tooltip = ({ label, children }: any) => (
-    <div data-testid="tooltip">
-      {label}
-      {children}
+  const InlineNotification = ({ title, subtitle, kind, className }: any) => (
+    <div className={className}>
+      <strong>{title}</strong>
+      <p>{subtitle}</p>
+      <span>{kind}</span>
     </div>
   );
-
-  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading].forEach(c => {
+  const Button = ({ children, renderIcon, ...props }: any) => {
+    const Icon = renderIcon;
+    return (
+      <button {...props}>
+        {Icon && <Icon />}
+        {children}
+      </button>
+    );
+  };
+  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification, Button].forEach(c => {
     // @ts-ignore
     // Assigning displayName to function components for better debugging in React DevTools.
     // TypeScript does not allow this by default, so we suppress the error.
     c.displayName = c.name || 'Anonymous';
   });
   Tile.displayName = 'Tile';
-  Tooltip.displayName = 'Tooltip';
-
-  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, Tooltip, };
+  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, InlineNotification, Button };
 });
 
 beforeAll(() => {
@@ -168,9 +187,28 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(() => new URLSearchParams('from=test&tab=overview')), // Return a real URLSearchParams instance
 }));
 
+jest.mock('@/utils/artifacts', () => ({
+  handleDownload: jest.fn(),
+  cleanArtifactPath: jest.fn((path: string) => path.replace(/^\//, '')),
+}));
+
+
+const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.Mock;
+const mockHandleDownload = handleDownload as jest.Mock;
+const mockCleanArtifactPath = cleanArtifactPath as jest.Mock;
+
 
 describe('TestRunDetails', () => {
   const runId = 'run-123';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockDownloadArtifactFromServer.mockClear();
+    mockHandleDownload.mockClear();
+    mockCleanArtifactPath.mockClear();
+  });
+
 
   it('shows the skeleton while loading', async () => {
     const runDetailsDeferred = setup<any>();
@@ -309,5 +347,131 @@ describe('TestRunDetails', () => {
   
     expect(spy).toHaveBeenCalledWith(window.location.href);
     spy.mockRestore();
+  });
+
+  describe('download artifacts', () => {
+    beforeEach(() => {
+      global.fetch = jest.fn();
+    });
+    
+    afterEach(() => {
+      (global.fetch as jest.Mock).mockRestore();
+    });
+
+    test('correctly calls the zip endpoint and initiates download on success', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
+
+      // Mock the successful fetch response
+      const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        headers: {
+          get: jest.fn().mockReturnValue('attachment; filename="TestRun-from-server.zip"'),
+        },
+        blob: jest.fn().mockResolvedValue(mockBlob),
+      });
+
+      render(
+        <TestRunDetails
+          runId={runId}
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      // Resolve promises to load the component's data
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: {
+            methods: [],
+            result: 'PASS',
+            status: 'OK',
+            runName: 'TestRun',
+            testShortName: 'Test',
+            bundle: 'Bundle',
+            submissionId: 'Submission',
+            group: 'Group',
+            requestor: 'Requestor',
+            queued: '2025-01-01T00:00:00Z',
+            startTime: '2025-01-01T00:00:00Z',
+            endTime: '2025-01-01T01:00:00Z',
+            tags: [],
+          },
+        });
+        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
+        runLogDeferred.resolve('Log content');
+      });
+
+      // Act
+      const downloadButton = screen.getByTestId('icon-download-all');
+      fireEvent.click(downloadButton);
+
+      // Check for loading state
+      expect(await screen.findByText('Loading')).toBeInTheDocument();
+
+      // Wait for all async operations in handleDownloadAll to complete
+      await waitFor(() => {
+        expect(handleDownload).toHaveBeenCalled();
+      });
+
+      // Verify the correct API endpoint was called
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(
+        `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`
+      );
+      
+      expect(handleDownload).toHaveBeenCalledWith(mockBlob, 'TestRun-from-server.zip');
+      // Ensure loading state is gone
+      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+    });
+
+    test('shows an error notification if download fails', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
+
+      render(
+        <TestRunDetails
+          runId={runId}
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      // Resolve promises to load the component's data
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: {
+            methods: [],
+            result: 'PASS',
+            status: 'OK',
+            runName: 'TestRun',
+            testShortName: 'Test',
+            bundle: 'Bundle',
+            submissionId: 'Submission',
+            group: 'Group',
+            requestor: 'Requestor',
+            queued: '2025-01-01T00:00:00Z',
+            startTime: '2025-01-01T00:00:00Z',
+            endTime: '2025-01-01T01:00:00Z',
+            tags: [],
+          },
+        });
+        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
+        runLogDeferred.resolve('Log content');
+      });
+      mockDownloadArtifactFromServer.mockRejectedValue(new Error('Download failed'));
+
+      const downloadButton = screen.getByTestId('icon-download-all');
+      fireEvent.click(downloadButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/downloadError/i)).toBeInTheDocument();
+      });
+    });
   });
 });

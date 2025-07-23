@@ -12,7 +12,7 @@ import styles from '@/styles/Artifacts.module.css';
 import { CarbonIconType, CloudDownload, Document, Folder, Image, Json, Zip } from '@carbon/icons-react';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
-import { handleDownload } from '@/utils/artifacts';
+import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
 import { Button } from '@carbon/react';
 
@@ -200,17 +200,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     setTreeData(root);
   }, [artifacts]);
 
-  const cleanArtifactPath = (rawPath: string) => {
-    let cleanedPath = rawPath;
-    if (rawPath.startsWith("./")) {
-      cleanedPath = rawPath.substring(2);
-    } else if (rawPath.startsWith("/")) {
-      cleanedPath = rawPath.substring(1);
-    }
-
-    return cleanedPath;
-  };
-
   const createFolderSegments = (segments: string[], currentNode: FolderNode, artifact: ArtifactIndexEntry) => {
     return segments.forEach((segment, idx) => {
       const isLast = idx === segments.length - 1;
@@ -345,7 +334,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
                         iconDescription={translations("download_button")}
                         onClick={handleDownloadClick}
                       />
-            
                     </div>
                   </Tile>
                 )}

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { AmPm } from "./interfaces";
+import { AmPm } from "./types/common";
 
 
 export function parseIsoDateTime(isoString: string) {
