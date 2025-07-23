@@ -15,6 +15,10 @@ This is the home of the web user-interface for Galasa.
 ## To build locally
 - Run the `build-locally.sh` script
 
+#### To build locally without galasactl
+- Replace the line in build-locally.sh from `gradle --warning-mode all --info --debug generateTypeScriptClient` to `gradle --warning-mode all --info --debug -PsourceMaven="https://development.galasa.dev/main/maven-repo/obr" generateTypeScriptClient`
+- Ensure you do not commit this change as a part of your branch if you choose to do this.
+
 ## To run development server locally
 - Run the `run-locally.sh` script
 
