@@ -202,6 +202,6 @@ describe('DateTimeFormatContext', () => {
       </DateTimeFormatProvider>
     );
 
-    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('Formatted Date:');
+    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('-');
   });
 });

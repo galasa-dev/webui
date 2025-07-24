@@ -187,7 +187,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
       const structure = run.testStructure || {};
       return {
         id: run.runId,
-        submittedAt: structure.queued || 'N/A',
+        submittedAt: structure.queued || '-',
         runName: structure.runName || 'N/A',
         requestor: structure.requestor || 'N/A',
         group: structure.group || 'N/A',
