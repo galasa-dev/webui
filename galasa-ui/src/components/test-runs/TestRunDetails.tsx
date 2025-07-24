@@ -160,7 +160,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
 
   const updateUrl = (params: URLSearchParams) => {
     const newUrl = `${pathname}?${params.toString()}`;
-   // window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
     router.replace(newUrl, { scroll: false });
   };
 
@@ -189,7 +188,6 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     updateUrl(params);
   };
 
-  console.log("Search params:", searchParams.toString());
   // Read line param for LogTab from URL
   const initialLine = useMemo(() => {
     const lineParam = searchParams.get(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);

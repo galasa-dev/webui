@@ -19,9 +19,19 @@ function setup<T>() {
   return { promise, resolve, reject };
 }
 
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(() => ({
+    replace: jest.fn(),
+  })),
+  usePathname: jest.fn(() => '/test-runs/some-run-id'),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+}));
+
+
 jest.mock('@/actions/runsAction');
 
-// Mocking next-intl
+// Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, opts?: any) =>
     opts?.runName ? `title:${opts.runName}` : key,
@@ -181,11 +191,6 @@ beforeAll(() => {
   });
 });
 
-// Mock for 'next/navigation'
-jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(() => '/mock/path/run-123'), // Return a mock path
-  useSearchParams: jest.fn(() => new URLSearchParams('from=test&tab=overview')), // Return a real URLSearchParams instance
-}));
 
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
