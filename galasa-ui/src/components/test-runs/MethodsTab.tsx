@@ -143,6 +143,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
                     <TableRow 
                       key={row.id} 
                       onClick={() => onMethodClick(methodDetails[parseInt(row.id)])} 
+                      className={styles.clickableRow}
                       {...getRowProps({ row })}
                     >
                       {/* Method name */}
