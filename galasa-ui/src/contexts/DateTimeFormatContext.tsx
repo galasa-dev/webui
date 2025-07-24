@@ -73,7 +73,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
     let formattedDate: string = '';
     try {
 
-      if(!(date instanceof Date)) {
+      if(!(date instanceof Date) || isNaN(date.getTime())) {
         throw new Error("Invalid date provided to formatDate");
       }
 

@@ -13,7 +13,7 @@ import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
 import { RunMetadata } from '@/utils/interfaces';
-import { getIsoTimeDifference, parseIsoDateTime } from '@/utils/timeOperations';
+import { getIsoTimeDifference } from '@/utils/timeOperations';
 import MethodsTab from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
@@ -69,10 +69,10 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: formatDate(new Date(runDetails.testStructure?.queued!)),
-      startedAt: formatDate(new Date(runDetails.testStructure?.startTime!)),
-      finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
-      duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
+      submitted: runDetails.testStructure?.queued ? formatDate(new Date(runDetails.testStructure?.queued!)) : 'N/A',
+      startedAt: runDetails.testStructure?.startTime ? formatDate(new Date(runDetails.testStructure?.startTime!)) : 'N/A',
+      finishedAt: runDetails.testStructure?.endTime ? formatDate(new Date(runDetails.testStructure?.endTime)) : 'N/A',
+      duration: (runDetails.testStructure?.startTime && runDetails.testStructure?.endTime) ? getIsoTimeDifference(runDetails.testStructure?.startTime, runDetails.testStructure?.endTime) : 'N/A',
       tags: runDetails.testStructure?.tags!
     };
 
