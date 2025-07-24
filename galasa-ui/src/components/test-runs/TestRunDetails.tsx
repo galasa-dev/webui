@@ -6,7 +6,7 @@
 "use client";
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from "@/styles/TestRun.module.css";
 import { Dashboard, Code, CloudLogging, RepoArtifact, Share, CloudDownload } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
@@ -14,7 +14,7 @@ import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
 import { RunMetadata } from '@/utils/interfaces';
 import { getIsoTimeDifference } from '@/utils/timeOperations';
-import MethodsTab from './MethodsTab';
+import MethodsTab, { MethodDetails } from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
 import LogTab from './LogTab';
 import TestRunSkeleton from './TestRunSkeleton';
@@ -26,7 +26,8 @@ import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import {SINGLE_RUN_QUERY_PARAMS, TEST_RUN_PAGE_TABS} from '@/utils/constants/common';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -41,6 +42,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const {breadCrumbItems } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -54,7 +56,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const { formatDate } = useDateTimeFormat();
 
   // Get the selected tab index from the URL or default to the first tab
-  const [selectedTabIndex, setSelectedTabIndex] = useState(searchParams.get('tab') ? parseInt(searchParams.get('tab')!) : 0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(searchParams.get('tab') ? 
+    TEST_RUN_PAGE_TABS.indexOf(searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!) : 0);
 
   const extractRunDetails = useCallback((runDetails: Run) => {
     setMethods(runDetails.testStructure?.methods || []);
@@ -82,6 +85,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   },[runId, formatDate]);
 
   useEffect(() => {
+    // If run details are already loaded, skip fetching
+    if(run) return;
     const loadRunDetails = async () => {
       setIsLoading(true);
 
@@ -103,11 +108,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     };
 
     loadRunDetails();
-  }, [runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
-
-  if (isError) {
-    return <ErrorPage />;
-  }
+  }, [run, runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
 
   const handleShare = async () => {
     try {
@@ -157,18 +158,47 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     }
   };
 
+  const updateUrl = (params: URLSearchParams) => {
+    const newUrl = `${pathname}?${params.toString()}`;
+   // window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+    router.replace(newUrl, { scroll: false });
+  };
+
   const handleTabChange = (event: {selectedIndex : number}) => {
     const newIndex = event.selectedIndex;
     setSelectedTabIndex(newIndex);
     
     const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', newIndex.toString());
+    params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[newIndex]);
+    // When switching away from the log tab, remove the line parameter
+    if (TEST_RUN_PAGE_TABS[newIndex] !== 'runLog') {
+      params.delete(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
+    }
 
-    const newUrl = `${pathname}?${params.toString()}`;
-
-    // Update the URL without triggering a page reload/re-mount
-    window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+    updateUrl(params);
   };
+
+  // Handle method click to navigate to the log tab with the correct line number
+  const handleNavigateToLog = (method: MethodDetails) => {
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
+    setSelectedTabIndex(logTabIndex);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[logTabIndex]);
+    params.set(SINGLE_RUN_QUERY_PARAMS.LOG_LINE, method.runLogStartLine.toString());
+    updateUrl(params);
+  };
+
+  console.log("Search params:", searchParams.toString());
+  // Read line param for LogTab from URL
+  const initialLine = useMemo(() => {
+    const lineParam = searchParams.get(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
+    return lineParam ? parseInt(lineParam, 10) : 0;
+  }, [searchParams]);
+
+  if (isError) {
+    return <ErrorPage />;
+  }
 
   return (
     <main id="content">
@@ -244,10 +274,16 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
                 <OverviewTab metadata={run!} />
               </TabPanel>
               <TabPanel>
-                <MethodsTab methods={methods} />
+                <MethodsTab 
+                  methods={methods} 
+                  onMethodClick={handleNavigateToLog}
+                />
               </TabPanel>
               <TabPanel>
-                <LogTab logs={logs} />
+                <LogTab 
+                  logs={logs} 
+                  initialLine={initialLine}
+                />
               </TabPanel>
               <TabPanel>
                 <ArtifactsTab

@@ -106,7 +106,7 @@ jest.mock('@/utils/constants/common', () => ({
     STATUS: 'status',
     RESULT: 'result',
     TAGS: 'tags',
-  },  RUN_QUERY_PARAMS: {
+  },  TEST_RUNS_QUERY_PARAMS: {
     FROM: 'from',
     TO: 'to',
     RUN_NAME: 'runName',

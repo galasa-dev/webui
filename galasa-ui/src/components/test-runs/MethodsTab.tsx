@@ -37,10 +37,14 @@ export interface MethodDetails {
   status: string;
   result: string;
   runLogStartLine: number;
-  runLogEndLine: number;
 }
 
-function MethodsTab({ methods }: { methods: TestMethod[] }) {
+interface MethodsTabProps {
+  methods: TestMethod[];
+  onMethodClick: (method: MethodDetails) => void;
+}
+
+function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
   const translations = useTranslations("MethodsTab");
 
   const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
@@ -56,7 +60,6 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
         status: method.status || "",
         result: method.result || "",
         runLogStartLine: method.runLogStart || 0,
-        runLogEndLine: method.runLogEnd || 0,
       };
 
       methodDetails.push(methodDetail);
@@ -89,11 +92,6 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
   useEffect(() => {
     extractMethods(methods);
   }, [methods]);
-
-  const handleMethodClick = (method: MethodDetails) => {
-
-
-  };
 
   return (
     <>
@@ -144,7 +142,9 @@ function MethodsTab({ methods }: { methods: TestMethod[] }) {
                   return (
                     <TableRow 
                       key={row.id} 
-                      {...getRowProps({ row })}>
+                      onClick={() => onMethodClick(methodDetails[parseInt(row.id)])} 
+                      {...getRowProps({ row })}
+                    >
                       {/* Method name */}
                       <TableCell key={row.cells[0].id}>
                         <p>{row.cells[0].value}</p>
