@@ -13,11 +13,15 @@
 }
 
 .logContainer {
-  margin: 1rem 0;
+  position: sticky;
+  top: 45px;
+  z-index: 10;
+  background: var(--cds-background, white);
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  
 }
 
 .searchContainer {
@@ -78,7 +82,7 @@
   border-radius: var(--border-radius);
   padding: 1rem;
   font-family: 'IBM Plex Mono', monospace;
-  height: 60vh;
+  height: 100vh;
   overflow-y: auto;
 }
 
