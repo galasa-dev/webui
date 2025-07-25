@@ -651,7 +651,7 @@ describe('TestRunsTabs Component', () => {
 
     const defaultTransformedRun = {
       bundle: "N/A", group: "N/A", package: "N/A", result: "N/A", submissionId: "N/A",
-      submittedAt: "N/A", testName: "N/A", runName: "N/A"
+      submittedAt: "-", testName: "N/A", runName: "N/A"
     };
 
     beforeEach(() => {

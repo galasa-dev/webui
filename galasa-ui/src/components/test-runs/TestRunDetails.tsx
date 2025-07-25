@@ -74,10 +74,10 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
       requestor: runDetails.testStructure?.requestor!,
       rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: formatDate(new Date(runDetails.testStructure?.queued!)),
-      startedAt: formatDate(new Date(runDetails.testStructure?.startTime!)),
-      finishedAt: formatDate(new Date(runDetails.testStructure?.endTime!)),
-      duration: getIsoTimeDifference(runDetails.testStructure?.startTime!, runDetails.testStructure?.endTime!),
+      submitted: runDetails.testStructure?.queued ? formatDate(new Date(runDetails.testStructure?.queued!)) : '-',
+      startedAt: runDetails.testStructure?.startTime ? formatDate(new Date(runDetails.testStructure?.startTime!)) : '-',
+      finishedAt: runDetails.testStructure?.endTime ? formatDate(new Date(runDetails.testStructure?.endTime)) : '-',
+      duration: (runDetails.testStructure?.startTime && runDetails.testStructure?.endTime) ? getIsoTimeDifference(runDetails.testStructure?.startTime, runDetails.testStructure?.endTime) : '-',
       tags: runDetails.testStructure?.tags!
     };
 
