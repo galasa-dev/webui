@@ -106,7 +106,7 @@ jest.mock('@/utils/constants/common', () => ({
     STATUS: 'status',
     RESULT: 'result',
     TAGS: 'tags',
-  },  RUN_QUERY_PARAMS: {
+  },  TEST_RUNS_QUERY_PARAMS: {
     FROM: 'from',
     TO: 'to',
     RUN_NAME: 'runName',
@@ -651,7 +651,7 @@ describe('TestRunsTabs Component', () => {
 
     const defaultTransformedRun = {
       bundle: "N/A", group: "N/A", package: "N/A", result: "N/A", submissionId: "N/A",
-      submittedAt: "N/A", testName: "N/A", runName: "N/A"
+      submittedAt: "-", testName: "N/A", runName: "N/A"
     };
 
     beforeEach(() => {
@@ -780,9 +780,9 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
 
-        const expectedDateRun2 = new Date('2023-10-02T12:00:00Z').toLocaleString().replace(',', '');
-        const expectedDateRun3 = new Date('2023-10-03T12:00:00Z').toLocaleString().replace(',', '');
-        const expectedDateRun1 = new Date('2023-10-11T12:00:00Z').toLocaleString().replace(',', '');
+        const expectedDateRun2 = '2023-10-02T12:00:00Z';
+        const expectedDateRun3 = '2023-10-03T12:00:00Z';
+        const expectedDateRun1 = '2023-10-11T12:00:00Z';
 
         expect(lastCallArgs.runsList).toEqual([
           { ...defaultTransformedRun, id: '2', submittedAt: expectedDateRun2, runName: 'Run B', status: 'Failed', requestor: 'B User', tags: 'B tag' },

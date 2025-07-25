@@ -19,6 +19,7 @@ import { InlineNotification } from '@carbon/react';
 import { deleteUserFromService } from '@/actions/userServerActions';
 import { DataTableCell, DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,7 @@ interface UsersTableProps {
 
 export default function UsersTable({ usersListPromise, currentUserPromise }: UsersTableProps) {
   const translations = useTranslations('usersTable');
+  const {formatDate} = useDateTimeFormat();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -89,16 +91,12 @@ If the user logs in to the Galasa service after this point, they will be challen
         );
 
         // Format the dates if the clients were found.
-        if (webClient) {
-          formattedLastLogin = new Intl.DateTimeFormat("en-GB").format(
-            webClient.lastLogin
-          );
+        if (webClient && webClient.lastLogin) {
+          formattedLastLogin = formatDate(webClient.lastLogin).split(',')[0];
         }
 
-        if (restApiClient) {
-          formattedLastAccessTokenUse = new Intl.DateTimeFormat("en-GB").format(
-            restApiClient.lastLogin
-          );
+        if (restApiClient && restApiClient.lastLogin) {
+          formattedLastAccessTokenUse = formatDate(restApiClient.lastLogin).split(',')[0];
         }
       }
 

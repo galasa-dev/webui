@@ -15,6 +15,7 @@ const mockGetRasSearchRuns = jest.fn();
 // Mock the API client library to return our mock implementation
 jest.mock('@/generated/galasaapi', () => {
   const originalModule = jest.requireActual('@/generated/galasaapi');
+
   return {
     ...originalModule,
     ResultArchiveStoreAPIApi: jest.fn().mockImplementation(() => ({

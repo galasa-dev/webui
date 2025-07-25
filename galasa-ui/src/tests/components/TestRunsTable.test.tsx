@@ -27,6 +27,13 @@ jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
   }),
 }));
 
+// Mock the useDateTimeFormat context
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    formatDate: (date: Date) => date.toLocaleString(), 
+  })
+}));
+
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {

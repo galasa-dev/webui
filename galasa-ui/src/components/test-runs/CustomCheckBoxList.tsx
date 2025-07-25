@@ -11,7 +11,7 @@ import {
 } from "@carbon/react";
 import { Button } from "@carbon/react";
 import { useTranslations } from "next-intl";
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 
 interface CheckBoxListProps {
     title: string;

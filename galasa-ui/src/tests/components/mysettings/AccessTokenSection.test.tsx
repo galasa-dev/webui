@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import AccessTokensSection from '@/components/AccessTokensSection';
+import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import { AuthTokens } from '@/generated/galasaapi';
 
 // Mock Carbon components
