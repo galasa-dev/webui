@@ -142,8 +142,11 @@ function generate_rest_client {
     fi
 
     # Set default SOURCE_MAVEN to development URL if not provided
-    SOURCE_MAVEN="${SOURCE_MAVEN:-https://development.galasa.dev/main/maven-repo/obr}"
-    
+    if [[ -z SOURCE_MAVEN ]]; then
+        SOURCE_MAVEN="https://development.galasa.dev/main/maven-repo/obr"
+        warn "SOURCE_MAVEN env not set, defaulting to $SOURCE_MAVEN"
+    fi
+
     # Execute Gradle command with SOURCE_MAVEN passed as a Gradle property
     gradle --warning-mode all --info --debug \
       -PsourceMaven="$SOURCE_MAVEN" \
