@@ -28,3 +28,20 @@
     gap: 0.5rem;
     text-transform: capitalize;
 }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+.buttonContainer{
+    display: flex;
+    margin-right: 3rem;
+}
+
+.notification {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}

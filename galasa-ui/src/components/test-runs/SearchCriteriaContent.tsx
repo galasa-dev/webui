@@ -12,11 +12,10 @@ import {
   StructuredListRow, 
   StructuredListBody,
 } from "@carbon/react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import CustomSearchComponent from "./CustomSearchComponent";
 import CustomCheckBoxList from "./CustomCheckBoxList";
-import {RUN_QUERY_PARAMS, TEST_RUNS_STATUS} from "@/utils/constants/common";
+import {TEST_RUNS_QUERY_PARAMS, TEST_RUNS_STATUS} from "@/utils/constants/common";
 import CustomTagsComponent from "./CustomTagsComponent";
 import { useTranslations } from "next-intl";
 import { Button } from "@carbon/react";
@@ -31,58 +30,42 @@ interface FilterableField {
 interface SearchCriteriaContentProps {
   requestorNamesPromise: Promise<string[]>;
   resultsNamesPromise: Promise<string[]>;
+  searchCriteria: Record<string, string>;
+  setSearchCriteria: (criteria: Record<string, string>) => void;
 }
 
 
-export default function SearchCriteriaContent({requestorNamesPromise, resultsNamesPromise}: SearchCriteriaContentProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export default function SearchCriteriaContent({
+  requestorNamesPromise, 
+  resultsNamesPromise,
+  searchCriteria,
+  setSearchCriteria 
+}: SearchCriteriaContentProps) {
+
   const translations = useTranslations("SearchCriteriaContent");
 
-
   const filterableFields: FilterableField[] = [
-    {id: RUN_QUERY_PARAMS.RUN_NAME, label: translations("fields.runName.label"), placeHolder: 'any', description: translations("fields.runName.description")},
-    {id: RUN_QUERY_PARAMS.REQUESTOR, label: translations("fields.requestor.label"), placeHolder: 'any', description: translations("fields.requestor.description")},
-    {id: RUN_QUERY_PARAMS.GROUP, label: translations("fields.group.label"), placeHolder: 'any', description: translations("fields.group.description")},
-    {id: RUN_QUERY_PARAMS.BUNDLE, label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
-    {id: RUN_QUERY_PARAMS.SUBMISSION_ID, label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
-    {id: RUN_QUERY_PARAMS.TEST_NAME, label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
-    {id: RUN_QUERY_PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'any', description: translations("fields.status.description")},
-    {id: RUN_QUERY_PARAMS.TAGS, label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
-    {id: RUN_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'any', description: translations("fields.result.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.RUN_NAME, label: translations("fields.runName.label"), placeHolder: 'any', description: translations("fields.runName.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.REQUESTOR, label: translations("fields.requestor.label"), placeHolder: 'any', description: translations("fields.requestor.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.GROUP, label: translations("fields.group.label"), placeHolder: 'any', description: translations("fields.group.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.BUNDLE, label: translations("fields.bundle.label"), placeHolder: 'any', description: translations("fields.bundle.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID, label: translations("fields.submissionId.label"), placeHolder: 'any', description: translations("fields.submissionId.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.TEST_NAME, label: translations("fields.testName.label"), placeHolder: 'any', description: translations("fields.testName.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.STATUS, label: translations("fields.status.label"), placeHolder: 'any', description: translations("fields.status.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.TAGS, label: translations("fields.tags.label"), placeHolder: 'any', description: translations("fields.tags.description")},
+    {id: TEST_RUNS_QUERY_PARAMS.RESULT, label: translations("fields.result.label"), placeHolder: 'any', description: translations("fields.result.description")},
   ];
 
+  // Local state for the UI of the "currently selected" filter editor
   const [selectedFilterId, setSelectedFilterId] = useState(filterableFields[0].id);
   const [currentInputValue, setCurrentInputValue] = useState('');
-  const [allRequestors, setAllRequestors] = useState<string[]>([]);
-  const [resultsNames, setResultsNames] = useState<string[]>([]);
   const [selectedResults, setSelectedResults] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Initialize the saved query state directly from the URL
-  const [query, setQuery] = useState(() => {
-    const initialQuery : Map<string, string> = new Map();
-    filterableFields.forEach(field => {
-      const value = searchParams.get(field.id);
-      if (value) {
-        // Set the value in the initial query map
-        initialQuery.set(field.id, value);
-
-        // If the field is 'result' or 'status' or 'tags', split the value into an array and set the corresponding state
-        if (field.id === RUN_QUERY_PARAMS.RESULT) {
-          setSelectedResults(value.split(','));
-        } else if (field.id === RUN_QUERY_PARAMS.STATUS) {
-          setSelectedStatuses(value.split(','));
-        } else if (field.id === RUN_QUERY_PARAMS.TAGS) {
-          setSelectedTags(value.split(','));
-        } 
-      } 
-    });
-
-    return initialQuery;
-  });
+  // State of fetched data
+  const [allRequestors, setAllRequestors] = useState<string[]>([]);
+  const [resultsNames, setResultsNames] = useState<string[]>([]);
 
   // Fetch all requestors on mount 
   useEffect(() => {
@@ -97,7 +80,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     loadRequestors();
   }, [requestorNamesPromise]);
 
-  // Get all results names
+  // Fetch results names on mount
   useEffect(() => {
     const loadResultsNames = async () => {
       try {
@@ -110,73 +93,55 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     loadResultsNames();
   }, [resultsNamesPromise]);
 
-  // Update the current input value on the first mount or when the selected filter changes
-  useEffect(() => {
-    handleFilterSelect(selectedFilterId);
-  }, [selectedFilterId]);
-
-
-  // Update the current input value when the selected filter changes or when the query is updated
-  const handleFilterSelect = (fieldId: string) => {
+  // Sync the local UI state with the saved value from props (Source: URL)
+  const handleFilterSelect = useCallback((fieldId: string) => {
     setSelectedFilterId(fieldId);
-    const savedValue = query.get(fieldId) || '';
+    const savedValue = searchCriteria[fieldId] || '';
 
     // Update the local UI state to match the newly selected filter's saved value
     setCurrentInputValue(savedValue);
 
     const splitSavedValue = savedValue ? savedValue.split(',') : [];
-    if (fieldId === RUN_QUERY_PARAMS.RESULT) {
+    if (fieldId === TEST_RUNS_QUERY_PARAMS.RESULT) {
       setSelectedResults(splitSavedValue);
-    } else if (fieldId === RUN_QUERY_PARAMS.STATUS) {
+    } else if (fieldId === TEST_RUNS_QUERY_PARAMS.STATUS) {
       setSelectedStatuses(splitSavedValue);
-    } else if (fieldId === RUN_QUERY_PARAMS.TAGS) {
+    } else if (fieldId === TEST_RUNS_QUERY_PARAMS.TAGS) {
       setSelectedTags(splitSavedValue);
     }
-  };
+  }, [searchCriteria]);
 
-  const updateQueryAndUrl = (newQuery: Map<string, string>) => {
-    // Update the component's query state
-    setQuery(newQuery);
-  
-    // Synchronize the browser's URL with the new query
-    const params = new URLSearchParams(searchParams.toString());
-    filterableFields.forEach(field => {
-      if (newQuery.has(field.id)) {
-        params.set(field.id, newQuery.get(field.id)!);
-      } else {
-        params.delete(field.id);
-      }
-    });
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
+  // Update the current input value on the first mount or when the selected filter changes
+  useEffect(() => {
+    handleFilterSelect(selectedFilterId);
+  }, [selectedFilterId, handleFilterSelect]);
 
   const handleSave = (event: FormEvent) => {
     event.preventDefault();
 
     // Determine the new value for the currently selected filter
     let valueToSet = '';
-    if (selectedFilterId === RUN_QUERY_PARAMS.RESULT) {
+    if (selectedFilterId === TEST_RUNS_QUERY_PARAMS.RESULT) {
       valueToSet = selectedResults.join(',');
-    } else if (selectedFilterId === RUN_QUERY_PARAMS.STATUS) {
+    } else if (selectedFilterId === TEST_RUNS_QUERY_PARAMS.STATUS) {
       valueToSet = selectedStatuses.join(',');
-    } else if (selectedFilterId === RUN_QUERY_PARAMS.TAGS) {
+    } else if (selectedFilterId === TEST_RUNS_QUERY_PARAMS.TAGS) {
       valueToSet = selectedTags.join(',');
     } else {
       valueToSet = currentInputValue.trim();
     }
 
-    const newQuery = new Map(query);
+    const newCriteria = {...searchCriteria};
 
     // If the new value is not empty, set it. Otherwise, delete the key.
     if (valueToSet) {
-      newQuery.set(selectedFilterId, valueToSet);
+      newCriteria[selectedFilterId] = valueToSet;
     } else {
-      // If the value is empty, remove the key from the query
-      newQuery.delete(selectedFilterId);
+      delete newCriteria[selectedFilterId];
     }
 
-    // Update the URL with the new query parameters and set the query state
-    updateQueryAndUrl(newQuery);
+    // Call parent to update state and URL
+    setSearchCriteria(newCriteria);
   };
 
 
@@ -190,10 +155,10 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
       setCurrentInputValue('');
     }
   
-    const newQuery = new Map(query);
-    if (newQuery.has(fieldId)) {
-      newQuery.delete(fieldId); 
-      updateQueryAndUrl(newQuery);
+    const newCriteria = { ...searchCriteria };
+    if (newCriteria[fieldId]) {
+      delete newCriteria[fieldId]; 
+      setSearchCriteria(newCriteria);
     }
   };
 
@@ -204,14 +169,14 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     setSelectedTags([]);
     setSelectedStatuses([]);
 
-    // Update the query with default empty states
-    updateQueryAndUrl(new Map());
+    // Call parent to clear all search criteria
+    setSearchCriteria({});
   };
 
   // Determine if the Save and Reset button should be disabled
   const isSaveAndResetDisabled: boolean = (() => {
     // Get saved value from the query and compare it with the current input value
-    const savedValue = query.get(selectedFilterId) || '';
+    const savedValue = searchCriteria[selectedFilterId] || '';
     let isDisabled = false;
 
     const splitSavedValue = savedValue ? savedValue.split(',').sort() : [];
@@ -262,14 +227,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     // Props for the checkbox list component
     const checkboxProps = {
       title: field.description,
-      items: (field.id === RUN_QUERY_PARAMS.RESULT) ? resultsNames : TEST_RUNS_STATUS,
-      selectedItems: (field.id === RUN_QUERY_PARAMS.RESULT) ? selectedResults : selectedStatuses,
-      onChange: (field.id === RUN_QUERY_PARAMS.RESULT) ? setSelectedResults : setSelectedStatuses, 
+      items: (field.id === TEST_RUNS_QUERY_PARAMS.RESULT) ? resultsNames : Object.values(TEST_RUNS_STATUS),
+      selectedItems: (field.id === TEST_RUNS_QUERY_PARAMS.RESULT) ? selectedResults : selectedStatuses,
+      onChange: (field.id === TEST_RUNS_QUERY_PARAMS.RESULT) ? setSelectedResults : setSelectedStatuses, 
       onSubmit: handleSave,
       onCancel: handleCancel,
       disableSaveAndReset: isSaveAndResetDisabled,
     };
 
+    // Props for the tags component 
     const tagsProps = {
       title: field.description,
       tags: selectedTags,
@@ -281,15 +247,15 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
 
     let customComponent;
     switch (field.id) {
-    case RUN_QUERY_PARAMS.REQUESTOR:
+    case TEST_RUNS_QUERY_PARAMS.REQUESTOR:
       customComponent = <CustomSearchComponent {...searchProps}
         allRequestors={allRequestors} />;
       break;
-    case RUN_QUERY_PARAMS.RESULT:
-    case RUN_QUERY_PARAMS.STATUS:
+    case TEST_RUNS_QUERY_PARAMS.RESULT:
+    case TEST_RUNS_QUERY_PARAMS.STATUS:
       customComponent = <CustomCheckBoxList {...checkboxProps} />;
       break;
-    case RUN_QUERY_PARAMS.TAGS:
+    case TEST_RUNS_QUERY_PARAMS.TAGS:
       customComponent = <CustomTagsComponent {...tagsProps} />;
       break;
     default:
@@ -299,13 +265,23 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
     return customComponent;
   };
 
-  const isClearFiltersDisabled = query.size === 0;
+  const isClearFiltersDisabled = Object.keys(searchCriteria).length === 0;
   const selectedFilterField = filterableFields.find(field => field.id === selectedFilterId) || filterableFields[0];
 
 
   return (
     <div>
       <p>{translations('description')}</p>
+      <div className={styles.resetToDefaultsButtonContainerSearchCriteria}>
+        <Button 
+          type="button"
+          kind="secondary"
+          onClick={handleResetToDefaults}
+          disabled={isClearFiltersDisabled}
+        >
+          {translations("clearFilters")}
+        </Button>
+      </div>
       <div className={styles.searchCriteriaContainer}>
         <div className={styles.structuredListContainer}>
           <StructuredListWrapper selection>
@@ -326,7 +302,7 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
                     className={`${styles.rowWrapper} ${selectedFilterId === field.id ? styles.selectedRow : ''}`}
                   >
                     <StructuredListCell>{field.label}</StructuredListCell>
-                    <StructuredListCell>{query.get(field.id) || field.placeHolder}</StructuredListCell>
+                    <StructuredListCell>{searchCriteria[field.id] || field.placeHolder}</StructuredListCell>
                   </div>
                 </StructuredListRow>
               ))}
@@ -335,15 +311,6 @@ export default function SearchCriteriaContent({requestorNamesPromise, resultsNam
         </div>
         {renderComponent(selectedFilterField)}
       </div>
-      <Button 
-        type="button"
-        kind="secondary"
-        className={styles.resetToDefaultsButton}
-        onClick={handleResetToDefaults}
-        disabled={isClearFiltersDisabled}
-      >
-        {translations("clearFilters")}
-      </Button>
     </div>
   );
 };

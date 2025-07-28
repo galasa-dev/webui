@@ -34,6 +34,17 @@
       "internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
     }
   },
+  "DateTimeFormatSection": {
+    "title": "Datums-/Zeitformat",
+    "description": "Konfigurieren Sie das Format zur Anzeige von Datum und Uhrzeit.",
+    "dateTimeFormat": "Datums-/Zeitformat",
+    "showDatesInBrowserLocale": "Datum und Uhrzeit basierend auf der Browsersprache anzeigen",
+    "showDatesInCustomLocale": "Datum und Uhrzeit in einem benutzerdefinierten Format anzeigen",
+    "selectLocale": "Sprache auswählen",
+    "selectTimeFormat": "Zeitformat auswählen",
+    "12-hour": "12-Stunden-Format",
+    "24-hour": "24-Stunden-Format"
+  },
   "AccessTokensSection": {
     "title": "Zugriffstoken",
     "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, der von einem Client-Programm gehalten wird, um Zugriff auf den Galasa-Dienst zu erhalten.",
@@ -204,6 +215,11 @@
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
     "status": "Status",
+    "copymessage": "Seiten-URL kopieren",
+    "copiedmessage": "Kopiert",
+    "downloadArtifacts": "Alle Artefakte herunterladen",
+    "downloading": "Herunterladen...",
+    "downloadError": "Fehler beim Herunterladen der Artefakte. Bitte versuchen Sie es später erneut.",
     "result": "Ergebnis",
     "test": "Test",
     "tabs": {
@@ -211,7 +227,8 @@
       "methods": "Methoden",
       "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
-    }
+    },
+    "errorTitle": "Fehler"
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -376,7 +393,8 @@
     "showHideHeader": "Spalten ein-/ausblenden",
     "warning": "Warnung",
     "noColumnsSelected": "Keine Spalten ausgewählt – nichts anzuzeigen. Bitte wählen Sie eine oder mehrere Spalten aus",
-    "sortOrderHeader": "Sortierreihenfolge"
+    "sortOrderHeader": "Sortierreihenfolge",
+    "resetToDefaults": "Auf Standard zurücksetzen"
   },
   "TableDesignRow": {
     "dragAndDropLabel": "Ziehen zum Neuordnen",

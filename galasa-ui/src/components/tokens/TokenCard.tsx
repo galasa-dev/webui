@@ -10,21 +10,23 @@ import { Password } from "@carbon/icons-react";
 import { SelectableTile } from "@carbon/react";
 import { AuthToken } from "@/generated/galasaapi";
 import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
+import { useMemo } from "react";
 
 function TokenCard({token, selectTokenForDeletion} : {token : AuthToken, selectTokenForDeletion: Function}){
   const translations = useTranslations("TokenCard");
-  //The token creation time receieved from the API is: e.g 2024-09-25T10:02:55.732580Z
-  // Splitting at "translations" will give us the date part of the creationTime ---> split = [2024-09-25 , 10:02:55.732580Z]
-  // split[0] ---> 2024-09-25
-  const trimmedTime = token.creationTime!.split("translations");
-
+  const {formatDate} = useDateTimeFormat();
+  const formattedDate = useMemo(() => {
+    return formatDate(new Date(token.creationTime!));
+  }, [token.creationTime, formatDate]);
+  
   return (
     <SelectableTile onClick={() => selectTokenForDeletion(token.tokenId)} value={true} key={token.tokenId} className={styles.cardContainer}>
       <h5>{token.description}</h5>
 
       <div className={styles.infoContainer}>
         <h6>
-          {translations("createdAt")} {trimmedTime[0]}
+          {translations("createdAt")} {formattedDate}
         </h6>
         <h6>
           {translations("owner")} {token.owner?.loginId}

@@ -34,6 +34,17 @@
       "internationalization": "Internationalization/Multiple language support"
     }
   },
+  "DateTimeFormatSection": {
+    "title": "Date/Time Format",
+    "description": "Configure the format for displaying date and time.",
+    "dateTimeFormat": "Date/Time Format",
+    "showDatesInBrowserLocale": "Show dates and times based on the browser locale",
+    "showDatesInCustomLocale": "Show dates and times in a custom format",
+    "selectLocale": "Select a locale",
+    "selectTimeFormat": "Select a time format",
+    "12-hour": "12-hour",
+    "24-hour": "24-hour"
+  },
   "AccessTokensSection": {
     "title": "Access Tokens",
     "descriptionline1": "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.",
@@ -203,6 +214,11 @@
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
+    "copymessage":"Copy page URL",
+    "copiedmessage":"Copied",
+    "downloadArtifacts": "Download all artifacts",
+    "downloading": "Downloading...",
+    "downloadError": "Failed to download artifacts. Please try again later.",
     "status": "Status",
     "result": "Result",
     "test": "Test",
@@ -211,7 +227,8 @@
       "methods": "Methods",
       "runLog": "Run Log",
       "artifacts": "Artifacts"
-    }
+    },
+    "errorTitle": "Error"
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -376,7 +393,8 @@
     "showHideHeader": "Show/Hide Columns",
     "warning": "Warning",
     "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
-    "sortOrderHeader": "Sort Order"
+    "sortOrderHeader": "Sort Order",
+    "resetToDefaults": "Reset to Defaults"
   }, 
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",

@@ -9,7 +9,6 @@ import { render, screen } from '@testing-library/react';
 import OverviewTab from '@/components/test-runs/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
 import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
-import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 
 // Mock the Carbon Tag component to simplify assertions
 jest.mock('@carbon/react', () => ({

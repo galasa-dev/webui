@@ -31,7 +31,7 @@ jest.mock('@/components/users/UserRoleSection', () => {
   };
 });
 
-jest.mock('@/components/AccessTokensSection', () => {
+jest.mock('@/components/mysettings/AccessTokensSection', () => {
   return function MockAccessTokensSection({ 
     accessTokensPromise, 
     isAddBtnVisible 

@@ -4,10 +4,5 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-.titleContainer {
-  margin-bottom: 1rem;
-}
-
-.clickableRow {
-  cursor: pointer;
-}
+export type AmPm = 'AM' | 'PM';
+export type sortOrderType = 'asc' | 'desc' | 'none';

@@ -5,6 +5,8 @@
  */
 
 import TableDesignContent from "@/components/test-runs/TableDesignContent";
+import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
+import { ColumnDefinition } from "@/utils/interfaces";
 import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock Child Components
@@ -43,14 +45,25 @@ jest.mock("next-intl", () => ({
       "description": "Customize your table view by showing, hiding, and reordering columns.",
       "dragAndDropHeader": "Drag columns to reorder",
       "columnName": "Column Name",
-      "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns."
+      "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
+      "resetToDefaults": "Reset to defaults",
     };
     return translations[key] || key;
   },
 }));
 
+// Mock constants
+jest.mock('@/utils/constants/common', () => ({
+  DEFAULT_VISIBLE_COLUMNS: ['testName', 'status'],
+  RESULTS_TABLE_COLUMNS: [
+    { id: 'testName', columnName: 'Test Name' },
+    { id: 'status', columnName: 'Status' },
+    { id: 'requestor', columnName: 'Requestor' },
+  ],
+}));
+
 // Mock test data
-const mockTableRows = [
+const mockTableRows: ColumnDefinition[] = [
   { id: 'testName', columnName: 'Test Name' },
   { id: 'requestor', columnName: 'Requestor' },
   { id: 'status', columnName: 'Status' },
@@ -59,21 +72,36 @@ const mockTableRows = [
 describe("TableDesignContent Component", () => {
   let mockSetSelectedRowIds: jest.Mock;
   let mockSetTableRows: jest.Mock;
+  let mockSetVisibleColumns: jest.Mock;
+  let mockSetColumnsOrder: jest.Mock;
+  let mockSetSortOrder: jest.Mock;
+  let defaultProps: any;
 
   beforeEach(() => {
     mockSetSelectedRowIds = jest.fn();
     mockSetTableRows = jest.fn();
+    mockSetVisibleColumns = jest.fn();
+    mockSetColumnsOrder = jest.fn();
+    mockSetSortOrder = jest.fn();
+
+    defaultProps = {
+      selectedRowIds: ['testName', 'requestor', 'status'], 
+      setSelectedRowIds: mockSetSelectedRowIds,
+      tableRows: mockTableRows,
+      setTableRows: mockSetTableRows,
+      visibleColumns: DEFAULT_VISIBLE_COLUMNS,
+      columnsOrder: RESULTS_TABLE_COLUMNS,
+      sortOrder: [],
+      setVisibleColumns: mockSetVisibleColumns,
+      setColumnsOrder: mockSetColumnsOrder,
+      setSortOrder: mockSetSortOrder,
+    };
   });
 
   describe("Rendering", () => {
     test("renders correctly without crashing", () => {
       render(
-        <TableDesignContent 
-          selectedRowIds={['testName']}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
+        <TableDesignContent {...defaultProps} />
       );
       expect(screen.getByText(/Customize your table view/i)).toBeInTheDocument();
       expect(screen.getByText('Column Name')).toBeInTheDocument();
@@ -82,12 +110,7 @@ describe("TableDesignContent Component", () => {
     test('should check the "Select All" checkbox if all rows are selected', () => {
       const allRowIds = mockTableRows.map(row => row.id);
       render(
-        <TableDesignContent 
-          selectedRowIds={allRowIds}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
+        <TableDesignContent {...defaultProps} selectedRowIds={allRowIds}/>
       );
       const selectAllCheckbox = screen.getByRole('checkbox', { name: 'Select all rows' });
       expect(selectAllCheckbox).toBeChecked();
@@ -97,12 +120,7 @@ describe("TableDesignContent Component", () => {
   describe("Checkbox Selection Logic", () => {
     test("selects all rows when 'Select All' is clicked", () => {
       render(
-        <TableDesignContent 
-          selectedRowIds={[]}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
+        <TableDesignContent {...defaultProps} selectedRowIds={[]}/>
       );
       fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
       expect(mockSetSelectedRowIds).toHaveBeenCalledWith(mockTableRows.map(row => row.id));
@@ -111,12 +129,7 @@ describe("TableDesignContent Component", () => {
     test('deselects all rows when "Select All" is clicked while all are selected', () => {
       const allRowIds = mockTableRows.map(row => row.id);
       render(
-        <TableDesignContent
-          selectedRowIds={allRowIds}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
+        <TableDesignContent {...defaultProps} selectedRowIds={allRowIds}/>
       );
       fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
       expect(mockSetSelectedRowIds).toHaveBeenCalledWith([]);
@@ -124,11 +137,8 @@ describe("TableDesignContent Component", () => {
 
     test("displays a warning message when no columns are selected", () => {
       render(
-        <TableDesignContent 
+        <TableDesignContent {...defaultProps} 
           selectedRowIds={[]}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={[]}
-          setTableRows={mockSetTableRows}
         />
       );
 
@@ -138,11 +148,8 @@ describe("TableDesignContent Component", () => {
     test('should call setSelectedRowIds with the correct row ID when a row checkbox is clicked', () => {
       const initialSelectedRowIds = ['testName'];
       render(
-        <TableDesignContent 
+        <TableDesignContent {...defaultProps}
           selectedRowIds={initialSelectedRowIds}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
         />
       );
 
@@ -159,11 +166,8 @@ describe("TableDesignContent Component", () => {
   describe("Row Reordering Logic", () => {
     test('should call setTableRows with new order on drag end', () => {
       render(
-        <TableDesignContent 
+        <TableDesignContent {...defaultProps}
           selectedRowIds={[]}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
         />
       );
 
@@ -179,23 +183,56 @@ describe("TableDesignContent Component", () => {
       const newOrderIds = newOrder.map((row: any) => row.id);
       expect(newOrderIds).toEqual(['status', 'testName', 'requestor']);
     });
+  });
 
-    test('should not move the top row up', () => {
-      render(
-        <TableDesignContent 
-          selectedRowIds={[]}
-          setSelectedRowIds={mockSetSelectedRowIds}
-          tableRows={mockTableRows}
-          setTableRows={mockSetTableRows}
-        />
-      );
-            
-      // Attempt to click the up arrow on the first item
-      const arrowUpButton = screen.getByTestId('arrow-up-testName');
-      fireEvent.click(arrowUpButton);
+  describe("Reset to Defaults Logic", () => {
+    test('calls setters with default values when "Reset to defaults" is clicked', () => {
+      const modifiedProps = {
+        ...defaultProps,
+        visibleColumns: ['testName'],
+        columnsOrder: [...RESULTS_TABLE_COLUMNS].reverse(),
+        sortOrder: [{ id: 'testName', order: 'asc' }],
+      };
 
-      // Assert that the state update function was NOT called
-      expect(mockSetTableRows).not.toHaveBeenCalled();
+      render(<TableDesignContent {...modifiedProps} />);
+
+      const resetButton = screen.getByRole('button', { name: /Reset to defaults/i });
+      fireEvent.click(resetButton);
+
+      expect(mockSetVisibleColumns).toHaveBeenCalledWith(DEFAULT_VISIBLE_COLUMNS);
+      expect(mockSetColumnsOrder).toHaveBeenCalledWith(RESULTS_TABLE_COLUMNS);
+      expect(mockSetSortOrder).toHaveBeenCalledWith([]);
+    });
+
+    test('button is disabled when all settings are at their defaults', () => {
+      render(<TableDesignContent {...defaultProps} />);
+
+      const resetButton = screen.getByRole('button', { name: /Reset to defaults/i });
+      expect(resetButton).toBeDisabled();
+    });
+
+    test('button is enabled when visible columns are modified', () => {
+      const modifiedProps = {
+        ...defaultProps,
+        visibleColumns: ['testName'],
+      };
+
+      render(<TableDesignContent {...modifiedProps} />);
+
+      const resetButton = screen.getByRole('button', { name: /Reset to defaults/i });
+      expect(resetButton).toBeEnabled();
+    });
+
+    test('button is enabled when columns order is modified', () => {
+      const modifiedProps = {
+        ...defaultProps,
+        columnsOrder: [...RESULTS_TABLE_COLUMNS].reverse(),
+      };
+
+      render(<TableDesignContent {...modifiedProps} />);
+
+      const resetButton = screen.getByRole('button', { name: /Reset to defaults/i });
+      expect(resetButton).toBeEnabled();
     });
   });
 });

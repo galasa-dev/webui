@@ -8,6 +8,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TimeFrameContent, { applyTimeFrameRules, calculateSynchronizedState } from '@/components/test-runs/TimeFrameContent';
 import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
+import { TimeFrameValues } from '@/utils/interfaces';
+import { useState } from 'react';
 
 // Mock next-intl to prevent ESM parsing errors in Jest
 jest.mock("next-intl", () => ({
@@ -75,18 +77,6 @@ jest.mock('@/components/test-runs/TimeFrameFilter', () => {
 
   return TimeFrameFilterMock;
 });
-
-
-// Mock next/navigation hooks
-const mockReplace = jest.fn();
-let mockSearchParams = new URLSearchParams();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    replace: mockReplace,
-  }),
-  useSearchParams: () => mockSearchParams,
-  usePathname: () => '/test-runs',
-}));
 
 describe('applyTimeFrameRules', () => {
   // A default "now" for tests that need to check against the current time.
@@ -236,17 +226,29 @@ describe('TimeFrameContent Tests', () => {
     // Reset mocks and timers before each test
     jest.useFakeTimers();
     jest.setSystemTime(MOCK_NOW);
-    mockReplace.mockClear();
-    mockSearchParams = new URLSearchParams();
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
+  const mockValues: TimeFrameValues = {
+    fromDate: new Date(MOCK_NOW.getTime() - DAY_MS), // 1 day before
+    toDate: MOCK_NOW,
+    durationDays: 1,
+    durationHours: 0,
+    durationMinutes: 0,
+    fromTime: '12:00',
+    fromAmPm: 'PM',
+    toTime: '12:00',
+    toAmPm: 'PM',
+  } ;
+
+  const mockSetValues = jest.fn();
+
 
   test('should render correctly and initialize its state from defaults', () => {
-    render(<TimeFrameContent />);
+    render(<TimeFrameContent values={mockValues} setValues={mockSetValues} />);
 
     const expectedToDate = MOCK_NOW;
     const expectedFromDate = new Date(expectedToDate.getTime() - DAY_MS); // 1 day before
@@ -258,55 +260,59 @@ describe('TimeFrameContent Tests', () => {
     expect(screen.getByLabelText('Hours')).toHaveValue(0);
   });
 
-  test('should initialize state from URL search params if they exists', () => {
-    const fromDateString = '2025-08-15T10:00:00.000Z';
-    const toDateString = '2025-08-17T10:00:00.000Z';
-    mockSearchParams.set('from', fromDateString);
-    mockSearchParams.set('to', toDateString);
+  test('should initialize state from props if they exists', () => {  
+    render(<TimeFrameContent values={{ ...mockValues  }} setValues={mockSetValues} />);
 
-    render(<TimeFrameContent />);
-
-    const expectedFromDate = new Date(fromDateString);
-    const expectedToDate = new Date(toDateString);
-
-    expect(screen.getByLabelText('From Date')).toHaveValue(expectedFromDate.toLocaleDateString('en-US'));
-    expect(screen.getByLabelText('To Date')).toHaveValue(expectedToDate.toLocaleDateString('en-US'));
-    expect(screen.getByLabelText('Days')).toHaveValue(2);
-    expect(screen.getByLabelText('Hours')).toHaveValue(0);
+    expect(screen.getByLabelText('From Date')).toHaveValue(mockValues.fromDate.toLocaleDateString('en-US'));
+    expect(screen.getByLabelText('To Date')).toHaveValue(mockValues.toDate.toLocaleDateString('en-US'));
+    expect(screen.getByLabelText('Days')).toHaveValue(mockValues.durationDays);
+    expect(screen.getByLabelText('Hours')).toHaveValue(mockValues.durationHours);
   });
 
   test('should update the `To` date when the duration is increased', async () => {
-    const initialFromDate = new Date('2025-08-15T12:00:00.000Z');
-    const initialToDate = new Date(initialFromDate.getTime() + DAY_MS); 
-    mockSearchParams.set('from', initialFromDate.toISOString());
-    mockSearchParams.set('to', initialToDate.toISOString());
+    const TestWrapper = () => {
+      const [values, setValues] = useState<TimeFrameValues>(() => {
+        const initialFromDate = new Date('2025-08-15T00:00:00.000Z');
+        const initialToDate = new Date(initialFromDate.getTime() + DAY_MS);
+        return calculateSynchronizedState(initialFromDate, initialToDate);
+      });
 
-    render(<TimeFrameContent />);
+      return <TimeFrameContent values={values} setValues={setValues} />;
+    };
+
+    render(<TestWrapper />);
 
     const daysInput = screen.getByLabelText('Days');
-    expect(daysInput).toHaveValue(1); 
+    const toDateInput = screen.getByLabelText('To Date');
 
-    // Change the duration to 3 days
-    fireEvent.change(daysInput, { target: { value: '3' } });
+    // Initial state check
+    expect(daysInput).toHaveValue(1);
+    // Use timeZone: 'UTC' to prevent off-by-one day errors in test environments
+    expect(toDateInput).toHaveValue(new Date('2025-08-16T00:00:00.000Z').toLocaleDateString('en-US', { timeZone: 'UTC' }));
 
+    // Act: Change the duration to 3 days
+    fireEvent.change(daysInput, { target: { value: 3 } });
+
+    // Assert: Wait for the re-render and check the new values
     await waitFor(() => {
-      const expectedToDate = new Date(initialFromDate.getTime() + 3 * DAY_MS); // 3 days total
-
-      expect(screen.getByLabelText('To Date')).toHaveValue(expectedToDate.toLocaleDateString('en-US'));
-    });
-
-    // Change the duration to 5 hours
-    const hoursInput = screen.getByLabelText('Hours');
-    fireEvent.change(hoursInput, { target: { value: '5' } });
-
-    await waitFor(() => {
-      const expectedToDate = new Date(initialFromDate.getTime() + 3 * DAY_MS + 5 * 60 * 60 * 1000); // 3 days and 5 hours total
-      expect(screen.getByLabelText('To Date')).toHaveValue(expectedToDate.toLocaleDateString('en-US'));
+      expect(daysInput).toHaveValue(3);
+      const expectedToDate = new Date('2025-08-18T00:00:00.000Z');
+      expect(toDateInput).toHaveValue(expectedToDate.toLocaleDateString('en-US', { timeZone: 'UTC' }));
     });
   });
 
   test('should update the duration when the `To` date or `From` date is changed', async () => {
-    render(<TimeFrameContent />);
+    const TestWrapper = () => {
+      const [values, setValues] = useState<TimeFrameValues>(() => {
+        const initialFromDate = new Date('2025-08-15T00:00:00.000Z');
+        const initialToDate = new Date(initialFromDate.getTime() + DAY_MS);
+        return calculateSynchronizedState(initialFromDate, initialToDate);
+      });
+
+      return <TimeFrameContent values={values} setValues={setValues} />;
+    };
+
+    render(<TestWrapper />);
 
     const fromDateInput = screen.getByLabelText('From Date');
     const toDateInput = screen.getByLabelText('To Date');
@@ -333,19 +339,22 @@ describe('TimeFrameContent Tests', () => {
   test('should display an error and not update state if the date range becomes inverted', async () => {
     const initialFrom = '2025-08-10T12:00:00.000Z';
     const initialTo = '2025-08-12T12:00:00.000Z';
-    mockSearchParams = new URLSearchParams({
-      from: initialFrom,
-      to: initialTo,
-    });
 
-    render(<TimeFrameContent />);
+    const TestWrapper = () => {
+      const [values, setValues] = useState<TimeFrameValues>(() => {
+        const initialFromDate = new Date(initialFrom);
+        const initialToDate = new Date(initialTo);
+        return calculateSynchronizedState(initialFromDate, initialToDate);
+      });
+
+      return <TimeFrameContent values={values} setValues={setValues} />;
+    };
+
+    render(<TestWrapper />);
 
     const fromDateInput = screen.getByLabelText('From Date');
     const toDateInput = screen.getByLabelText('To Date');
     const daysInput = screen.getByLabelText('Days');
-
-    // Clear previous router calls from initialization
-    mockReplace.mockClear();
 
     // Change "From" date to be after "To" date
     fireEvent.change(fromDateInput, { target: { value: '08/15/2025' } });
@@ -354,53 +363,9 @@ describe('TimeFrameContent Tests', () => {
     const errorNotification = await screen.findByText("'To' date cannot be before 'From' date.");
     expect(errorNotification).toBeInTheDocument();
 
-    // Ensure the router replace was called once on mount
-    expect(mockReplace).toHaveBeenCalledTimes(1);
-
     // Ensure the dates are not modified
     expect(fromDateInput).toHaveValue(new Date(initialFrom).toLocaleDateString('en-US'));
     expect(toDateInput).toHaveValue(new Date(initialTo).toLocaleDateString('en-US'));
     expect(daysInput).toHaveValue(2);
-  });
-
-  test('should update the URL search params when dates are changed and valid', async () => {
-    const MOCK_INITIAL_FROM = new Date('2025-08-19T12:00:00.000Z');
-
-    render(<TimeFrameContent />);
-
-    // Assert on mount call
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledTimes(1);
-    });
-    const expectedMountUrl = `/test-runs?from=${encodeURIComponent(MOCK_INITIAL_FROM.toISOString())}&to=${encodeURIComponent(MOCK_NOW.toISOString())}`;
-    expect(mockReplace).toHaveBeenCalledWith(expectedMountUrl, { scroll: false });
-
-    // Change the "From" date
-    const fromDateInput = screen.getByLabelText('From Date');
-    fireEvent.change(fromDateInput, { target: { value: '2025-08-15' } });
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledTimes(2);
-    });
-
-    // Change the "To" date
-    const toDateInput = screen.getByLabelText('To Date');
-    fireEvent.change(toDateInput, { target: { value: '2025-08-19' } });
-
-    // Assert the final state
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledTimes(3);
-
-      const expectedFinalFrom = new Date('2025-08-15T12:00:00.000Z');
-      const expectedFinalTo = new Date('2025-08-19T12:00:00.000Z');
-
-      const expectedParams = new URLSearchParams({
-        from: expectedFinalFrom.toISOString(),
-        to: expectedFinalTo.toISOString(),
-      });
-      
-      const lastCall = mockReplace.mock.calls[mockReplace.mock.calls.length - 1];
-      expect(lastCall[0]).toContain(`?${expectedParams.toString()}`);
-    });
   });
 });

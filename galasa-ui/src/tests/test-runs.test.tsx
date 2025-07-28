@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { render, screen, waitFor } from '@testing-library/react';
-import { Run } from '@/generated/galasaapi';
 import TestRunsPage from '@/app/test-runs/page'; 
 import { getRequestorList, getResultsNames } from '@/utils/testRuns';
 

@@ -8,22 +8,40 @@ import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import styles from "@/styles/TestRunsPage.module.css";
 import TableDesignRow from "./TableDesignRow";
-import { Checkbox } from "@carbon/react";
+import { Checkbox, Button } from "@carbon/react";
 import { useTranslations } from "next-intl";
 import { InlineNotification } from "@carbon/react";
-import { ColumnDefinition, sortOrderType } from "@/utils/interfaces";
+import { ColumnDefinition } from "@/utils/interfaces";
+import { sortOrderType } from "@/utils/types/common";
+import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
+import { Dispatch, SetStateAction } from "react";
 
 
 interface TableDesignContentProps {
     selectedRowIds: string[];
     setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
     tableRows: ColumnDefinition[];
+    visibleColumns?: string[];
+    columnsOrder?: ColumnDefinition[];
     setTableRows: React.Dispatch<React.SetStateAction<ColumnDefinition[]>>;
     sortOrder?: { id: string; order: sortOrderType }[];
     setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrderType }[]>>;
+    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
+    setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
 }
 
-export default function TableDesignContent({selectedRowIds, setSelectedRowIds, tableRows, setTableRows, sortOrder, setSortOrder}: TableDesignContentProps) {
+export default function TableDesignContent({
+  selectedRowIds, 
+  setSelectedRowIds,
+  tableRows,
+  visibleColumns,
+  columnsOrder,
+  setTableRows, 
+  sortOrder, 
+  setSortOrder, 
+  setVisibleColumns, 
+  setColumnsOrder}
+  : TableDesignContentProps) {
   const translations = useTranslations("TableDesignContent"); 
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
@@ -82,6 +100,12 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     }
   };
 
+  const handleResetToDefaults = () => {
+    setVisibleColumns(DEFAULT_VISIBLE_COLUMNS);
+    setColumnsOrder(RESULTS_TABLE_COLUMNS);
+    setSortOrder?.([]);
+  };
+
   // All sensors used for drag and drop functionality (Pointer, Touch, and Keyboard)
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -91,6 +115,11 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
     })
   );
 
+  const isResetToDefaultsDisabled = 
+    JSON.stringify(visibleColumns) === JSON.stringify(DEFAULT_VISIBLE_COLUMNS) &&
+    JSON.stringify(columnsOrder) === JSON.stringify(RESULTS_TABLE_COLUMNS) &&
+    (sortOrder === undefined || sortOrder.length === 0);
+
   return (
     <DndContext 
       onDragEnd={handleDragEnd}
@@ -98,6 +127,16 @@ export default function TableDesignContent({selectedRowIds, setSelectedRowIds, t
       sensors={sensors}
     >
       <p className={styles.titleText}>{translations("description")}</p>
+      <div className={styles.resetToDefaultsButtonContainerTableDesign}>
+        <Button 
+          type="button"
+          kind="secondary"
+          onClick={handleResetToDefaults}
+          disabled={isResetToDefaultsDisabled}
+        >
+          {translations("resetToDefaults")}
+        </Button>
+      </div>
       <div className={styles.tableDesignContainer}>
         <div className={styles.tableDesignHeaderRow}>
           <div className={styles.cellDragHandle}>
