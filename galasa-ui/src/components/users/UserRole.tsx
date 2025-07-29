@@ -50,7 +50,7 @@ export default function ProfileRole({ userProfilePromise }: ProfileDetailsProps)
         : !isError &&
         <>
           <div className={styles.userDetailsContainer}>
-            <h3>{translations("title")}</h3>
+            <h3>{translations("user-role-title")}</h3>
             <p>{translations("change-role")}</p>
             <br/>
             <p>{translations("current-role")}: {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}</p>

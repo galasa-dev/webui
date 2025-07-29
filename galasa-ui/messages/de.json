@@ -136,7 +136,7 @@
     "lastLoginToken": "Letzte Anmeldung mit Token (UTC): {date}"
   },
   "ProfileRole": {
-    "title": "Benutzerrolle",
+    "user-role-title": "Benutzerrolle",
     "change-role" : "Benutzerrollen bestimmen, was Sie tun können und was nicht. Wenden Sie sich an Ihren lokalen Galasa-Administrator, wenn Sie Änderungen benötigen.",
     "current-role": "Sie haben derzeit die Rolle",
     "roleDescription": "Details zur Rolle"
