@@ -14,11 +14,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-    "title": "User Role",
-    "change-role" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
-    "current-role": "You currently have the role",
-    "roleDescription": "Details about role"
-    }
+      "title": "User Role",
+      "change-role" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
+      "current-role": "You currently have the role",
+      "roleDescription": "Details about role"
+    };
     return translations[key] || key;
   }
 }));
@@ -45,19 +45,19 @@ describe('ProfileRole Component', () => {
     };
 
     const fakeUser = {
-        loginId: expectedLoginId,
-        role: '1',
-        synthetic: {
-          role: mockRole,
-        }
+      loginId: expectedLoginId,
+      role: '1',
+      synthetic: {
+        role: mockRole,
+      }
     };
 
     const userPromise = Promise.resolve(fakeUser);
 
-    render(<ProfileRole userProfilePromise={userPromise} />)
+    render(<ProfileRole userProfilePromise={userPromise} />);
 
     await waitFor(() => {
-        expect(screen.getByText(`You currently have the role: ${expectedRoleName.charAt(0).toUpperCase() + expectedRoleName.slice(1)}`)).toBeInTheDocument();
+      expect(screen.getByText(`You currently have the role: ${expectedRoleName.charAt(0).toUpperCase() + expectedRoleName.slice(1)}`)).toBeInTheDocument();
     });
   });
 });
