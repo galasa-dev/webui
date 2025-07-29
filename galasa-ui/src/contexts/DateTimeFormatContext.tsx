@@ -6,7 +6,7 @@
 'use client';
 
 import { PREFERENCE_KEYS } from "@/utils/constants/common";
-import { DateTimeFormats, Locale, TimeFormat } from "@/utils/types/dateTimeFormat";
+import { DateTimeFormats, Locale, TimeFormat } from "@/utils/types/dateTimeSettings";
 import { useCallback, useState, createContext, useContext } from "react";
 
 

@@ -34,8 +34,10 @@
       "internationalization": "Internationalization/Multiple language support"
     }
   },
+  "DateTimeSettings": {
+    "title": "Date/Time Format"
+  },
   "DateTimeFormatSection": {
-    "title": "Date/Time Format",
     "description": "Configure the format for displaying date and time.",
     "dateTimeFormat": "Date/Time Format",
     "showDatesInBrowserLocale": "Show dates and times based on the browser locale",
@@ -44,6 +46,15 @@
     "selectTimeFormat": "Select a time format",
     "12-hour": "12-hour",
     "24-hour": "24-hour"
+  },
+  "TimeZoneSection": {
+    "description": "Configure which time zone is applied when displaying date and time values.",
+    "timeZoneFormat": "Time Zone Format",
+    "showTimeZoneInBrowser": "Show time zone based on the browser settings",
+    "showTimeZoneInCustom": "Show time zone in a custom format",
+    "selectTimeZone": "Select a time zone",
+    "customTimeZone": "Custom Time Zone",
+    "browserTimeZone": "Browser Time Zone"
   },
   "AccessTokensSection": {
     "title": "Access Tokens",

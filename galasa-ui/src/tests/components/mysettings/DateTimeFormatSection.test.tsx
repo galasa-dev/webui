@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import DateTimeFormatSection from '@/components/mysettings/DateTimeFormatSection';
+import DateTimeFormatSection from '@/components/mysettings/FormatSection';
 import { SUPPORTED_LOCALES } from '@/utils/constants/common';
 
 // Mock the useTranslations hook

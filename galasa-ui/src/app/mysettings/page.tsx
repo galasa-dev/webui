@@ -16,7 +16,7 @@ import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/mysettings/ExperimentalFeaturesSection';
 import { HOME } from '@/utils/constants/breadcrumb';
-import DateTimeFormatSection from '@/components/mysettings/DateTimeFormatSection';
+import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
 
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
@@ -59,7 +59,7 @@ export default async function MySettings() {
       <PageTile translationKey="MySettings.title" />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
-      <DateTimeFormatSection />
+      <DateTimeSettings />
       <ExperimentalFeaturesSection />
     </main>
   );

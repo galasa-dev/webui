@@ -1,0 +1,65 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+'use client';
+import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
+import styles from "@/styles/FormatSection.module.css";
+import { PREFERENCE_KEYS, SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
+import { SUPPORTED_TIMEZONES } from "@/utils/constants/timezones";
+import { TimeZone } from "@/utils/types/dateTimeSettings";
+import { Dropdown } from "@carbon/react";
+import { RadioButton, RadioButtonGroup } from '@carbon/react';
+import { useTranslations } from "next-intl";
+
+type TimeZoneFormats = 'custom' | 'browser'
+
+export default function FormatSection() {
+  const { preferences, updatePreferences } = useDateTimeFormat();
+  const translations = useTranslations("TimeZoneSection");
+
+  const handleChange = (key: keyof typeof preferences, value: string) => {
+    updatePreferences({ [key]: value });
+  };
+
+  const isDropdownDisabled = preferences.dateTimeFormatType !== 'custom';
+
+  return (
+    <div className={styles.container}>
+      <p className={styles.title}>{translations("description")}</p>
+      <RadioButtonGroup 
+        legendText={translations("timeZoneFormat")}
+        name="timezone-format"
+        orientation="vertical"
+        // valueSelected={preferences.timeZoneFormatType}
+        // onChange={(value: string) => handleChange(PREFERENCE_KEYS.TIME_ZONE_FORMAT_TYPE, value as TimeZoneFormats)}
+      >
+        <RadioButton 
+          labelText={translations("showTimeZoneInBrowser")}
+          value="browser"
+          id="browser-time-zone-format"
+        />
+        <RadioButton 
+          labelText={translations("showTimeZoneInCustom")}
+          value="custom"
+          id="custom-time-zone-format"
+        />
+        <div className={styles.dropdownContainer}>
+          <Dropdown 
+            helperText={translations("selectTimeZone")}
+            label={translations("selectTimeZone")}
+            id="custom-time-zone-dropdown"
+            data-testid="custom-time-zone-dropdown-test"
+            items={SUPPORTED_TIMEZONES}
+            itemToString={(item: TimeZone) => (item ? `${item.iana} ${item.label}` : '')}
+            // selectedItem={SUPPORTED_TIMEZONES.find(item => item.code === preferences.timeZone)}
+            // onChange={(e: {selectedItem: TimeZone}) => handleChange(PREFERENCE_KEYS.TIME_ZONE, e.selectedItem?.code || SUPPORTED_TIMEZONES[0].code)}
+            size="lg"
+            disabled={isDropdownDisabled}
+          />
+        </div>
+      </RadioButtonGroup>
+    </div>
+  );
+}
