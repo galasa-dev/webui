@@ -23,7 +23,7 @@ export default function FormatSection() {
     updatePreferences({ [key]: value });
   };
 
-  const isDropdownDisabled = preferences.dateTimeFormatType !== 'custom';
+  const isDropdownDisabled = preferences.timeZoneType !== 'custom';
 
   return (
     <div className={styles.container}>
@@ -32,8 +32,8 @@ export default function FormatSection() {
         legendText={translations("timeZoneFormat")}
         name="timezone-format"
         orientation="vertical"
-        // valueSelected={preferences.timeZoneFormatType}
-        // onChange={(value: string) => handleChange(PREFERENCE_KEYS.TIME_ZONE_FORMAT_TYPE, value as TimeZoneFormats)}
+        valueSelected={preferences.timeZoneType}
+        onChange={(value: string) => handleChange(PREFERENCE_KEYS.TIME_ZONE_TYPE, value as TimeZoneFormats)}
       >
         <RadioButton 
           labelText={translations("showTimeZoneInBrowser")}
@@ -52,9 +52,9 @@ export default function FormatSection() {
             id="custom-time-zone-dropdown"
             data-testid="custom-time-zone-dropdown-test"
             items={SUPPORTED_TIMEZONES}
-            itemToString={(item: TimeZone) => (item ? `${item.iana} ${item.label}` : '')}
-            // selectedItem={SUPPORTED_TIMEZONES.find(item => item.code === preferences.timeZone)}
-            // onChange={(e: {selectedItem: TimeZone}) => handleChange(PREFERENCE_KEYS.TIME_ZONE, e.selectedItem?.code || SUPPORTED_TIMEZONES[0].code)}
+            itemToString={(item: TimeZone) => item.label ? item.label : ''}
+            selectedItem={SUPPORTED_TIMEZONES.find(item => item.iana === preferences.timeZone)}
+            onChange={(e: {selectedItem: TimeZone}) => handleChange(PREFERENCE_KEYS.TIME_ZONE, e.selectedItem?.iana || SUPPORTED_TIMEZONES[0].iana)}
             size="lg"
             disabled={isDropdownDisabled}
           />

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-
 export type DateTimeFormats = 'custom' | 'browser'
 export type TimeZoneFormats = 'custom' | 'browser'
 export type Locale = { code: string; format: string; example: string };

@@ -6,7 +6,7 @@
 'use client';
 
 import { PREFERENCE_KEYS } from "@/utils/constants/common";
-import { DateTimeFormats, Locale, TimeFormat } from "@/utils/types/dateTimeSettings";
+import { DateTimeFormats, Locale, TimeFormat, TimeZone, TimeZoneFormats } from "@/utils/types/dateTimeSettings";
 import { useCallback, useState, createContext, useContext } from "react";
 
 
@@ -25,9 +25,13 @@ interface DateTimeFormatContextType {
     [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: DateTimeFormats;
     [PREFERENCE_KEYS.LOCALE]: Locale['code'];
     [PREFERENCE_KEYS.TIME_FORMAT]: TimeFormat['label'];
+    [PREFERENCE_KEYS.TIME_ZONE_TYPE]: TimeZoneFormats;
+    [PREFERENCE_KEYS.TIME_ZONE]: TimeZone['iana']; 
+    
   };
   updatePreferences: (newPreferences: Partial<DateTimeFormatContextType['preferences']>) => void;
   formatDate: (date: Date) => string;
+  getResolvedTimeZone: () => string;
 }
 
 const DateTimeFormatContext = createContext<DateTimeFormatContextType | undefined>(undefined);
@@ -42,7 +46,9 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
   const defaultPreferences: DateTimeFormatContextType['preferences'] = {
     [PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE]: 'browser' as DateTimeFormats,
     [PREFERENCE_KEYS.LOCALE]: 'en-US',
-    [PREFERENCE_KEYS.TIME_FORMAT]: '12-hour'
+    [PREFERENCE_KEYS.TIME_FORMAT]: '12-hour' as TimeFormat['label'],
+    [PREFERENCE_KEYS.TIME_ZONE_TYPE]: 'browser' as TimeZoneFormats,
+    [PREFERENCE_KEYS.TIME_ZONE]: 'UTC' as TimeZone['iana'], 
   };
 
   const [preferences, setPreferences] = useState<DateTimeFormatContextType['preferences']>(() => {
@@ -51,7 +57,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
       // Load preferences from local storage or set default values
       const storedPreferences = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (storedPreferences) {
-        currentPreferences = JSON.parse(storedPreferences);
+        currentPreferences = {...defaultPreferences, ...JSON.parse(storedPreferences)};
       }
     }
     return currentPreferences;
@@ -59,15 +65,33 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
 
   const updatePreferences = (newPreferences: Partial<typeof preferences>) => {
     let updatedPreferences = { ...preferences, ...newPreferences };
+
+    // If format type is set to 'browser', reset related fields
     if (newPreferences[PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE] === 'browser') {
-      updatedPreferences = {
-        ...preferences,
-        ...defaultPreferences
-      } as DateTimeFormatContextType['preferences'];
+      updatedPreferences[PREFERENCE_KEYS.LOCALE] = defaultPreferences[PREFERENCE_KEYS.LOCALE];
+      updatedPreferences[PREFERENCE_KEYS.TIME_FORMAT] = defaultPreferences[PREFERENCE_KEYS.TIME_FORMAT];
     } 
+
+    // If time zone format type is set to 'browser', reset time zone
+    if (newPreferences[PREFERENCE_KEYS.TIME_ZONE_TYPE] === 'browser') {
+      updatedPreferences[PREFERENCE_KEYS.TIME_ZONE] = defaultPreferences[PREFERENCE_KEYS.TIME_ZONE];
+    }
+
     setPreferences(updatedPreferences);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedPreferences));
   };
+
+  // Helper function to determine which timezone to use 
+  const getResolvedTimeZone = useCallback((): string => {
+    // Fallback to the browser's actual detected timezone
+    let specifiedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (preferences.timeZoneType === 'custom' && preferences.timeZone) {
+      specifiedTimeZone = preferences.timeZone;
+    }
+    
+    return specifiedTimeZone;
+  }, [preferences.timeZoneType, preferences.timeZone]);
+
 
   const formatDate = useCallback((date: Date): string => {
     let formattedDate: string = '-';
@@ -77,7 +101,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
         throw new Error("Invalid date provided to formatDate");
       }
 
-      const { dateTimeFormatType, locale, timeFormat } = preferences;
+      const { dateTimeFormatType, locale, timeFormat, timeZone, timeZoneType} = preferences;
         
       const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
@@ -87,6 +111,8 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
         minute: "2-digit",
         second: "2-digit",
         hour12: timeFormat === '12-hour',
+        timeZone: getResolvedTimeZone(),
+        timeZoneName: "short"
       };
 
       if (dateTimeFormatType === 'browser') {
@@ -101,9 +127,9 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
     }  
 
     return formattedDate;
-  }, [preferences]);
-  
-  const value = { preferences, updatePreferences, formatDate };
+  }, [preferences, getResolvedTimeZone]);
+
+  const value = { preferences, updatePreferences, formatDate, getResolvedTimeZone};
 
   return (
     <DateTimeFormatContext.Provider value={value}>
