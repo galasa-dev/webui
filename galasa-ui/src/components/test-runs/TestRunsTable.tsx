@@ -162,7 +162,7 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
       );
     } else if (header === "submittedAt") {
       // Format the date using the context's formatDate function
-      cellComponent = <TableCell id="clickableItem">{formatDate(new Date(value))}</TableCell>;
+      cellComponent = <TableCell>{formatDate(new Date(value))}</TableCell>;
     }
 
     return cellComponent;
