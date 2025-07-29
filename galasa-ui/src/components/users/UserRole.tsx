@@ -50,10 +50,10 @@ export default function ProfileRole({ userProfilePromise }: ProfileDetailsProps)
         : !isError &&
         <>
           <div className={styles.userDetailsContainer}>
-            <h3>{translations("user-role-title")}</h3>
-            <p>{translations("change-role")}</p>
+            <h3>{translations("userRoleTitle")}</h3>
+            <p>{translations("changeRole")}</p>
             <br/>
-            <p>{translations("current-role")}: {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}</p>
+            <p>{translations("currentRole")}: {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}</p>
 
             <div className="cds--form__helper-text">
               {roleDescription}.<br/>

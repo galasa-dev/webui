@@ -136,9 +136,9 @@
     "lastLoginToken": "Letzte Anmeldung mit Token (UTC): {date}"
   },
   "ProfileRole": {
-    "user-role-title": "Benutzerrolle",
-    "change-role" : "Benutzerrollen bestimmen, was Sie tun können und was nicht. Wenden Sie sich an Ihren lokalen Galasa-Administrator, wenn Sie Änderungen benötigen.",
-    "current-role": "Sie haben derzeit die Rolle",
+    "userRoleTitle": "Benutzerrolle",
+    "changeRole" : "Benutzerrollen bestimmen, was Sie tun können und was nicht. Wenden Sie sich an Ihren lokalen Galasa-Administrator, wenn Sie Änderungen benötigen.",
+    "currentRole": "Sie haben derzeit die Rolle",
     "roleDescription": "Details zur Rolle"
   },
   "EditUserBreadCrumb": {

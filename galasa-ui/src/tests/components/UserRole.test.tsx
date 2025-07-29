@@ -14,9 +14,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "user-role-title": "User Role",
-      "change-role" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
-      "current-role": "You currently have the role",
+      "userRoleTitle": "User Role",
+      "changeRole" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
+      "currentRole": "You currently have the role",
       "roleDescription": "Details about role"
     };
     return translations[key] || key;
