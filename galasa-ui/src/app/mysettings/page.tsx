@@ -16,6 +16,8 @@ import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
 import ExperimentalFeaturesSection from '@/components/mysettings/ExperimentalFeaturesSection';
 import { HOME } from '@/utils/constants/breadcrumb';
+import { fetchUserFromApiServer } from '@/actions/userServerActions';
+import ProfileRole from '@/components/users/UserRole';
 import DateTimeFormatSection from '@/components/mysettings/DateTimeFormatSection';
 
 export default async function MySettings() {
@@ -57,6 +59,7 @@ export default async function MySettings() {
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
       <PageTile translationKey="MySettings.title" />
+      <ProfileRole userProfilePromise={fetchUserFromApiServer("me")} />
       <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeFormatSection />

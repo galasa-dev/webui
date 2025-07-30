@@ -118,11 +118,16 @@
   "ProfileDetails": {
     "title": "User Details",
     "loggedInAs": "Currently logged in as:",
-    "role": "Role",
     "recentActivity": "Recent Login Activity",
     "noLastLogin": "No last login date",
     "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
     "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}"
+  },
+  "ProfileRole": {
+    "userRoleTitle": "User Role",
+    "changeRole" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
+    "currentRole": "You currently have the role",
+    "roleDescription": "Details about role"
   },
   "EditUserBreadCrumb": {
     "home": "Home",

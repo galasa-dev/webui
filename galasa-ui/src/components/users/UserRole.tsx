@@ -14,9 +14,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 
-export default function ProfileDetails({ userProfilePromise }: ProfileDetailsProps) {
-  const WEB_UI_CLIENT_NAME = "web-ui";
-  const translations = useTranslations("ProfileDetails");
+export default function ProfileRole({ userProfilePromise }: ProfileDetailsProps) {
+  const translations = useTranslations("ProfileRole");
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +40,9 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
     loadUserProfile();
   }, [userProfilePromise]);
 
+  const roleName = userProfile.synthetic?.role?.metadata?.name;
+  const roleDescription = userProfile.synthetic?.role?.metadata?.description;
+
   return (
     <div className={styles.profileDetails}>
       { isLoading ?
@@ -48,33 +50,14 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
         : !isError &&
         <>
           <div className={styles.userDetailsContainer}>
-            <h3>{translations("title")}</h3>
-            <p>{translations("loggedInAs")} {userProfile?.loginId}</p>
-          </div>
+            <h3>{translations("userRoleTitle")}</h3>
+            <p>{translations("changeRole")}</p>
+            <br/>
+            <p>{translations("currentRole")}: {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}</p>
 
-          <div className={styles.loginActivityContainer}>
-            <h3>{translations("recentActivity")}</h3>
-            {
-              userProfile?.clients?.map((client, index) => {
-                let lastLoginDateStr: string;
-                if (client.lastLogin) {
-                  const clientLastLoginDate = new Date(client.lastLogin);
-                  lastLoginDateStr = `${clientLastLoginDate.toUTCString()}`;
-                } else {
-                  lastLoginDateStr = translations("noLastLogin");
-                }
-
-                return (
-                  <p key={index}>
-                    {
-                      client.clientName === WEB_UI_CLIENT_NAME
-                        ? translations("lastLoginWeb", { date: lastLoginDateStr })
-                        : translations("lastLoginToken", { date: lastLoginDateStr })
-                    }
-                  </p>
-                );
-              })
-            }
+            <div className="cds--form__helper-text">
+              {roleDescription}.<br/>
+            </div>
           </div>
         </>
       }

@@ -100,7 +100,6 @@ describe('MyProfilePage', () => {
     // Then...
     // Assert that the user's login ID is displayed correctly
     expect(screen.getByText(`Currently logged in as: ${expectedLoginId}`)).toBeInTheDocument();
-    expect(screen.getByText(`Role: ${expectedRoleName}`)).toBeInTheDocument();
   });
 
   test('handles fetch failure gracefully', async () => {
