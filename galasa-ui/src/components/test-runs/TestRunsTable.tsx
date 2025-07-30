@@ -214,11 +214,10 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
                 <TableBody>
                   {rows.map((row) => (
                     <TableRow
-                      id="clickableRow"
                       key={row.id}
                       {...getRowProps({ row })}
                       onClick={() => handleRowClick(row.id, row.cells.find(cell => cell.info.header === 'testRunName')?.value as string)}
-                      style={{ cursor: 'pointer' }}
+                      className={styles.clickableRow}
                     >
                       {row.cells.map((cell) =>
                         <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />
