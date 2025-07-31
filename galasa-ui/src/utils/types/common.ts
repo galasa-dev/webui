@@ -6,3 +6,9 @@
 
 export type AmPm = 'AM' | 'PM';
 export type sortOrderType = 'asc' | 'desc' | 'none';
+
+export type NotificationType = {
+  kind: 'error' | 'success' | 'info' | 'warning';
+  title: string;
+  subtitle: string;
+}

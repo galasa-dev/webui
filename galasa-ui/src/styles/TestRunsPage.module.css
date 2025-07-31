@@ -307,6 +307,15 @@
   visibility: hidden;
 }
 
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 3rem;
+  padding-top: 0;
+}
+
 .clickableRow {
   cursor: pointer;
 }
+

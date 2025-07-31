@@ -31,19 +31,6 @@ jest.mock('@/components/common/BreadCrumb', () => {
   };
 });
 
-
-// Mock PageTile component
-jest.mock('@/components/PageTile', () => {
-  const PageTile = ({ translationKey }: any) => (
-    <h1 data-testid="pagetile">{translationKey}</h1>
-  );
-  PageTile.displayName = 'PageTile';
-  return {
-    __esModule: true,
-    default: PageTile,
-  };
-});
-
 // Mock TestRunsTabs component
 jest.mock('@/components/test-runs/TestRunsTabs', () => {
   const TestRunsTabs = () => (
@@ -76,6 +63,23 @@ jest.mock('next/navigation', () => ({
   })),
 }));
 
+// Carbon React mocks
+jest.mock('@carbon/react', () => ({
+  Button: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
+  Tile: ({ children, ...props }: any) => (
+    <div {...props} data-testid="tile">{children}</div>
+  ),
+  InlineNotification: ({ title, subtitle, kind }: any) => (
+    <div data-testid="notification" className={`notification-${kind}`}>
+      <strong>{title}</strong>
+      <p>{subtitle}</p>
+    </div>
+  ),
+  Share: () => <span>Share Icon</span>,
+}));
+
 const renderWithProviders = (ui: React.ReactElement) => {
   // Create a new client for each test
   const queryClient = new QueryClient({
@@ -92,6 +96,14 @@ const renderWithProviders = (ui: React.ReactElement) => {
     </QueryClientProvider>
   );
 };
+
+beforeAll(() => {
+  Object.assign(navigator, {
+    clipboard: {
+      writeText: jest.fn(),
+    },
+  });
+});
 
 
 Object.defineProperty(window, 'matchMedia', {
@@ -122,7 +134,7 @@ describe("TestRunsDetails", () => {
     expect(breadcrumb).toBeInTheDocument();
     expect(screen.getByText('Home')).toBeInTheDocument();
 
-    const pageTile = screen.getByTestId('pagetile');
+    const pageTile = screen.getByTestId('tile');
     expect(pageTile).toBeInTheDocument();
   });
 
@@ -136,6 +148,60 @@ describe("TestRunsDetails", () => {
     );
 
     expect(screen.getByTestId('mock-test-runs-tabs')).toBeInTheDocument();
+  });
+
+
+  describe('Copy to Clipboard', () => {
+    test('copies the URL when share button is clicked', async () => {
+      renderWithProviders(
+        <TestRunsDetails 
+          requestorNamesPromise={mockRequestorNamesPromise} 
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const shareButton = screen.getByTestId('share-button');
+      expect(shareButton).toBeInTheDocument();
+
+      await shareButton.click();
+
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(window.location.href);
+    }); 
+  });
+
+  test('shows success notification when URL is copied', async () => {
+    renderWithProviders(
+      <TestRunsDetails 
+        requestorNamesPromise={mockRequestorNamesPromise} 
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
+
+    const shareButton = screen.getByTestId('share-button');
+    await shareButton.click();
+
+    const notification = await screen.findByTestId('notification');
+    expect(notification).toHaveClass('notification-success');
+    expect(notification).toHaveTextContent('copiedTitle');
+  });
+
+  test('shows error notification when copy fails', async () => {
+    // Override the clipboard writeText method to simulate failure
+    navigator.clipboard.writeText = jest.fn().mockRejectedValue(new Error('Copy failed'));
+
+    renderWithProviders(
+      <TestRunsDetails 
+        requestorNamesPromise={mockRequestorNamesPromise} 
+        resultsNamesPromise={mockResultsNamesPromise}
+      />
+    );
+
+    const shareButton = screen.getByTestId('share-button');
+    await shareButton.click();
+
+    const notification = await screen.findByTestId('notification');
+    expect(notification).toHaveClass('notification-error');
+    expect(notification).toHaveTextContent('errorTitle');
   });
 });
 
