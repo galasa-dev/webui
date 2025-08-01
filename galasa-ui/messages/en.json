@@ -140,6 +140,12 @@
     "currentRole": "You currently have the role",
     "roleDescription": "Details about role"
   },
+  "ProfileRole": {
+    "userRoleTitle": "User Role",
+    "changeRole" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
+    "currentRole": "You currently have the role",
+    "roleDescription": "Details about role"
+  },
   "EditUserBreadCrumb": {
     "home": "Home",
     "users": "Users"
