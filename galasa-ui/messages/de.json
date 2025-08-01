@@ -31,7 +31,8 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
+      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
+      "graph": "Testlauf-Diagramm"
     }
   },
   "DateTimeFormatSection": {
@@ -278,12 +279,39 @@
       "page": "Seite"
     }
   },
+  "TestRunGraph": {
+  "submittedAt": "Eingereicht am",
+  "runName": "Ausführungsname",
+  "requestor": "Anforderer",
+  "submissionId": "Einreichungs-ID",
+  "group": "Gruppe",
+  "bundle": "Paket",
+  "package": "Paket",
+  "testName": "Testname",
+  "status": "Status",
+  "tags": "Tags",
+  "result": "Ergebnis",
+  "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
+  "isloading": "Diagramm wird geladen...",
+  "errorLoadingGraph": "Beim Laden des Diagramms ist ein Fehler aufgetreten.",
+  "noTestRunsFound": "Keine Testläufe gefunden.",
+
+  "limitExceeded": {
+    "title": "Grenzwert überschritten",
+    "subtitle": "Ihre Abfrage hat mehr als {MAX_RECORDS} Ergebnisse geliefert. Es werden die ersten {MAX_RECORDS} Datensätze angezeigt."
+  },
+
+  "timeFrameText": {
+    "range": "Zeige Testläufe von {from} bis {to}"
+  }
+  },
   "TestRunsTabs": {
     "tabs": {
       "timeframe": "Zeitraum",
       "tableDesign": "Tabellendesign",
       "searchCriteria": "Suchkriterien",
-      "results": "Ergebnisse"
+      "results": "Ergebnisse",
+      "graphs": "Diagramme"
     },
     "content": {
       "timeframe": "Diese Seite befindet sich im Aufbau. Derzeit werden alle Ergebnisse der letzten 24 Stunden angezeigt.",
