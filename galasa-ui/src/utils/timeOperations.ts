@@ -134,11 +134,9 @@ export const combineDateTime = (date: Date, time: string, amPm: AmPm, timezone: 
 
   // Format the date part (YYYY-MM-DD)
   const datePart = moment(date).format('YYYY-MM-DD');
-  console.log("Date part: ", datePart);
 
   // Combine date and time into a single string
   const dateTimeStr = `${datePart} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
-  console.log("Date time string: ", dateTimeStr);
 
   // Interpret the string in the specified timezone, then format it into a full ISO string, which includes the correct timezone offset.
   const isoStringWithTimezone = moment.tz(dateTimeStr, 'YYYY-MM-DD HH:mm:ss', timezone).format();
@@ -172,7 +170,6 @@ export const extractDateTimeForUI = (date: Date, timezone: string) => {
   const timeValue = momentInZone.format('hh:mm'); // 'hh' = 12-hour format (01-12)
   const amPmValue = momentInZone.format('A') as AmPm; // 'A' = AM/PM
 
-  console.log(`Extracted in ${timezone}:`, timeValue, amPmValue); // e.g. 09:55 PM
   return {
     time: timeValue,
     amPm: amPmValue,
