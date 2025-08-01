@@ -28,7 +28,7 @@ import { TableRowProps } from "@carbon/react/lib/components/DataTable/TableRow";
 import { TableHeadProps } from "@carbon/react/lib/components/DataTable/TableHead";
 import { TableBodyProps } from "@carbon/react/lib/components/DataTable/TableBody";
 import StatusIndicator from "../common/StatusIndicator";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ErrorPage from "@/app/error/page";
 import { MAX_RECORDS} from "@/utils/constants/common";
@@ -53,7 +53,7 @@ interface TestRunsTableProps {
   isError?: boolean;
 }
 
-export default function TestRunsTable({runsList,limitExceeded, visibleColumns, orderedHeaders, isLoading, isError}: TestRunsTableProps) {
+export default function TestRunsTable({runsList, limitExceeded, visibleColumns, orderedHeaders, isLoading, isError}: TestRunsTableProps) {
   const translations = useTranslations("TestRunsTable");
   const { pushBreadCrumb } = useHistoryBreadCrumbs();
   const { formatDate } = useDateTimeFormat();
@@ -64,10 +64,26 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const [showNotification, setShowNotification] = useState(limitExceeded);
+  
   const headers = orderedHeaders?.filter(column => visibleColumns.includes(column.id)).map(column => ({
     key: column.id,
     header: translations(column.id)
   })) || [];
+
+  // Set a timer to hide the notification after 5 seconds
+  useEffect(() => {
+    // Only show the notification if the limit was exceeded
+    if (limitExceeded) {
+      setShowNotification(true);
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 6000); // 6 seconds
+
+      // Cleanup function: This will clear the timer unmounts before the timeout.
+      return () => clearTimeout(timer);
+    }
+  }, [limitExceeded]);
 
   // Calculate the paginated rows based on the current page and page size
   const paginatedRows = useMemo(() => {
@@ -178,12 +194,14 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
 
   return (
     <div className={styles.resultsPageContainer}>
-      {limitExceeded && <InlineNotification
-        className={styles.notification}
-        kind="warning" 
-        title="Limit Exceeded" 
-        subtitle={`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`} 
-      />}
+      {limitExceeded && showNotification &&
+        <InlineNotification
+          className={styles.notification}
+          kind="warning" 
+          title="Limit Exceeded" 
+          subtitle={translations('limitExceededSubtitle', { maxRecords: MAX_RECORDS})}
+        />
+      }
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
         <DataTable rows={paginatedRows} headers={headers}>

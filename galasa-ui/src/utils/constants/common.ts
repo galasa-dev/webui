@@ -19,7 +19,7 @@ const COLORS = {
 };
 
 // Maximum number of records to fetch in one go
-const MAX_RECORDS = 1000; 
+const MAX_RECORDS = 2000; 
 
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;
