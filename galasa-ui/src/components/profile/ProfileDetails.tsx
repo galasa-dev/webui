@@ -6,6 +6,7 @@
 'use client';
 
 import ErrorPage from "@/app/error/page";
+import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
 import { UserData } from "@/generated/galasaapi";
 import styles from "@/styles/MyProfile.module.css";
 import { ProfileDetailsProps } from "@/utils/interfaces";
@@ -17,6 +18,7 @@ import { useEffect, useState } from "react";
 export default function ProfileDetails({ userProfilePromise }: ProfileDetailsProps) {
   const WEB_UI_CLIENT_NAME = "web-ui";
   const translations = useTranslations("ProfileDetails");
+  const { formatDate } = useDateTimeFormat();
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +64,7 @@ export default function ProfileDetails({ userProfilePromise }: ProfileDetailsPro
                 let lastLoginDateStr: string;
                 if (client.lastLogin) {
                   const clientLastLoginDate = new Date(client.lastLogin);
-                  lastLoginDateStr = `${clientLastLoginDate.toUTCString()}`;
+                  lastLoginDateStr = `${formatDate(clientLastLoginDate)}`;
                 } else {
                   lastLoginDateStr = translations("noLastLogin");
                 }

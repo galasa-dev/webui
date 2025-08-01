@@ -132,8 +132,8 @@
     "role": "Role",
     "recentActivity": "Recent Login Activity",
     "noLastLogin": "No last login date",
-    "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
-    "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}"
+    "lastLoginWeb": "Last logged in to this web application: {date}",
+    "lastLoginToken": "Last logged in using a Galasa personal access token: {date}"
   },
   "EditUserBreadCrumb": {
     "home": "Home",
