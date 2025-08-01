@@ -42,13 +42,6 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
   const EDIT_OTHER_USERS_PERMISSION = "USER_EDIT_OTHER";
   const OWNER_ROLE_NAME = "owner";
 
-  const warningString = `Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.
-
-Tests run by this user will remain untouched and available for queries.
-
-If the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point.`;
-
-
   const headers = [
 
     // headers we want to show in the data table

@@ -102,8 +102,10 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
       }
 
       const { dateTimeFormatType, locale, timeFormat } = preferences;
-        
-      const options: Intl.DateTimeFormatOptions = {
+      const resolvedTimeZone = getResolvedTimeZone();
+
+      // Define options for the main date/time part
+      const dateTimeOptions: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -111,23 +113,35 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
         minute: "2-digit",
         second: "2-digit",
         hour12: timeFormat === '12-hour',
-        timeZone: getResolvedTimeZone(),
-        timeZoneName: "short"
+        timeZone: resolvedTimeZone,
       };
 
-      if (dateTimeFormatType === 'browser') {
-        // Pass undefined to use the browser's default locale
-        formattedDate = new Intl.DateTimeFormat(undefined, options).format(date);
-      } else {
-        // Use the custom locale
-        formattedDate = new Intl.DateTimeFormat(locale, options).format(date);
-      }
+      // Define options specifically to extract the timezone name
+      const timeZoneNameOptions: Intl.DateTimeFormatOptions = {
+        timeZone: resolvedTimeZone,
+        timeZoneName: "short", // e.g., PST, EDT, EEST
+      };
+
+      // Determine the locale to use 
+      const effectiveLocale = dateTimeFormatType === 'browser' ? undefined : locale;
+
+      // Format the two parts separately
+      const mainPart = new Intl.DateTimeFormat(effectiveLocale, dateTimeOptions).format(date);
+      
+      // Get the full string with timezone
+      const fullStringWithTz = new Intl.DateTimeFormat(effectiveLocale, { ...dateTimeOptions, timeZoneName: 'short' }).format(date);
+      const timeZonePart = fullStringWithTz.split(' ').pop() || '';
+
+      // Combine them into the desired final format (e.g., "MM/DD/YYYY, HH:mm:ss (GMT+X)")
+      formattedDate = `${mainPart} (${timeZonePart})`;
     } catch (error) {
       console.error("Error formatting date:", error);
     }  
 
     return formattedDate;
   }, [preferences, getResolvedTimeZone]);
+
+
 
   const value = { preferences, updatePreferences, formatDate, getResolvedTimeZone};
 
@@ -143,7 +157,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
  * 
  * @returns {DateTimeFormatContextType} - The context value for date and time formatting preferences.
  */
-export function useDateTimeFormat() {
+export function useDateTimeFormat(): DateTimeFormatContextType {
   const context = useContext(DateTimeFormatContext);
   if (context === undefined) {
     throw new Error('useDateTimeFormat must be used within a DateTimeFormatProvider');
