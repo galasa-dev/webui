@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import DateTimeFormatSection from '@/components/mysettings/FormatSection';
+import FormatSection from '@/components/mysettings/FormatSection';
 import { SUPPORTED_LOCALES } from '@/utils/constants/common';
 
 // Mock the useTranslations hook
@@ -33,13 +33,14 @@ let mockContextValue = {
   },
   updatePreferences: mockUpdatePreferences,
 };
+
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => mockContextValue,
 }));
 
 
 
-describe('DateTimeFormatSection', () => {
+describe('FormatSection', () => {
   beforeEach(() => {
     // Reset the context value and mock function before each test
     mockContextValue = {
@@ -54,7 +55,7 @@ describe('DateTimeFormatSection', () => {
   });
 
   test('renders correctly with initial preferences', () => {
-    render(<DateTimeFormatSection />);
+    render(<FormatSection />);
 
     expect(screen.getByText(/Edit date and time format settings./i)).toBeInTheDocument();
     expect(screen.getByLabelText(/browser/i)).toBeInTheDocument();
@@ -70,7 +71,7 @@ describe('DateTimeFormatSection', () => {
   });
 
   test('enables custom locale dropdown when custom dateTimeFormatType is selected', () => {
-    const {rerender} = render(<DateTimeFormatSection />);
+    const {rerender} = render(<FormatSection />);
 
     // Select the custom dateTimeFormatType
     const customRadio = screen.getByRole('radio', { name: /custom/i });
@@ -85,7 +86,7 @@ describe('DateTimeFormatSection', () => {
       }
     };
 
-    rerender(<DateTimeFormatSection />);
+    rerender(<FormatSection />);
 
     // Assert that the custom locale dropdown is enabled
     const dropdownWrapper = screen.getByTestId('custom-locale-dropdown-test');
@@ -94,7 +95,7 @@ describe('DateTimeFormatSection', () => {
   });
 
   test('updates locale preference when a new locale is selected', () => {
-    const { rerender } = render(<DateTimeFormatSection />);
+    const { rerender } = render(<FormatSection />);
 
     // Enable the custom dropdowns
     fireEvent.click(screen.getByRole('radio', { name: /custom/i }));
@@ -105,8 +106,7 @@ describe('DateTimeFormatSection', () => {
         dateTimeFormatType: 'custom',
       }
     };
-    rerender(<DateTimeFormatSection />);
-    
+    rerender(<FormatSection />);
     mockUpdatePreferences.mockClear();
 
     // Select a new locale from the dropdown

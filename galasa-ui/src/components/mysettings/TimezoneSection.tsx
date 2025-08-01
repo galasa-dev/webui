@@ -50,8 +50,8 @@ export default function TimezoneSection() {
             className={styles.timezoneDropdown}
             helperText={translations("selectTimeZone")}
             label={translations("selectTimeZone")}
-            id="custom-time-zone-dropdown"
-            data-testid="custom-time-zone-dropdown-test"
+            id="custom-timezone-dropdown"
+            data-testid="custom-timezone-dropdown-test"
             items={SUPPORTED_TIMEZONES}
             itemToString={(item: TimeZone) => item.label ? item.label : ''}
             selectedItem={SUPPORTED_TIMEZONES.find(item => item.iana === preferences.timeZone)}
