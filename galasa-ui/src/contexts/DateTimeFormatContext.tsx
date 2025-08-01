@@ -129,7 +129,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
       const mainPart = new Intl.DateTimeFormat(effectiveLocale, dateTimeOptions).format(date);
       
       // Get the full string with timezone
-      const fullStringWithTz = new Intl.DateTimeFormat(effectiveLocale, { ...dateTimeOptions, timeZoneName: 'short' }).format(date);
+      const fullStringWithTz = new Intl.DateTimeFormat(effectiveLocale, { ...dateTimeOptions, ...timeZoneNameOptions }).format(date);
       const timeZonePart = fullStringWithTz.split(' ').pop() || '';
 
       // Combine them into the desired final format (e.g., "MM/DD/YYYY, HH:mm:ss (GMT+X)")

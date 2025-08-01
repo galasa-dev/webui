@@ -42,6 +42,10 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
   const EDIT_OTHER_USERS_PERMISSION = "USER_EDIT_OTHER";
   const OWNER_ROLE_NAME = "owner";
 
+  // Get the timezone abbreviation in brackets
+  const sampleFormattedDate = formatDate(new Date());
+  const timezoneAbbreviation = sampleFormattedDate.split(' ').slice(-1)[0];
+
   const headers = [
 
     // headers we want to show in the data table
@@ -49,7 +53,7 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
 
     {
       key: "loginId",
-      header: translations('headersLoginId')
+      header: translations('headersLoginId',)
     },
     {
       key: "role",
@@ -57,11 +61,11 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
     },
     {
       key: "lastLogin",
-      header: translations('headersLastLogin')
+      header: translations('headersLastLogin', { timezone: timezoneAbbreviation })
     },
     {
       key: "lastAccessTokenUse",
-      header: translations('headersLastAccessTokenUse')
+      header: translations('headersLastAccessTokenUse', {timezone: timezoneAbbreviation})
     },
   ];
 
