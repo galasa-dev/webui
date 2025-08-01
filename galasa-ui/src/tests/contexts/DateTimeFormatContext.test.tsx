@@ -245,12 +245,14 @@ describe('DateTimeFormatContext', () => {
     });
 
     describe('formatDate with timezones', () => {
-      test('uses custom timezone when type is "custom"', () => {
-        process.env.TZ = 'Asia/Tokyo';
-  
+      test('uses custom timezone and locale when type is "custom"', () => {
+        
         localStorage.setItem('dateTimeFormatSettings', JSON.stringify({
-          timeZoneType: 'custom',
-          timeZone: 'Asia/Tokyo'
+          dateTimeFormatType: 'custom', 
+          locale: 'en-US',            
+          timeFormat: '12-hour',    
+          timeZoneType: 'custom',    
+          timeZone: 'Asia/Tokyo'     
         }));
   
         render(
@@ -259,8 +261,7 @@ describe('DateTimeFormatContext', () => {
           </DateTimeFormatProvider>
         );
         
-        // 2023-10-01T12:00:00Z is 9:00 PM in Tokyo (UTC+9).
-        expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('Formatted Date: 01/10/2023, 09:00:00 pm (GMT+9)');
+        expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('Formatted Date: 10/01/2023, 09:00:00 PM (GMT+9)');
       });
     });
   });
