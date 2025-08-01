@@ -27,7 +27,6 @@ interface DateTimeFormatContextType {
     [PREFERENCE_KEYS.TIME_FORMAT]: TimeFormat['label'];
     [PREFERENCE_KEYS.TIME_ZONE_TYPE]: TimeZoneFormats;
     [PREFERENCE_KEYS.TIME_ZONE]: TimeZone['iana']; 
-    
   };
   updatePreferences: (newPreferences: Partial<DateTimeFormatContextType['preferences']>) => void;
   formatDate: (date: Date) => string;

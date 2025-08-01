@@ -10,21 +10,29 @@ import { DateTimeFormatProvider, useDateTimeFormat } from '@/contexts/DateTimeFo
 
 // Mock a simple component to display the hook's state for our tests
 const TestComponent = ({ date }: { date: Date }) => {
-  const {preferences, formatDate, updatePreferences} = useDateTimeFormat();
+  const {preferences, formatDate, updatePreferences, getResolvedTimeZone} = useDateTimeFormat();
   
   return (
     <div>
       <p>Preferences: {JSON.stringify(preferences)}</p>
       <p>Formatted Date: {formatDate(date)}</p>
+      <p>Resolved TimeZone: {getResolvedTimeZone()}</p>
       <button onClick={() => updatePreferences({ locale: 'de-DE' })}>
         Update Locale
       </button>
       <button onClick={() => updatePreferences({ dateTimeFormatType: 'browser' })}>
         Set to Browser
       </button>
+      <button onClick={() => updatePreferences({ timeZoneType: 'browser' })}>
+        Set TZ to Browser
+      </button>
+      <button onClick={() => updatePreferences({ timeZoneType: 'custom', timeZone: 'Asia/Tokyo' })}>
+        Set TZ to Custom
+      </button>
     </div>
   );
 };
+
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -204,5 +212,56 @@ describe('DateTimeFormatContext', () => {
     );
 
     expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('-');
+  });
+
+  describe('Timezone functionality', () => {
+    describe('getResolvedTimeZone', () => {
+      test('returns browser timezone when timeZoneType is "browser"', () => {
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+
+        expect(screen.getByText(/Resolved TimeZone:/)).toHaveTextContent(Intl.DateTimeFormat().resolvedOptions().timeZone);
+      });
+
+      test('returns custom timezone when timeZoneType is "custom"', () => {
+        const customPrefs = {
+          ...defaultPreferences,
+          timeZoneType: 'custom',
+          timeZone: 'Asia/Tokyo'
+        };
+        localStorage.setItem('dateTimeFormatSettings', JSON.stringify(customPrefs));
+
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+
+        expect(screen.getByText(/Resolved TimeZone:/)).toHaveTextContent('Asia/Tokyo');
+      });
+    });
+
+    describe('formatDate with timezones', () => {
+      test('uses custom timezone when type is "custom"', () => {
+        process.env.TZ = 'Asia/Tokyo';
+  
+        localStorage.setItem('dateTimeFormatSettings', JSON.stringify({
+          timeZoneType: 'custom',
+          timeZone: 'Asia/Tokyo'
+        }));
+  
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+        
+        // 2023-10-01T12:00:00Z is 9:00 PM in Tokyo (UTC+9).
+        expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('Formatted Date: 01/10/2023, 09:00:00 pm (GMT+9)');
+      });
+    });
   });
 });
