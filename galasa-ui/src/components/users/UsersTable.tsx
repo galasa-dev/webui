@@ -56,19 +56,19 @@ If the user logs in to the Galasa service after this point, they will be challen
 
     {
       key: "loginId",
-      header: translations('headers_loginId')
+      header: translations('headersLoginId')
     },
     {
       key: "role",
-      header: translations('headers_role')
+      header: translations('headersRole')
     },
     {
       key: "lastLogin",
-      header: translations('headers_lastLogin')
+      header: translations('headersLastLogin')
     },
     {
       key: "lastAccessTokenUse",
-      header: translations('headers_lastAccessTokenUse')
+      header: translations('headersLastAccessTokenUse')
     },
   ];
 
@@ -231,17 +231,17 @@ If the user logs in to the Galasa service after this point, they will be challen
                           open={isDeleteModalOpen} 
                           onRequestClose={() => setIsDeleteModalOpen(false)} 
                           danger 
-                          modalHeading={translations('modal_heading', { user: selectedRow!.cells[0].value })} 
-                          modalLabel={translations('modal_label')} 
-                          primaryButtonText={translations('modal_primaryButton')} 
-                          secondaryButtonText={translations('modal_secondaryButton')}
+                          modalHeading={translations('modalHeading', { user: selectedRow!.cells[0].value })} 
+                          modalLabel={translations('modalLabel')} 
+                          primaryButtonText={translations('modalPrimaryButton')} 
+                          secondaryButtonText={translations('modalSecondaryButton')}
                         >
                           <InlineNotification
-                            title={translations('modal_notificationTitle')}
+                            title={translations('modalNotificationTitle')}
                             kind="warning"
                             subtitle={
                               <div style={{ whiteSpace: 'pre-wrap' }}>
-                                {translations('modal_notificationSubtitle')}
+                                {translations('modalNotificationSubtitle')}
                               </div>
                             }
                             lowContrast
