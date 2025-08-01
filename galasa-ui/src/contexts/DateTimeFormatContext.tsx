@@ -101,7 +101,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
         throw new Error("Invalid date provided to formatDate");
       }
 
-      const { dateTimeFormatType, locale, timeFormat, timeZone, timeZoneType} = preferences;
+      const { dateTimeFormatType, locale, timeFormat } = preferences;
         
       const options: Intl.DateTimeFormatOptions = {
         year: "numeric",

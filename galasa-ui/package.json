@@ -25,6 +25,7 @@
     "jszip": "^3.10.1",
     "jwt-decode": "^3.1.2",
     "markdown-it": "^14.1.0",
+    "moment-timezone": "^0.6.0",
     "next": "^14.0.3",
     "next-intl": "^4.1.0",
     "react": "^18.2.0",

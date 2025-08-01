@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { AmPm } from "./types/common";
-
+import moment from "moment-timezone";
 
 export function parseIsoDateTime(isoString: string) {
   // Construct a Date object
@@ -100,16 +100,27 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
 };
 
 /**
- *  Combines date, time, AM/PM  parts into a single, accurate Date object.
- * 
- * @param date - The date part as a Date object.
+ * Combines date, time, AM/PM, and timezone parts into a single, accurate Date object.
+ *
+ * This function uses moment-timezone to ensure the date and time are interpreted
+ * correctly in the context of the specified timezone.
+ *
+ * @param date - The date part as a Date object. Only its year, month, and day are used.
  * @param time - The time part as a string in 'HH:MM' format.
  * @param amPm - The AM/PM part as a string ('AM' or 'PM').
- * 
- * @return A Date object representing the combined date and time.
- */
-
-export const combineDateTime = (date: Date, time: string, amPm: AmPm): Date => {
+ * @param timezone - The IANA timezone identifier (e.g., 'America/New_York', 'Europe/London').
+ *
+ * @returns A standard JavaScript `Date` object representing the precise universal moment in time.
+ *          Note: The returned `Date` object is timezone-agnostic. When printed to the console,
+ *          it will be displayed in the local timezone of the environment. To see its UTC value,
+ *          use the `.toISOString()` method.
+ *
+ * @example
+ *  To create a Date for July 31, 2025, at 9:55 PM in New York (which is UTC-4):
+ * combineDateTime(new Date('2025-07-31'), '09:55', 'PM', 'America/New_York');
+ *  The returned Date object's .toISOString() will be "2025-08-01T01:55:00.000Z"
+*/
+export const combineDateTime = (date: Date, time: string, amPm: AmPm, timezone: string): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
@@ -120,40 +131,51 @@ export const combineDateTime = (date: Date, time: string, amPm: AmPm): Date => {
   if (amPm === 'AM' && hours === 12) { // Handle midnight case
     hours = 0;
   }
-  
-  const newDate = new Date(date);
-  newDate.setHours(hours, minutes, 0, 0); // Sets time in the local timezone
-  return newDate;
+
+  // Format the date part (YYYY-MM-DD)
+  const datePart = moment(date).format('YYYY-MM-DD');
+  console.log("Date part: ", datePart);
+
+  // Combine date and time into a single string
+  const dateTimeStr = `${datePart} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+  console.log("Date time string: ", dateTimeStr);
+
+  // Interpret the string in the specified timezone, then format it into a full ISO string, which includes the correct timezone offset.
+  const isoStringWithTimezone = moment.tz(dateTimeStr, 'YYYY-MM-DD HH:mm:ss', timezone).format();
+
+  // Create a universal Date object from the reliable ISO string.
+  return new Date(isoStringWithTimezone);
 };
 
 /**
- * Extracts the time, AM/PM from a Date object for populating UI fields.
- * 
- * @param date - A Date object to extract date and time from.
- * @returns An object with `time` and `amPm` properties.
+ * Deconstructs a universal Date object into UI parts (time and AM/PM)
+ * for a specific timezone. This is the inverse of `combineDateTime`.
+ *
+ * It ensures UI components display the time correctly according to the
+ * user's selected timezone, not their browser's local time.
+ *
+ * @param date - The date to extract time from, as a JavaScript Date object.
+ * @param timezone - The IANA timezone (e.g., 'America/New_York') to interpret the date in.
+ * @returns An object with `{ time: 'hh:mm', amPm: 'AM'|'PM' }` for the target timezone.
+ *
+ * @example
+ * What time was it in New York (UTC-4) at the moment '2025-08-01T01:55:00.000Z'?
+ * extractDateTimeForUI(new Date('2025-08-01T01:55:00.000Z'), 'America/New_York');
+ * returns -> { time: '09:55', amPm: 'PM' }
  */
-export const extractDateTimeForUI = (date: Date) => {
-  const hours24 = date.getHours();
-  const minutes = date.getMinutes();
+export const extractDateTimeForUI = (date: Date, timezone: string) => {
+  // 1. Create a moment object from the universal Date and tell it
+  //  to interpret that moment in the context of the desired timezone.
+  const momentInZone = moment.tz(date, timezone);
 
-  const amPm: AmPm = hours24 >= 12 ? 'PM' : 'AM';
+  // 2. Format the parts using moment's timezone-aware formatting.
+  const timeValue = momentInZone.format('hh:mm'); // 'hh' = 12-hour format (01-12)
+  const amPmValue = momentInZone.format('A') as AmPm; // 'A' = AM/PM
 
-  // Convert 24-hour format to 12-hour format for display
-  let hours12 = hours24 % 12;
-  if (hours12 === 0) {
-    hours12 = 12;
-  }
-
-  // Pad hours and minutes with leading zeros to ensure they are always two digits
-  const minutesStr = minutes.toString().padStart(2, '0');
-  const hoursStr = hours12.toString().padStart(2, '0');
-
-  // Construct the final time string
-  const timeValue = `${hoursStr}:${minutesStr}`;
-
+  console.log(`Extracted in ${timezone}:`, timeValue, amPmValue); // e.g. 09:55 PM
   return {
     time: timeValue,
-    amPm: amPm,
+    amPm: amPmValue,
   };
 };
 
