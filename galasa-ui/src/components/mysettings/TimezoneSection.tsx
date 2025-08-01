@@ -5,8 +5,8 @@
  */
 'use client';
 import { useDateTimeFormat } from "@/contexts/DateTimeFormatContext";
-import styles from "@/styles/FormatSection.module.css";
-import { PREFERENCE_KEYS, SUPPORTED_LOCALES, TIME_FORMATS } from "@/utils/constants/common";
+import styles from "@/styles/TimezoneSection.module.css";
+import { PREFERENCE_KEYS } from "@/utils/constants/common";
 import { SUPPORTED_TIMEZONES } from "@/utils/constants/timezones";
 import { TimeZone } from "@/utils/types/dateTimeSettings";
 import { Dropdown } from "@carbon/react";
@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 
 type TimeZoneFormats = 'custom' | 'browser'
 
-export default function FormatSection() {
+export default function TimezoneSection() {
   const { preferences, updatePreferences } = useDateTimeFormat();
   const translations = useTranslations("TimeZoneSection");
 
@@ -47,6 +47,7 @@ export default function FormatSection() {
         />
         <div className={styles.dropdownContainer}>
           <Dropdown 
+            className={styles.timezoneDropdown}
             helperText={translations("selectTimeZone")}
             label={translations("selectTimeZone")}
             id="custom-time-zone-dropdown"

@@ -49,7 +49,6 @@ export function applyTimeFrameRules(fromDate: Date, toDate: Date,
   let correctedFrom = new Date(fromDate.getTime());
   let correctedTo = new Date(toDate.getTime());
   let notification: Notification | null = null;
-    
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
