@@ -26,7 +26,7 @@ exports[`MySettings Component renders correctly when user login id is found 1`] 
     onLoad={[Function]}
     refreshToken=""
   />
-  <DateTimeFormatSection />
+  <DateTimeSettings />
   <ExperimentalFeaturesSection />
 </main>
 `;

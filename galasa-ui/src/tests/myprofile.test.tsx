@@ -36,6 +36,13 @@ jest.mock('next/navigation', () => ({
   })),
 }));
 
+// Mock the useDateTimeFormat context
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    formatDate: (date: Date) => date.toLocaleString(), 
+  })
+}));
+
 describe('MyProfilePage', () => {
   afterEach(() => {
     jest.clearAllMocks();

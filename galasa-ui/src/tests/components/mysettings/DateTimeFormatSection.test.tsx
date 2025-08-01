@@ -56,7 +56,6 @@ describe('DateTimeFormatSection', () => {
   test('renders correctly with initial preferences', () => {
     render(<DateTimeFormatSection />);
 
-    expect(screen.getByText(/Date\/Time Format/i)).toBeInTheDocument();
     expect(screen.getByText(/Edit date and time format settings./i)).toBeInTheDocument();
     expect(screen.getByLabelText(/browser/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/custom/i)).toBeInTheDocument();
