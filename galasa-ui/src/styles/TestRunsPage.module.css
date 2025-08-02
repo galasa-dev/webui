@@ -306,3 +306,7 @@
 .hidden {
   visibility: hidden;
 }
+
+.clickableRow {
+  cursor: pointer;
+}

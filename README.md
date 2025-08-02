@@ -13,6 +13,19 @@ This is the home of the web user-interface for Galasa.
 - Run the `setup-locally.sh` script
 
 ## To build locally
+
+To build the code, it needs to get the REST interface definition from somewhere, to generate stubs in order to make calling the REST API easy.
+Hence, we need to tell the build where to get this definition from. 
+
+If you don't have the `galasa` repository built locally, then the default behaviour is to refer to a hosted version.
+
+If you do have a built `galasa` repository already, then we can refer to your `~/.m2` repository using the `SOURCE_MAVEN` environment variable.
+```shell
+export SOURCE_MAVEN="file://${HOME}/.m2/repository"
+```
+
+then...
+
 - Run the `build-locally.sh` script
 
 ## To run development server locally

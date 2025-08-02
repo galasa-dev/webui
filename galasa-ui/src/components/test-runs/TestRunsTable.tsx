@@ -213,9 +213,15 @@ export default function TestRunsTable({runsList,limitExceeded, visibleColumns, o
                 </TableHead>
                 <TableBody>
                   {rows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })} onClick={() => handleRowClick(row.id, row.cells.find(cell => cell.info.header === 'testRunName')?.value as string)}>
-                      {row.cells.map((cell) => 
-                        <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />)}
+                    <TableRow
+                      key={row.id}
+                      {...getRowProps({ row })}
+                      onClick={() => handleRowClick(row.id, row.cells.find(cell => cell.info.header === 'testRunName')?.value as string)}
+                      className={styles.clickableRow}
+                    >
+                      {row.cells.map((cell) =>
+                        <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
