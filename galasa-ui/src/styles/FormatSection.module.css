@@ -3,11 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
- .section { 
-    width: 90%;
-    margin: 3rem auto;
-}
-
 .title {
     font-weight: 500;
     margin: 1rem 0;

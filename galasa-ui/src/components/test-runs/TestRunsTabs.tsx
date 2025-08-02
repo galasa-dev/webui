@@ -21,6 +21,7 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import { ColumnDefinition, runStructure } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { Run } from '@/generated/galasaapi';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 interface TabConfig {
   id: string;
@@ -37,6 +38,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   const router = useRouter();
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
+  const { getResolvedTimeZone } = useDateTimeFormat();
 
   // Decode the search params from the URL every time the searchParams change
   const searchParams = useMemo(() => {
@@ -83,7 +85,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const toParam = searchParams.get('to');
     const initialToDate = toParam ? new Date(toParam) : new Date();
     const initialFromDate = fromParam ? new Date(fromParam) : new Date(initialToDate.getTime() - DAY_MS);
-    return calculateSynchronizedState(initialFromDate, initialToDate);
+    const timezone = getResolvedTimeZone();
+    return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
   });
 
   // Initialize search criteria based on URL parameters

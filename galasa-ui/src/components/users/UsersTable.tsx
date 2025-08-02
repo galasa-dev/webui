@@ -42,12 +42,9 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
   const EDIT_OTHER_USERS_PERMISSION = "USER_EDIT_OTHER";
   const OWNER_ROLE_NAME = "owner";
 
-  const warningString = `Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.
-
-Tests run by this user will remain untouched and available for queries.
-
-If the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point.`;
-
+  // Get the timezone abbreviation in brackets
+  const sampleFormattedDate = formatDate(new Date());
+  const timezoneAbbreviation = sampleFormattedDate.split(' ').slice(-1)[0];
 
   const headers = [
 
@@ -56,19 +53,19 @@ If the user logs in to the Galasa service after this point, they will be challen
 
     {
       key: "loginId",
-      header: translations('headers_loginId')
+      header: translations('headersLoginId',)
     },
     {
       key: "role",
-      header: translations('headers_role')
+      header: translations('headersRole')
     },
     {
       key: "lastLogin",
-      header: translations('headers_lastLogin')
+      header: translations('headersLastLogin', { timezone: timezoneAbbreviation })
     },
     {
       key: "lastAccessTokenUse",
-      header: translations('headers_lastAccessTokenUse')
+      header: translations('headersLastAccessTokenUse', {timezone: timezoneAbbreviation})
     },
   ];
 
@@ -231,17 +228,17 @@ If the user logs in to the Galasa service after this point, they will be challen
                           open={isDeleteModalOpen} 
                           onRequestClose={() => setIsDeleteModalOpen(false)} 
                           danger 
-                          modalHeading={translations('modal_heading', { user: selectedRow!.cells[0].value })} 
-                          modalLabel={translations('modal_label')} 
-                          primaryButtonText={translations('modal_primaryButton')} 
-                          secondaryButtonText={translations('modal_secondaryButton')}
+                          modalHeading={translations('modalHeading', { user: selectedRow!.cells[0].value })} 
+                          modalLabel={translations('modalLabel')} 
+                          primaryButtonText={translations('modalPrimaryButton')} 
+                          secondaryButtonText={translations('modalSecondaryButton')}
                         >
                           <InlineNotification
-                            title={translations('modal_notificationTitle')}
+                            title={translations('modalNotificationTitle')}
                             kind="warning"
                             subtitle={
                               <div style={{ whiteSpace: 'pre-wrap' }}>
-                                {translations('modal_notificationSubtitle')}
+                                {translations('modalNotificationSubtitle')}
                               </div>
                             }
                             lowContrast
