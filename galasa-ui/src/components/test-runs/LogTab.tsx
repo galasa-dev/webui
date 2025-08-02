@@ -16,6 +16,7 @@ import {
   CloudDownload,
   Term,
   LetterAa,
+  Copy,
 } from "@carbon/icons-react";
 import { handleDownload } from "@/utils/artifacts";
 import { useTranslations } from "next-intl";
@@ -44,6 +45,11 @@ interface LogTabProps {
   initialLine?: number;
 }
 
+interface selectedRange {
+  startLine: number;
+  endLine: number;
+}
+
 export default function LogTab({ logs, initialLine }: LogTabProps) {
   const translations = useTranslations("LogTab");
 
@@ -62,6 +68,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     INFO: true,
     TRACE: true,
   });
+  const [selectedRange, setSelectedRange] = useState<selectedRange | null>(null);
 
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
@@ -94,6 +101,52 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       ...prev,
       [level]: !prev[level as keyof typeof prev],
     }));
+  };
+
+  const handleSelection = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    // Get the current selection from the browser
+    const selected = window.getSelection();
+
+    // Ignore if no selection or just a single click
+    if (!selected || selected.isCollapsed) {
+      setSelectedRange(null);
+      return;
+    }
+
+    // Set the selection state with start and end lines
+    const startLine = selected.anchorNode?.parentElement?.closest('[id^="log-line-"]');
+    const endLine = selected.focusNode?.parentElement?.closest('[id^="log-line-"]');
+
+    if (startLine && endLine) {
+      setSelectedRange({
+        startLine: startLine ? parseInt(startLine.attributes[0].value.split('-')[2]) : 0,
+        endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
+      });
+    }
+
+    console.log("Selection changed:", {
+      startLine: startLine ? parseInt(startLine.attributes[0].value.split('-')[2]) : 0,
+      endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
+    });
+  }, []);
+
+  // Clear selection when clicking outside the log content
+  const handleClickOutside = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (logContainerRef.current && !logContainerRef.current.contains(event.target as Node)) {
+      setSelectedRange(null);
+    }
+  };
+
+  const handleCopyPermalink = () => {
+    if (!selectedRange) return;
+
+    const { startLine, endLine } = selectedRange;
+    const permalink = `${window.location.href}#log-${startLine}-${endLine}`;
+
+    navigator.clipboard.writeText(permalink);
+
+    // Clear selection after copying
+    setSelectedRange(null); 
   };
 
   const toggleMatchCase = () => {
@@ -279,6 +332,40 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     return result;
   }, [searchRegex, debouncedSearchTerm, searchMatches, currentMatchIndex]);
 
+  const highlightSelection = useCallback(() => {
+    if (!selectedRange || !logContainerRef.current) return;
+
+    // Ensure start/end lines are ordered correctly, as user can select upwards
+    const startLineNum = Math.min(selectedRange.startLine, selectedRange.endLine);
+    const endLineNum = Math.max(selectedRange.startLine, selectedRange.endLine);
+
+
+    const startElement = document.getElementById(`log-line-${startLineNum}`);
+    const endElement = document.getElementById(`log-line-${endLineNum}`);
+
+    // Target the <pre> tags which contain the actual log content
+    const startPre = startElement?.querySelector('pre');
+    const endPre = endElement?.querySelector('pre');
+
+    if (startPre?.firstChild && endPre?.lastChild) {
+      const range = document.createRange();
+
+      //  Set range start at the beginning of the <pre> tag's content
+      range.setStart(startPre.firstChild, 0);
+
+      const endNode = endPre.lastChild;
+      const endOffset = endNode.textContent?.length || 0;
+      range.setEnd(endNode, endOffset);
+
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }, [selectedRange]);
+
+
   const visibleLines = useMemo(() => {
     return processedLines.filter(line => line.isVisible);
   }, [processedLines]);
@@ -292,6 +379,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       result = visibleLines.map((logLine) => {
         const levelClass = logLine.level.toLowerCase();
         const colorClass = styles[levelClass as keyof typeof styles] || "";
+
+        // Highlight the selection if it exists
+        if (selectedRange && logLine.lineNumber >= selectedRange.startLine && logLine.lineNumber <= selectedRange.endLine) {
+          highlightSelection();
+        }
 
         return (
           <div
@@ -310,6 +402,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
 
     return result;
   };
+
 
   // Effect to scroll to the initial line
   useEffect(() => {
@@ -524,9 +617,22 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           iconDescription={translations("download_button")}
           onClick={() => handleDownload(logContent, "run.log")}
         />
+        <Button
+          kind="ghost"
+          renderIcon={Copy}
+          hasIconOnly
+          iconDescription={translations("copy_permalink_button")}
+          onClick={handleCopyPermalink}
+          disabled={!selectedRange?.startLine}
+        />
       </div>
       <div className={styles.runLog}>
-        <div className={styles.runLogContent} ref={logContainerRef}>
+        <div 
+          className={styles.runLogContent} 
+          ref={logContainerRef} 
+          onMouseUp={handleSelection}
+          onMouseDown={handleClickOutside}
+        >
           {renderLogContent()}
         </div>
       </div>
