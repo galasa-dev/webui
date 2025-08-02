@@ -75,6 +75,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
 
   const logContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialScrollDone = useRef(false);
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
 
   const handleSearchChange = (e: any) => {
@@ -140,8 +141,14 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   const handleCopyPermalink = () => {
     if (!selectedRange) return;
 
-    const { startLine, endLine } = selectedRange;
-    const permalink = `${window.location.href}#log-${startLine}-${endLine}`;
+    // Ensure start/end lines are ordered correctly, as users can select upwards
+    const start = Math.min(selectedRange.startLine, selectedRange.endLine);
+    const end = Math.max(selectedRange.startLine, selectedRange.endLine);
+
+    // Construct the base URL from its parts to explicitly exclude any existing hash
+    const baseUrl = window.location.origin + window.location.pathname + window.location.search;
+    
+    const permalink = `${baseUrl}#log-${start}-${end}`;
 
     navigator.clipboard.writeText(permalink);
 
@@ -339,7 +346,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     const startLineNum = Math.min(selectedRange.startLine, selectedRange.endLine);
     const endLineNum = Math.max(selectedRange.startLine, selectedRange.endLine);
 
-
     const startElement = document.getElementById(`log-line-${startLineNum}`);
     const endElement = document.getElementById(`log-line-${endLineNum}`);
 
@@ -350,7 +356,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     if (startPre?.firstChild && endPre?.lastChild) {
       const range = document.createRange();
 
-      //  Set range start at the beginning of the <pre> tag's content
+      // Set range start at the beginning of the <pre> tag's content
       range.setStart(startPre.firstChild, 0);
 
       const endNode = endPre.lastChild;
@@ -403,6 +409,48 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     return result;
   };
 
+  // Effect to scroll to selected lines 
+  useEffect(() => {
+    // Exit if logs aren't processed or if we've already done the initial scroll
+    if (processedLines.length === 0 || isInitialScrollDone.current) {
+      return;
+    }
+
+    // Use a timeout to ensure the DOM is fully rendered before we try to scroll
+    const scrollTimer = setTimeout(() => {
+      let startLine, endLine;
+      const hash = window.location.hash;
+
+      // Check for a line range in the URL hash
+      if (hash.startsWith("#log-")) {
+        const parts = hash.substring(1).split('-');
+        if (parts.length === 3 && parts[0] === 'log') {
+          startLine = parseInt(parts[1], 10);
+          endLine = parseInt(parts[2], 10);
+        }
+      } 
+
+      if (startLine && endLine && !isNaN(startLine) && !isNaN(endLine)) {
+        isInitialScrollDone.current = true; // Mark as done so it doesn't run again
+
+        // Set the selection state
+        setSelectedRange({ startLine, endLine });
+
+        // Find the element to scroll to
+        const targetElement = document.getElementById(`log-line-${startLine}`);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: "auto",
+            block: "center",
+          });
+        }
+      }
+    }, 0); 
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(scrollTimer);
+
+  }, [processedLines, initialLine]); 
 
   // Effect to scroll to the initial line
   useEffect(() => {
