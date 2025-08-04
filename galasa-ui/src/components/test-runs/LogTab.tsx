@@ -690,6 +690,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           iconDescription={translations("copyPermalinkButton")}
           onClick={handleCopyPermalink}
           disabled={!selectedRange?.startLine}
+          data-testid="icon-button-copy-permalink"
         />
       </div>
       <div className={styles.runLog}>

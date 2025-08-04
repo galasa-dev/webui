@@ -8,6 +8,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LogTab from '@/components/test-runs/LogTab';
 import { handleDownload } from '@/utils/artifacts';
+import { wait } from '@testing-library/user-event/dist/types/utils';
 
 // Mock the utility function
 jest.mock('@/utils/artifacts', () => ({
@@ -97,6 +98,21 @@ jest.mock('@carbon/icons-react', () => ({
   TextUnderline: () => <div>TextUnderline</div>,
   CloudDownload: () => <div>CloudDownload</div>,
 }));
+
+// Mock window.getSelection API
+const mockSelection = (startNode: Node, endNode: Node) => {
+  const selection = {
+    anchorNode: startNode,
+    focusNode: endNode,
+    isCollapse: startNode === endNode,
+    removeAllRanges: jest.fn(),
+    addRange: jest.fn(),
+  };
+
+  // Override the global window.getSelection method
+  window.getSelection = jest.fn().mockReturnValue(selection as unknown as Selection);
+  return selection;
+};
 
 const sampleLogs = `2024-01-01 10:00:00 INFO Starting application
 2024-01-01 10:00:01 DEBUG Initializing database connection
@@ -436,4 +452,82 @@ Line with $dollar and ^caret`;
     });
   });
 
+  describe('Selection and Permalink Functionality', () => {
+    beforeEach(() => {
+    // Mock the clipboard API for permalink tests
+      Object.assign(navigator, {
+        clipboard: {
+          writeText: jest.fn(),
+        },
+      });
+    });
+
+
+    it('copies permalink button is initially disabled', () => {
+      render(<LogTab logs={sampleLogs} />);
+
+      const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
+      expect(copyPermalinkButton).toBeDisabled(); 
+    });
+
+    it('enables permalink button when a log line is selected', async  () => {
+      render(<LogTab logs={sampleLogs} />);
+
+      // Wait for the lines to be rendered
+      await waitFor(() => {
+        expect(screen.getByText(/Starting application/)).toBeInTheDocument();
+        expect(screen.getByText(/Failed to connect to database/)).toBeInTheDocument();
+      });
+
+      // Get lines selected nodes
+      const logContainer = screen.getByText(/Starting application/).closest('div[class*="runLogContent"]');
+      const startLineNode = screen.getByText(/Starting application/);
+      const endLineNode = screen.getByText(/Failed to connect to database/);
+
+      // Simulate selection
+      mockSelection(startLineNode, endLineNode);
+
+      // Trigger onMouseUp event on the container to process the selection
+      fireEvent.mouseUp(logContainer!);
+
+      // Check if the permalink button is enabled
+      await waitFor(() => {
+        const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
+        expect(copyPermalinkButton).toBeEnabled();
+      });
+    });
+
+    it('copies the correct permalink to the clipboard and disables the button', async () => {
+      render(<LogTab logs={sampleLogs} />);
+      
+      await waitFor(() => {
+        expect(screen.getByText(/Initializing database connection/)).toBeInTheDocument();
+        expect(screen.getByText(/Connection retry attempt 1/)).toBeInTheDocument();
+      });
+
+      const logContainer = screen.getByText(/Initializing database connection/).closest('div[class*="runLogContent"]');
+      const startLineNode = screen.getByText(/Initializing database connection/); // Line 2
+      const endLineNode = screen.getByText(/Connection retry attempt 1/);         // Line 4
+
+      // Simulate selection
+      mockSelection(startLineNode, endLineNode);
+      fireEvent.mouseUp(logContainer!);
+
+      const copyButton = await screen.findByTestId('icon-button-copy-permalink');
+      expect(copyButton).not.toBeDisabled();
+
+      // Click the button
+      fireEvent.click(copyButton);
+
+      // Verify the clipboard was called with the correct URL hash.
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        expect.stringContaining('#log-2-4')
+      );
+
+      // The button should become disabled again after copying.
+      await waitFor(() => {
+        expect(copyButton).toBeDisabled();
+      });
+    });
+  });
 });
