@@ -73,9 +73,12 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
 
+  // State to track the URL hash, initialized to the value of the first render
+  const [currentHash, setCurrentHash] = useState<string>(typeof window !== 'undefined' ? window.location.hash : '');
+
   const logContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isInitialScrollDone = useRef(false);
+
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
 
   const handleSearchChange = (e: any) => {
@@ -124,22 +127,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
       });
     }
-  }, []);
-
-  // Effect to clear selection state when the user deselects text anywhere.
-  useEffect(() => {
-    const handleSelectionChange = () => {
-      const selection = window.getSelection();
-      if (selection && selection.isCollapsed) {
-        setSelectedRange(null);
-      }
-    };
-
-    document.addEventListener("selectionchange", handleSelectionChange);
-
-    return () => {
-      document.removeEventListener("selectionchange", handleSelectionChange);
-    };
   }, []);
 
   const handleCopyPermalink = () => {
@@ -414,17 +401,45 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     return result;
   };
 
+  // Effect to clear selection state when the user deselects text anywhere.
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (selection && selection.isCollapsed) {
+        setSelectedRange(null);
+      }
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, []);
+
+  // Effect to listen to the browser hash changes and updates the state that runs only on mount
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentHash(window.location.hash);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
   // Effect to scroll to selected lines 
   useEffect(() => {
-    // Exit if logs aren't processed or if we've already done the initial scroll
-    if (processedLines.length === 0 || isInitialScrollDone.current) {
+    // Exit if logs aren't processed
+    if (processedLines.length === 0) {
       return;
     }
 
     // Use a timeout to ensure the DOM is fully rendered before we try to scroll
     const scrollTimer = setTimeout(() => {
       let startLine, endLine;
-      const hash = window.location.hash;
+      const hash = currentHash || window.location.hash;
 
       // Check for a line range in the URL hash
       if (hash.startsWith("#log-")) {
@@ -436,8 +451,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       } 
 
       if (startLine && endLine && !isNaN(startLine) && !isNaN(endLine)) {
-        isInitialScrollDone.current = true; // Mark as done so it doesn't run again
-
         // Set the selection state
         setSelectedRange({ startLine, endLine });
 
@@ -455,7 +468,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     // Cleanup function to clear the timeout if the component unmounts
     return () => clearTimeout(scrollTimer);
 
-  }, [processedLines, initialLine]); 
+  }, [processedLines, currentHash]); 
 
   // Effect to scroll to the initial line
   useEffect(() => {
