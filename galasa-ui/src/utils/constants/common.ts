@@ -129,6 +129,8 @@ const PREFERENCE_KEYS = {
   DATE_TIME_FORMAT_TYPE: 'dateTimeFormatType' as const,
   LOCALE: 'locale' as const,
   TIME_FORMAT: 'timeFormat' as const,
+  TIME_ZONE_TYPE: 'timeZoneType' as const,
+  TIME_ZONE: 'timeZone' as const,
 } as const;
 
 const TEST_RUN_PAGE_TABS = ["overview", "methods", "runLog", "artifacts"];

@@ -95,6 +95,14 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
+// Mock the useDateTimeFormat context
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    formatDate: (date: Date) => date.toLocaleString(), 
+    getResolvedTimeZone: () => 'UTC', 
+  })
+}));
+
 jest.mock('@/utils/constants/common', () => ({
   RESULTS_TABLE_COLUMNS:  [
     { id: 'submittedAt', columnName: 'Submitted' },

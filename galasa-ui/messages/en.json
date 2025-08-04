@@ -35,8 +35,10 @@
       "graph":" Test Run Graphs"
     }
   },
+  "DateTimeSettings": {
+    "title": "Date/Time Format"
+  },
   "DateTimeFormatSection": {
-    "title": "Date/Time Format",
     "description": "Configure the format for displaying date and time.",
     "dateTimeFormat": "Date/Time Format",
     "showDatesInBrowserLocale": "Show dates and times based on the browser locale",
@@ -45,6 +47,15 @@
     "selectTimeFormat": "Select a time format",
     "12-hour": "12-hour",
     "24-hour": "24-hour"
+  },
+  "TimeZoneSection": {
+    "description": "Configure which time zone is applied when displaying date and time values.",
+    "timeZoneFormat": "Time Zone Format",
+    "showTimeZoneInBrowser": "Show time zone based on the browser settings",
+    "showTimeZoneInCustom": "Show time zone in a custom format",
+    "selectTimeZone": "Select a time zone",
+    "customTimeZone": "Custom Time Zone",
+    "browserTimeZone": "Browser Time Zone"
   },
   "AccessTokensSection": {
     "title": "Access Tokens",
@@ -65,19 +76,19 @@
   "usersTable": {
     "searchPlaceholder": "Search",
     "ariaLabel": "Users table",
-    "headers_loginId": "Login ID",
-    "headers_role": "Role",
-    "headers_lastLogin": "Last login",
-    "headers_lastAccessTokenUse": "Last access token use",
-    "headers_actions": "Actions",
+    "headersLoginId": "Login ID",
+    "headersRole": "Role",
+    "headersLastLogin": "Last login {timezone}",
+    "headersLastAccessTokenUse": "Last access token use {timezone}",
+    "headersActions": "Actions",
     "editIconDescription": "Edit User",
     "deleteIconDescription": "Delete User",
-    "modal_label": "Delete User",
-    "modal_heading": "Are you sure you want to delete '{user}'?",
-    "modal_primaryButton": "Delete",
-    "modal_secondaryButton": "Cancel",
-    "modal_notificationTitle": "Deleting a user will remove any memory the Galasa service has of this user.",
-    "modal_notificationSubtitle": "Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.\n\nTests run by this user will remain untouched and available for queries.\n\nIf the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point."
+    "modalLabel": "Delete User",
+    "modalHeading": "Are you sure you want to delete '{user}'?",
+    "modalPrimaryButton": "Delete",
+    "modalSecondaryButton": "Cancel",
+    "modalNotificationTitle": "Deleting a user will remove any memory the Galasa service has of this user.",
+    "modalNotificationSubtitle": "Any access tokens previously allocated by this user will be removed and will no longer have access to the Galasa service.\n\nTests run by this user will remain untouched and available for queries.\n\nIf the user logs in to the Galasa service after this point, they will be challenged for credentials from the configured authorization authority, as they were originally when they started using the Galasa service. If that authority allows access, a new set of details for that user will be collected from that point."
   },
   "TokenResponseModal": {
     "modalHeading": "Personal access token details",
@@ -121,8 +132,8 @@
     "loggedInAs": "Currently logged in as:",
     "recentActivity": "Recent Login Activity",
     "noLastLogin": "No last login date",
-    "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
-    "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}"
+    "lastLoginWeb": "Last logged in to this web application: {date}",
+    "lastLoginToken": "Last logged in using a Galasa personal access token: {date}"
   },
   "ProfileRole": {
     "userRoleTitle": "User Role",

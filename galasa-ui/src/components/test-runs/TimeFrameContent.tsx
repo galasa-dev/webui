@@ -9,11 +9,11 @@ import styles from '@/styles/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback, useEffect } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
-import { addMonths, combineDateTime, extractDateTimeForUI } from '@/utils/timeOperations';
+import { addMonths, dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
 import { InlineNotification } from '@carbon/react';
 import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
-
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 type Notification = {
   text: string;
@@ -23,9 +23,9 @@ type Notification = {
 /*
  * Calculates the final, fully synchronized state object from two valid dates.
  */
-export const calculateSynchronizedState = (fromDate: Date, toDate: Date): TimeFrameValues => {
-  const fromUiParts = extractDateTimeForUI(fromDate);
-  const toUiParts = extractDateTimeForUI(toDate);
+export const calculateSynchronizedState = (fromDate: Date, toDate: Date, timezone: string): TimeFrameValues => {
+  const fromUiParts = dateTimeUTC2Local(fromDate, timezone);
+  const toUiParts = dateTimeUTC2Local(toDate, timezone);
   let difference = toDate.getTime() - fromDate.getTime();
   if (difference < 0) difference = 0;
 
@@ -49,7 +49,6 @@ export function applyTimeFrameRules(fromDate: Date, toDate: Date,
   let correctedFrom = new Date(fromDate.getTime());
   let correctedTo = new Date(toDate.getTime());
   let notification: Notification | null = null;
-    
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
@@ -90,6 +89,8 @@ interface TimeFrameContentProps {
 
 export default function TimeFrameContent({ values, setValues }: TimeFrameContentProps) {
   const translations = useTranslations('TimeFrame');
+  const { getResolvedTimeZone } = useDateTimeFormat();
+
   const [notification, setNotification] = useState<Notification | null>(null);
 
   const handleValueChange = useCallback((field: keyof TimeFrameValues, value: any) => {
@@ -100,16 +101,17 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
     setNotification(null);
 
     const draftValues = { ...values, [field]: value };
+    const timezone = getResolvedTimeZone();
 
     // Combine date and time into Date objects
     let fromDate: Date, toDate: Date;
     if (field.startsWith('duration')) {
-      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
+      fromDate = dateTimeLocal2UTC(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm, timezone);
       const durationInMs = draftValues.durationDays * DAY_MS + draftValues.durationHours * HOUR_MS + draftValues.durationMinutes * MINUTE_MS;
       toDate = new Date(fromDate.getTime() + durationInMs);
     } else {
-      fromDate = combineDateTime(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm);
-      toDate = combineDateTime(draftValues.toDate, draftValues.toTime, draftValues.toAmPm);
+      fromDate = dateTimeLocal2UTC(draftValues.fromDate, draftValues.fromTime, draftValues.fromAmPm, timezone);
+      toDate = dateTimeLocal2UTC(draftValues.toDate, draftValues.toTime, draftValues.toAmPm, timezone);
     }
 
     const { correctedFrom, correctedTo, notification: validationNotification } = applyTimeFrameRules(fromDate, toDate, translations);
@@ -119,10 +121,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
     // Update the state with the corrected values
     if (validationNotification?.kind !== 'error') {
-      const finalState = calculateSynchronizedState(correctedFrom, correctedTo);
+      const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
       setValues(finalState);
     }
-  }, [values, translations, setValues]);
+  }, [values, translations, setValues, getResolvedTimeZone]);
 
   return (
     <div className={styles.TimeFrameContainer}>
