@@ -13,11 +13,13 @@ import { handleDownload } from '@/utils/artifacts';
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
 }));
+
+// Mock the next-intl translations
 jest.mock("next-intl", () => ({
   useTranslations: () => {
     return (key: string, vars?: Record<string, any>) => {
-      // For match_counter, return formatted "current of total"
-      if (key === "match_counter" && vars) {
+      // For matchCounter, return formatted "current of total"
+      if (key === "matchCounter" && vars) {
         return `${vars.current} of ${vars.total}`;
       }
       // Provide dummy translations for other keys used in LogTab:
@@ -25,20 +27,20 @@ jest.mock("next-intl", () => ({
         title: "Run Log",
         description:
           "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
-        search_placeholder: "Find in run log",
-        no_matches: "No matches",
-        match_counter: "{current} of {total}",
-        match_previous: "Previous match",
-        match_next: "Next match",
-        match_case: "Match case",
-        match_whole_word: "Match whole word",
-        filters_menu_title: "Hide / Show Content",
-        filter_error: "Error",
-        filter_warn: "Warning",
-        filter_info: "Info",
-        filter_debug: "Debug",
-        filter_trace: "Trace",
-        download_button: "Download Run Log",
+        searchPlaceholder: "Find in run log",
+        noMatches: "No matches",
+        matchCounter: "{current} of {total}",
+        matchPrevious: "Previous match",
+        matchNext: "Next match",
+        matchCase: "Match case",
+        matchWholeWord: "Match whole word",
+        filtersMenuTitle: "Hide / Show Content",
+        filterError: "Error",
+        filterWarn: "Warning",
+        filterInfo: "Info",
+        filterDebug: "Debug",
+        filterTrace: "Trace",
+        downloadButton: "Download Run Log",
       };
       return dummy[key] ?? key;
     };
