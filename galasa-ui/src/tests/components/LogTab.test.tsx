@@ -8,7 +8,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LogTab from '@/components/test-runs/LogTab';
 import { handleDownload } from '@/utils/artifacts';
-import { wait } from '@testing-library/user-event/dist/types/utils';
 
 // Mock the utility function
 jest.mock('@/utils/artifacts', () => ({
@@ -527,6 +526,50 @@ Line with $dollar and ^caret`;
       // The button should become disabled again after copying.
       await waitFor(() => {
         expect(copyButton).toBeDisabled();
+      });
+    });
+  });
+
+  describe('URL Hash Handling', () => {
+    it('scrolls to the line specified in the URL hash on initial load', async () => {
+      // Set the URL hash *before* rendering
+      window.history.pushState({}, 'Test page', '/#log-3-5');
+
+      render(<LogTab logs={sampleLogs} />);
+
+      // Wait for the target line to be rendered and check for scroll
+      await waitFor(() => {
+        const targetLineElement = screen.getByText(/Failed to connect to database/).closest('div'); // Line 3
+        expect(targetLineElement).not.toBeNull();
+        expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
+          behavior: "auto",
+          block: "center",
+        });
+      });
+    });
+
+    it('scrolls to a new line when the hash changes', async () => {
+      window.history.pushState({}, 'Test page', '/');
+
+      render(<LogTab logs={sampleLogs} />);
+
+      // Wait for the content to be rendered
+      await waitFor(() => {
+        expect(screen.getByText(/Starting application/)).toBeInTheDocument();
+      });
+
+      // Change the URL hash to a new line
+      window.history.pushState({}, 'Test page', '/#log-5-6');
+      fireEvent(window, new HashChangeEvent('hashchange'));
+
+      // Wait for the new line to be rendered and check for scroll
+      await waitFor(() => {
+        const targetLineElement = screen.getByText(/Detailed execution trace/).closest('div'); // Line 5
+        expect(targetLineElement).not.toBeNull();
+        expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
+          behavior: "auto",
+          block: "center",
+        });
       });
     });
   });
