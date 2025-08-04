@@ -124,19 +124,23 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
       });
     }
-
-    console.log("Selection changed:", {
-      startLine: startLine ? parseInt(startLine.attributes[0].value.split('-')[2]) : 0,
-      endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
-    });
   }, []);
 
-  // Clear selection when clicking outside the log content
-  const handleClickOutside = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (logContainerRef.current && !logContainerRef.current.contains(event.target as Node)) {
-      setSelectedRange(null);
-    }
-  };
+  // Effect to clear selection state when the user deselects text anywhere.
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (selection && selection.isCollapsed) {
+        setSelectedRange(null);
+      }
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, []);
 
   const handleCopyPermalink = () => {
     if (!selectedRange) return;
@@ -679,7 +683,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           className={styles.runLogContent} 
           ref={logContainerRef} 
           onMouseUp={handleSelection}
-          onMouseDown={handleClickOutside}
         >
           {renderLogContent()}
         </div>
