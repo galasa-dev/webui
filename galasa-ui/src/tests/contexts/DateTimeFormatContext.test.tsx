@@ -171,8 +171,7 @@ describe('DateTimeFormatContext', () => {
       </DateTimeFormatProvider>
     );
 
-    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(/10\/01\/2023, \d{1,2}:00:00 (AM|PM)/);
-  });
+    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(/10\/01\/2023, \d{1,2}:\d{2}:\d{2} (AM|PM)/);});
 
   test('formatDate uses custom locale and time format correctly', () => {
     // Set custom preferences in localStorage

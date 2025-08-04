@@ -28,6 +28,7 @@ import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {SINGLE_RUN_QUERY_PARAMS, TEST_RUN_PAGE_TABS} from '@/utils/constants/common';
+import { NotificationType } from '@/utils/types/common';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -52,7 +53,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [notificationError, setNotificationError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<NotificationType | null>(null);
   const { formatDate } = useDateTimeFormat();
 
   // Get the selected tab index from the URL or default to the first tab
@@ -113,10 +114,21 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); 
+      setNotification({
+        kind: 'success',
+        title: translations("copiedTitle"),
+        subtitle: translations("copiedMessage")
+      });
+
+      // Hide notification after 6 seconds
+      setTimeout(() => setNotification(null), 6000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      setNotification({
+        kind: 'error',
+        title: translations("errorTitle"),
+        subtitle: translations("copyFailedMessage")
+      });
     }
   };
 
@@ -124,7 +136,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     if (!run) return;
     
     setIsDownloading(true);
-    setNotificationError(null); 
+    setNotification(null); 
 
     try {
       const url = new URL(`/internal-api/test-runs/${run.runId}/zip`, window.location.origin);
@@ -151,7 +163,11 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       handleDownload(blob, filename);
 
     } catch (err) {
-      setNotificationError("downloadError");
+      setNotification({
+        kind: 'error',
+        title: translations("errorTitle"),
+        subtitle: translations("downloadError")
+      });
       console.error("Failed to create zip file:", err);
     } finally {
       setIsDownloading(false);
@@ -217,21 +233,21 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
             kind="ghost"
             hasIconOnly
             renderIcon={Share}
-            iconDescription={copied ? translations("copiedmessage") : translations("copymessage")}
+            iconDescription={translations("copyMessage")}
             onClick={handleShare}
             data-testid="icon-Share"
           />
         </div>
       </Tile>
-      {notificationError && (
+      {notification && (
         <InlineNotification
-          title={translations("errorTitle")}
-          subtitle={translations(notificationError) || "An unexpected error occurred."}
+          title={notification.title}
+          subtitle={notification.subtitle}
           className={styles.notification}
-          kind="error"
+          kind={notification.kind}
+          hideCloseButton={true}
         />
-      )}    
- 
+      )}
       {isLoading ? (
         <TestRunSkeleton />
       ) : (

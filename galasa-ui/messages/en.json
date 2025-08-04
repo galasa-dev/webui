@@ -31,7 +31,8 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "internationalization": "Internationalization/Multiple language support"
+      "internationalization": "Internationalization/Multiple language support",
+      "graph":" Test Run Graphs"
     }
   },
   "DateTimeFormatSection": {
@@ -220,8 +221,12 @@
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
-    "copymessage":"Copy page URL",
-    "copiedmessage":"Copied",
+    "errorTitle": "Error",
+    "successTitle": "Success",
+    "copyMessage":"Copy page URL",
+    "copiedTitle":"URL copy successful: ",
+    "copiedMessage":"The URL for this page has been copied to the clipboard.",
+    "copyFailedMessage":"Failed to copy page URL",
     "downloadArtifacts": "Download all artifacts",
     "downloading": "Downloading...",
     "downloadError": "Failed to download artifacts. Please try again later.",
@@ -233,8 +238,16 @@
       "methods": "Methods",
       "runLog": "Run Log",
       "artifacts": "Artifacts"
-    },
-    "errorTitle": "Error"
+    }
+  },
+  "TestRunsDetails": {
+    "title": "Test Runs",
+    "errorTitle": "Error",
+    "successTitle": "Success",
+    "copyMessage": "Copy page URL",
+    "copiedTitle": "URL copy successful: ",
+    "copiedMessage": "The URL for this page has been copied to the clipboard.",
+    "copyFailedMessage": "Failed to copy page URL"
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -279,12 +292,39 @@
       "page":"page"
     }
   },
+"TestRunGraph": {
+    "submittedAt": "Submitted At",
+    "runName": "Run Name",
+    "requestor": "Requestor",
+    "submissionId": "Submission ID",
+    "group": "Group",
+    "bundle": "Bundle",
+    "package": "Package",
+    "testName": "Test Name",
+    "status": "Status",
+    "tags": "Tags",
+    "result": "Result",
+    "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible. Please adjust the table design to show the columns that you would like to see.",
+    "isloading": "Loading graph...",
+    "errorLoadingGraph": "Something went wrong loading the graph.",
+    "noTestRunsFound": "No test runs found.",
+
+    "limitExceeded": {
+      "title": "Limit Exceeded",
+      "subtitle": "Your query returned more than {MAX_RECORDS} results. Showing the first {MAX_RECORDS} records."
+    },
+
+    "timeFrameText": {
+      "range": "Showing test runs submitted between {from} and {to}"
+    }
+  },
   "TestRunsTabs": {
     "tabs": {
       "timeframe": "Timeframe",
       "tableDesign": "Table Design",
       "searchCriteria": "Search Criteria",
-      "results": "Results"
+      "results": "Results",
+      "graph": "Graph"
     },
     "content": {
       "timeframe": "This page is under construction. Currently, all results for the last 24 hours are shown in the Results tab.",

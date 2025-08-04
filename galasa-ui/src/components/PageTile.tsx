@@ -12,10 +12,19 @@ import { useTranslations } from "next-intl";
 
 export default function PageTile({
   translationKey,
+  className,
+  children,
 }: {
   translationKey: string;
+  className?: string;
+  children?: React.ReactNode;
 }) {
   const translations = useTranslations();
 
-  return <Tile id="tile">{translations(translationKey)}</Tile>;
+  return (
+    <Tile id="tile" className={className}>
+      {translations(translationKey)}
+      {children}
+    </Tile>
+  );
 }

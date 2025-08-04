@@ -14,8 +14,11 @@ const COLORS = {
   GREEN: "#24A148",
   NEUTRAL: "#6f6f6f",
   BLUE: "#0043ce",
-  YELLOW: "#f1c21b"
-
+  YELLOW: "#f1c21b",
+  PURPLE: "#ab47bc",
+  CYAN: "#00bcd4", 
+  GRAY: "#bdbdbd", 
+  BLUE_GRAY: "#607d8b"
 };
 
 // Maximum number of records to fetch in one go
