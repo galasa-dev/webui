@@ -585,7 +585,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       <div className={styles.logContainer}>
         <div className={styles.searchContainer}>
           <Search
-            placeholder={translations("search_placeholder")}
+            placeholder={translations("searchPlaceholder")}
             size="lg"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -594,11 +594,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
             <div className={styles.findControls}>
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
-                  ? translations("match_counter", {
+                  ? translations("matchCounter", {
                     current: currentMatchIndex + 1,
                     total: totalMatches,
                   })
-                  : translations("no_matches")}
+                  : translations("noMatches")}
               </span>
               <Button
                 kind="ghost"
@@ -606,7 +606,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToPreviousMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronUp}
-                iconDescription={translations("match_previous")}
+                iconDescription={translations("matchPrevious")}
                 hasIconOnly
               />
               <Button
@@ -615,7 +615,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToNextMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronDown}
-                iconDescription={translations("match_next")}
+                iconDescription={translations("matchNext")}
                 hasIconOnly
               />
               <Button
@@ -623,7 +623,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 size="sm"
                 onClick={toggleMatchCase}
                 renderIcon={LetterAa}
-                iconDescription={translations("match_case")}
+                iconDescription={translations("matchCase")}
                 hasIconOnly
               />
               <Button
@@ -631,7 +631,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 size="sm"
                 onClick={toggleMatchWholeWord}
                 renderIcon={Term}
-                iconDescription={translations("match_whole_word")}
+                iconDescription={translations("matchWholeWord")}
                 hasIconOnly
               />
             </div>
@@ -640,37 +640,37 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         <div className={styles.filterBtn}>
           <OverflowMenu
             size="lg"
-            iconDescription={translations("filters_menu_title")}
+            iconDescription={translations("filtersMenuTitle")}
             renderIcon={Filter}
             flipped={true}
           >
             <Checkbox
               id="checkbox-error"
-              labelText={translations("filter_error")}
+              labelText={translations("filterError")}
               checked={filters.ERROR}
               onChange={() => handleFilterChange("ERROR")}
             />
             <Checkbox
               id="checkbox-warn"
-              labelText={translations("filter_warn")}
+              labelText={translations("filterWarn")}
               checked={filters.WARN}
               onChange={() => handleFilterChange("WARN")}
             />
             <Checkbox
               id="checkbox-info"
-              labelText={translations("filter_info")}
+              labelText={translations("filterInfo")}
               checked={filters.INFO}
               onChange={() => handleFilterChange("INFO")}
             />
             <Checkbox
               id="checkbox-debug"
-              labelText={translations("filter_debug")}
+              labelText={translations("filterDebug")}
               checked={filters.DEBUG}
               onChange={() => handleFilterChange("DEBUG")}
             />
             <Checkbox
               id="checkbox-trace"
-              labelText={translations("filter_trace")}
+              labelText={translations("filterTrace")}
               checked={filters.TRACE}
               onChange={() => handleFilterChange("TRACE")}
             />
@@ -680,14 +680,14 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           kind="ghost"
           renderIcon={CloudDownload}
           hasIconOnly
-          iconDescription={translations("download_button")}
+          iconDescription={translations("downloadButton")}
           onClick={() => handleDownload(logContent, "run.log")}
         />
         <Button
           kind="ghost"
           renderIcon={Copy}
           hasIconOnly
-          iconDescription={translations("copy_permalink_button")}
+          iconDescription={translations("copyPermalinkButton")}
           onClick={handleCopyPermalink}
           disabled={!selectedRange?.startLine}
         />
