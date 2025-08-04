@@ -353,7 +353,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     const startElement = document.getElementById(`log-line-${startLineNum}`);
     const endElement = document.getElementById(`log-line-${endLineNum}`);
 
-    // Target the <pre> tags which contain the actual log content
+    // Target the tags which contain the actual log content
     const startPre = startElement?.querySelector(`.${styles.lineNumberCol}`);
     const endPre = endElement?.querySelector('pre');
 
@@ -367,6 +367,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       const endOffset = endNode.textContent?.length || 0;
       range.setEnd(endNode, endOffset);
 
+      // Clear any existing selection and apply the new range
       const selection = window.getSelection();
       if (selection) {
         selection.removeAllRanges();
