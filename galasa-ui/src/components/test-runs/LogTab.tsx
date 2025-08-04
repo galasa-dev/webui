@@ -354,7 +354,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     const endElement = document.getElementById(`log-line-${endLineNum}`);
 
     // Target the <pre> tags which contain the actual log content
-    const startPre = startElement?.querySelector('pre');
+    const startPre = startElement?.querySelector(`.${styles.lineNumberCol}`);
     const endPre = endElement?.querySelector('pre');
 
     if (startPre?.firstChild && endPre?.lastChild) {
