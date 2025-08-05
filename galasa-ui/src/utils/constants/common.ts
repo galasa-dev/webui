@@ -113,12 +113,25 @@ const DEFAULT_VISIBLE_COLUMNS: string[] = [
   
 const BATCH_SIZE = 100;
 
+
+// NOTE: To add a new locale, you need to:
+// 1. Add the locale code to the SUPPORTED_LOCALES array below.
+// 2. Add the locale's flatpickr date format to the LOCALE_TO_FLATPICKR_FORMAT_MAP object.
 const SUPPORTED_LOCALES = [
   { code: 'en-US', format: 'MM/DD/YYYY' },     
   { code: 'en-GB', format: 'DD/MM/YYYY' },
   { code: 'fr-FR', format: 'DD/MM/YYYY' },    
   { code: 'de-DE', format: 'DD.MM.YYYY' },     
 ];
+
+// Converts a display format string to a Flatpickr-compatible format used by the DatePicker component.
+const LOCALE_TO_FLATPICKR_FORMAT_MAP: { [key: string]: string } = {
+  'en-US': 'm/d/Y',
+  'en-GB': 'd/m/Y',
+  'fr-FR': 'd/m/Y',
+  'de-DE': 'd.m.Y',
+};
+
 
 const TIME_FORMATS = [
   { label: '12-hour', format: 'hh:mm:ss AM/PM' },
@@ -140,4 +153,4 @@ export { CLIENT_API_VERSION,COLORS, MAX_RECORDS, MINUTE_MS,
   BATCH_SIZE, RESULTS_TABLE_COLUMNS, COLUMNS_IDS, TEST_RUNS_QUERY_PARAMS,
   TABS_IDS, SEARCH_CRITERIA_KEYS, DEFAULT_VISIBLE_COLUMNS, 
   SUPPORTED_LOCALES, TIME_FORMATS, PREFERENCE_KEYS, TEST_RUN_PAGE_TABS,
-  SINGLE_RUN_QUERY_PARAMS};
+  SINGLE_RUN_QUERY_PARAMS, LOCALE_TO_FLATPICKR_FORMAT_MAP};
