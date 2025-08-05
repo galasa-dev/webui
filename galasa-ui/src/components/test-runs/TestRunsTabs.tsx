@@ -21,6 +21,10 @@ import { TimeFrameValues } from '@/utils/interfaces';
 import { ColumnDefinition, runStructure } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { Run } from '@/generated/galasaapi';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
+import TestRunGraph from './TestRunGraph';
 
 interface TabConfig {
   id: string;
@@ -36,7 +40,11 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   const translations = useTranslations("TestRunsTabs");
   const router = useRouter();
   const pathname = usePathname();
+  const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results','graphs'];
+  const { isFeatureEnabled } = useFeatureFlags();
+  const isGraphEnabled = isFeatureEnabled(FEATURE_FLAGS.GRAPH);
   const rawSearchParams = useSearchParams();
+  const { getResolvedTimeZone } = useDateTimeFormat();
 
   // Decode the search params from the URL every time the searchParams change
   const searchParams = useMemo(() => {
@@ -83,7 +91,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const toParam = searchParams.get('to');
     const initialToDate = toParam ? new Date(toParam) : new Date();
     const initialFromDate = fromParam ? new Date(fromParam) : new Date(initialToDate.getTime() - DAY_MS);
-    return calculateSynchronizedState(initialFromDate, initialToDate);
+    const timezone = getResolvedTimeZone();
+    return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
   });
 
   // Initialize search criteria based on URL parameters
@@ -116,12 +125,24 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   useEffect(() => {setIsInitialized(true);}, []);
 
   // Define the tabs with their corresponding labels, memoized to avoid unnecessary re-renders
-  const TABS_CONFIG: TabConfig[] = useMemo(() => [
-    { id: TABS_IDS[0], label: translations('tabs.timeframe') },
-    { id: TABS_IDS[1], label: translations('tabs.tableDesign') },
-    { id: TABS_IDS[2], label: translations('tabs.searchCriteria') },
-    { id: TABS_IDS[3], label: translations('tabs.results') },
-  ], [translations]);
+  const TABS_CONFIG = useMemo<TabConfig[]>(() => {
+    const tabs: TabConfig[] = [
+      { id: TABS_IDS[0], label: translations("tabs.timeframe") },
+      { id: TABS_IDS[1], label: translations("tabs.tableDesign") },
+      { id: TABS_IDS[2], label: translations("tabs.searchCriteria") },
+      { id: TABS_IDS[3], label: translations("tabs.results") },
+    ];
+
+    if (isGraphEnabled) {
+      tabs.push({
+        id: TABS_IDS[4],
+        label: translations("tabs.graph"),
+      });
+    }
+
+    return tabs;
+  }, [translations, isGraphEnabled]);
+
 
   // Save and encode current state to the URL. This is the single source of truth for URL updates.
   useEffect(() => {
@@ -186,8 +207,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     return runs.map((run) => {
       const structure = run.testStructure || {};
       return {
-        id: run.runId,
-        submittedAt: structure.queued || '-',
+        id: run.runId || 'N/A',
+        submittedAt: structure.queued || 'N/A',
         runName: structure.runName || 'N/A',
         requestor: structure.requestor || 'N/A',
         group: structure.group || 'N/A',
@@ -250,7 +271,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
       return response.json() as Promise<TestRunsData>;
     },
     // Only run the query when the results tab is selected
-    enabled: selectedIndex === TABS_IDS.indexOf('results'), 
+    enabled: ['results', 'graphs'].includes(TABS_IDS[selectedIndex]),
     // Only refetch when the canonical query key changes
     staleTime: Infinity,
   });
@@ -348,6 +369,20 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
             />
           </div>
         </TabPanel>
+        { isGraphEnabled &&
+          <TabPanel>
+            <div className={styles.tabContent}>
+              <TestRunGraph
+                runsList={sortedRuns ?? []}
+                limitExceeded={runsData?.limitExceeded ?? false}
+                visibleColumns={selectedVisibleColumns}
+                isLoading={isLoading}
+                isError={isError}
+              />
+            </div>
+          </TabPanel>
+        }
+        
       </TabPanels>
     </Tabs>
   );

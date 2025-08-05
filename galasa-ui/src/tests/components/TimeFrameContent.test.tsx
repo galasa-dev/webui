@@ -78,6 +78,14 @@ jest.mock('@/components/test-runs/TimeFrameFilter', () => {
   return TimeFrameFilterMock;
 });
 
+// Mock the DateTimeFormatContext
+jest.mock('@/contexts/DateTimeFormatContext', () => ({
+  useDateTimeFormat: () => ({
+    getResolvedTimeZone: () => 'UTC',
+  }),
+}));
+
+const timezone = 'UTC';
 describe('applyTimeFrameRules', () => {
   // A default "now" for tests that need to check against the current time.
   const MOCK_NOW = new Date('2025-08-20T12:00:00.000Z');
@@ -161,7 +169,7 @@ describe('calculateSynchronizedState', () => {
   test('should correctly calculate a duration of excactly 1 day', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-16T10:00:00.000Z');
-    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate, timezone);
 
     expect(durationDays).toBe(1);
     expect(durationHours).toBe(0);
@@ -171,7 +179,7 @@ describe('calculateSynchronizedState', () => {
   test('should correctly calculate a complex duration of 2 days, 5 hours and 15 minutes', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-17T15:15:00.000Z');
-    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate, timezone);
 
     expect(durationDays).toBe(2);
     expect(durationHours).toBe(5);
@@ -180,7 +188,7 @@ describe('calculateSynchronizedState', () => {
 
   test('should handle a zero duration when "From" and "To" dates are the same', () => {
     const sameDate = new Date('2025-08-15T10:00:00.000Z');
-    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(sameDate, sameDate);
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(sameDate, sameDate, timezone);
 
     expect(durationDays).toBe(0);
     expect(durationHours).toBe(0);
@@ -190,7 +198,7 @@ describe('calculateSynchronizedState', () => {
   test('should handle a negative duration by returning zero values', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-14T10:00:00.000Z'); // One day before
-    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate, timezone);
 
     expect(durationDays).toBe(0);
     expect(durationHours).toBe(0);
@@ -200,17 +208,17 @@ describe('calculateSynchronizedState', () => {
   test('should handle a duration of less than a minute', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-15T10:00:30.000Z'); // 30 seconds later
-    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate);
+    const { durationDays, durationHours, durationMinutes } = calculateSynchronizedState(fromDate, toDate, timezone);
 
     expect(durationDays).toBe(0);
     expect(durationHours).toBe(0);
     expect(durationMinutes).toBe(0);
   });
 
-  test('should corrrectly extract time parts for "From" and "To" dates', () => {
-    const fromDate = new Date('2025-08-15T10:30:00.000');
-    const toDate = new Date('2025-08-15T12:45:00.000');
-    const { fromTime, fromAmPm, toTime, toAmPm } = calculateSynchronizedState(fromDate, toDate);
+  test('should correctly extract time parts for "From" and "To" dates', () => {
+    const fromDate = new Date('2025-08-15T10:30:00.000Z');
+    const toDate = new Date('2025-08-15T12:45:00.000Z');
+    const { fromTime, fromAmPm, toTime, toAmPm } = calculateSynchronizedState(fromDate, toDate, timezone);
 
     expect(fromTime).toBe('10:30');
     expect(fromAmPm).toBe('AM');
@@ -274,7 +282,8 @@ describe('TimeFrameContent Tests', () => {
       const [values, setValues] = useState<TimeFrameValues>(() => {
         const initialFromDate = new Date('2025-08-15T00:00:00.000Z');
         const initialToDate = new Date(initialFromDate.getTime() + DAY_MS);
-        return calculateSynchronizedState(initialFromDate, initialToDate);
+  
+        return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
       });
 
       return <TimeFrameContent values={values} setValues={setValues} />;
@@ -306,7 +315,8 @@ describe('TimeFrameContent Tests', () => {
       const [values, setValues] = useState<TimeFrameValues>(() => {
         const initialFromDate = new Date('2025-08-15T00:00:00.000Z');
         const initialToDate = new Date(initialFromDate.getTime() + DAY_MS);
-        return calculateSynchronizedState(initialFromDate, initialToDate);
+  
+        return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
       });
 
       return <TimeFrameContent values={values} setValues={setValues} />;
@@ -344,7 +354,8 @@ describe('TimeFrameContent Tests', () => {
       const [values, setValues] = useState<TimeFrameValues>(() => {
         const initialFromDate = new Date(initialFrom);
         const initialToDate = new Date(initialTo);
-        return calculateSynchronizedState(initialFromDate, initialToDate);
+  
+        return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
       });
 
       return <TimeFrameContent values={values} setValues={setValues} />;
