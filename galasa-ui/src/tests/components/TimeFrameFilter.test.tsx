@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
-import TimeFrameFilter from '@/components/test-runs/TimeFrameFilter';
+import TimeFrameFilter from '@/components/test-runs/timeframe/TimeFrameFilter';
 import { TimeFrameValues } from '@/utils/interfaces';
 import userEvent from '@testing-library/user-event';
 

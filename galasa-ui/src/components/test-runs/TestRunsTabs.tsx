@@ -6,7 +6,7 @@
 'use client';
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react';
 import styles from '@/styles/TestRunsPage.module.css';
-import TimeframeContent, { calculateSynchronizedState } from './TimeFrameContent';
+import TimeframeContent, { calculateSynchronizedState } from './timeframe/TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
 import SearchCriteriaContent from './SearchCriteriaContent';
 import TableDesignContent from './TableDesignContent';

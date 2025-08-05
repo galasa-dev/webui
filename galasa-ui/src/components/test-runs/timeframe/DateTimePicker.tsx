@@ -7,7 +7,7 @@
 
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import styles from '@/styles/TestRunsPage.module.css';
-import { LOCALE_TO_FLATPICKR_FORMAT_MAP, SUPPORTED_LOCALES } from '@/utils/constants/common';
+import { LOCALE_TO_FLATPICKR_FORMAT_MAP } from '@/utils/constants/common';
 import { parseAndValidateTime } from '@/utils/timeOperations';
 import {
   FormGroup,

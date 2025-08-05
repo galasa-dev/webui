@@ -10,7 +10,7 @@ import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
-import { DAY_MS, DEFAULT_VISIBLE_COLUMNS } from '@/utils/constants/common';
+import { DAY_MS } from '@/utils/constants/common';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => (
@@ -27,7 +27,7 @@ jest.mock('@/components/test-runs/TestRunsTable', () => ({
   default: (props: any) => TestRunsTableMock(props),
 }));
 
-jest.mock('@/components/test-runs/TimeFrameContent', () => ({
+jest.mock('@/components/test-runs/timeframe/TimeFrameContent', () => ({
   __esModule: true,
   default: () => <div>Mocked Timeframe Content</div>,
   calculateSynchronizedState: jest.fn((fromDate, toDate) => ({

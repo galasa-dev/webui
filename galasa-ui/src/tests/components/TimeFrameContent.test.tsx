@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TimeFrameContent, {
   applyTimeFrameRules,
   calculateSynchronizedState,
-} from '@/components/test-runs/TimeFrameContent';
+} from '@/components/test-runs/timeframe/TimeFrameContent';
 import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
 import { TimeFrameValues } from '@/utils/interfaces';
@@ -38,7 +38,7 @@ const mockTranslator = (key: string, values?: Record<string, any>) => {
 };
 
 // Mock the child component to prevent its internal logic from running
-jest.mock('@/components/test-runs/TimeFrameFilter', () => {
+jest.mock('@/components/test-runs/timeframe/TimeFrameFilter', () => {
   const TimeFrameFilterMock = (props: any) => (
     <div data-testid="timeframe-filter">
       <label htmlFor="from-date">From Date</label>
