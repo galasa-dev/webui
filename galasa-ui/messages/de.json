@@ -386,11 +386,14 @@
     "time": "Uhrzeit"
   },
   "TimeFrameFilter": {
+    "from": "Von",
+    "to": "Bis"
+  },
+  "DurationFilter": {
     "days": "Tage",
     "hours": "Stunden",
     "minutes": "Minuten",
-    "from": "Von",
-    "to": "Bis",
+
     "duration": "Dauer"
   },
   "SearchCriteriaContent": {

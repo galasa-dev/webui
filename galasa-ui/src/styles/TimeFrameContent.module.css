@@ -3,27 +3,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+.timeFrameContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
 
-.timeFrameText,
-.titleText {
-  font-size: 1rem;
-  margin: 0.5rem 0.5rem;
+.optionRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
 }
 
 .timeFrameFilterContainer {
   display: flex;
-  gap: 10rem;
-  width: 85%;
-  padding-top: 1.5rem;
+  gap: 2rem;
+  flex-grow: 1;
 }
 
 .durationFilterContainer {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
-  min-width: 200px;
 }
-
 .durationInputsContainer {
   display: flex;
   gap: 1rem;
@@ -34,6 +38,16 @@
   bottom: 5.5rem;
   right: 1rem;
   z-index: 9999;
+}
+
+.filterWrapper {
+  padding-left: 2rem;
+  padding-bottom: 1rem;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @media (max-width: 1055px) {

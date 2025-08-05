@@ -365,11 +365,13 @@
     "time": "Time"
   },
   "TimeFrameFilter": {
+    "from": "From",
+    "to": "To"
+  },
+  "DurationFilter": {
     "days": "Days",
     "hours": "Hours",
     "minutes": "Minutes",
-    "from": "From",
-    "to": "To",
     "duration": "Duration"
   },
   "SearchCriteriaContent": {

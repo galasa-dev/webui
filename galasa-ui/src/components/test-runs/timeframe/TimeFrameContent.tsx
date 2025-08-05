@@ -15,11 +15,17 @@ import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import DurationFilter from './DurationFilter';
+import { RadioButton, FormGroup } from '@carbon/react';
 
 type Notification = {
   text: string;
   kind: 'error' | 'warning';
 };
+
+enum TimeFrameOptions {
+  fromToSelection = 'fromToSelection',
+  durationSelection = 'durationSelection',
+}
 
 /*
  * Calculates the final, fully synchronized state object from two valid dates.
@@ -109,6 +115,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const { getResolvedTimeZone } = useDateTimeFormat();
 
   const [notification, setNotification] = useState<Notification | null>(null);
+  const [selectedOption, setSelectedOption] = useState<TimeFrameOptions | null>(null);
 
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
@@ -169,13 +176,50 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   );
 
   return (
-    <div className={styles.TimeFrameContainer}>
+    <div className={styles.timeFrameContainer}>
       <div>
         <p>{translations('selectEnvelope')}</p>
         <p>{translations('envelopeDescription')}</p>
       </div>
-      <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
-      <DurationFilter values={values} handleValueChange={handleValueChange} />
+ 
+      <FormGroup legendText="" role="radiogroup">
+        <div className={styles.optionRow}>
+          <RadioButton
+            labelText={translations('fromToSelection')}
+            value={TimeFrameOptions.fromToSelection}
+            id="from-to-selection"
+            name="timeframe-options"
+            checked={selectedOption === TimeFrameOptions.fromToSelection}
+            onChange={() => setSelectedOption(TimeFrameOptions.fromToSelection)}
+          />
+          <div className={styles.filterWrapper}>
+            <TimeFrameFilter
+              values={values}
+              handleValueChange={handleValueChange}
+              //   disabled={selectedOption !== TimeFrameOptions.fromToSelection}
+            />
+          </div>
+        </div>
+
+        <div className={styles.optionRow}>
+          <RadioButton
+            labelText={translations('durationSelection')}
+            value={TimeFrameOptions.durationSelection}
+            id="duration-selection"
+            name="timeframe-options"
+            checked={selectedOption === TimeFrameOptions.durationSelection}
+            onChange={() => setSelectedOption(TimeFrameOptions.durationSelection)}
+          />
+          <div className={styles.filterWrapper}>
+            <DurationFilter
+              values={values}
+              handleValueChange={handleValueChange}
+              // disabled={selectedOption !== TimeFrameOptions.durationSelection}
+            />
+          </div>
+        </div>
+      </FormGroup>
+
       {notification && (
         <InlineNotification
           className={styles.notification}
