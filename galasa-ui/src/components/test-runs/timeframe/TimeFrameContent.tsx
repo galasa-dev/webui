@@ -5,7 +5,7 @@
  */
 'use client';
 
-import styles from '@/styles/TestRunsPage.module.css';
+import styles from '@/styles/TimeFrameContent.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
@@ -14,6 +14,7 @@ import { InlineNotification } from '@carbon/react';
 import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
+import DurationFilter from './DurationFilter';
 
 type Notification = {
   text: string;
@@ -174,6 +175,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         <p>{translations('envelopeDescription')}</p>
       </div>
       <TimeFrameFilter values={values} handleValueChange={handleValueChange} />
+      <DurationFilter values={values} handleValueChange={handleValueChange} />
       {notification && (
         <InlineNotification
           className={styles.notification}
