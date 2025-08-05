@@ -39,7 +39,8 @@
     "title": "Date/Time Format"
   },
   "DateTimeFormatSection": {
-    "description": "Configure the format for displaying date and time.",
+    "title": "Date/Time Format",
+    "description": "Configure the format for displaying dates and times.",
     "dateTimeFormat": "Date/Time Format",
     "showDatesInBrowserLocale": "Show dates and times based on the browser locale",
     "showDatesInCustomLocale": "Show dates and times in a custom format",
