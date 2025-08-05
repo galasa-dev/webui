@@ -13,9 +13,11 @@ import { useTranslations } from 'next-intl';
 export default function TimeFrameFilter({
   values,
   handleValueChange,
+  disabled = false,
 }: {
   values: TimeFrameValues;
   handleValueChange: (field: keyof TimeFrameValues, value: any) => void;
+  disabled?: boolean;
 }) {
   const translations = useTranslations('TimeFrameFilter');
   return (
@@ -28,6 +30,7 @@ export default function TimeFrameFilter({
         onDateChange={(date) => handleValueChange('fromDate', date)}
         onTimeChange={(time) => handleValueChange('fromTime', time)}
         onAmPmChange={(amPm) => handleValueChange('fromAmPm', amPm)}
+        disabled={disabled}
       />
       <DateTimePicker
         legend={translations('to')}
@@ -37,6 +40,7 @@ export default function TimeFrameFilter({
         onDateChange={(date) => handleValueChange('toDate', date)}
         onTimeChange={(time) => handleValueChange('toTime', time)}
         onAmPmChange={(amPm) => handleValueChange('toAmPm', amPm)}
+        disabled={disabled}
       />
     </div>
   );

@@ -17,9 +17,11 @@ const MAX_MINUTES = 59;
 export default function DurationFilter({
   values,
   handleValueChange,
+  disabled = false,
 }: {
   values: TimeFrameValues;
   handleValueChange: (field: keyof TimeFrameValues, value: any) => void;
+  disabled?: boolean;
 }) {
   const translations = useTranslations('DurationFilter');
 
@@ -36,6 +38,7 @@ export default function DurationFilter({
             _: React.ChangeEvent<HTMLInputElement>,
             { value }: { value: number | string }
           ) => handleValueChange('durationDays', value)}
+          disabled={disabled}
         />
         <NumberInput
           id="duration-hours"
@@ -47,6 +50,7 @@ export default function DurationFilter({
             _: React.ChangeEvent<HTMLInputElement>,
             { value }: { value: number | string }
           ) => handleValueChange('durationHours', value)}
+          disabled={disabled}
         />
         <NumberInput
           id="duration-minutes"
@@ -58,6 +62,7 @@ export default function DurationFilter({
             _: React.ChangeEvent<HTMLInputElement>,
             { value }: { value: number | string }
           ) => handleValueChange('durationMinutes', value)}
+          disabled={disabled}
         />
       </div>
     </FormGroup>

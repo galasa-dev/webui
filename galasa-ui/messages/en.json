@@ -355,7 +355,9 @@
     "toBeforeFrom": "'To' date cannot be before 'From' date.",
     "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
     "dateRangeCapped": "Date range was capped at the current time.",
-    "invalidTimeText": "Please enter a valid time in HH:MM format."
+    "invalidTimeText": "Please enter a valid time in HH:MM format.",
+    "fromToSelection": "Exact dates and times",
+    "durationSelection": "Relative to current time"
   },
   "DateTimePicker": {
     "invalidTimeText": "Please enter a valid time in HH:MM format.",

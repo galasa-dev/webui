@@ -28,6 +28,7 @@ interface DateTimePickerProps {
   onDateChange: (date: Date | null) => void;
   onTimeChange: (time: string) => void;
   onAmPmChange: (amPm: string) => void;
+  disabled?: boolean;
 }
 
 /**
@@ -41,6 +42,7 @@ export default function DateTimePicker({
   onDateChange,
   onTimeChange,
   onAmPmChange,
+  disabled = false,
 }: DateTimePickerProps) {
   const [localTime, setLocalTime] = useState(time);
   const { preferences } = useDateTimeFormat();
@@ -90,6 +92,7 @@ export default function DateTimePicker({
           id={`${legend}-date-picker`}
           labelText={translations('date')}
           placeholder={placeholder}
+          disabled={disabled}
         />
       </DatePicker>
       <TimePicker
@@ -100,6 +103,7 @@ export default function DateTimePicker({
         invalidText={invalidTimeText}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLocalTime(event.target.value)}
         onBlur={handleTimeBlur}
+        disabled={disabled}
       >
         <TimePickerSelect
           id={`${legend}-time-picker-ampm`}

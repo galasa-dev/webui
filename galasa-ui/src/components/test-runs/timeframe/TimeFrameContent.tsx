@@ -115,7 +115,9 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const { getResolvedTimeZone } = useDateTimeFormat();
 
   const [notification, setNotification] = useState<Notification | null>(null);
-  const [selectedOption, setSelectedOption] = useState<TimeFrameOptions | null>(null);
+  const [selectedOption, setSelectedOption] = useState<TimeFrameOptions | null>(
+    TimeFrameOptions.fromToSelection
+  );
 
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
@@ -181,7 +183,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         <p>{translations('selectEnvelope')}</p>
         <p>{translations('envelopeDescription')}</p>
       </div>
- 
+
       <FormGroup legendText="" role="radiogroup">
         <div className={styles.optionRow}>
           <RadioButton
@@ -196,7 +198,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
             <TimeFrameFilter
               values={values}
               handleValueChange={handleValueChange}
-              //   disabled={selectedOption !== TimeFrameOptions.fromToSelection}
+              disabled={selectedOption !== TimeFrameOptions.fromToSelection}
             />
           </div>
         </div>
@@ -214,7 +216,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
             <DurationFilter
               values={values}
               handleValueChange={handleValueChange}
-              // disabled={selectedOption !== TimeFrameOptions.durationSelection}
+              disabled={selectedOption !== TimeFrameOptions.durationSelection}
             />
           </div>
         </div>
