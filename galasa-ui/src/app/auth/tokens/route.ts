@@ -14,15 +14,16 @@ import { AuthenticationAPIApi } from '@/generated/galasaapi';
 export const dynamic = 'force-dynamic';
 
 interface TokenDetails {
-  tokenDescription: string,
+  tokenDescription: string;
 }
-
 
 // POST request handler for requests to /auth/tokens
 export async function POST(request: NextRequest) {
   // Call out to the API server's /auth/clients endpoint to create a new Dex client
 
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
+  const authApiClientWithAuthHeader = new AuthenticationAPIApi(
+    createAuthenticatedApiConfiguration()
+  );
   const dexClient = await authApiClientWithAuthHeader.postClients();
 
   const clientId = dexClient.clientId;
@@ -36,10 +37,12 @@ export async function POST(request: NextRequest) {
 
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);
-    const response = NextResponse.json({ url: authResponse.headers.get('Location') ?? authResponse.url });
+    const response = NextResponse.json({
+      url: authResponse.headers.get('Location') ?? authResponse.url,
+    });
     response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
 
-    cookies().set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', {httpOnly: false});
+    cookies().set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', { httpOnly: false });
 
     return response;
   } else {
@@ -47,18 +50,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest){
-
+export async function DELETE(request: NextRequest) {
   const { tokenId } = await request.json();
 
   if (!tokenId) {
     return new NextResponse('Token ID is required', { status: 400 });
   }
 
-  const authApiClientWithAuthHeader = new AuthenticationAPIApi(createAuthenticatedApiConfiguration());
+  const authApiClientWithAuthHeader = new AuthenticationAPIApi(
+    createAuthenticatedApiConfiguration()
+  );
 
-  await authApiClientWithAuthHeader.deleteToken(tokenId);  
+  await authApiClientWithAuthHeader.deleteToken(tokenId);
 
-  return (new NextResponse(null, {status: 204}));
-
+  return new NextResponse(null, { status: 204 });
 }

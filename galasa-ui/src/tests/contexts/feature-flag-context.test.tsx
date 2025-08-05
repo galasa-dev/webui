@@ -12,12 +12,14 @@ import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 // Mock a simple component to display the hook's state for our tests
 const TestComponent = () => {
-  const {isFeatureEnabled, toggleFeatureFlag} = useFeatureFlags();
+  const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
 
-  return (<div>
-    <p>Test Runs Enabled: {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS).toString()}</p>
-    <button onClick={() => toggleFeatureFlag(FEATURE_FLAGS.TEST_RUNS)}>Toggle Test Runs</button>
-  </div>);
+  return (
+    <div>
+      <p>Test Runs Enabled: {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS).toString()}</p>
+      <button onClick={() => toggleFeatureFlag(FEATURE_FLAGS.TEST_RUNS)}>Toggle Test Runs</button>
+    </div>
+  );
 };
 
 describe('Feature Flags Provider and useFeatureFlags Hook', () => {
@@ -42,11 +44,11 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   });
 
   test('initializes with provided props from the server', () => {
-    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true});
+    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
     render(
       <FeatureFlagProvider initialFlags={initialFlags}>
         <TestComponent />
-      </FeatureFlagProvider> 
+      </FeatureFlagProvider>
     );
 
     expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
@@ -64,20 +66,22 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
 
     // Due to React's strict mode
     cookieSpy.mockClear();
-        
+
     const toggleButton = screen.getByText('Toggle Test Runs');
 
     fireEvent.click(toggleButton);
 
     expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
-  
+
     const expectedCookieVal = JSON.stringify({
       [FEATURE_FLAGS.TEST_RUNS]: true,
       [FEATURE_FLAGS.INTERNATIONALIZATION]: false,
       [FEATURE_FLAGS.GRAPH]: false,
     });
-  
+
     expect(cookieSpy).toHaveBeenCalledTimes(1);
-    expect(cookieSpy).toHaveBeenCalledWith(expect.stringContaining(`${FeatureFlagCookies.FEATURE_FLAGS}=${expectedCookieVal}`));
+    expect(cookieSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`${FeatureFlagCookies.FEATURE_FLAGS}=${expectedCookieVal}`)
+    );
   });
 });

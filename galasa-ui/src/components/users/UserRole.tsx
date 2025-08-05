@@ -5,22 +5,21 @@
  */
 'use client';
 
-import ErrorPage from "@/app/error/page";
-import { UserData } from "@/generated/galasaapi";
-import styles from "@/styles/MyProfile.module.css";
-import { ProfileDetailsProps } from "@/utils/interfaces";
-import { Loading } from "@carbon/react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-
+import ErrorPage from '@/app/error/page';
+import { UserData } from '@/generated/galasaapi';
+import styles from '@/styles/MyProfile.module.css';
+import { ProfileDetailsProps } from '@/utils/interfaces';
+import { Loading } from '@carbon/react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 export default function ProfileRole({ userProfilePromise }: ProfileDetailsProps) {
-  const translations = useTranslations("ProfileRole");
+  const translations = useTranslations('ProfileRole');
 
   const [userProfile, setUserProfile] = useState<UserData>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  
+
   useEffect(() => {
     const loadUserProfile = async () => {
       setIsError(false);
@@ -45,25 +44,28 @@ export default function ProfileRole({ userProfilePromise }: ProfileDetailsProps)
 
   return (
     <div className={styles.profileDetails}>
-      { isLoading ?
+      {isLoading ? (
         <Loading data-testid="loader" small={false} active={isLoading} />
-        : !isError &&
-        <>
-          <div className={styles.userDetailsContainer}>
-            <h3>{translations("userRoleTitle")}</h3>
-            <p>{translations("changeRole")}</p>
-            <br/>
-            <p>{translations("currentRole")}: {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}</p>
+      ) : (
+        !isError && (
+          <>
+            <div className={styles.userDetailsContainer}>
+              <h3>{translations('userRoleTitle')}</h3>
+              <p>{translations('changeRole')}</p>
+              <br />
+              <p>
+                {translations('currentRole')}:{' '}
+                {roleName && roleName.charAt(0).toUpperCase() + roleName.slice(1)}
+              </p>
 
-            <div className="cds--form__helper-text">
-              {roleDescription}.<br/>
+              <div className="cds--form__helper-text">
+                {roleDescription}.<br />
+              </div>
             </div>
-          </div>
-        </>
-      }
-      { isError &&
-        <ErrorPage />
-      }
+          </>
+        )
+      )}
+      {isError && <ErrorPage />}
     </div>
   );
 }

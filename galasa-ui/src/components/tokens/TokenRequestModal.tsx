@@ -12,8 +12,7 @@ import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useTranslations } from 'next-intl';
 
-export default function TokenRequestModal({isDisabled} : {isDisabled : boolean}) {
-
+export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean }) {
   const translations = useTranslations('TokenRequestModal');
 
   const [open, setOpen] = useState(false);
@@ -31,7 +30,7 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
       const response = await fetch('/auth/tokens', {
         method: 'POST',
         body: JSON.stringify({
-          tokenDescription: tokenNameInputRef.current?.value.trim()
+          tokenDescription: tokenNameInputRef.current?.value.trim(),
         }),
       });
 
@@ -54,11 +53,17 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
       console.error('Failed to request a personal access token: %s', err);
     }
   };
-    
+
   return (
     <>
-      <Button iconDescription={translations('new_access_token')} role="token-request-btn" disabled={isDisabled} hasIconOnly onClick={() => setOpen(true)}>
-        <Add/>
+      <Button
+        iconDescription={translations('new_access_token')}
+        role="token-request-btn"
+        disabled={isDisabled}
+        hasIconOnly
+        onClick={() => setOpen(true)}
+      >
+        <Add />
       </Button>
       <Modal
         modalHeading={translations('modal_heading')}
@@ -77,15 +82,11 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
           }
         }}
       >
-        <p>
-          {translations('token_description')}
-        </p>
+        <p>{translations('token_description')}</p>
 
         <br />
 
-        <p>
-          {translations('token_name_description')}
-        </p>
+        <p>{translations('token_name_description')}</p>
 
         <br />
 
@@ -111,4 +112,4 @@ export default function TokenRequestModal({isDisabled} : {isDisabled : boolean})
       </Modal>
     </>
   );
-};
+}

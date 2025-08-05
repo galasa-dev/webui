@@ -38,30 +38,34 @@ jest.mock('@/components/PageTile', () => {
 });
 
 jest.mock('@/components/users/UsersTable', () => {
-  return function MockUsersTable({ 
-    usersListPromise, 
-    currentUserPromise 
-  }: { 
-    usersListPromise: Promise<UserData[]>; 
-    currentUserPromise: Promise<any>; 
+  return function MockUsersTable({
+    usersListPromise,
+    currentUserPromise,
+  }: {
+    usersListPromise: Promise<UserData[]>;
+    currentUserPromise: Promise<any>;
   }) {
     const [usersData, setUsersData] = React.useState<string>('loading');
     const [currentUserData, setCurrentUserData] = React.useState<string>('loading');
 
     React.useEffect(() => {
-      usersListPromise.then(() => {
-        setUsersData('users-promise-resolved');
-      }).catch(() => {
-        setUsersData('users-promise-error');
-      });
+      usersListPromise
+        .then(() => {
+          setUsersData('users-promise-resolved');
+        })
+        .catch(() => {
+          setUsersData('users-promise-error');
+        });
     }, [usersListPromise]);
 
     React.useEffect(() => {
-      currentUserPromise.then(() => {
-        setCurrentUserData('current-user-promise-resolved');
-      }).catch(() => {
-        setCurrentUserData('current-user-promise-error');
-      });
+      currentUserPromise
+        .then(() => {
+          setCurrentUserData('current-user-promise-resolved');
+        })
+        .catch(() => {
+          setCurrentUserData('current-user-promise-error');
+        });
     }, [currentUserPromise]);
 
     return (
@@ -73,7 +77,6 @@ jest.mock('@/components/users/UsersTable', () => {
   };
 });
 
-
 describe('UsersPage', () => {
   const mockApiConfig = { baseURL: 'http://localhost:3000' };
   const mockUsersApiClient = {
@@ -82,10 +85,13 @@ describe('UsersPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     (createAuthenticatedApiConfiguration as jest.Mock).mockReturnValue(mockApiConfig);
     (UsersAPIApi as jest.Mock).mockImplementation(() => mockUsersApiClient);
-    (fetchUserFromApiServer as jest.Mock).mockResolvedValue({ id: 'current-user', name: 'Current User' });
+    (fetchUserFromApiServer as jest.Mock).mockResolvedValue({
+      id: 'current-user',
+      name: 'Current User',
+    });
   });
 
   it('renders the main page structure correctly', () => {
@@ -110,7 +116,7 @@ describe('UsersPage', () => {
       { loginId: 'user1', id: 'User One' },
       { loginId: 'user2', id: 'User Two' },
     ];
-    
+
     mockUsersApiClient.getUserByLoginId.mockResolvedValue(mockUsers);
 
     render(<UsersPage />);
@@ -127,23 +133,25 @@ describe('UsersPage', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('current-user-promise')).toHaveTextContent('current-user-promise-resolved');
+      expect(screen.getByTestId('current-user-promise')).toHaveTextContent(
+        'current-user-promise-resolved'
+      );
     });
 
     expect(fetchUserFromApiServer).toHaveBeenCalledWith('me');
   });
 
   it('handles API call with correct parameters', async () => {
-    const mockUsers: UserData[] = [
-      { loginId: 'user1', id: 'User One' },
-    ];
-    
+    const mockUsers: UserData[] = [{ loginId: 'user1', id: 'User One' }];
+
     mockUsersApiClient.getUserByLoginId.mockResolvedValue(mockUsers);
 
     render(<UsersPage />);
 
     await waitFor(() => {
-      expect(mockUsersApiClient.getUserByLoginId).toHaveBeenCalledWith(Constants.CLIENT_API_VERSION);
+      expect(mockUsersApiClient.getUserByLoginId).toHaveBeenCalledWith(
+        Constants.CLIENT_API_VERSION
+      );
     });
   });
 
@@ -173,7 +181,7 @@ describe('UsersPage', () => {
 
   it('handles API errors gracefully', async () => {
     mockUsersApiClient.getUserByLoginId.mockRejectedValue(new Error('API Error'));
-    
+
     // Mock console.error to avoid error output in tests
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -185,10 +193,8 @@ describe('UsersPage', () => {
   });
 
   it('creates a deep copy of users data using structuredClone', async () => {
-    const mockUsers: UserData[] = [
-      { loginId: 'user1', id: 'User One' },
-    ];
-    
+    const mockUsers: UserData[] = [{ loginId: 'user1', id: 'User One' }];
+
     mockUsersApiClient.getUserByLoginId.mockResolvedValue(mockUsers);
 
     render(<UsersPage />);
@@ -210,7 +216,6 @@ describe('UsersPage', () => {
   });
 });
 
-
 describe('UsersPage - API Integration', () => {
   const mockApiConfig = { baseURL: 'http://localhost:3000' };
   const mockUsersApiClient = {
@@ -221,7 +226,10 @@ describe('UsersPage - API Integration', () => {
     jest.clearAllMocks();
     (createAuthenticatedApiConfiguration as jest.Mock).mockReturnValue(mockApiConfig);
     (UsersAPIApi as jest.Mock).mockImplementation(() => mockUsersApiClient);
-    (fetchUserFromApiServer as jest.Mock).mockResolvedValue({ id: 'current-user', name: 'Current User' });
+    (fetchUserFromApiServer as jest.Mock).mockResolvedValue({
+      id: 'current-user',
+      name: 'Current User',
+    });
   });
 
   it('successfully fetches and processes users data', async () => {
@@ -229,12 +237,11 @@ describe('UsersPage - API Integration', () => {
       { loginId: 'user1', id: 'User One' },
       { loginId: 'user2', id: 'User Two' },
     ];
-    
+
     mockUsersApiClient.getUserByLoginId.mockResolvedValue(mockUsers);
 
     render(<UsersPage />);
 
-    
     await waitFor(() => {
       expect(screen.getByTestId('users-promise')).toHaveTextContent('users-promise-resolved');
     });
@@ -275,7 +282,9 @@ describe('UsersPage - API Integration', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('current-user-promise')).toHaveTextContent('current-user-promise-error');
+      expect(screen.getByTestId('current-user-promise')).toHaveTextContent(
+        'current-user-promise-error'
+      );
     });
   });
 });

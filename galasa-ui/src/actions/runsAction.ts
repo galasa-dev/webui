@@ -1,27 +1,30 @@
-"use server";
+'use server';
 /*
  * Copyright contributors to the Galasa project
  *
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { ResultArchiveStoreAPIApi } from "@/generated/galasaapi";
-import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import { CLIENT_API_VERSION } from "@/utils/constants/common";
-
+import { ResultArchiveStoreAPIApi } from '@/generated/galasaapi';
+import { createAuthenticatedApiConfiguration } from '@/utils/api';
+import { CLIENT_API_VERSION } from '@/utils/constants/common';
 
 export const downloadArtifactFromServer = async (runId: string, artifactUrl: string) => {
   const apiConfig = createAuthenticatedApiConfiguration();
   const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
-  const artifactFile = await rasApiClient.getRasRunArtifactByPath(runId, artifactUrl, CLIENT_API_VERSION);
+  const artifactFile = await rasApiClient.getRasRunArtifactByPath(
+    runId,
+    artifactUrl,
+    CLIENT_API_VERSION
+  );
   const contentType = artifactFile.type;
 
   const arrayBuffer = await artifactFile.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const size = artifactFile.size;
 
-  const base64 = buffer.toString("base64");
+  const base64 = buffer.toString('base64');
 
   let data: string;
 
@@ -43,6 +46,6 @@ export const downloadArtifactFromServer = async (runId: string, artifactUrl: str
     contentType,
     data,
     size,
-    base64
+    base64,
   };
 };

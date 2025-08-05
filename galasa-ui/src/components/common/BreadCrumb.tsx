@@ -6,9 +6,9 @@
 'use client';
 
 import React from 'react';
-import { Breadcrumb, BreadcrumbItem, OverflowMenuItem, OverflowMenu, Theme } from "@carbon/react";
-import "@/styles/global.scss";
-import styles from "@/styles/BreadCrumb.module.css";
+import { Breadcrumb, BreadcrumbItem, OverflowMenuItem, OverflowMenu, Theme } from '@carbon/react';
+import '@/styles/global.scss';
+import styles from '@/styles/BreadCrumb.module.css';
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import { BreadCrumbProps } from '@/utils/interfaces/components';
@@ -19,10 +19,8 @@ interface CustomBreadCrumbProps {
   breadCrumbItems: BreadCrumbProps[];
 }
 
-function BreadCrumb({
-  breadCrumbItems,
-}: CustomBreadCrumbProps) {
-  const translations = useTranslations("Breadcrumb");
+function BreadCrumb({ breadCrumbItems }: CustomBreadCrumbProps) {
+  const translations = useTranslations('Breadcrumb');
   const current = useTheme().theme;
   const router = useRouter();
   let theme: 'g10' | 'g90';
@@ -44,13 +42,10 @@ function BreadCrumb({
   const renderBreadCrumbItems = (items: BreadCrumbProps[]) => {
     return items.map((item) => {
       const translatedTitle = translations(item.title);
-      const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
-      
+      const displayText = translatedTitle.startsWith('Breadcrumb.') ? item.title : translatedTitle;
+
       return (
-        <BreadcrumbItem
-          key={item.route}
-          href={item.route}
-        >
+        <BreadcrumbItem key={item.route} href={item.route}>
           {displayText}
         </BreadcrumbItem>
       );
@@ -60,12 +55,12 @@ function BreadCrumb({
   const renderOverflowItems = (items: BreadCrumbProps[]) => {
     return items.map((item) => {
       const translatedTitle = translations(item.title);
-      const displayText = translatedTitle.startsWith("Breadcrumb.") ? item.title : translatedTitle;
-      
+      const displayText = translatedTitle.startsWith('Breadcrumb.') ? item.title : translatedTitle;
+
       return (
         <OverflowMenuItem
           key={item.route}
-          itemText={displayText} 
+          itemText={displayText}
           onClick={() => {
             router.push(item.route);
           }}
@@ -77,27 +72,28 @@ function BreadCrumb({
   return (
     <Theme theme={theme}>
       <Breadcrumb className={styles.crumbContainer}>
-        {
-          breadCrumbItems.length <= BREADCRUMB_THRESHOLD ? renderBreadCrumbItems(breadCrumbItems) : 
-            <>
-              {/* Render the first 2 items */}
-              {renderBreadCrumbItems(breadCrumbItems.slice(0, 2))}
+        {breadCrumbItems.length <= BREADCRUMB_THRESHOLD ? (
+          renderBreadCrumbItems(breadCrumbItems)
+        ) : (
+          <>
+            {/* Render the first 2 items */}
+            {renderBreadCrumbItems(breadCrumbItems.slice(0, 2))}
 
-              {/* Render the overflow menu with the middle terms */}
-              <BreadcrumbItem>
-                <OverflowMenu 
-                  align="bottom"
-                  aria-label="More navigation links" 
-                  data-testid="breadcrumb-overflow-menu"
-                >
-                  {renderOverflowItems(breadCrumbItems.slice(NUM_START_ITEM, -NUM_END_ITEM))}
-                </OverflowMenu>
-              </BreadcrumbItem>
+            {/* Render the overflow menu with the middle terms */}
+            <BreadcrumbItem>
+              <OverflowMenu
+                align="bottom"
+                aria-label="More navigation links"
+                data-testid="breadcrumb-overflow-menu"
+              >
+                {renderOverflowItems(breadCrumbItems.slice(NUM_START_ITEM, -NUM_END_ITEM))}
+              </OverflowMenu>
+            </BreadcrumbItem>
 
-              {/* Render the last 2 items */}
-              {renderBreadCrumbItems(breadCrumbItems.slice(-NUM_END_ITEM))}
-            </>
-        }
+            {/* Render the last 2 items */}
+            {renderBreadCrumbItems(breadCrumbItems.slice(-NUM_END_ITEM))}
+          </>
+        )}
       </Breadcrumb>
     </Theme>
   );

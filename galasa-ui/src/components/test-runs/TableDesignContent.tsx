@@ -3,50 +3,63 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
-import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import styles from "@/styles/TestRunsPage.module.css";
-import TableDesignRow from "./TableDesignRow";
-import { Checkbox, Button } from "@carbon/react";
-import { useTranslations } from "next-intl";
-import { InlineNotification } from "@carbon/react";
-import { ColumnDefinition } from "@/utils/interfaces";
-import { sortOrderType } from "@/utils/types/common";
-import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
-import { Dispatch, SetStateAction } from "react";
-
+'use client';
+import {
+  closestCorners,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import styles from '@/styles/TestRunsPage.module.css';
+import TableDesignRow from './TableDesignRow';
+import { Checkbox, Button } from '@carbon/react';
+import { useTranslations } from 'next-intl';
+import { InlineNotification } from '@carbon/react';
+import { ColumnDefinition } from '@/utils/interfaces';
+import { sortOrderType } from '@/utils/types/common';
+import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { Dispatch, SetStateAction } from 'react';
 
 interface TableDesignContentProps {
-    selectedRowIds: string[];
-    setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
-    tableRows: ColumnDefinition[];
-    visibleColumns?: string[];
-    columnsOrder?: ColumnDefinition[];
-    setTableRows: React.Dispatch<React.SetStateAction<ColumnDefinition[]>>;
-    sortOrder?: { id: string; order: sortOrderType }[];
-    setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrderType }[]>>;
-    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
-    setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
+  selectedRowIds: string[];
+  setSelectedRowIds: React.Dispatch<React.SetStateAction<string[]>>;
+  tableRows: ColumnDefinition[];
+  visibleColumns?: string[];
+  columnsOrder?: ColumnDefinition[];
+  setTableRows: React.Dispatch<React.SetStateAction<ColumnDefinition[]>>;
+  sortOrder?: { id: string; order: sortOrderType }[];
+  setSortOrder?: React.Dispatch<React.SetStateAction<{ id: string; order: sortOrderType }[]>>;
+  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
+  setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
 }
 
 export default function TableDesignContent({
-  selectedRowIds, 
+  selectedRowIds,
   setSelectedRowIds,
   tableRows,
   visibleColumns,
   columnsOrder,
-  setTableRows, 
-  sortOrder, 
-  setSortOrder, 
-  setVisibleColumns, 
-  setColumnsOrder}
-  : TableDesignContentProps) {
-  const translations = useTranslations("TableDesignContent"); 
+  setTableRows,
+  sortOrder,
+  setSortOrder,
+  setVisibleColumns,
+  setColumnsOrder,
+}: TableDesignContentProps) {
+  const translations = useTranslations('TableDesignContent');
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
       if (prev.includes(rowId)) {
-        return prev.filter(id => id !== rowId);
+        return prev.filter((id) => id !== rowId);
       } else {
         return [...prev, rowId];
       }
@@ -55,20 +68,19 @@ export default function TableDesignContent({
 
   const handleSelectAll = () => {
     const allSelected = selectedRowIds.length === tableRows.length;
-    const rowIds = tableRows.map(row => row.id);
+    const rowIds = tableRows.map((row) => row.id);
 
     if (selectedRowIds.length < tableRows.length) {
       setSelectedRowIds(rowIds);
     } else {
-      setSelectedRowIds(allSelected ? [] : rowIds); 
+      setSelectedRowIds(allSelected ? [] : rowIds);
     }
   };
 
-  const getRowPosition = (id: string) => tableRows.findIndex(row => row.id === id);
-
+  const getRowPosition = (id: string) => tableRows.findIndex((row) => row.id === id);
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active , over } = event;
+    const { active, over } = event;
 
     if (over && active.id !== over.id) {
       setTableRows((rows: ColumnDefinition[]) => {
@@ -85,7 +97,7 @@ export default function TableDesignContent({
       setSortOrder((prev) => {
         let updatedSortOrder = [...prev];
         if (newSortOrder !== 'none') {
-          const existingIndex = updatedSortOrder.findIndex(item => item.id === rowId);
+          const existingIndex = updatedSortOrder.findIndex((item) => item.id === rowId);
           if (existingIndex !== -1) {
             updatedSortOrder[existingIndex].order = newSortOrder;
           } else {
@@ -93,7 +105,7 @@ export default function TableDesignContent({
           }
         } else {
           // If the new order is 'none', remove the item from the sort array
-          updatedSortOrder = prev.filter(order => order.id !== rowId);
+          updatedSortOrder = prev.filter((order) => order.id !== rowId);
         }
         return updatedSortOrder;
       });
@@ -115,74 +127,72 @@ export default function TableDesignContent({
     })
   );
 
-  const isResetToDefaultsDisabled = 
+  const isResetToDefaultsDisabled =
     JSON.stringify(visibleColumns) === JSON.stringify(DEFAULT_VISIBLE_COLUMNS) &&
     JSON.stringify(columnsOrder) === JSON.stringify(RESULTS_TABLE_COLUMNS) &&
     (sortOrder === undefined || sortOrder.length === 0);
 
   return (
-    <DndContext 
-      onDragEnd={handleDragEnd}
-      collisionDetection={closestCorners}
-      sensors={sensors}
-    >
-      <p className={styles.titleText}>{translations("description")}</p>
+    <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners} sensors={sensors}>
+      <p className={styles.titleText}>{translations('description')}</p>
       <div className={styles.resetToDefaultsButtonContainerTableDesign}>
-        <Button 
+        <Button
           type="button"
           kind="secondary"
           onClick={handleResetToDefaults}
           disabled={isResetToDefaultsDisabled}
         >
-          {translations("resetToDefaults")}
+          {translations('resetToDefaults')}
         </Button>
       </div>
       <div className={styles.tableDesignContainer}>
         <div className={styles.tableDesignHeaderRow}>
           <div className={styles.cellDragHandle}>
-            <strong>{translations("dragAndDropHeader")}</strong>
+            <strong>{translations('dragAndDropHeader')}</strong>
           </div>
           <div className={styles.tableDesignCheckboxHeader}>
-            <strong>{translations("showHideHeader")}</strong>
+            <strong>{translations('showHideHeader')}</strong>
             <Checkbox
-              aria-label="Select all rows" 
+              aria-label="Select all rows"
               id="columns-checkbox-all"
               checked={selectedRowIds.length > 0 && selectedRowIds.length === tableRows.length}
               onChange={handleSelectAll}
             />
           </div>
           <div className={styles.cellValue}>
-            <strong>{translations("columnName")}</strong>
+            <strong>{translations('columnName')}</strong>
           </div>
           <div className={styles.cellDropdownHeader}>
-            <strong>{translations("sortOrderHeader")}</strong>
+            <strong>{translations('sortOrderHeader')}</strong>
           </div>
         </div>
-        <SortableContext items={tableRows.map(row => row.id)} strategy={verticalListSortingStrategy}>
-          {
-            tableRows.map((row) => {
-              const currentSort = sortOrder?.find(order => order.id === row.id);
-              return <TableDesignRow 
-                key={row.id} 
-                rowId={row.id} 
+        <SortableContext
+          items={tableRows.map((row) => row.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {tableRows.map((row) => {
+            const currentSort = sortOrder?.find((order) => order.id === row.id);
+            return (
+              <TableDesignRow
+                key={row.id}
+                rowId={row.id}
                 currentSortOrder={currentSort?.order || 'none'}
                 isSelected={selectedRowIds.includes(row.id)}
                 onSelect={handleRowSelect}
                 onSortOrderChange={handleSortOrderChange}
-              />;
-            }) 
-          }
+              />
+            );
+          })}
         </SortableContext>
-        {
-          selectedRowIds.length === 0 && 
+        {selectedRowIds.length === 0 && (
           <InlineNotification
             className={styles.notification}
-            kind={"warning"} 
-            title={translations("warning")}
-            subtitle={translations("noColumnsSelected")}
+            kind={'warning'}
+            title={translations('warning')}
+            subtitle={translations('noColumnsSelected')}
             hideCloseButton={true}
           />
-        }
+        )}
       </div>
     </DndContext>
   );

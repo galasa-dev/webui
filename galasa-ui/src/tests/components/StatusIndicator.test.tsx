@@ -51,10 +51,10 @@ describe('StatusIndicator Component', () => {
   describe('Passed status', () => {
     it('renders correctly for "Passed" status', () => {
       render(<StatusIndicator status="Passed" />);
-      
+
       const statusText = screen.getByText('Passed');
       const checkmarkIcon = screen.getByTestId('checkmark-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(checkmarkIcon).toBeInTheDocument();
       expect(checkmarkIcon).toHaveClass('mocked-status-passed');
@@ -65,10 +65,10 @@ describe('StatusIndicator Component', () => {
   describe('Failed status variants', () => {
     it('renders correctly for "Failed" status', () => {
       render(<StatusIndicator status="Failed" />);
-      
+
       const statusText = screen.getByText('Failed');
       const errorIcon = screen.getByTestId('error-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(errorIcon).toBeInTheDocument();
       expect(errorIcon).toHaveClass('mocked-status-failed');
@@ -77,10 +77,10 @@ describe('StatusIndicator Component', () => {
 
     it('renders correctly for "Hung" status', () => {
       render(<StatusIndicator status="Hung" />);
-      
+
       const statusText = screen.getByText('Hung');
       const errorIcon = screen.getByTestId('warning-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(errorIcon).toBeInTheDocument();
       expect(errorIcon).toHaveAttribute('aria-label', 'Hung');
@@ -88,10 +88,10 @@ describe('StatusIndicator Component', () => {
 
     it('renders correctly for "EnvFail" status', () => {
       render(<StatusIndicator status="EnvFail" />);
-      
+
       const statusText = screen.getByText('EnvFail');
       const errorIcon = screen.getByTestId('error-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(errorIcon).toBeInTheDocument();
       expect(errorIcon).toHaveAttribute('aria-label', 'EnvFail');
@@ -101,10 +101,10 @@ describe('StatusIndicator Component', () => {
   describe('Cancelled/Ignored status variants', () => {
     it('renders correctly for "Cancelled" status', () => {
       render(<StatusIndicator status="Cancelled" />);
-      
+
       const statusText = screen.getByText('Cancelled');
       const errorIcon = screen.getByTestId('stop-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(errorIcon).toBeInTheDocument();
       expect(errorIcon).toHaveClass('mocked-status-cancelled');
@@ -113,10 +113,10 @@ describe('StatusIndicator Component', () => {
 
     it('renders correctly for "Ignored" status', () => {
       render(<StatusIndicator status="Ignored" />);
-      
+
       const statusText = screen.getByText('Ignored');
       const errorIcon = screen.getByTestId('stop-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(errorIcon).toBeInTheDocument();
       expect(errorIcon).toHaveAttribute('aria-label', 'Ignored');
@@ -126,10 +126,10 @@ describe('StatusIndicator Component', () => {
   describe('Requeued status', () => {
     it('renders correctly for "Requeued" status', () => {
       render(<StatusIndicator status="Requeued" />);
-      
+
       const statusText = screen.getByText('Requeued');
       const renewIcon = screen.getByTestId('renew-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(renewIcon).toBeInTheDocument();
       expect(renewIcon).toHaveClass('mocked-status-requeued');
@@ -140,10 +140,10 @@ describe('StatusIndicator Component', () => {
   describe('Unknown status', () => {
     it('renders correctly for unknown status', () => {
       render(<StatusIndicator status="SomeUnknownStatus" />);
-      
+
       const unknownText = screen.getByText('SomeUnknownStatus');
       const helpIcon = screen.getByTestId('help-icon');
-      
+
       expect(unknownText).toBeInTheDocument();
       expect(helpIcon).toBeInTheDocument();
       expect(helpIcon).toHaveClass('mocked-status-other');
@@ -151,10 +151,10 @@ describe('StatusIndicator Component', () => {
     });
     it('handles an empty string by rendering the default icon', () => {
       render(<StatusIndicator status="" />);
-      
+
       const unknownText = screen.getByText('Unknown');
       const helpIcon = screen.getByTestId('help-icon');
-      
+
       expect(unknownText).toBeInTheDocument();
       expect(helpIcon).toBeInTheDocument();
       expect(helpIcon).toHaveClass('mocked-status-other');
@@ -162,10 +162,10 @@ describe('StatusIndicator Component', () => {
 
     it('renders nothing if the status is null', () => {
       render(<StatusIndicator status={null as any} />);
-      
+
       const unknownText = screen.getByText('Unknown');
       const helpIcon = screen.getByTestId('help-icon');
-      
+
       expect(unknownText).toBeInTheDocument();
       expect(helpIcon).toBeInTheDocument();
     });
@@ -175,7 +175,7 @@ describe('StatusIndicator Component', () => {
     it('applies the correct CSS class to all status elements', () => {
       const { container } = render(<StatusIndicator status="Passed" />);
       const statusContainer = container.querySelector('.mocked-status-container');
-      
+
       expect(statusContainer).toBeInTheDocument();
     });
   });
@@ -183,22 +183,22 @@ describe('StatusIndicator Component', () => {
   describe('Edge cases', () => {
     it('handles case sensitivity correctly', () => {
       render(<StatusIndicator status="passed" />);
-      
+
       // Should render as unknown since it's case sensitive
       const statusText = screen.getByText('Passed');
       const passedIcon = screen.getByTestId('checkmark-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(passedIcon).toBeInTheDocument();
     });
 
     it('handles status with extra whitespace', () => {
       render(<StatusIndicator status=" Passed " />);
-      
+
       // Should render as unknown since it includes whitespace
       const statusText = screen.getByText('Passed');
       const passedIcon = screen.getByTestId('checkmark-filled-icon');
-      
+
       expect(statusText).toBeInTheDocument();
       expect(passedIcon).toBeInTheDocument();
     });

@@ -11,7 +11,7 @@ const originalEnv = process.env;
 
 jest.mock('@/utils/auth', () => ({
   ...jest.requireActual('@/utils/auth'),
-  GALASA_WEBUI_HOST_URL: "http://mock-webui-host-url",
+  GALASA_WEBUI_HOST_URL: 'http://mock-webui-host-url',
 }));
 
 // Mock the jwtDecode method
@@ -25,7 +25,7 @@ jest.mock('jwt-decode', () => ({
 jest.mock('next/headers', () => ({
   ...jest.requireActual('next/headers'),
   cookies: jest.fn(() => ({
-    get: jest.fn().mockReturnValue('false')
+    get: jest.fn().mockReturnValue('false'),
   })),
 }));
 
@@ -50,15 +50,16 @@ describe('Middleware', () => {
     const req = new NextRequest(new Request(requestUrl), {});
     const redirectUrl = 'http://my-connector/auth';
 
-    const fetchSpy = jest.spyOn(global, "fetch")
-      .mockImplementation(jest.fn(() =>
+    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(
+      jest.fn(() =>
         Promise.resolve({
           url: redirectUrl,
           headers: {
             get: jest.fn().mockReturnValue(redirectUrl),
           },
         })
-      ) as jest.Mock);
+      ) as jest.Mock
+    );
 
     // When...
     await middleware(req);
@@ -70,7 +71,9 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(`callback_url=http://mock-webui-host-url/runs/callback`);
+    expect(fetchedUrl.toString()).toContain(
+      `callback_url=http://mock-webui-host-url/runs/callback`
+    );
     fetchSpy.mockRestore();
   });
 
@@ -80,15 +83,16 @@ describe('Middleware', () => {
     const req = new NextRequest(new Request(requestUrl), {});
     const redirectUrl = 'http://my-connector/auth';
 
-    const fetchSpy = jest.spyOn(global, "fetch")
-      .mockImplementation(jest.fn(() =>
+    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(
+      jest.fn(() =>
         Promise.resolve({
           url: redirectUrl,
           headers: {
             get: jest.fn().mockReturnValue(redirectUrl),
           },
         })
-      ) as jest.Mock);
+      ) as jest.Mock
+    );
 
     // When...
     await middleware(req);
@@ -283,8 +287,8 @@ describe('Middleware', () => {
 
     process.env = {
       ...originalEnv,
-      GALASA_DEV_TOKEN: "galasa:token",
-      NODE_ENV: "development"
+      GALASA_DEV_TOKEN: 'galasa:token',
+      NODE_ENV: 'development',
     };
 
     const mockIdToken = 'mynewjwt';
@@ -292,7 +296,8 @@ describe('Middleware', () => {
       Promise.resolve({
         jwt: mockIdToken,
         refreshToken: 'myrefreshtoken',
-      }));
+      })
+    );
 
     // When...
     const response = await middleware(req);
@@ -301,7 +306,7 @@ describe('Middleware', () => {
     expect(redirectSpy).toHaveBeenCalledTimes(0);
     expect(postAuthenticateSpy).toHaveBeenCalledTimes(1);
     expect(response.status).toEqual(200);
-    expect(response.headers.get("Set-Cookie")).toEqual(`id_token=${mockIdToken}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`id_token=${mockIdToken}`);
 
     postAuthenticateSpy.mockReset();
   });
@@ -313,8 +318,8 @@ describe('Middleware', () => {
 
     process.env = {
       ...originalEnv,
-      GALASA_DEV_TOKEN: "invalidtoken",
-      NODE_ENV: "development"
+      GALASA_DEV_TOKEN: 'invalidtoken',
+      NODE_ENV: 'development',
     };
 
     // When...
@@ -334,8 +339,8 @@ describe('Middleware', () => {
 
     process.env = {
       ...originalEnv,
-      GALASA_DEV_TOKEN: "galasa:token",
-      NODE_ENV: "development"
+      GALASA_DEV_TOKEN: 'galasa:token',
+      NODE_ENV: 'development',
     };
 
     const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate');

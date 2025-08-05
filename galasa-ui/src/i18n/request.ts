@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { cookies } from "next/headers";
-import { getRequestConfig } from "next-intl/server";
-import { locales, defaultLocale } from "@/i18n/config";
+import { cookies } from 'next/headers';
+import { getRequestConfig } from 'next-intl/server';
+import { locales, defaultLocale } from '@/i18n/config';
 
-const COOKIE_NAME = "NEXT_LOCALE";
+const COOKIE_NAME = 'NEXT_LOCALE';
 
 export default getRequestConfig(async () => {
   const cookieStore = cookies();

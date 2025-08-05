@@ -14,7 +14,7 @@ import { handleDownload } from '@/utils/artifacts';
 jest.mock('@/actions/runsAction');
 jest.mock('@/utils/artifacts', () => ({
   ...jest.requireActual('@/utils/artifacts'),
-  handleDownload: jest.fn(),                
+  handleDownload: jest.fn(),
 }));
 // Mock next-intl completely
 jest.mock('next-intl', () => ({
@@ -37,11 +37,7 @@ jest.mock('@carbon/react', () => ({
   TreeNode: ({ children, label, onSelect, onToggle, isExpanded, renderIcon }: any) => {
     const IconComponent = renderIcon;
     return (
-      <div
-        data-testid={`tree-node-${label}`}
-        onClick={onSelect}
-        data-expanded={isExpanded}
-      >
+      <div data-testid={`tree-node-${label}`} onClick={onSelect} data-expanded={isExpanded}>
         {IconComponent && <IconComponent data-testid={`icon-${label}`} />}
         <span>{label}</span>
         {onToggle && (
@@ -53,9 +49,7 @@ jest.mock('@carbon/react', () => ({
       </div>
     );
   },
-  InlineLoading: ({ description }: any) => (
-    <div data-testid="inline-loading">{description}</div>
-  ),
+  InlineLoading: ({ description }: any) => <div data-testid="inline-loading">{description}</div>,
   InlineNotification: ({ title, subtitle }: any) => (
     <div data-testid="inline-notification">
       <div>{title}</div>
@@ -68,11 +62,7 @@ jest.mock('@carbon/react', () => ({
     </div>
   ),
   Button: ({ onClick, iconDescription, renderIcon: Icon }: any) => (
-    <button
-      data-testid="mock-carbon-button"
-      aria-label={iconDescription}
-      onClick={onClick}
-    >
+    <button data-testid="mock-carbon-button" aria-label={iconDescription} onClick={onClick}>
       {Icon && <Icon />}
     </button>
   ),
@@ -90,7 +80,9 @@ jest.mock('@carbon/icons-react', () => ({
   Zip: () => <div data-testid="zip-icon" />,
 }));
 
-const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.MockedFunction<typeof downloadArtifactFromServer>;
+const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.MockedFunction<
+  typeof downloadArtifactFromServer
+>;
 const mockHandleDownload = handleDownload as jest.MockedFunction<typeof handleDownload>;
 
 // Import useTranslations from the mocked module
@@ -147,7 +139,7 @@ describe('ArtifactsTab', () => {
   describe('Component Rendering', () => {
     test('renders the component with title and description', () => {
       render(<ArtifactsTab artifacts={[]} runId="test-run" runName="Test Run" />);
-      
+
       expect(screen.getByText('Artifacts')).toBeInTheDocument();
       expect(screen.getByText('Test artifacts description')).toBeInTheDocument();
       expect(screen.getByTestId('tree-view')).toBeInTheDocument();
@@ -155,7 +147,7 @@ describe('ArtifactsTab', () => {
 
     test('renders empty tree when no artifacts provided', () => {
       render(<ArtifactsTab artifacts={[]} runId="test-run" runName="Test Run" />);
-      
+
       const treeView = screen.getByTestId('tree-view');
       expect(treeView).toBeInTheDocument();
       expect(treeView.children).toHaveLength(0);
@@ -163,7 +155,7 @@ describe('ArtifactsTab', () => {
 
     test('displays default message when no file is selected', () => {
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       expect(screen.getByText('Select a file to display its content')).toBeInTheDocument();
     });
   });
@@ -171,12 +163,12 @@ describe('ArtifactsTab', () => {
   describe('Tree Structure Building', () => {
     test('builds correct tree structure from artifacts', () => {
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       // Check for folder nodes
       expect(screen.getByTestId('tree-node-framework')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-data')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-archive')).toBeInTheDocument();
-      
+
       // Check for file nodes
       expect(screen.getByTestId('tree-node-test.txt')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-config.json')).toBeInTheDocument();
@@ -190,8 +182,10 @@ describe('ArtifactsTab', () => {
         { path: 'simple/file.txt', runId: 'run-123' },
       ];
 
-      render(<ArtifactsTab artifacts={artifactsWithVariousPaths} runId="test-run" runName="Test Run" />);
-      
+      render(
+        <ArtifactsTab artifacts={artifactsWithVariousPaths} runId="test-run" runName="Test Run" />
+      );
+
       expect(screen.getByTestId('tree-node-framework')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-data')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-simple')).toBeInTheDocument();
@@ -204,31 +198,30 @@ describe('ArtifactsTab', () => {
       ];
 
       render(<ArtifactsTab artifacts={artifactsWithPrefix} runId="test-run" runName="Test Run" />);
-      
+
       expect(screen.getByTestId('tree-node-framework')).toBeInTheDocument();
       expect(screen.getByTestId('tree-node-data')).toBeInTheDocument();
     });
   });
 
-
   describe('Folder Expansion', () => {
     test('toggles folder expansion state', async () => {
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const frameworkToggle = screen.getByTestId('toggle-framework');
       const frameworkNode = screen.getByTestId('tree-node-framework');
-      
+
       // Initially not expanded
       expect(frameworkNode).toHaveAttribute('data-expanded', 'false');
-      
+
       // Click to expand
       fireEvent.click(frameworkToggle);
-      
+
       expect(frameworkNode).toHaveAttribute('data-expanded', 'true');
-      
+
       // Click to collapse
       fireEvent.click(frameworkToggle);
-      
+
       expect(frameworkNode).toHaveAttribute('data-expanded', 'false');
     });
   });
@@ -245,15 +238,18 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
 
       await waitFor(() => {
-        expect(mockDownloadArtifactFromServer).toHaveBeenCalledWith('test-run', '/framework/test.txt');
+        expect(mockDownloadArtifactFromServer).toHaveBeenCalledWith(
+          'test-run',
+          '/framework/test.txt'
+        );
       });
 
       // Check if content is displayed
@@ -274,9 +270,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-config.json');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -297,9 +293,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-screenshot.png');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -310,14 +306,14 @@ describe('ArtifactsTab', () => {
     });
 
     test('displays loading state during download', async () => {
-      mockDownloadArtifactFromServer.mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
+      mockDownloadArtifactFromServer.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 100))
       );
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -330,9 +326,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockRejectedValue(new Error('Download failed'));
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -356,9 +352,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -379,9 +375,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -404,9 +400,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-test.txt');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });
@@ -415,8 +411,8 @@ describe('ArtifactsTab', () => {
         expect(screen.getByTestId('cloud-download-icon')).toBeInTheDocument();
       });
 
-      const downloadButton = screen.getByRole("button", { name: /download/i });
-      
+      const downloadButton = screen.getByRole('button', { name: /download/i });
+
       await act(async () => {
         fireEvent.click(downloadButton);
       });
@@ -426,7 +422,6 @@ describe('ArtifactsTab', () => {
         'framework/test.txt'
       );
     });
-
   });
 
   describe('Edge Cases', () => {
@@ -436,19 +431,21 @@ describe('ArtifactsTab', () => {
         { path: '/valid/path.txt', runId: 'run-123' },
       ];
 
-      render(<ArtifactsTab artifacts={artifactsWithUndefinedPaths} runId="test-run" runName="Test Run" />);
-      
+      render(
+        <ArtifactsTab artifacts={artifactsWithUndefinedPaths} runId="test-run" runName="Test Run" />
+      );
+
       // Should only render the valid path
       expect(screen.getByTestId('tree-node-valid')).toBeInTheDocument();
     });
 
     test('handles artifacts with empty runId', () => {
-      const artifactsWithEmptyRunId = [
-        { path: '/test/file.txt', runId: undefined },
-      ];
+      const artifactsWithEmptyRunId = [{ path: '/test/file.txt', runId: undefined }];
 
-      render(<ArtifactsTab artifacts={artifactsWithEmptyRunId} runId="test-run" runName="Test Run" />);
-      
+      render(
+        <ArtifactsTab artifacts={artifactsWithEmptyRunId} runId="test-run" runName="Test Run" />
+      );
+
       expect(screen.getByTestId('tree-node-file.txt')).toBeInTheDocument();
     });
 
@@ -463,9 +460,9 @@ describe('ArtifactsTab', () => {
       mockDownloadArtifactFromServer.mockResolvedValue(mockDownloadResult);
 
       render(<ArtifactsTab artifacts={mockArtifacts} runId="test-run" runName="Test Run" />);
-      
+
       const fileNode = screen.getByTestId('tree-node-config.json');
-      
+
       await act(async () => {
         fireEvent.click(fileNode);
       });

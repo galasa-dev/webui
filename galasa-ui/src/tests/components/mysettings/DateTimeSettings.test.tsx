@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import DateTimeSettings from "@/components/mysettings/DateTimeSettings";
+import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
@@ -12,13 +12,13 @@ import { render, screen } from '@testing-library/react';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "Date and Time Settings",
+      title: 'Date and Time Settings',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
-// Mock components 
+// Mock components
 jest.mock('@/components/mysettings/FormatSection', () => {
   return function MockedFormatSection() {
     return <div>Mocked Format Section</div>;
@@ -30,7 +30,6 @@ jest.mock('@/components/mysettings/TimezoneSection', () => {
     return <div>Mocked Timezone Section</div>;
   };
 });
-
 
 describe('DateTimeSettings', () => {
   test('Renders without crashing', () => {

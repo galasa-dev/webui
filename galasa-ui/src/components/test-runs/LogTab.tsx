@@ -3,22 +3,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
+'use client';
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Search, OverflowMenu, Button } from '@carbon/react';
-import styles from "@/styles/LogTab.module.css";
-import { Checkbox } from "@carbon/react";
-import {
-  Filter,
-  ChevronUp,
-  ChevronDown,
-  CloudDownload,
-  Term,
-  LetterAa,
-} from "@carbon/icons-react";
-import { handleDownload } from "@/utils/artifacts";
-import { useTranslations } from "next-intl";
+import styles from '@/styles/LogTab.module.css';
+import { Checkbox } from '@carbon/react';
+import { Filter, ChevronUp, ChevronDown, CloudDownload, Term, LetterAa } from '@carbon/icons-react';
+import { handleDownload } from '@/utils/artifacts';
+import { useTranslations } from 'next-intl';
 
 interface LogLine {
   content: string;
@@ -35,8 +28,8 @@ interface MatchInfo {
 }
 
 enum RegexFlags {
-  AllMatches = "g",
-  AllMatchesIgnoreCase = "gi",
+  AllMatches = 'g',
+  AllMatchesIgnoreCase = 'gi',
 }
 
 interface LogTabProps {
@@ -45,9 +38,9 @@ interface LogTabProps {
 }
 
 export default function LogTab({ logs, initialLine }: LogTabProps) {
-  const translations = useTranslations("LogTab");
+  const translations = useTranslations('LogTab');
 
-  const [logContent, setLogContent] = useState<string>("");
+  const [logContent, setLogContent] = useState<string>('');
   const [processedLines, setProcessedLines] = useState<LogLine[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
@@ -71,7 +64,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
 
   const handleSearchChange = (e: any) => {
-    const value = e.target?.value || "";
+    const value = e.target?.value || '';
     setSearchTerm(value);
 
     // Clear any existing timeout
@@ -100,14 +93,14 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     setMatchCase(!matchCase);
 
     // Clear cache when search options change
-    setSearchCache(new Map()); 
+    setSearchCache(new Map());
   };
 
   const toggleMatchWholeWord = () => {
     setMatchWholeWord(!matchWholeWord);
 
     // Clear cache when search options change
-    setSearchCache(new Map()); 
+    setSearchCache(new Map());
   };
 
   const goToNextMatch = () => {
@@ -142,16 +135,16 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     let logLevel: string | null = null;
 
     // Attempt to parse a timestamp and log level by splitting the line.
-    const tokens = line.trim().split(" ");
+    const tokens = line.trim().split(' ');
     if (
       tokens.length >= 3 &&
       tokens[0].length === 10 && // Simple check for DD/MM/YYYY format
-      tokens[0].charAt(2) === "/" &&
-      tokens[0].charAt(5) === "/" &&
-      tokens[1].includes(":") &&
-      tokens[1].includes(".")
+      tokens[0].charAt(2) === '/' &&
+      tokens[0].charAt(5) === '/' &&
+      tokens[1].includes(':') &&
+      tokens[1].includes('.')
     ) {
-      if (["ERROR", "WARN", "DEBUG", "INFO", "TRACE"].includes(tokens[2])) {
+      if (['ERROR', 'WARN', 'DEBUG', 'INFO', 'TRACE'].includes(tokens[2])) {
         logLevel = tokens[2];
       }
     }
@@ -159,16 +152,16 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     // Fallback: check if the line starts with any log level
     if (!logLevel) {
       const trimmedLine = line.trim();
-      if (trimmedLine.startsWith("ERROR")) {
-        logLevel = "ERROR";
-      } else if (trimmedLine.startsWith("WARN")) {
-        logLevel = "WARN";
-      } else if (trimmedLine.startsWith("DEBUG")) {
-        logLevel = "DEBUG";
-      } else if (trimmedLine.startsWith("INFO")) {
-        logLevel = "INFO";
-      } else if (trimmedLine.startsWith("TRACE")) {
-        logLevel = "TRACE";
+      if (trimmedLine.startsWith('ERROR')) {
+        logLevel = 'ERROR';
+      } else if (trimmedLine.startsWith('WARN')) {
+        logLevel = 'WARN';
+      } else if (trimmedLine.startsWith('DEBUG')) {
+        logLevel = 'DEBUG';
+      } else if (trimmedLine.startsWith('INFO')) {
+        logLevel = 'INFO';
+      } else if (trimmedLine.startsWith('TRACE')) {
+        logLevel = 'TRACE';
       }
     }
 
@@ -176,111 +169,115 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   };
 
   // Search function that computes all matches once and caches results
-  const computeSearchMatches = useCallback((lines: LogLine[], regex: RegExp | null): MatchInfo[] => {
-    let result: MatchInfo[] = [];
+  const computeSearchMatches = useCallback(
+    (lines: LogLine[], regex: RegExp | null): MatchInfo[] => {
+      let result: MatchInfo[] = [];
 
-    if (!regex || !debouncedSearchTerm.trim()) {
-      result = [];
-    } else {
-      try {
-        // Create cache key
-        const cacheKey = `${debouncedSearchTerm}-${matchCase}-${matchWholeWord}-${lines.map(l => l.isVisible).join('')}`;
-
-        // Check cache first
-        if (searchCache.has(cacheKey)) {
-          result = searchCache.get(cacheKey)!;
-        } else {
-          const matches: MatchInfo[] = [];
-          let globalIndex = 0;
-
-          lines.forEach((line, lineIndex) => {
-            if (!line.isVisible) return;
-
-            // Reset regex lastIndex to ensure we get all matches
-            regex.lastIndex = 0;
-            let match;
-
-            while ((match = regex.exec(line.content)) !== null) {
-              matches.push({
-                lineIndex,
-                start: match.index,
-                end: match.index + match[0].length,
-                globalIndex: globalIndex++
-              });
-
-              // Prevent infinite loop on zero-length matches
-              if (match.index === regex.lastIndex) {
-                regex.lastIndex++;
-              }
-            }
-          });
-
-          // Cache the results
-          setSearchCache(prev => new Map(prev).set(cacheKey, matches));
-          result = matches;
-        }
-      } catch (error) {
-
-        console.warn('Regex execution error:', error);
+      if (!regex || !debouncedSearchTerm.trim()) {
         result = [];
+      } else {
+        try {
+          // Create cache key
+          const cacheKey = `${debouncedSearchTerm}-${matchCase}-${matchWholeWord}-${lines.map((l) => l.isVisible).join('')}`;
 
+          // Check cache first
+          if (searchCache.has(cacheKey)) {
+            result = searchCache.get(cacheKey)!;
+          } else {
+            const matches: MatchInfo[] = [];
+            let globalIndex = 0;
+
+            lines.forEach((line, lineIndex) => {
+              if (!line.isVisible) return;
+
+              // Reset regex lastIndex to ensure we get all matches
+              regex.lastIndex = 0;
+              let match;
+
+              while ((match = regex.exec(line.content)) !== null) {
+                matches.push({
+                  lineIndex,
+                  start: match.index,
+                  end: match.index + match[0].length,
+                  globalIndex: globalIndex++,
+                });
+
+                // Prevent infinite loop on zero-length matches
+                if (match.index === regex.lastIndex) {
+                  regex.lastIndex++;
+                }
+              }
+            });
+
+            // Cache the results
+            setSearchCache((prev) => new Map(prev).set(cacheKey, matches));
+            result = matches;
+          }
+        } catch (error) {
+          console.warn('Regex execution error:', error);
+          result = [];
+        }
       }
-    }
 
-    return result;
-  }, [debouncedSearchTerm, matchCase, matchWholeWord, searchCache]);
+      return result;
+    },
+    [debouncedSearchTerm, matchCase, matchWholeWord, searchCache]
+  );
 
   const searchMatches = useMemo(() => {
     return computeSearchMatches(processedLines, searchRegex);
   }, [processedLines, searchRegex, computeSearchMatches]);
 
-  const highlightText = useCallback((text: string, lineIndex: number): React.ReactNode => {
-    let result: React.ReactNode = text;
+  const highlightText = useCallback(
+    (text: string, lineIndex: number): React.ReactNode => {
+      let result: React.ReactNode = text;
 
-    if (searchRegex && debouncedSearchTerm.trim()) {
-      const lineMatches = searchMatches.filter(match => match.lineIndex === lineIndex);
+      if (searchRegex && debouncedSearchTerm.trim()) {
+        const lineMatches = searchMatches.filter((match) => match.lineIndex === lineIndex);
 
-      if (lineMatches.length > 0) {
-        const resultArray: React.ReactNode[] = [];
-        let lastEnd = 0;
+        if (lineMatches.length > 0) {
+          const resultArray: React.ReactNode[] = [];
+          let lastEnd = 0;
 
-        lineMatches.forEach((match, matchIndex) => {
-          // Add text before match
-          if (match.start > lastEnd) {
-            resultArray.push(text.substring(lastEnd, match.start));
+          lineMatches.forEach((match, matchIndex) => {
+            // Add text before match
+            if (match.start > lastEnd) {
+              resultArray.push(text.substring(lastEnd, match.start));
+            }
+
+            // Add highlighted match
+            const isCurrentMatch = match.globalIndex === currentMatchIndex;
+            const matchText = text.substring(match.start, match.end);
+
+            resultArray.push(
+              <span
+                key={`match-${lineIndex}-${matchIndex}`}
+                className={`${styles.highlight} ${isCurrentMatch ? styles.currentHighlight : ''}`}
+                id={isCurrentMatch ? 'current-match' : undefined}
+              >
+                {matchText}
+              </span>
+            );
+
+            lastEnd = match.end;
+          });
+
+          // Add remaining text after last match
+          if (lastEnd < text.length) {
+            resultArray.push(text.substring(lastEnd));
           }
 
-          // Add highlighted match
-          const isCurrentMatch = match.globalIndex === currentMatchIndex;
-          const matchText = text.substring(match.start, match.end);
-
-          resultArray.push(
-            <span
-              key={`match-${lineIndex}-${matchIndex}`}
-              className={`${styles.highlight} ${isCurrentMatch ? styles.currentHighlight : ''}`}
-              id={isCurrentMatch ? 'current-match' : undefined}
-            >
-              {matchText}
-            </span>
-          );
-
-          lastEnd = match.end;
-        });
-
-        // Add remaining text after last match
-        if (lastEnd < text.length) {
-          resultArray.push(text.substring(lastEnd));
+          result = resultArray;
         }
-
-        result = resultArray;
       }
-    }
 
-    return result;
-  }, [searchRegex, debouncedSearchTerm, searchMatches, currentMatchIndex]);
+      return result;
+    },
+    [searchRegex, debouncedSearchTerm, searchMatches, currentMatchIndex]
+  );
 
   const visibleLines = useMemo(() => {
-    return processedLines.filter(line => line.isVisible);
+    return processedLines.filter((line) => line.isVisible);
   }, [processedLines]);
 
   const renderLogContent = () => {
@@ -291,7 +288,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     } else {
       result = visibleLines.map((logLine) => {
         const levelClass = logLine.level.toLowerCase();
-        const colorClass = styles[levelClass as keyof typeof styles] || "";
+        const colorClass = styles[levelClass as keyof typeof styles] || '';
 
         return (
           <div
@@ -299,9 +296,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
             id={`log-line-${logLine.lineNumber}`}
             className={`${colorClass} ${styles.logEntry}`}
           >
-            <span className={styles.lineNumberCol}>
-              {logLine.lineNumber}.
-            </span>
+            <span className={styles.lineNumberCol}>{logLine.lineNumber}.</span>
             <pre>{highlightText(logLine.content, processedLines.indexOf(logLine))}</pre>
           </div>
         );
@@ -316,7 +311,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     if (initialLine && processedLines.length > 0) {
       const lineElement = document.getElementById(`log-line-${initialLine - 1}`);
       if (lineElement) {
-        lineElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        lineElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   }, [initialLine, processedLines]);
@@ -324,11 +319,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   // Scroll to current match
   useEffect(() => {
     if (currentMatchIndex >= 0) {
-      const currentMatchElement = document.getElementById("current-match");
+      const currentMatchElement = document.getElementById('current-match');
       if (currentMatchElement) {
         currentMatchElement.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
+          behavior: 'smooth',
+          block: 'center',
         });
       }
     }
@@ -350,18 +345,18 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   // Process log content and apply filters
   useEffect(() => {
     const processLogLines = (content: string) => {
-      const lines = content.split("\n");
+      const lines = content.split('\n');
       const processed: LogLine[] = [];
-      let currentLevel = "INFO"; // Default level
-  
+      let currentLevel = 'INFO'; // Default level
+
       lines.forEach((line, index) => {
         const detectedLevel = getLogLevel(line);
-  
+
         // If we find a new level, update current level
         if (detectedLevel) {
           currentLevel = detectedLevel;
         }
-  
+
         // All lines get assigned to the current level (either explicit or inherited)
         processed.push({
           content: line,
@@ -370,16 +365,14 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           isVisible: true,
         });
       });
-  
+
       return processed;
     };
 
     const applyFilters = (lines: LogLine[]) => {
       let filteredLines = [];
-      const hasActiveFilters = Object.values(filters).some(
-        (filter) => filter === true,
-      );
-  
+      const hasActiveFilters = Object.values(filters).some((filter) => filter === true);
+
       if (!hasActiveFilters) {
         // If no filters are active, hide all lines
         filteredLines = lines.map((line) => ({ ...line, isVisible: false }));
@@ -390,7 +383,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           isVisible: !!filters[line.level as keyof typeof filters],
         }));
       }
-  
+
       return filteredLines;
     };
 
@@ -421,12 +414,12 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
 
   return (
     <div className={styles.tabContent}>
-      <h3>{translations("title")}</h3>
-      <p>{translations("description")}</p>
+      <h3>{translations('title')}</h3>
+      <p>{translations('description')}</p>
       <div className={styles.logContainer}>
         <div className={styles.searchContainer}>
           <Search
-            placeholder={translations("search_placeholder")}
+            placeholder={translations('search_placeholder')}
             size="lg"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -435,11 +428,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
             <div className={styles.findControls}>
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
-                  ? translations("match_counter", {
-                    current: currentMatchIndex + 1,
-                    total: totalMatches,
-                  })
-                  : translations("no_matches")}
+                  ? translations('match_counter', {
+                      current: currentMatchIndex + 1,
+                      total: totalMatches,
+                    })
+                  : translations('no_matches')}
               </span>
               <Button
                 kind="ghost"
@@ -447,7 +440,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToPreviousMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronUp}
-                iconDescription={translations("match_previous")}
+                iconDescription={translations('match_previous')}
                 hasIconOnly
               />
               <Button
@@ -456,23 +449,23 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToNextMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronDown}
-                iconDescription={translations("match_next")}
+                iconDescription={translations('match_next')}
                 hasIconOnly
               />
               <Button
-                kind={matchCase ? "primary" : "ghost"}
+                kind={matchCase ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={toggleMatchCase}
                 renderIcon={LetterAa}
-                iconDescription={translations("match_case")}
+                iconDescription={translations('match_case')}
                 hasIconOnly
               />
               <Button
-                kind={matchWholeWord ? "primary" : "ghost"}
+                kind={matchWholeWord ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={toggleMatchWholeWord}
                 renderIcon={Term}
-                iconDescription={translations("match_whole_word")}
+                iconDescription={translations('match_whole_word')}
                 hasIconOnly
               />
             </div>
@@ -481,39 +474,39 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         <div className={styles.filterBtn}>
           <OverflowMenu
             size="lg"
-            iconDescription={translations("filters_menu_title")}
+            iconDescription={translations('filters_menu_title')}
             renderIcon={Filter}
             flipped={true}
           >
             <Checkbox
               id="checkbox-error"
-              labelText={translations("filter_error")}
+              labelText={translations('filter_error')}
               checked={filters.ERROR}
-              onChange={() => handleFilterChange("ERROR")}
+              onChange={() => handleFilterChange('ERROR')}
             />
             <Checkbox
               id="checkbox-warn"
-              labelText={translations("filter_warn")}
+              labelText={translations('filter_warn')}
               checked={filters.WARN}
-              onChange={() => handleFilterChange("WARN")}
+              onChange={() => handleFilterChange('WARN')}
             />
             <Checkbox
               id="checkbox-info"
-              labelText={translations("filter_info")}
+              labelText={translations('filter_info')}
               checked={filters.INFO}
-              onChange={() => handleFilterChange("INFO")}
+              onChange={() => handleFilterChange('INFO')}
             />
             <Checkbox
               id="checkbox-debug"
-              labelText={translations("filter_debug")}
+              labelText={translations('filter_debug')}
               checked={filters.DEBUG}
-              onChange={() => handleFilterChange("DEBUG")}
+              onChange={() => handleFilterChange('DEBUG')}
             />
             <Checkbox
               id="checkbox-trace"
-              labelText={translations("filter_trace")}
+              labelText={translations('filter_trace')}
               checked={filters.TRACE}
-              onChange={() => handleFilterChange("TRACE")}
+              onChange={() => handleFilterChange('TRACE')}
             />
           </OverflowMenu>
         </div>
@@ -521,8 +514,8 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           kind="ghost"
           renderIcon={CloudDownload}
           hasIconOnly
-          iconDescription={translations("download_button")}
-          onClick={() => handleDownload(logContent, "run.log")}
+          iconDescription={translations('download_button')}
+          onClick={() => handleDownload(logContent, 'run.log')}
         />
       </div>
       <div className={styles.runLog}>

@@ -24,8 +24,7 @@ const mockValues: TimeFrameValues = {
 
 const mockHandleValueChange = jest.fn();
 
-
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
@@ -42,12 +41,9 @@ beforeEach(() => {
 });
 
 describe('TimeFrameFilter', () => {
-
   test('initial render and prop display', () => {
     // Act: render the component with the mock values
-    render(
-      <TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />
-    );
+    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
 
     // Assert: check if the component renders correctly with the mocked values
     const fromGroup = screen.getByRole('group', { name: /from/i });
@@ -63,9 +59,7 @@ describe('TimeFrameFilter', () => {
   test('should call handleValueChange when a date is selected from the calendar', async () => {
     const user = userEvent.setup();
     // Act
-    render(
-      <TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />
-    );
+    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the date input changes
     const fromGroup = screen.getByRole('group', { name: /from/i });
@@ -75,23 +69,20 @@ describe('TimeFrameFilter', () => {
     await user.type(dateInput, '10/25/2023');
     await user.tab();
 
-
     expect(mockHandleValueChange).toHaveBeenCalled();
     console.log(mockHandleValueChange.mock.calls);
     const calledDate = mockHandleValueChange.mock.calls[0][1];
-        
+
     expect(calledDate).toBeInstanceOf(Date);
     expect(calledDate.getDate()).toBe(25);
-    expect(calledDate.getMonth()).toBe(9); 
+    expect(calledDate.getMonth()).toBe(9);
     expect(calledDate.getFullYear()).toBe(2023);
   });
 
   test('should call handleValueChange when AM/PM select is changed', async () => {
     const user = userEvent.setup();
     // Act
-    render(
-      <TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />
-    );
+    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the time input changes
     const fromGroup = screen.getByRole('group', { name: /from/i });

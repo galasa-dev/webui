@@ -5,8 +5,8 @@
  */
 import { renderHook, act, waitFor } from '@testing-library/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
-import { HOME } from '@/utils/constants/breadcrumb'; 
-import { BreadCrumbProps } from '@/utils/interfaces'; 
+import { HOME } from '@/utils/constants/breadcrumb';
+import { BreadCrumbProps } from '@/utils/interfaces';
 
 // Mock sessionStorage
 const sessionStorageMock = (() => {
@@ -17,7 +17,7 @@ const sessionStorageMock = (() => {
     },
     getItem(key: string) {
       return store[key] || null;
-    }, 
+    },
     clear() {
       store = {};
     },
@@ -55,15 +55,15 @@ describe('useHistoryBreadCrumbs', () => {
     sessionStorage.setItem('breadCrumbHistory', JSON.stringify(storedItems));
     usePathnameMock.mockReturnValue('/page-1');
 
-    const {result} = renderHook(() => useHistoryBreadCrumbs());
-    
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
+
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
   });
 
   test('should initialize with HOME but then truncate to empty array based on path', async () => {
-    const {result} = renderHook(() => useHistoryBreadCrumbs());
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
 
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([]);
@@ -71,8 +71,8 @@ describe('useHistoryBreadCrumbs', () => {
   });
 
   test('should push new breadcrumb item', async () => {
-    const {result} = renderHook(() =>  useHistoryBreadCrumbs());
-    
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
+
     // Wait for initial truncation to an empty array.
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([]);
@@ -88,8 +88,8 @@ describe('useHistoryBreadCrumbs', () => {
   });
 
   test('should not push duplicate breadcrumb item', async () => {
-    const {result} = renderHook(() => useHistoryBreadCrumbs());
-    
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
+
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([]);
     });
@@ -97,14 +97,14 @@ describe('useHistoryBreadCrumbs', () => {
     act(() => {
       result.current.pushBreadCrumb(HOME);
       result.current.pushBreadCrumb(PAGE_1);
-      result.current.pushBreadCrumb(PAGE_1); 
+      result.current.pushBreadCrumb(PAGE_1);
     });
 
     expect(result.current.breadCrumbItems).toEqual([HOME, PAGE_1]);
   });
-  
+
   test('should reset breadcrumbs to HOME', async () => {
-    const {result} = renderHook(() => useHistoryBreadCrumbs());
+    const { result } = renderHook(() => useHistoryBreadCrumbs());
 
     // Setup the state first
     act(() => {
@@ -112,7 +112,6 @@ describe('useHistoryBreadCrumbs', () => {
       result.current.pushBreadCrumb(PAGE_1);
     });
     expect(result.current.breadCrumbItems).toEqual([HOME, PAGE_1]);
-
 
     act(() => {
       result.current.resetBreadCrumbs();
@@ -123,13 +122,13 @@ describe('useHistoryBreadCrumbs', () => {
     });
     expect(sessionStorageMock.getItem('breadCrumbHistory')).toEqual(JSON.stringify([HOME]));
   });
-  
+
   test('should handle browser navigation and truncate breadcrumbs', async () => {
     sessionStorage.setItem('breadCrumbHistory', JSON.stringify([HOME, PAGE_1, PAGE_2]));
 
     usePathnameMock.mockReturnValue('/page-1');
     const { result } = renderHook(() => useHistoryBreadCrumbs());
-    
+
     await waitFor(() => {
       expect(result.current.breadCrumbItems).toEqual([HOME]);
     });
@@ -137,11 +136,11 @@ describe('useHistoryBreadCrumbs', () => {
 
   test('should correctly handle paths with query parameters', async () => {
     sessionStorage.setItem('breadCrumbHistory', JSON.stringify([HOME, PAGE_1, PAGE_2_WITH_QUERY]));
-    
+
     // "Navigate" back to page 1
     usePathnameMock.mockReturnValue('/page-1');
-    useSearchParamsMock.mockReturnValue(new URLSearchParams()); 
-    
+    useSearchParamsMock.mockReturnValue(new URLSearchParams());
+
     const { result } = renderHook(() => useHistoryBreadCrumbs());
 
     await waitFor(() => {

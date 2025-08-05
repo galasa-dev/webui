@@ -15,12 +15,18 @@ jest.mock('@carbon/react', () => ({
   Tag: ({ children }: { children: React.ReactNode }) => (
     <span data-testid="mock-tag">{children}</span>
   ),
-  Link: ({ children, href, renderIcon }: { 
-    children: React.ReactNode; 
-    href: string; 
-    renderIcon?: React.ComponentType 
+  Link: ({
+    children,
+    href,
+    renderIcon,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    renderIcon?: React.ComponentType;
   }) => (
-    <a href={href} data-testid="mock-link">{children}</a>
+    <a href={href} data-testid="mock-link">
+      {children}
+    </a>
   ),
 }));
 
@@ -29,21 +35,21 @@ jest.mock('@/utils/timeOperations', () => ({
   getAWeekBeforeSubmittedTime: jest.fn(),
 }));
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      bundle: "Bundle",
-      test: "Test",
-      package: "Package",
-      group: "Group",
-      submissionId: "Submission ID",
-      requestor: "Requestor",
-      submitted: "Submitted",
-      started: "Started",
-      finished: "Finished",
-      duration: "Duration",
-      tags: "Tags",
-      noTags: "No tags were associated with this test run.",
+      bundle: 'Bundle',
+      test: 'Test',
+      package: 'Package',
+      group: 'Group',
+      submissionId: 'Submission ID',
+      requestor: 'Requestor',
+      submitted: 'Submitted',
+      started: 'Started',
+      finished: 'Finished',
+      duration: 'Duration',
+      tags: 'Tags',
+      noTags: 'No tags were associated with this test run.',
     };
     return translations[key] || key;
   },
@@ -59,14 +65,14 @@ jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
 }));
 
 const completeMetadata: RunMetadata = {
-  runId: "12345678",
-  runName: "C123456",
+  runId: '12345678',
+  runName: 'C123456',
   bundle: 'bundle-xyz',
   testName: 'TestAlpha',
   group: 'GroupA',
-  status: "finished",
-  result: "Passed",
-  package: "com.example.tests",
+  status: 'finished',
+  result: 'Passed',
+  package: 'com.example.tests',
   submissionId: 'SUB123',
   requestor: 'alice@example.com',
   submitted: '2025-06-10T09:00:00Z',
@@ -77,7 +83,9 @@ const completeMetadata: RunMetadata = {
 };
 
 const mockGetOneMonthAgo = getOneMonthAgo as jest.MockedFunction<typeof getOneMonthAgo>;
-const mockGetAWeekBeforeSubmittedTime = getAWeekBeforeSubmittedTime as jest.MockedFunction<typeof getAWeekBeforeSubmittedTime>;
+const mockGetAWeekBeforeSubmittedTime = getAWeekBeforeSubmittedTime as jest.MockedFunction<
+  typeof getAWeekBeforeSubmittedTime
+>;
 
 describe('OverviewTab', () => {
   it('renders all top-level InlineText entries', () => {
@@ -93,10 +101,8 @@ describe('OverviewTab', () => {
       ['Requestor:', completeMetadata.requestor],
     ].forEach(([label, value]) => {
       // check the label <p>
-      expect(
-        screen.getByText(label as string, { selector: 'p' })
-      ).toBeInTheDocument();
-    
+      expect(screen.getByText(label as string, { selector: 'p' })).toBeInTheDocument();
+
       // check the value wherever it appears
       expect(screen.getByText(value as string)).toBeInTheDocument();
     });
@@ -106,9 +112,7 @@ describe('OverviewTab', () => {
     render(<OverviewTab metadata={completeMetadata} />);
 
     ['Submitted:', 'Started:', 'Finished:', 'Duration:'].forEach((label) => {
-      expect(
-        screen.getByText(label as string, {selector: 'p'})
-      ).toBeInTheDocument();
+      expect(screen.getByText(label as string, { selector: 'p' })).toBeInTheDocument();
     });
     expect(screen.getByText(completeMetadata.duration)).toBeInTheDocument();
   });
@@ -127,9 +131,7 @@ describe('OverviewTab', () => {
   it('shows fallback text when tags is empty or missing', () => {
     const noTags: RunMetadata = { ...completeMetadata, tags: [] };
     render(<OverviewTab metadata={noTags} />);
-    expect(
-      screen.getByText('No tags were associated with this test run.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('No tags were associated with this test run.')).toBeInTheDocument();
   });
 });
 
@@ -149,19 +151,17 @@ describe('OverviewTab - Time and Link Logic', () => {
     await screen.findAllByTestId('mock-link');
 
     const links = screen.getAllByTestId('mock-link');
-    const recentRunsLink = links.find(link => 
-      link.getAttribute('href')?.includes('testName=')
-    );
-    
+    const recentRunsLink = links.find((link) => link.getAttribute('href')?.includes('testName='));
+
     const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results`;
-    
+
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
 
   it('renders both links when weekBefore is valid', async () => {
     const mockMonthAgoDate = '2025-05-10T00:00:00Z';
     const mockWeekBefore = '2025-06-03T09:00:00Z';
-    
+
     mockGetOneMonthAgo.mockReturnValue(mockMonthAgoDate);
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(mockWeekBefore);
 
@@ -173,24 +173,22 @@ describe('OverviewTab - Time and Link Logic', () => {
     expect(links).toHaveLength(2);
 
     // Check the retries link href
-    const retriesLink = links.find(link => 
-      link.getAttribute('href')?.includes('submissionId')
-    );
+    const retriesLink = links.find((link) => link.getAttribute('href')?.includes('submissionId'));
     expect(retriesLink).toHaveAttribute(
-      'href', 
+      'href',
       `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results`
     );
   });
 
   it('renders only recent runs link when weekBefore is invalid', async () => {
     const mockMonthAgoDate = '2025-05-10T00:00:00Z';
-    
+
     mockGetOneMonthAgo.mockReturnValue(mockMonthAgoDate);
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(null);
 
     render(<OverviewTab metadata={completeMetadata} />);
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const links = screen.getAllByTestId('mock-link');
     expect(links).toHaveLength(1);
@@ -202,7 +200,7 @@ describe('OverviewTab - Time and Link Logic', () => {
   it('calls getAWeekBeforeSubmittedTime with correct parameter', () => {
     const metadataWithRawSubmittedAt: RunMetadata = {
       ...completeMetadata,
-      rawSubmittedAt: '2025-06-10T09:00:00Z'
+      rawSubmittedAt: '2025-06-10T09:00:00Z',
     };
 
     const mockMonthAgoDate = '2025-05-10T00:00:00Z';
@@ -227,7 +225,7 @@ describe('OverviewTab - Time and Link Logic', () => {
   it('handles missing rawSubmittedAt gracefully', () => {
     const metadataWithoutRawSubmittedAt: RunMetadata = {
       ...completeMetadata,
-      rawSubmittedAt: undefined
+      rawSubmittedAt: undefined,
     };
 
     mockGetOneMonthAgo.mockReturnValue('2025-05-10T00:00:00Z');
@@ -240,7 +238,7 @@ describe('OverviewTab - Time and Link Logic', () => {
 
   it('updates weekBefore state correctly when time is valid', async () => {
     const mockWeekBefore = '2025-06-03T09:00:00Z';
-    
+
     mockGetOneMonthAgo.mockReturnValue('2025-05-10T00:00:00Z');
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(mockWeekBefore);
 
@@ -249,10 +247,8 @@ describe('OverviewTab - Time and Link Logic', () => {
     await screen.findAllByTestId('mock-link');
 
     const links = screen.getAllByTestId('mock-link');
-    const retriesLink = links.find(link => 
-      link.getAttribute('href')?.includes('submissionId')
-    );
-    
+    const retriesLink = links.find((link) => link.getAttribute('href')?.includes('submissionId'));
+
     expect(retriesLink).toBeDefined();
   });
 
@@ -262,14 +258,12 @@ describe('OverviewTab - Time and Link Logic', () => {
 
     render(<OverviewTab metadata={completeMetadata} />);
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const links = screen.getAllByTestId('mock-link');
     expect(links).toHaveLength(1);
-    
-    const retriesLink = links.find(link => 
-      link.getAttribute('href')?.includes('submissionId')
-    );
+
+    const retriesLink = links.find((link) => link.getAttribute('href')?.includes('submissionId'));
     expect(retriesLink).toBeUndefined();
   });
 
@@ -277,7 +271,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     render(<OverviewTab metadata={completeMetadata} />);
 
     const links = screen.getAllByTestId('mock-link');
-    links.forEach(link => {
+    links.forEach((link) => {
       link.click();
       expect(pushBreadCrumbMock).toHaveBeenCalledWith({
         title: `${completeMetadata.runName}`,

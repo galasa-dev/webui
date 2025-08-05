@@ -10,7 +10,7 @@ import TokenResponseModal from '@/components/tokens/TokenResponseModal';
 import PageTile from '@/components/PageTile';
 import { UsersAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
-import * as Constants from "@/utils/constants/common";
+import * as Constants from '@/utils/constants/common';
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { fetchAccessTokens } from '../../actions/getUserAccessTokens';
 import ErrorPage from '../error/page';
@@ -35,13 +35,13 @@ export default async function MySettings() {
 
   const fetchUserLoginId = async () => {
     const usersApiClient = new UsersAPIApi(apiConfig);
-    const userResponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION, "me");
+    const userResponse = await usersApiClient.getUserByLoginId(Constants.CLIENT_API_VERSION, 'me');
 
     let loginId: string | undefined;
     if (userResponse.length > 0) {
       loginId = userResponse[0].loginId;
       if (!loginId) {
-        throw new Error("Unable to get current user ID from the Galasa API server");
+        throw new Error('Unable to get current user ID from the Galasa API server');
       }
     }
     return loginId;
@@ -58,11 +58,14 @@ export default async function MySettings() {
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
       <PageTile translationKey="MySettings.title" />
-      <ProfileRole userProfilePromise={fetchUserFromApiServer("me")} />
-      <AccessTokensSection accessTokensPromise={fetchAccessTokens(userLoginId)} isAddBtnVisible={true}/>
+      <ProfileRole userProfilePromise={fetchUserFromApiServer('me')} />
+      <AccessTokensSection
+        accessTokensPromise={fetchAccessTokens(userLoginId)}
+        isAddBtnVisible={true}
+      />
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeSettings />
       <ExperimentalFeaturesSection />
     </main>
   );
-};
+}

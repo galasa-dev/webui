@@ -3,22 +3,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
- .testRunsContentWrapper {
-    width: 90%;
-    height: 100%;
-    margin: 4rem auto;
+.testRunsContentWrapper {
+  width: 90%;
+  height: 100%;
+  margin: 4rem auto;
 }
 
-.timeFrameText, .titleText {
-    font-size: 1rem;
-    margin: 0.5rem 0.5rem;
+.timeFrameText,
+.titleText {
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem;
 }
 
-.notification{
-    position: fixed;
-    bottom: 5.5rem;
-    right: 1rem;
-    z-index: 9999;
+.notification {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1rem;
+  z-index: 9999;
 }
 
 .spinnerWrapper {

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import React from 'react';
-import styles from "@/styles/OverviewTab.module.css";
+import styles from '@/styles/OverviewTab.module.css';
 
-const InlineText = ({ title, value }: { title: string, value: string }) => {
+const InlineText = ({ title, value }: { title: string; value: string }) => {
   return (
     <div className={styles.info}>
       <p>{title}</p>

@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import SearchCriteriaContent from "@/components/test-runs/SearchCriteriaContent";
+import SearchCriteriaContent from '@/components/test-runs/SearchCriteriaContent';
 import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 
-// Mock child components 
+// Mock child components
 jest.mock('@/components/test-runs/CustomSearchComponent', () => {
   return function MockCustomSearchComponent(props: any) {
     return (
@@ -22,7 +22,9 @@ jest.mock('@/components/test-runs/CustomSearchComponent', () => {
           value={props.value}
           onChange={props.onChange}
         />
-        <button onClick={props.onSubmit} disabled={props.disableSaveAndReset}>Submit</button>
+        <button onClick={props.onSubmit} disabled={props.disableSaveAndReset}>
+          Submit
+        </button>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={props.onClear}>Clear</button>
       </div>
@@ -40,7 +42,13 @@ jest.mock('@/components/test-runs/CustomCheckBoxList', () => {
             <input
               type="checkbox"
               checked={props.selectedItems.includes(item)}
-              onChange={(e) => props.onChange(e.target.checked ? [...props.selectedItems, item] : props.selectedItems.filter((i: string) => i !== item))}
+              onChange={(e) =>
+                props.onChange(
+                  e.target.checked
+                    ? [...props.selectedItems, item]
+                    : props.selectedItems.filter((i: string) => i !== item)
+                )
+              }
             />
             {item}
           </label>
@@ -52,38 +60,42 @@ jest.mock('@/components/test-runs/CustomCheckBoxList', () => {
   };
 });
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "description": "Edit search criteria to describe the test results you wish to view",
-      "table.columnName": "Column Name",
-      "table.allowedValues": "Allowed Values",
-      "fields.runName.label": "Test Run Name",
-      "fields.runName.description": "Description for Test Run Name",
-      "fields.requestor.label": "Requestor",
-      "fields.requestor.description": "Description for Requestor",
-      "fields.group.label": "Group",
-      "fields.group.description": "Description for Group",
-      "fields.bundle.label": "Bundle",
-      "fields.bundle.description": "Description for Bundle",
-      "fields.submissionId.label": "Submission ID",
-      "fields.submissionId.description": "Description for Submission ID",
-      "fields.testName.label": "Test Name",
-      "fields.testName.description": "Description for Test Name",
-      "fields.status.label": "Status",
-      "fields.status.description": "Description for Status",
-      "fields.tags.label": "Tags",
-      "fields.tags.description": "Description for Tags",
-      "fields.result.label": "Result",
-      "fields.result.description": "Description for Result",
-      "clearFilters": "Clear Filters",
+      description: 'Edit search criteria to describe the test results you wish to view',
+      'table.columnName': 'Column Name',
+      'table.allowedValues': 'Allowed Values',
+      'fields.runName.label': 'Test Run Name',
+      'fields.runName.description': 'Description for Test Run Name',
+      'fields.requestor.label': 'Requestor',
+      'fields.requestor.description': 'Description for Requestor',
+      'fields.group.label': 'Group',
+      'fields.group.description': 'Description for Group',
+      'fields.bundle.label': 'Bundle',
+      'fields.bundle.description': 'Description for Bundle',
+      'fields.submissionId.label': 'Submission ID',
+      'fields.submissionId.description': 'Description for Submission ID',
+      'fields.testName.label': 'Test Name',
+      'fields.testName.description': 'Description for Test Name',
+      'fields.status.label': 'Status',
+      'fields.status.description': 'Description for Status',
+      'fields.tags.label': 'Tags',
+      'fields.tags.description': 'Description for Tags',
+      'fields.result.label': 'Result',
+      'fields.result.description': 'Description for Result',
+      clearFilters: 'Clear Filters',
     };
     return translations[key] || key;
   },
 }));
 
-// Helper function to render a stateful wrapper. 
-const SearchCriteriaTestWrapper = ({ initialCriteria = {} }: { initialCriteria?: Record<string, string> }) => {
+// Helper function to render a stateful wrapper.
+const SearchCriteriaTestWrapper = ({
+  initialCriteria = {},
+}: {
+  initialCriteria?: Record<string, string>;
+}) => {
   const [criteria, setCriteria] = useState(initialCriteria);
   const requestorNamesPromise = Promise.resolve(['req1', 'req2']);
   const resultsNamesPromise = Promise.resolve(['result1', 'result2']);
@@ -93,7 +105,7 @@ const SearchCriteriaTestWrapper = ({ initialCriteria = {} }: { initialCriteria?:
       requestorNamesPromise={requestorNamesPromise}
       resultsNamesPromise={resultsNamesPromise}
       searchCriteria={criteria}
-      setSearchCriteria={setCriteria} 
+      setSearchCriteria={setCriteria}
     />
   );
 };
@@ -113,7 +125,6 @@ describe('SearchCriteriaContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-    
 
   test('renders correctly and selects the first filter by default', () => {
     render(
@@ -136,12 +147,11 @@ describe('SearchCriteriaContent', () => {
     const rowWrapperDiv = testRunNameRow?.querySelector('.rowWrapper');
     expect(rowWrapperDiv).toBeInTheDocument();
     expect(rowWrapperDiv).toHaveClass('selectedRow');
-        
+
     expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
   });
 
-    
-  test('initialize state from Search Criteria props' , async () => {
+  test('initialize state from Search Criteria props', async () => {
     render(
       <SearchCriteriaContent
         requestorNamesPromise={requestorNamesPromise}
@@ -171,7 +181,7 @@ describe('SearchCriteriaContent', () => {
     expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
 
     // Click on the 'status' row
-    const statusRow = screen.getByText('Status').closest('div') ||  document.createElement('div');
+    const statusRow = screen.getByText('Status').closest('div') || document.createElement('div');
     fireEvent.click(statusRow);
 
     // Checkbox list component should be visible
@@ -195,7 +205,7 @@ describe('SearchCriteriaContent', () => {
     const submitButton = within(searchComponent).getByText('Submit');
 
     // Simulate user typing a new value
-    fireEvent.change(input, {target: {value: "New Test Run"}});
+    fireEvent.change(input, { target: { value: 'New Test Run' } });
 
     // Simulate form submission
     fireEvent.click(submitButton);
@@ -203,14 +213,12 @@ describe('SearchCriteriaContent', () => {
     // Check that the parent function was called with the new value
     expect(mockSetSearchCriteria).toHaveBeenCalledWith({
       ...mockSearchCriteria,
-      runName: "New Test Run"
+      runName: 'New Test Run',
     });
   });
 
   test('cancels an edit and reverts the input value', async () => {
-    render(
-      <SearchCriteriaTestWrapper initialCriteria={mockSearchCriteria} />
-    );
+    render(<SearchCriteriaTestWrapper initialCriteria={mockSearchCriteria} />);
 
     // Find the input and buttons within the mocked component
     const searchComponent = screen.getByTestId('mock-custom-search-component');
@@ -220,7 +228,7 @@ describe('SearchCriteriaContent', () => {
     expect(input).toHaveValue('MyRun');
 
     // Simulate user tyuping a value and canel it
-    fireEvent.change(input, {target: {value: "Cancel this value"}});
+    fireEvent.change(input, { target: { value: 'Cancel this value' } });
     fireEvent.click(cancelButton);
 
     // Check that the input is reverted
@@ -248,7 +256,7 @@ describe('SearchCriteriaContent', () => {
     // Check that the parent function was called to clear the search criteria
     expect(mockSetSearchCriteria).toHaveBeenCalledWith({
       ...mockSearchCriteria,
-      runName: undefined, 
+      runName: undefined,
     });
   });
 
@@ -261,7 +269,7 @@ describe('SearchCriteriaContent', () => {
         setSearchCriteria={mockSetSearchCriteria}
       />
     );
-    
+
     // Find the input and submit button within the mocked component
     const searchComponent = screen.getByTestId('mock-custom-search-component');
     const input = within(searchComponent).getByTestId('search-input');
@@ -274,7 +282,7 @@ describe('SearchCriteriaContent', () => {
     // Check that the parent function was called to remove the parameter
     expect(mockSetSearchCriteria).toHaveBeenCalledWith({
       ...mockSearchCriteria,
-      runName: undefined, 
+      runName: undefined,
     });
   });
 
@@ -283,20 +291,25 @@ describe('SearchCriteriaContent', () => {
     const pendingRequestors: Promise<string[]> = new Promise(() => {});
     const pendingResults: Promise<string[]> = new Promise(() => {});
 
-    render(<SearchCriteriaContent 
-      requestorNamesPromise={pendingRequestors} 
-      resultsNamesPromise={pendingResults}
-      searchCriteria={mockSearchCriteria}
-      setSearchCriteria={mockSetSearchCriteria}
-    />);
+    render(
+      <SearchCriteriaContent
+        requestorNamesPromise={pendingRequestors}
+        resultsNamesPromise={pendingResults}
+        searchCriteria={mockSearchCriteria}
+        setSearchCriteria={mockSetSearchCriteria}
+      />
+    );
 
     // Check that the UI renders correctly even with pending promises
-    expect(screen.getByText('Edit search criteria to describe the test results you wish to view')).toBeInTheDocument();
-    
+    expect(
+      screen.getByText('Edit search criteria to describe the test results you wish to view')
+    ).toBeInTheDocument();
+
     // Switch to a filter that depends on a promise
-    const requestorRow = screen.getByText('Requestor').closest('[role="row"]') || document.createElement('div');
+    const requestorRow =
+      screen.getByText('Requestor').closest('[role="row"]') || document.createElement('div');
     fireEvent.click(requestorRow);
-        
+
     // The component should still render its structure
     expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
   });
@@ -329,8 +342,9 @@ describe('SearchCriteriaContent', () => {
   });
 
   test('clear all filters when the "Clear Filters" button is clicked', async () => {
-    render(<SearchCriteriaTestWrapper 
-      initialCriteria={{ runName: 'InitialValue', result: "Passed" }} />);
+    render(
+      <SearchCriteriaTestWrapper initialCriteria={{ runName: 'InitialValue', result: 'Passed' }} />
+    );
 
     const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
 
@@ -338,7 +352,7 @@ describe('SearchCriteriaContent', () => {
     const resultRow = screen.getByText('Result').closest('[role="row"]') as HTMLElement;
 
     await waitFor(() => {
-      expect(within(testRunNameRow).getByText('InitialValue')).toBeInTheDocument(); 
+      expect(within(testRunNameRow).getByText('InitialValue')).toBeInTheDocument();
       expect(within(resultRow).getByText('Passed')).toBeInTheDocument();
     });
 
@@ -355,12 +369,13 @@ describe('SearchCriteriaContent', () => {
   test('"Clear Filters" button is enabled with filters and becomes disabled after being clicked', async () => {
     const user = userEvent.setup();
 
-    render(<SearchCriteriaTestWrapper 
-      initialCriteria={{ runName: 'MyRun', status: 'Passed, Failed' }} />);
+    render(
+      <SearchCriteriaTestWrapper initialCriteria={{ runName: 'MyRun', status: 'Passed, Failed' }} />
+    );
 
     const clearFiltersButton = screen.getByRole('button', { name: /Clear Filters/i });
     expect(clearFiltersButton).toBeEnabled();
-    
+
     // Check that the filter value is displayed
     expect(screen.getByText('MyRun')).toBeInTheDocument();
     expect(screen.getByText('Passed, Failed')).toBeInTheDocument();

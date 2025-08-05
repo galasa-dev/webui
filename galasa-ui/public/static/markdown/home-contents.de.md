@@ -1,4 +1,5 @@
 # Willkommen bei Ihrem Galasa Dienst
+
 Nutzen Sie Galasa optimal, indem Sie die [Galasa-Dokumentation](https://galasa.dev/) lesen.
 
 Um diesen Text anzupassen, wenden Sie sich bitte an Ihren Servicetechniker oder Administrator, um die Konfigurationseigenschaft `service.welcome.markdown` festzulegen.

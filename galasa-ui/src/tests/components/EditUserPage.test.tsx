@@ -1,4 +1,3 @@
-
 /*
  * Copyright contributors to the Galasa project
  *
@@ -15,12 +14,12 @@ jest.mock('@/components/PageTile', () => {
 });
 
 jest.mock('@/components/users/UserRoleSection', () => {
-  return function MockUserRoleSection({ 
-    userProfilePromise, 
-    roleDetailsPromise 
-  }: { 
-    userProfilePromise: any; 
-    roleDetailsPromise: any; 
+  return function MockUserRoleSection({
+    userProfilePromise,
+    roleDetailsPromise,
+  }: {
+    userProfilePromise: any;
+    roleDetailsPromise: any;
   }) {
     return (
       <div data-testid="user-role-section">
@@ -32,12 +31,12 @@ jest.mock('@/components/users/UserRoleSection', () => {
 });
 
 jest.mock('@/components/mysettings/AccessTokensSection', () => {
-  return function MockAccessTokensSection({ 
-    accessTokensPromise, 
-    isAddBtnVisible 
-  }: { 
-    accessTokensPromise: any; 
-    isAddBtnVisible: boolean; 
+  return function MockAccessTokensSection({
+    accessTokensPromise,
+    isAddBtnVisible,
+  }: {
+    accessTokensPromise: any;
+    isAddBtnVisible: boolean;
   }) {
     return (
       <div data-testid="access-tokens-section">
@@ -62,13 +61,12 @@ jest.mock('@/components/common/BreadCrumb', () => {
   };
 });
 
-
 jest.mock('@/generated/galasaapi', () => ({
   RoleBasedAccessControlAPIApi: jest.fn().mockImplementation(() => ({
     getRBACRoles: jest.fn().mockResolvedValue([
       { id: '1', name: 'Admin', description: 'Administrator role' },
-      { id: '2', name: 'User', description: 'Regular user role' }
-    ])
+      { id: '2', name: 'User', description: 'Regular user role' },
+    ]),
   })),
   RBACRole: {},
 }));
@@ -78,7 +76,7 @@ jest.mock('@/utils/api', () => ({
     baseServer: { makeRequestContext: jest.fn() },
     httpApi: { send: jest.fn() },
     middleware: [],
-    authMethods: {}
+    authMethods: {},
   }),
 }));
 
@@ -86,15 +84,15 @@ jest.mock('@/actions/getUserAccessTokens', () => ({
   fetchAccessTokens: jest.fn().mockResolvedValue({
     tokens: [
       { tokenId: 'token1', description: 'Test token 1' },
-      { tokenId: 'token2', description: 'Test token 2' }
-    ]
+      { tokenId: 'token2', description: 'Test token 2' },
+    ],
   }),
 }));
 
 jest.mock('@/actions/userServerActions', () => ({
   fetchUserFromApiServer: jest.fn().mockResolvedValue({
     loginId: 'testuser',
-    roles: ['user']
+    roles: ['user'],
   }),
 }));
 
@@ -109,7 +107,7 @@ import EditUserPage from '@/app/users/edit/page';
 describe('EditUserPage', () => {
   const defaultProps = {
     params: {},
-    searchParams: { loginId: 'testuser123' }
+    searchParams: { loginId: 'testuser123' },
   };
 
   beforeEach(() => {
@@ -119,7 +117,7 @@ describe('EditUserPage', () => {
   describe('Component Rendering', () => {
     it('should render the main content structure', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const mainElement = screen.getByRole('main');
       expect(mainElement).toBeInTheDocument();
       expect(mainElement).toHaveAttribute('id', 'content');
@@ -127,10 +125,10 @@ describe('EditUserPage', () => {
 
     it('should render BreadCrumb component', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const breadcrumb = screen.getByTestId('breadcrumb');
       expect(breadcrumb).toBeInTheDocument();
-      
+
       // Check that breadcrumb items are rendered
       expect(screen.getByTestId('breadcrumb-item-0')).toBeInTheDocument();
       expect(screen.getByTestId('breadcrumb-item-1')).toBeInTheDocument();
@@ -138,7 +136,7 @@ describe('EditUserPage', () => {
 
     it('should render PageTile with correct translation key', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const pageTile = screen.getByTestId('page-tile');
       expect(pageTile).toBeInTheDocument();
       expect(pageTile).toHaveTextContent('UserEditPage.title');
@@ -146,7 +144,7 @@ describe('EditUserPage', () => {
 
     it('should render UserRoleSection component', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const userRoleSection = screen.getByTestId('user-role-section');
       expect(userRoleSection).toBeInTheDocument();
       expect(screen.getByTestId('user-profile-promise')).toHaveTextContent('user-profile-received');
@@ -155,10 +153,12 @@ describe('EditUserPage', () => {
 
     it('should render AccessTokensSection with isAddBtnVisible set to false', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const accessTokensSection = screen.getByTestId('access-tokens-section');
       expect(accessTokensSection).toBeInTheDocument();
-      expect(screen.getByTestId('access-tokens-promise')).toHaveTextContent('access-tokens-received');
+      expect(screen.getByTestId('access-tokens-promise')).toHaveTextContent(
+        'access-tokens-received'
+      );
       expect(screen.getByTestId('add-btn-visible')).toHaveTextContent('hidden');
     });
   });
@@ -168,11 +168,11 @@ describe('EditUserPage', () => {
       const loginId = 'user456';
       const props = {
         params: {},
-        searchParams: { loginId }
+        searchParams: { loginId },
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
@@ -180,11 +180,11 @@ describe('EditUserPage', () => {
     it('should handle missing loginId gracefully', () => {
       const props = {
         params: {},
-        searchParams: {}
+        searchParams: {},
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
@@ -192,11 +192,11 @@ describe('EditUserPage', () => {
     it('should handle empty string loginId', () => {
       const props = {
         params: {},
-        searchParams: { loginId: '' }
+        searchParams: { loginId: '' },
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
@@ -205,19 +205,19 @@ describe('EditUserPage', () => {
   describe('Component Structure', () => {
     it('should render all required components in correct order', () => {
       render(<EditUserPage {...defaultProps} />);
-      
+
       const main = screen.getByRole('main');
       const breadcrumb = screen.getByTestId('breadcrumb');
       const pageTile = screen.getByTestId('page-tile');
       const userRoleSection = screen.getByTestId('user-role-section');
       const accessTokensSection = screen.getByTestId('access-tokens-section');
-      
+
       expect(main).toBeInTheDocument();
       expect(breadcrumb).toBeInTheDocument();
       expect(pageTile).toBeInTheDocument();
       expect(userRoleSection).toBeInTheDocument();
       expect(accessTokensSection).toBeInTheDocument();
-      
+
       expect(main).toContainElement(breadcrumb);
       expect(main).toContainElement(pageTile);
       expect(main).toContainElement(userRoleSection);
@@ -230,11 +230,11 @@ describe('EditUserPage', () => {
       const loginId = 'user@domain.com';
       const props = {
         params: {},
-        searchParams: { loginId }
+        searchParams: { loginId },
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
@@ -242,15 +242,15 @@ describe('EditUserPage', () => {
     it('should handle additional searchParams', () => {
       const props = {
         params: {},
-        searchParams: { 
-          loginId: 'testuser', 
+        searchParams: {
+          loginId: 'testuser',
           additionalParam: 'value',
-          anotherParam: 'anotherValue'
-        }
+          anotherParam: 'anotherValue',
+        },
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
@@ -258,14 +258,14 @@ describe('EditUserPage', () => {
     it('should handle array values in searchParams', () => {
       const props = {
         params: {},
-        searchParams: { 
+        searchParams: {
           loginId: 'testuser',
-          tags: ['tag1', 'tag2']
-        }
+          tags: ['tag1', 'tag2'],
+        },
       };
 
       render(<EditUserPage {...props} />);
-      
+
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });

@@ -17,8 +17,11 @@ export default function UsersPage() {
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
-      <PageTile translationKey={"UsersPage.title"} />
-      <UsersTable usersListPromise={fetchAllUsersFromApiServer()} currentUserPromise={fetchUserFromApiServer("me")} />
+      <PageTile translationKey={'UsersPage.title'} />
+      <UsersTable
+        usersListPromise={fetchAllUsersFromApiServer()}
+        currentUserPromise={fetchUserFromApiServer('me')}
+      />
     </main>
   );
 }

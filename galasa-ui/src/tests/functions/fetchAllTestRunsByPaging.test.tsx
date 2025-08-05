@@ -8,7 +8,6 @@ import { fetchAllTestRunsByPaging } from '@/utils/testRuns';
 import { ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 
-
 // This mock will simulate the API client's method
 const mockGetRasSearchRuns = jest.fn();
 
@@ -43,7 +42,6 @@ jest.mock('next-intl', () => ({
   NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-
 describe('fetchAllTestRunsByPaging Function', () => {
   const fromDate = new Date('2023-10-26T00:00:00.000Z');
   const toDate = new Date('2023-10-27T00:00:00.000Z');
@@ -76,11 +74,25 @@ describe('fetchAllTestRunsByPaging Function', () => {
     expect(result.limitExceeded).toBe(false);
     expect(mockGetRasSearchRuns).toHaveBeenCalledTimes(1);
     expect(mockGetRasSearchRuns).toHaveBeenCalledWith(
-      "from:desc", "test-version", undefined, undefined, undefined, undefined,
-      new Date('2023-10-26T00:00:00.000Z'), new Date('2023-10-27T00:00:00.000Z'), 
-      undefined, undefined, 4, undefined,
-      undefined, undefined, undefined, undefined,
-      undefined, "true", undefined
+      'from:desc',
+      'test-version',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      new Date('2023-10-26T00:00:00.000Z'),
+      new Date('2023-10-27T00:00:00.000Z'),
+      undefined,
+      undefined,
+      4,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'true',
+      undefined
     );
   });
 
@@ -119,13 +131,13 @@ describe('fetchAllTestRunsByPaging Function', () => {
   });
 
   test('should handle API errors gracefully and return empty data', async () => {
-    const apiError = new Error("API Failure");
+    const apiError = new Error('API Failure');
     mockGetRasSearchRuns.mockRejectedValue(apiError);
 
     const result = await fetchAllTestRunsByPaging({ fromDate, toDate });
-    
+
     expect(result.runs).toEqual([]);
     expect(result.limitExceeded).toBe(false);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Error fetching test runs:", apiError);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching test runs:', apiError);
   });
 });

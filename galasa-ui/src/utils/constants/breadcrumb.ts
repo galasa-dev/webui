@@ -5,19 +5,18 @@
  */
 
 const HOME = {
-  title: "home",
-  route: "/",
+  title: 'home',
+  route: '/',
 };
 
 const EDIT_USER = {
-  title: "users",
-  route: "/users",
+  title: 'users',
+  route: '/users',
 };
 
 const TEST_RUNS = {
-  title: "testRuns",
-  route: "/test-runs",
+  title: 'testRuns',
+  route: '/test-runs',
 };
-
 
 export { HOME, EDIT_USER, TEST_RUNS };

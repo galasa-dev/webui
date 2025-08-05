@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import TestRunsDetails from "@/components/test-runs/TestRunsDetails";
-import { render, screen } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import TestRunsDetails from '@/components/test-runs/TestRunsDetails';
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock useHistoryBreadCrumbs hook to return a mock history breadcrumbs.
 jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
   __esModule: true,
   default: () => ({
-    breadCrumbItems: [{ title: 'Home', route: '/' }], 
+    breadCrumbItems: [{ title: 'Home', route: '/' }],
   }),
 }));
 
@@ -33,9 +32,7 @@ jest.mock('@/components/common/BreadCrumb', () => {
 
 // Mock TestRunsTabs component
 jest.mock('@/components/test-runs/TestRunsTabs', () => {
-  const TestRunsTabs = () => (
-    <div data-testid="mock-test-runs-tabs">Test Runs Tabs</div>
-  );
+  const TestRunsTabs = () => <div data-testid="mock-test-runs-tabs">Test Runs Tabs</div>;
   TestRunsTabs.displayName = 'TestRunsTabs';
   return {
     __esModule: true,
@@ -47,7 +44,7 @@ jest.mock('@/components/test-runs/TestRunsTabs', () => {
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "TestRun.title": "Test Run Details",
+      'TestRun.title': 'Test Run Details',
     };
     return translations[key] || key;
   },
@@ -57,7 +54,7 @@ jest.mock('next-intl', () => ({
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/mock-path'),
   useSearchParams: jest.fn(() => new URLSearchParams()),
-  useRouter: jest.fn(() => ({ 
+  useRouter: jest.fn(() => ({
     push: jest.fn(),
     replace: jest.fn(),
   })),
@@ -65,11 +62,11 @@ jest.mock('next/navigation', () => ({
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => ({
-  Button: ({ children, ...props }: any) => (
-    <button {...props}>{children}</button>
-  ),
+  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
   Tile: ({ children, ...props }: any) => (
-    <div {...props} data-testid="tile">{children}</div>
+    <div {...props} data-testid="tile">
+      {children}
+    </div>
   ),
   InlineNotification: ({ title, subtitle, kind }: any) => (
     <div data-testid="notification" className={`notification-${kind}`}>
@@ -90,11 +87,7 @@ const renderWithProviders = (ui: React.ReactElement) => {
     },
   });
 
-  return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
-  );
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 };
 
 beforeAll(() => {
@@ -105,10 +98,9 @@ beforeAll(() => {
   });
 });
 
-
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -121,11 +113,11 @@ Object.defineProperty(window, 'matchMedia', {
 const mockRequestorNamesPromise = Promise.resolve(['requestor1', 'requestor2']);
 const mockResultsNamesPromise = Promise.resolve(['result1', 'result2']);
 
-describe("TestRunsDetails", () => {
+describe('TestRunsDetails', () => {
   test('renders breadcrumbs and page title', () => {
     renderWithProviders(
-      <TestRunsDetails 
-        requestorNamesPromise={mockRequestorNamesPromise} 
+      <TestRunsDetails
+        requestorNamesPromise={mockRequestorNamesPromise}
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
@@ -138,11 +130,10 @@ describe("TestRunsDetails", () => {
     expect(pageTile).toBeInTheDocument();
   });
 
-  
   test('should render the main content area with TestRunsTabs', () => {
     renderWithProviders(
-      <TestRunsDetails 
-        requestorNamesPromise={mockRequestorNamesPromise} 
+      <TestRunsDetails
+        requestorNamesPromise={mockRequestorNamesPromise}
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
@@ -150,12 +141,11 @@ describe("TestRunsDetails", () => {
     expect(screen.getByTestId('mock-test-runs-tabs')).toBeInTheDocument();
   });
 
-
   describe('Copy to Clipboard', () => {
     test('copies the URL when share button is clicked', async () => {
       renderWithProviders(
-        <TestRunsDetails 
-          requestorNamesPromise={mockRequestorNamesPromise} 
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
@@ -166,13 +156,13 @@ describe("TestRunsDetails", () => {
       await shareButton.click();
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(window.location.href);
-    }); 
+    });
   });
 
   test('shows success notification when URL is copied', async () => {
     renderWithProviders(
-      <TestRunsDetails 
-        requestorNamesPromise={mockRequestorNamesPromise} 
+      <TestRunsDetails
+        requestorNamesPromise={mockRequestorNamesPromise}
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
@@ -190,8 +180,8 @@ describe("TestRunsDetails", () => {
     navigator.clipboard.writeText = jest.fn().mockRejectedValue(new Error('Copy failed'));
 
     renderWithProviders(
-      <TestRunsDetails 
-        requestorNamesPromise={mockRequestorNamesPromise} 
+      <TestRunsDetails
+        requestorNamesPromise={mockRequestorNamesPromise}
         resultsNamesPromise={mockResultsNamesPromise}
       />
     );
@@ -204,4 +194,3 @@ describe("TestRunsDetails", () => {
     expect(notification).toHaveTextContent('errorTitle');
   });
 });
-

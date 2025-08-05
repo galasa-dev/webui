@@ -3,25 +3,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import jwtDecode, { JwtPayload } from "jwt-decode";
-import { NextResponse, NextRequest } from "next/server";
-import AuthCookies from "./utils/authCookies";
+import jwtDecode, { JwtPayload } from 'jwt-decode';
+import { NextResponse, NextRequest } from 'next/server';
+import AuthCookies from './utils/authCookies';
 import {
   GALASA_WEBUI_CLIENT_ID,
   GALASA_WEBUI_HOST_URL,
   authApiClient,
   sendAuthRequest,
-} from "./utils/auth";
-import { AuthProperties } from "./generated/galasaapi";
-import { cookies } from "next/headers";
-import { CLIENT_API_VERSION } from "./utils/constants/common";
+} from './utils/auth';
+import { AuthProperties } from './generated/galasaapi';
+import { cookies } from 'next/headers';
+import { CLIENT_API_VERSION } from './utils/constants/common';
 
 const authenticateWithDevToken = async (devToken: string) => {
   let response = NextResponse.next();
   const authProperties = new AuthProperties();
 
   // Access tokens are expected to be in the form "<refresh-token>:<client-id>"
-  const devTokenParts = devToken.split(":");
+  const devTokenParts = devToken.split(':');
   if (devTokenParts.length == 2) {
     const refreshToken = devTokenParts[0];
     const clientId = devTokenParts[1];
@@ -29,63 +29,49 @@ const authenticateWithDevToken = async (devToken: string) => {
     authProperties.refreshToken = refreshToken;
     authProperties.clientId = clientId;
 
-    const { jwt } = await authApiClient.postAuthenticate(
-      authProperties,
-      CLIENT_API_VERSION,
-    );
+    const { jwt } = await authApiClient.postAuthenticate(authProperties, CLIENT_API_VERSION);
     if (jwt && !isTokenExpired(jwt)) {
-      response.headers.set("Set-Cookie", `${AuthCookies.ID_TOKEN}=${jwt}`);
+      response.headers.set('Set-Cookie', `${AuthCookies.ID_TOKEN}=${jwt}`);
     }
   } else {
-    throw new Error("Invalid Galasa token provided.");
+    throw new Error('Invalid Galasa token provided.');
   }
   return response;
 };
 
 // Runs before any request is completed
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.rewrite(new URL("/error", request.url));
+  let response = NextResponse.rewrite(new URL('/error', request.url));
 
   try {
     if (
-      process.env.NODE_ENV === "development" &&
+      process.env.NODE_ENV === 'development' &&
       process.env.GALASA_DEV_TOKEN &&
       !isAuthenticated(request)
     ) {
       response = await authenticateWithDevToken(process.env.GALASA_DEV_TOKEN);
     } else {
-      if (request.url.includes("/callback")) {
-        let responseUrl = request.url.substring(
-          0,
-          request.url.lastIndexOf("/callback"),
-        );
+      if (request.url.includes('/callback')) {
+        let responseUrl = request.url.substring(0, request.url.lastIndexOf('/callback'));
 
-        const shouldReturnToMySettingsPage = cookies().get(
-          AuthCookies.SHOULD_REDIRECT_TO_SETTINGS,
-        );
+        const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
 
-        if (shouldReturnToMySettingsPage?.value === "true") {
-          responseUrl = responseUrl + "/mysettings";
+        if (shouldReturnToMySettingsPage?.value === 'true') {
+          responseUrl = responseUrl + '/mysettings';
         }
 
         response = await handleCallback(
           request,
-          NextResponse.redirect(responseUrl, { status: 302 }),
+          NextResponse.redirect(responseUrl, { status: 302 })
         );
       } else if (!isAuthenticated(request)) {
         // Force the user to re-authenticate, getting the URL to redirect to and any cookies to be set
         const callbackUrl = getRequestCallbackUrl(request.nextUrl.pathname);
-        const authResponse = await sendAuthRequest(
-          GALASA_WEBUI_CLIENT_ID,
-          callbackUrl,
-        );
-        const locationHeader = authResponse.headers.get("Location");
+        const authResponse = await sendAuthRequest(GALASA_WEBUI_CLIENT_ID, callbackUrl);
+        const locationHeader = authResponse.headers.get('Location');
         if (locationHeader) {
           response = NextResponse.redirect(locationHeader, { status: 302 });
-          response.headers.set(
-            "Set-Cookie",
-            authResponse.headers.get("Set-Cookie") ?? "",
-          );
+          response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
         }
       } else {
         // User is authenticated and the request can go through
@@ -93,7 +79,7 @@ export async function middleware(request: NextRequest) {
       }
     }
   } catch (err) {
-    console.error("Failed to authenticate with the Galasa Ecosystem: %s", err);
+    console.error('Failed to authenticate with the Galasa Ecosystem: %s', err);
   }
   return response;
 }
@@ -102,14 +88,14 @@ export async function middleware(request: NextRequest) {
 const getRequestCallbackUrl = (requestedPath: string) => {
   // Remove the trailing '/' from the host URL and requested path if there is one
   let hostUrl = GALASA_WEBUI_HOST_URL;
-  if (hostUrl.endsWith("/")) {
+  if (hostUrl.endsWith('/')) {
     hostUrl = hostUrl.substring(0, hostUrl.length - 1);
   }
 
   let pathName = requestedPath;
-  if (pathName === "/") {
-    pathName = "";
-  } else if (pathName.endsWith("/")) {
+  if (pathName === '/') {
+    pathName = '';
+  } else if (pathName.endsWith('/')) {
     pathName = pathName.substring(0, pathName.length - 1);
   }
 
@@ -157,29 +143,23 @@ const isTokenExpired = (jwt: string) => {
 // they were originally looking at.
 const handleCallback = async (request: NextRequest, response: NextResponse) => {
   const queryParams = request.nextUrl.searchParams;
-  const code = queryParams.get("code");
+  const code = queryParams.get('code');
 
   if (code) {
-    let clientId = "";
+    let clientId = '';
     const clientIdCookie = request.cookies.get(AuthCookies.CLIENT_ID);
 
     if (!clientIdCookie) {
-      clientId = process.env.GALASA_WEBUI_CLIENT_ID ?? "";
+      clientId = process.env.GALASA_WEBUI_CLIENT_ID ?? '';
     } else {
       clientId = clientIdCookie.value;
     }
 
-    const tokenDescription = request.cookies.get(
-      AuthCookies.TOKEN_DESCRIPTION,
-    )?.value;
+    const tokenDescription = request.cookies.get(AuthCookies.TOKEN_DESCRIPTION)?.value;
     response.cookies.delete(AuthCookies.TOKEN_DESCRIPTION);
 
     // Build the request body
-    const authProperties = buildAuthProperties(
-      clientId,
-      code,
-      tokenDescription,
-    );
+    const authProperties = buildAuthProperties(clientId, code, tokenDescription);
 
     // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
     const tokenResponse = await authApiClient.createToken(authProperties);
@@ -189,21 +169,15 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
         httpOnly: true,
       });
     } else if (tokenResponse.refreshToken && clientIdCookie) {
-      response.cookies.set(
-        AuthCookies.REFRESH_TOKEN,
-        tokenResponse.refreshToken,
-        { httpOnly: true },
-      );
+      response.cookies.set(AuthCookies.REFRESH_TOKEN, tokenResponse.refreshToken, {
+        httpOnly: true,
+      });
     }
   }
   return response;
 };
 
-const buildAuthProperties = (
-  clientId: string,
-  code: string,
-  tokenDescription?: string,
-) => {
+const buildAuthProperties = (clientId: string, code: string, tokenDescription?: string) => {
   const authProperties = new AuthProperties();
 
   authProperties.clientId = clientId;
@@ -220,6 +194,6 @@ export const config = {
     // /_next/static (static files)
     // /_next/image (image optimisations)
     // /favicon.ico
-    "/((?!error|_next/static|_next/image|favicon.ico).*)",
+    '/((?!error|_next/static|_next/image|favicon.ico).*)',
   ],
 };

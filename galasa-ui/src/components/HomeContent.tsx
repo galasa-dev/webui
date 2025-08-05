@@ -4,27 +4,26 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import { Section } from "@carbon/react";
-import styles from "@/styles/HomeContent.module.css";
-import { useEffect, useState } from "react";
+import { Section } from '@carbon/react';
+import styles from '@/styles/HomeContent.module.css';
+import { useEffect, useState } from 'react';
 import MarkdownIt from 'markdown-it';
 import { useRouter } from 'next/navigation';
-import AccessDeniedModal from "./common/AccessDeniedModal";
-import { MarkdownResponse } from "@/utils/interfaces";
+import AccessDeniedModal from './common/AccessDeniedModal';
+import { MarkdownResponse } from '@/utils/interfaces';
 
 interface HomeContentProps {
   markdownContentPromise: Promise<MarkdownResponse>;
 }
 
 export default function HomeContent({ markdownContentPromise }: HomeContentProps) {
-
-  const [renderedHtmlContent, setRenderedHtmlContent] = useState<string>("");
+  const [renderedHtmlContent, setRenderedHtmlContent] = useState<string>('');
   const [isAccessAllowed, setIsAccessAllowed] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     let md = new MarkdownIt({
-      html: false
+      html: false,
     });
 
     const setRenderedHtmlFromMarkdown = async () => {
@@ -32,17 +31,16 @@ export default function HomeContent({ markdownContentPromise }: HomeContentProps
         const markdownContent = await markdownContentPromise;
 
         switch (markdownContent.responseStatusCode) {
-        case 200:
-          setRenderedHtmlContent(md.render(markdownContent.markdownContent));
-          break;
-        case 403:
-          setIsAccessAllowed(false);
-          break;
-        default:
-          console.error("Unexpected response:", markdownContent);
-          break;
+          case 200:
+            setRenderedHtmlContent(md.render(markdownContent.markdownContent));
+            break;
+          case 403:
+            setIsAccessAllowed(false);
+            break;
+          default:
+            console.error('Unexpected response:', markdownContent);
+            break;
         }
-
       } catch (err) {
         console.error('Error fetching or processing markdown content', err);
       }
@@ -62,5 +60,4 @@ export default function HomeContent({ markdownContentPromise }: HomeContentProps
       </div>
     </Section>
   );
-
 }

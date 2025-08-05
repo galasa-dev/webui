@@ -3,22 +3,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
-import styles from "@/styles/TestRunsPage.module.css";
-import { Button, Search } from "@carbon/react";
-import { useTranslations } from "next-intl";
-import { FormEvent, useMemo, useState, useRef, useEffect } from "react";
+'use client';
+import styles from '@/styles/TestRunsPage.module.css';
+import { Button, Search } from '@carbon/react';
+import { useTranslations } from 'next-intl';
+import { FormEvent, useMemo, useState, useRef, useEffect } from 'react';
 
 interface CustomSearchComponentProps {
-    title: string;
-    placeholder: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onClear: () => void;
-    onSubmit: (e: FormEvent) => void;
-    onCancel: () => void;
-    allRequestors?: string[];
-    disableSaveAndReset: boolean;
+  title: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClear: () => void;
+  onSubmit: (e: FormEvent) => void;
+  onCancel: () => void;
+  allRequestors?: string[];
+  disableSaveAndReset: boolean;
 }
 
 /**
@@ -33,10 +33,20 @@ interface CustomSearchComponentProps {
  * @param onCancel - Callback function to handle cancellation.
  * @param allRequestors - Optional list of all requestors for suggestion.
  * @param disableSaveAndReset - Flag to disable the save and reset buttons when no changes are made.
- * 
+ *
  * @returns The Search component.
  */
-export default function CustomSearchComponent({ title, placeholder, value, onChange, onClear, onSubmit, onCancel, allRequestors, disableSaveAndReset }: CustomSearchComponentProps) {
+export default function CustomSearchComponent({
+  title,
+  placeholder,
+  value,
+  onChange,
+  onClear,
+  onSubmit,
+  onCancel,
+  allRequestors,
+  disableSaveAndReset,
+}: CustomSearchComponentProps) {
   const [isListVisible, setIsListVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const translations = useTranslations('CustomSearchComponent');
@@ -45,11 +55,13 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
 
   const filteredRequestors = useMemo(() => {
     let currentRequestors = allRequestors || [];
-      
+
     if (value && currentRequestors.length > 0) {
-      currentRequestors = currentRequestors?.filter((name: string) => name.toLowerCase().includes(value.toLowerCase()));
+      currentRequestors = currentRequestors?.filter((name: string) =>
+        name.toLowerCase().includes(value.toLowerCase())
+      );
     }
-  
+
     return currentRequestors;
   }, [value, allRequestors]);
 
@@ -58,10 +70,10 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
     if (activeItemRef.current && suggestionListRef.current && activeIndex >= 0) {
       const listElement = suggestionListRef.current;
       const activeElement = activeItemRef.current;
-      
+
       const listRect = listElement.getBoundingClientRect();
       const activeRect = activeElement.getBoundingClientRect();
-      
+
       // Check if the active item is above the visible area
       if (activeRect.top < listRect.top) {
         activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -72,7 +84,7 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
       }
     }
   }, [activeIndex]);
-  
+
   const handleSelectRequestor = (name: string) => {
     onChange({ target: { value: name } } as React.ChangeEvent<HTMLInputElement>);
     setIsListVisible(false);
@@ -100,41 +112,46 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if(isListVisible && filteredRequestors.length > 0) {
+    if (isListVisible && filteredRequestors.length > 0) {
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
+          break;
 
-      switch(event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        setActiveIndex((prevIndex) => (prevIndex + 1) % filteredRequestors.length);
-        break;
+        case 'ArrowUp':
+          event.preventDefault();
+          setActiveIndex(
+            (prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length
+          );
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
+            handleSelectRequestor(filteredRequestors[activeIndex]);
+          } else {
+            // If no active index, submit the form with the current value
+            onSubmit(event);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          setIsListVisible(false);
+          setActiveIndex(-1);
+          break;
 
-      case 'ArrowUp':
-        event.preventDefault();
-        setActiveIndex((prevIndex) => (prevIndex - 1 + filteredRequestors.length) % filteredRequestors.length);
-        break;
-      case 'Enter':
-        event.preventDefault();
-        if (activeIndex >= 0 && activeIndex < filteredRequestors.length) {
-          handleSelectRequestor(filteredRequestors[activeIndex]);
-        } else {
-          // If no active index, submit the form with the current value
-          onSubmit(event);
-        }
-        break;
-      case 'Escape':
-        event.preventDefault();
-        setIsListVisible(false);
-        setActiveIndex(-1);
-        break;
-
-      default:
-        break;
-      } 
+        default:
+          break;
+      }
     }
   };
-  
+
   return (
-    <form data-testid="custom-search-form"  className={styles.filterInputContainer} onSubmit={onSubmit}>
+    <form
+      data-testid="custom-search-form"
+      className={styles.filterInputContainer}
+      onSubmit={onSubmit}
+    >
       <div className={styles.customComponentWrapper}>
         <p>{title}</p>
         <div className={styles.suggestionContainer}>
@@ -148,13 +165,13 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
             onClear={handleClear}
             onKeyDown={handleKeyDown}
             onFocus={() => allRequestors && setIsListVisible(true)}
-            onBlur={() => setTimeout(() => setIsListVisible(false))} 
+            onBlur={() => setTimeout(() => setIsListVisible(false))}
           />
           {allRequestors && isListVisible && filteredRequestors.length > 0 && (
             <ul ref={suggestionListRef} className={styles.suggestionList}>
               {filteredRequestors.map((name: string, index: number) => (
-                <li 
-                  key={name} 
+                <li
+                  key={name}
                   ref={index === activeIndex ? activeItemRef : null}
                   className={index === activeIndex ? styles.activeSuggestion : ''}
                   onMouseDown={() => handleSelectRequestor(name)}
@@ -168,21 +185,18 @@ export default function CustomSearchComponent({ title, placeholder, value, onCha
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <Button 
-          type="button" 
+        <Button
+          type="button"
           kind="secondary"
           disabled={disableSaveAndReset}
           onClick={handleCancel}
         >
-          {translations("reset")}
+          {translations('reset')}
         </Button>
-        <Button 
-          type="submit"
-          disabled={disableSaveAndReset}
-        >
-          {translations("save")}
+        <Button type="submit" disabled={disableSaveAndReset}>
+          {translations('save')}
         </Button>
       </div>
     </form>
   );
-};
+}

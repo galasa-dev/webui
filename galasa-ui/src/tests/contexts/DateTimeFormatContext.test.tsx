@@ -10,16 +10,14 @@ import { DateTimeFormatProvider, useDateTimeFormat } from '@/contexts/DateTimeFo
 
 // Mock a simple component to display the hook's state for our tests
 const TestComponent = ({ date }: { date: Date }) => {
-  const {preferences, formatDate, updatePreferences, getResolvedTimeZone} = useDateTimeFormat();
-  
+  const { preferences, formatDate, updatePreferences, getResolvedTimeZone } = useDateTimeFormat();
+
   return (
     <div>
       <p>Preferences: {JSON.stringify(preferences)}</p>
       <p>Formatted Date: {formatDate(date)}</p>
       <p>Resolved TimeZone: {getResolvedTimeZone()}</p>
-      <button onClick={() => updatePreferences({ locale: 'de-DE' })}>
-        Update Locale
-      </button>
+      <button onClick={() => updatePreferences({ locale: 'de-DE' })}>Update Locale</button>
       <button onClick={() => updatePreferences({ dateTimeFormatType: 'browser' })}>
         Set to Browser
       </button>
@@ -32,7 +30,6 @@ const TestComponent = ({ date }: { date: Date }) => {
     </div>
   );
 };
-
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -58,8 +55,8 @@ const defaultPreferences = {
   locale: 'en-US',
   timeFormat: '12-hour',
   timeZoneType: 'browser',
-  timeZone: 'UTC'
-};  
+  timeZone: 'UTC',
+};
 
 describe('DateTimeFormatContext', () => {
   let originalDateTimeFormat: typeof Intl.DateTimeFormat;
@@ -94,11 +91,14 @@ describe('DateTimeFormatContext', () => {
   });
 
   test('initialize preferences from localStorage', () => {
-    localStorageMock.setItem('dateTimeFormatSettings', JSON.stringify({
-      dateTimeFormatType: 'custom',
-      locale: 'fr-FR',
-      timeFormat: '24-hour'
-    }));
+    localStorageMock.setItem(
+      'dateTimeFormatSettings',
+      JSON.stringify({
+        dateTimeFormatType: 'custom',
+        locale: 'fr-FR',
+        timeFormat: '24-hour',
+      })
+    );
 
     render(
       <DateTimeFormatProvider>
@@ -106,12 +106,14 @@ describe('DateTimeFormatContext', () => {
       </DateTimeFormatProvider>
     );
 
-    expect(screen.getByText(/Preferences:/)).toHaveTextContent(JSON.stringify({
-      ...defaultPreferences,
-      dateTimeFormatType: 'custom',
-      locale: 'fr-FR',
-      timeFormat: '24-hour'
-    }));
+    expect(screen.getByText(/Preferences:/)).toHaveTextContent(
+      JSON.stringify({
+        ...defaultPreferences,
+        dateTimeFormatType: 'custom',
+        locale: 'fr-FR',
+        timeFormat: '24-hour',
+      })
+    );
   });
 
   test('updates preferences and localStorage', () => {
@@ -130,12 +132,14 @@ describe('DateTimeFormatContext', () => {
       ...defaultPreferences,
       dateTimeFormatType: 'browser',
       locale: 'de-DE', // The updated value
-      timeFormat: '12-hour'
+      timeFormat: '12-hour',
     };
     expect(screen.getByText(/Preferences:/)).toHaveTextContent(JSON.stringify(expectedPrefs));
 
     // Check that localStorage was updated
-    const storedPreferences = JSON.parse(localStorageMock.getItem('dateTimeFormatSettings') || '{}');
+    const storedPreferences = JSON.parse(
+      localStorageMock.getItem('dateTimeFormatSettings') || '{}'
+    );
     expect(storedPreferences).toEqual(expectedPrefs);
   });
 
@@ -143,11 +147,10 @@ describe('DateTimeFormatContext', () => {
     const initialCustomPrefs = {
       dateTimeFormatType: 'custom',
       locale: 'ja-JP',
-      timeFormat: '24-hour'
+      timeFormat: '24-hour',
     };
     localStorage.setItem('dateTimeFormatSettings', JSON.stringify(initialCustomPrefs));
 
-    
     render(
       <DateTimeFormatProvider>
         <TestComponent date={mockDate} />
@@ -155,7 +158,9 @@ describe('DateTimeFormatContext', () => {
     );
 
     // Check that it initialized correctly
-    expect(screen.getByText(/Preferences:/)).toHaveTextContent(JSON.stringify({...defaultPreferences, ...initialCustomPrefs}));
+    expect(screen.getByText(/Preferences:/)).toHaveTextContent(
+      JSON.stringify({ ...defaultPreferences, ...initialCustomPrefs })
+    );
 
     // Click the button that sets the type to 'browser'
     const button = screen.getByRole('button', { name: /Set to Browser/i });
@@ -170,9 +175,12 @@ describe('DateTimeFormatContext', () => {
   });
 
   test('formatDate uses browser locale when dateTimeFormatType is "browser"', () => {
-    jest.spyOn(Intl, 'DateTimeFormat').mockImplementation(
-      (locale, options) => new originalDateTimeFormat(locale === undefined ? 'en-US' : locale, options)
-    );
+    jest
+      .spyOn(Intl, 'DateTimeFormat')
+      .mockImplementation(
+        (locale, options) =>
+          new originalDateTimeFormat(locale === undefined ? 'en-US' : locale, options)
+      );
 
     render(
       <DateTimeFormatProvider>
@@ -180,30 +188,34 @@ describe('DateTimeFormatContext', () => {
       </DateTimeFormatProvider>
     );
 
-    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(/10\/01\/2023, \d{1,2}:\d{2}:\d{2} (AM|PM)/);});
+    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(
+      /10\/01\/2023, \d{1,2}:\d{2}:\d{2} (AM|PM)/
+    );
+  });
 
   test('formatDate uses custom locale and time format correctly', () => {
     // Set custom preferences in localStorage
     const customPrefs = {
       dateTimeFormatType: 'custom',
       locale: 'fr-FR',
-      timeFormat: '24-hour' 
+      timeFormat: '24-hour',
     };
     localStorage.setItem('dateTimeFormatSettings', JSON.stringify(customPrefs));
 
-    
     render(
       <DateTimeFormatProvider>
         <TestComponent date={mockDate} />
       </DateTimeFormatProvider>
     );
 
-    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(/01\/10\/2023.*\d{2}:\d{2}:\d{2}/);
+    expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(
+      /01\/10\/2023.*\d{2}:\d{2}:\d{2}/
+    );
   });
 
   test('returns an empty text on invalid date', () => {
     const invalidDate = new Date('invalid-date-string');
-    
+
     render(
       <DateTimeFormatProvider>
         <TestComponent date={invalidDate} />
@@ -222,14 +234,16 @@ describe('DateTimeFormatContext', () => {
           </DateTimeFormatProvider>
         );
 
-        expect(screen.getByText(/Resolved TimeZone:/)).toHaveTextContent(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        expect(screen.getByText(/Resolved TimeZone:/)).toHaveTextContent(
+          Intl.DateTimeFormat().resolvedOptions().timeZone
+        );
       });
 
       test('returns custom timezone when timeZoneType is "custom"', () => {
         const customPrefs = {
           ...defaultPreferences,
           timeZoneType: 'custom',
-          timeZone: 'Asia/Tokyo'
+          timeZone: 'Asia/Tokyo',
         };
         localStorage.setItem('dateTimeFormatSettings', JSON.stringify(customPrefs));
 
@@ -245,22 +259,26 @@ describe('DateTimeFormatContext', () => {
 
     describe('formatDate with timezones', () => {
       test('uses custom timezone and locale when type is "custom"', () => {
-        
-        localStorage.setItem('dateTimeFormatSettings', JSON.stringify({
-          dateTimeFormatType: 'custom', 
-          locale: 'en-US',            
-          timeFormat: '12-hour',    
-          timeZoneType: 'custom',    
-          timeZone: 'Asia/Tokyo'     
-        }));
-  
+        localStorage.setItem(
+          'dateTimeFormatSettings',
+          JSON.stringify({
+            dateTimeFormatType: 'custom',
+            locale: 'en-US',
+            timeFormat: '12-hour',
+            timeZoneType: 'custom',
+            timeZone: 'Asia/Tokyo',
+          })
+        );
+
         render(
           <DateTimeFormatProvider>
             <TestComponent date={mockDate} />
           </DateTimeFormatProvider>
         );
-        
-        expect(screen.getByText(/Formatted Date:/)).toHaveTextContent('Formatted Date: 10/01/2023, 09:00:00 PM (GMT+9)');
+
+        expect(screen.getByText(/Formatted Date:/)).toHaveTextContent(
+          'Formatted Date: 10/01/2023, 09:00:00 PM (GMT+9)'
+        );
       });
     });
   });

@@ -37,9 +37,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const stored = localStorage.getItem('preferred-theme') as ThemeType | null;
-    if (stored === 'light' || stored === 'dark'){
+    if (stored === 'light' || stored === 'dark') {
       setTheme(stored);
-    }else{
+    } else {
       setTheme('system');
     }
     setIsLoaded(true);
@@ -47,11 +47,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   if (!isLoaded) return null; // Prevent flash by not rendering anything until theme is loaded
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => useContext(ThemeContext);

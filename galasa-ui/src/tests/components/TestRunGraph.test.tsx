@@ -3,24 +3,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import TestRunGraph from "../../components/test-runs/TestRunGraph";
-import { useRouter, useSearchParams } from "next/navigation";
-import { RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
-import { DateTimeFormatProvider } from "@/contexts/DateTimeFormatContext";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import TestRunGraph from '../../components/test-runs/TestRunGraph';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { DateTimeFormatProvider } from '@/contexts/DateTimeFormatContext';
 
-jest.mock("next/navigation");
-jest.mock("next-intl", () => ({
+jest.mock('next/navigation');
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {
-      "timeFrameText.range": "Showing test runs submitted between {from} and {to}",
-      "errorLoadingGraph": "Error loading graph",
-      "loadingGraph": "Loading graph...",
-      "noTestRunsFound": "No test runs found",
-      "submittedAt": "Submitted at",
-      "limitExceeded.title": "Limit Exceeded",
-      "limitExceeded.subtitle": "Showing only the first {MAX_RECORDS} records.",
+      'timeFrameText.range': 'Showing test runs submitted between {from} and {to}',
+      errorLoadingGraph: 'Error loading graph',
+      loadingGraph: 'Loading graph...',
+      noTestRunsFound: 'No test runs found',
+      submittedAt: 'Submitted at',
+      'limitExceeded.title': 'Limit Exceeded',
+      'limitExceeded.subtitle': 'Showing only the first {MAX_RECORDS} records.',
     };
     let text = translations[key] || key;
     if (vars) {
@@ -31,15 +31,14 @@ jest.mock("next-intl", () => ({
     return text;
   },
 }));
-jest.mock("@/contexts/ThemeContext", () => ({
-  useTheme: () => ({ theme: "light" })
+jest.mock('@/contexts/ThemeContext', () => ({
+  useTheme: () => ({ theme: 'light' }),
 }));
-jest.mock("@/hooks/useHistoryBreadCrumbs", () => () => ({ pushBreadCrumb: jest.fn() }));
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => () => ({ pushBreadCrumb: jest.fn() }));
 jest.mock('@carbon/charts', () => ({
   ScaleTypes: { TIME: 'time' },
-  TimeIntervalNames: { monthly: 'monthly' }
+  TimeIntervalNames: { monthly: 'monthly' },
 }));
-
 
 const mockPush = jest.fn();
 (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
@@ -68,8 +67,8 @@ const generateMockRuns = (count: number) => {
       bundle: `bundle${i}`,
       package: `package${i}`,
       testName: `test${i}`,
-      status: "finished",
-      result: i % 2 === 0 ? "Failed" : "Passed",
+      status: 'finished',
+      result: i % 2 === 0 ? 'Failed' : 'Passed',
       submittedAt: new Date(Date.now() - i * 1000 * 60 * 60).toISOString(),
       tags: `tag${i}`,
       submissionId: `submission${i}`,
@@ -79,28 +78,29 @@ const generateMockRuns = (count: number) => {
 
 const defaultProps = {
   runsList: generateMockRuns(2),
-  visibleColumns: ["submittedAt", "runName", "requestor", "testName", "status", "result"],
+  visibleColumns: ['submittedAt', 'runName', 'requestor', 'testName', 'status', 'result'],
   orderedHeaders: RESULTS_TABLE_COLUMNS,
   limitExceeded: false,
   isLoading: false,
-  isError: false
+  isError: false,
 };
 
-describe("TestRunGraph", () => {
-  it("renders the graph with data", () => {
+describe('TestRunGraph', () => {
+  it('renders the graph with data', () => {
     render(
       <DateTimeFormatProvider>
         <TestRunGraph {...defaultProps} />
-      </DateTimeFormatProvider>);
+      </DateTimeFormatProvider>
+    );
     expect(screen.getByText(/Showing test runs submitted between/)).toBeInTheDocument();
     // Check for legend items (status labels)
-    expect(screen.getByText("passed")).toBeInTheDocument();
-    expect(screen.getByText("failed")).toBeInTheDocument();
+    expect(screen.getByText('passed')).toBeInTheDocument();
+    expect(screen.getByText('failed')).toBeInTheDocument();
     // Optionally, check for the chart container
-    expect(document.querySelector(".cds--cc--chart-wrapper")).toBeInTheDocument();
+    expect(document.querySelector('.cds--cc--chart-wrapper')).toBeInTheDocument();
   });
 
-  it("shows loading state", () => {
+  it('shows loading state', () => {
     render(
       <DateTimeFormatProvider>
         <TestRunGraph {...defaultProps} isLoading={true} />
@@ -109,7 +109,7 @@ describe("TestRunGraph", () => {
     expect(document.querySelector('.cds--skeleton__text')).toBeInTheDocument();
   });
 
-  it("shows error state", () => {
+  it('shows error state', () => {
     render(
       <DateTimeFormatProvider>
         <TestRunGraph {...defaultProps} isError={true} />
@@ -118,44 +118,43 @@ describe("TestRunGraph", () => {
     expect(screen.getByText(/Error loading graph/)).toBeInTheDocument();
   });
 
-  it("shows no data message", () => {
-    render(   
+  it('shows no data message', () => {
+    render(
       <DateTimeFormatProvider>
-        <TestRunGraph {...defaultProps} runsList={[]} />    
+        <TestRunGraph {...defaultProps} runsList={[]} />
       </DateTimeFormatProvider>
     );
     expect(screen.getByText(/No test runs found/)).toBeInTheDocument();
   });
 
-  it("shows limit exceeded warning", () => {
-    render(   
+  it('shows limit exceeded warning', () => {
+    render(
       <DateTimeFormatProvider>
         <TestRunGraph {...defaultProps} limitExceeded={true} />
-      </DateTimeFormatProvider>);
+      </DateTimeFormatProvider>
+    );
     expect(screen.getByText(/Limit Exceeded/)).toBeInTheDocument();
   });
 
-  it("navigates to the test run details page when a data point is clicked", async () => {
-    render(   
+  it('navigates to the test run details page when a data point is clicked', async () => {
+    render(
       <DateTimeFormatProvider>
         <TestRunGraph {...defaultProps} />
-      </DateTimeFormatProvider>);
-  
+      </DateTimeFormatProvider>
+    );
+
     const chartContainer = document.querySelector("[data-carbon-theme='white']");
-    const mockDot = document.createElement("div");
+    const mockDot = document.createElement('div');
     (mockDot as any).__data__ = {
       custom: defaultProps.runsList[0], // The run we expect to navigate to
     };
     chartContainer?.appendChild(mockDot);
     fireEvent.click(mockDot);
-  
+
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(`/test-runs/${defaultProps.runsList[0].id}`);
     });
-  
+
     chartContainer?.removeChild(mockDot);
   });
-  
-
 });
-

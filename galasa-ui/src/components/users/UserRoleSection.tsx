@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
+'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { ProfileDetailsProps, UpdateUserRolePayload } from '@/utils/interfaces';
 import { RBACRole, UserData } from '@/generated/galasaapi';
-import styles from "@/styles/UserRole.module.css";
+import styles from '@/styles/UserRole.module.css';
 import { ButtonSet, Button, Dropdown, Loading } from '@carbon/react';
 import ErrorPage from '@/app/error/page';
 import { InlineNotification } from '@carbon/react';
@@ -38,7 +38,10 @@ interface RoleDetailsProps {
   roleDetailsPromise: Promise<RBACRole[]>;
 }
 
-export default function UserRoleSection({ userProfilePromise, roleDetailsPromise }: ProfileDetailsProps & RoleDetailsProps) {
+export default function UserRoleSection({
+  userProfilePromise,
+  roleDetailsPromise,
+}: ProfileDetailsProps & RoleDetailsProps) {
   const translations = useTranslations('userRole');
 
   const [userProfile, setUserProfile] = useState<UserData>({});
@@ -60,12 +63,10 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
       setIsLoading(true);
 
       try {
-
         const loadedProfile = await userProfilePromise;
         setUserProfile(loadedProfile);
 
         setRole(loadedProfile.synthetic?.role?.metadata!);
-
       } catch (err) {
         setIsError(true);
         console.error(err);
@@ -82,14 +83,12 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
           const flattenedRoles = flattenUserRoleApi(loadedRoles);
           setUserRoles(flattenedRoles);
         }
-
       } catch (err) {
         console.log(err);
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
-
     };
 
     loadUserProfile();
@@ -97,82 +96,69 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
   }, [userProfilePromise, roleDetailsPromise]);
 
   const flattenUserRoleApi = (rawRoles: RBACRole[]) => {
-
     const flattenedRoles = [];
 
     if (rawRoles.length >= 1) {
       for (let i = 0; i < rawRoles.length; i++) {
-
         if (rawRoles[i].metadata?.assignable) {
           const { id, name, description } = rawRoles[i].metadata!;
           const extractedInfo = { id, name, description };
           flattenedRoles.push(extractedInfo);
         }
-
       }
     }
 
     return flattenedRoles;
-
   };
 
   const changeUserRole = (event: DropdownChangeEvent) => {
-
     setRole({
       id: event.selectedItem.id,
       name: event.selectedItem.name,
-      description: event.selectedItem.description
+      description: event.selectedItem.description,
     });
 
     if (userProfile.synthetic?.role?.metadata?.name === event.selectedItem.name) {
       setIsResetBtnDisabled(true);
       setIsSaveBtnDisabled(true);
-    }
-    else {
+    } else {
       setIsResetBtnDisabled(false);
       setIsSaveBtnDisabled(false);
     }
-
   };
 
   const resetRole = () => {
-
     setRole(userProfile.synthetic?.role?.metadata!);
     setIsResetBtnDisabled(true);
     setIsSaveBtnDisabled(true);
-
   };
 
   const updateUserRole = async () => {
-
     const requestBody: UpdateUserRolePayload = {
       roleDetails: {
-        role: role.id!
+        role: role.id!,
       },
-      userNumber: userProfile.id!
+      userNumber: userProfile.id!,
     };
 
     try {
       const response = await updateUserRoleAction(requestBody);
 
       if (response.status === 200) {
-
         setIsResetBtnDisabled(true);
         setIsSaveBtnDisabled(true);
         setIsToastVisible(true);
 
-        router.refresh();  //refresh page so that the component latest user data from api server
+        router.refresh(); //refresh page so that the component latest user data from api server
 
         // Set timeout to hide the toast after 5 seconds.
         toastTimer.current = setTimeout(() => {
           setIsToastVisible(false);
         }, 5000);
-
       }
     } catch (err) {
       setIsError(true);
     }
-
   };
 
   useEffect(() => {
@@ -202,7 +188,7 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
           <Dropdown
             selectedItem={role}
             onChange={(event: DropdownChangeEvent) => changeUserRole(event)}
-            style={{ width: "35%" }}
+            style={{ width: '35%' }}
             size="lg"
             id="default"
             helperText={role.description}
@@ -211,15 +197,25 @@ export default function UserRoleSection({ userProfilePromise, roleDetailsPromise
             itemToString={(item: DropdownItem) => (item ? item.name : '')}
           />
           <ButtonSet className={styles.buttonSet}>
-            <Button onClick={resetRole} disabled={isResetBtnDisabled} kind="secondary">{translations('resetButton')}</Button>
-            <Button onClick={updateUserRole} disabled={isSaveBtnDisabled} kind="primary">{translations('saveButton')}</Button>
+            <Button onClick={resetRole} disabled={isResetBtnDisabled} kind="secondary">
+              {translations('resetButton')}
+            </Button>
+            <Button onClick={updateUserRole} disabled={isSaveBtnDisabled} kind="primary">
+              {translations('saveButton')}
+            </Button>
           </ButtonSet>
         </div>
 
-        {
-          isToastVisible && <InlineNotification inline={true} onClose={() => setIsToastVisible(false)} lowContrast={true} kind="success" title={translations('toastTitle')} subtitle={translations('toastSubtitle')}/>
-        }
-
+        {isToastVisible && (
+          <InlineNotification
+            inline={true}
+            onClose={() => setIsToastVisible(false)}
+            lowContrast={true}
+            kind="success"
+            title={translations('toastTitle')}
+            subtitle={translations('toastSubtitle')}
+          />
+        )}
       </div>
     </div>
   );

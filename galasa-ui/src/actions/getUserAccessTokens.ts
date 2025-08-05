@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { AuthenticationAPIApi, AuthTokens } from "@/generated/galasaapi";
-import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants/common";
+import { AuthenticationAPIApi, AuthTokens } from '@/generated/galasaapi';
+import { createAuthenticatedApiConfiguration } from '@/utils/api';
+import * as Constants from '@/utils/constants/common';
 
 export const fetchAccessTokens = async (loginId: string) => {
-
   const apiConfig = createAuthenticatedApiConfiguration();
 
   const authApiClient = new AuthenticationAPIApi(apiConfig);

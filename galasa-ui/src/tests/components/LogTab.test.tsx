@@ -13,32 +13,32 @@ import { handleDownload } from '@/utils/artifacts';
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
 }));
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => {
     return (key: string, vars?: Record<string, any>) => {
       // For match_counter, return formatted "current of total"
-      if (key === "match_counter" && vars) {
+      if (key === 'match_counter' && vars) {
         return `${vars.current} of ${vars.total}`;
       }
       // Provide dummy translations for other keys used in LogTab:
       const dummy: Record<string, string> = {
-        title: "Run Log",
+        title: 'Run Log',
         description:
-          "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
-        search_placeholder: "Find in run log",
-        no_matches: "No matches",
-        match_counter: "{current} of {total}",
-        match_previous: "Previous match",
-        match_next: "Next match",
-        match_case: "Match case",
-        match_whole_word: "Match whole word",
-        filters_menu_title: "Hide / Show Content",
-        filter_error: "Error",
-        filter_warn: "Warning",
-        filter_info: "Info",
-        filter_debug: "Debug",
-        filter_trace: "Trace",
-        download_button: "Download Run Log",
+          'A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.',
+        search_placeholder: 'Find in run log',
+        no_matches: 'No matches',
+        match_counter: '{current} of {total}',
+        match_previous: 'Previous match',
+        match_next: 'Next match',
+        match_case: 'Match case',
+        match_whole_word: 'Match whole word',
+        filters_menu_title: 'Hide / Show Content',
+        filter_error: 'Error',
+        filter_warn: 'Warning',
+        filter_info: 'Info',
+        filter_debug: 'Debug',
+        filter_trace: 'Trace',
+        download_button: 'Download Run Log',
       };
       return dummy[key] ?? key;
     };
@@ -56,12 +56,24 @@ jest.mock('@carbon/react', () => ({
       {...props}
     />
   ),
-  Button: ({ children, onClick, disabled, iconDescription, hasIconOnly, renderIcon, ...props }: any) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    iconDescription,
+    hasIconOnly,
+    renderIcon,
+    ...props
+  }: any) => (
     <button
       onClick={onClick}
       disabled={disabled}
       aria-label={iconDescription}
-      data-testid={hasIconOnly ? `icon-button-${iconDescription?.toLowerCase().replace(/\s+/g, '-')}` : 'button'}
+      data-testid={
+        hasIconOnly
+          ? `icon-button-${iconDescription?.toLowerCase().replace(/\s+/g, '-')}`
+          : 'button'
+      }
       {...props}
     >
       {hasIconOnly ? iconDescription : children}
@@ -106,7 +118,6 @@ Multi-line continuation
 2024-01-01 10:00:06 ERROR Another error occurred`;
 
 describe('LogTab', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -164,14 +175,14 @@ describe('LogTab', () => {
       await screen.findByText(/Connection retry attempt 1/i);
       const targetLineElement = screen.getByText(/Connection retry attempt 1/).closest('div');
 
-      // Assert 
+      // Assert
       expect(scrollIntoViewMock).toHaveBeenCalledTimes(1);
     });
 
     it('does not scroll if initialLine is out of bounds', async () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
-      
+
       render(<LogTab logs={sampleLogs} initialLine={999} />);
 
       await screen.findByText(/Starting application/);
@@ -219,7 +230,6 @@ This is a continuation line
       expect(screen.getByText(/This is a continuation line/)).toBeInTheDocument();
     });
   });
-
 
   describe('Filtering', () => {
     it('renders all filter checkboxes', () => {
@@ -433,5 +443,4 @@ Line with $dollar and ^caret`;
       });
     });
   });
-
 });

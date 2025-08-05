@@ -8,13 +8,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomTagsComponent from '@/components/test-runs/CustomTagsComponent';
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "save": "Save",
-      "cancel": "Cancel",
-      "add": "Add",
-      "remove": "Remove",
+      save: 'Save',
+      cancel: 'Cancel',
+      add: 'Add',
+      remove: 'Remove',
     };
     return translations[key] || key;
   },
@@ -23,7 +23,7 @@ jest.mock("next-intl", () => ({
 describe('CustomTagsComponent', () => {
   const mockOnChange = jest.fn();
   const mockOnSubmit = jest.fn((e) => e.preventDefault());
-  const mockOnCancel = jest.fn(); 
+  const mockOnCancel = jest.fn();
 
   const defaultProps = {
     title: 'Manage Your Tags',
@@ -41,23 +41,22 @@ describe('CustomTagsComponent', () => {
 
   test('renders correctly with initial props', () => {
     render(<CustomTagsComponent {...defaultProps} />);
-        
 
     expect(screen.getByText('Manage Your Tags')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('any')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-        
+
     // Check for existing tags in the listbox
     expect(screen.getByRole('option', { name: 'existing-tag-1' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'existing-tag-2' })).toBeInTheDocument();
-        
+
     // Remove button should be disabled initially
     expect(screen.getByRole('button', { name: 'Remove' })).toBeDisabled();
   });
 
   test('allows adding a new tag via the "Add" button and clears the input', () => {
     const { rerender } = render(<CustomTagsComponent {...defaultProps} />);
-        
+
     const input = screen.getByPlaceholderText('any');
     const addButton = screen.getByRole('button', { name: 'Add' });
 
@@ -67,7 +66,7 @@ describe('CustomTagsComponent', () => {
 
     // Assert that onChange was called correctly
     expect(mockOnChange).toHaveBeenCalledWith(['existing-tag-1', 'existing-tag-2', 'new-tag']);
-        
+
     // Assert input is cleared immediately
     expect(input).toHaveValue('');
 
@@ -80,24 +79,24 @@ describe('CustomTagsComponent', () => {
 
   test('Does not allow adding an empty tag', () => {
     render(<CustomTagsComponent {...defaultProps} />);
-        
+
     const input = screen.getByPlaceholderText('any');
     const addButton = screen.getByRole('button', { name: 'Add' });
 
     fireEvent.change(input, { target: { value: '' } });
     fireEvent.click(addButton);
-        
+
     // No new tag should be added
     expect(screen.queryByRole('option', { name: '' })).not.toBeInTheDocument();
   });
 
   test('allows selecting and removing tags', () => {
     const { rerender } = render(<CustomTagsComponent {...defaultProps} />);
-        
+
     const removeButton = screen.getByRole('button', { name: 'Remove' });
     const listbox = screen.getByRole('listbox');
     fireEvent.change(listbox, { target: { value: 'existing-tag-1' } });
-        
+
     //  Assert the remove button is enabled after selecting a tag
     expect(removeButton).toBeEnabled();
     fireEvent.click(removeButton);
@@ -118,9 +117,8 @@ describe('CustomTagsComponent', () => {
   test('calls onSubmit when the save button is clicked', () => {
     render(<CustomTagsComponent {...defaultProps} />);
     const saveButton = screen.getByRole('button', { name: 'Save' });
-    
+
     fireEvent.click(saveButton);
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
   });
-
 });

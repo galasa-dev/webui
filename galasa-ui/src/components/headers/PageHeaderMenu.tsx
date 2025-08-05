@@ -7,7 +7,7 @@
 
 import React, { useEffect } from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem, HeaderName } from '@carbon/react';
-import { User } from "@carbon/icons-react";
+import { User } from '@carbon/icons-react';
 import { useRouter } from 'next/navigation';
 import { handleDeleteCookieApiOperation } from '@/utils/logout';
 import LanguageSelector from './LanguageSelector';
@@ -24,53 +24,51 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const router = useRouter();
 
   const handleRedirectToMyProfilePage = () => {
-    router.push("/myprofile");
+    router.push('/myprofile');
   };
 
   const handleRedirectToMySettingsPage = () => {
-    router.push("/mysettings");
+    router.push('/mysettings');
   };
-  const {isFeatureEnabled} = useFeatureFlags();
+  const { isFeatureEnabled } = useFeatureFlags();
 
   const isInternationalizationEnabled = isFeatureEnabled(FEATURE_FLAGS.INTERNATIONALIZATION);
-  
+
   useEffect(() => {
     if (!isInternationalizationEnabled) {
-      setUserLocale("en");
+      setUserLocale('en');
     }
   }, [isInternationalizationEnabled]);
 
   return (
     <HeaderGlobalBar data-testid="header-menu">
-      {isInternationalizationEnabled && (<LanguageSelector/>)}
+      {isInternationalizationEnabled && <LanguageSelector />}
       <ThemeSelector />
       <HeaderName prefix="">{galasaServiceName}</HeaderName>
       <OverflowMenu
         data-floating-menu-container
         selectorPrimaryFocus={'.optionOne'}
         renderIcon={User}
-        data-testid='menu-btn'
-        size='lg'
+        data-testid="menu-btn"
+        size="lg"
         flipped={true}
       >
         <OverflowMenuItem
           itemText={translations('profile')}
-          data-testid='my-profile-btn'
+          data-testid="my-profile-btn"
           onClick={handleRedirectToMyProfilePage}
         />
         <OverflowMenuItem
           itemText={translations('settings')}
-          data-testid='my-settings-btn'
+          data-testid="my-settings-btn"
           onClick={handleRedirectToMySettingsPage}
         />
         <OverflowMenuItem
           itemText={translations('logout')}
           onClick={() => handleDeleteCookieApiOperation(router)}
-          data-testid='logout-btn'
+          data-testid="logout-btn"
         />
-
       </OverflowMenu>
-
     </HeaderGlobalBar>
   );
 }

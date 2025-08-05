@@ -8,7 +8,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BreadCrumb from '@/components/common/BreadCrumb';
 
-
 // Mock useTranslations hook to return a mock translation function
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -26,7 +25,7 @@ jest.mock('next/navigation', () => ({
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -47,12 +46,12 @@ describe('BreadCrumb Component', () => {
     render(<BreadCrumb breadCrumbItems={mockBreadCrumbItems} />);
 
     // Check if all breadcrumb items are rendered
-    mockBreadCrumbItems.forEach(item => {
+    mockBreadCrumbItems.forEach((item) => {
       expect(screen.getByText(item.title)).toBeInTheDocument();
     });
   });
 
-  test("does not render overflow menu when items are below threshold", () => {
+  test('does not render overflow menu when items are below threshold', () => {
     render(<BreadCrumb breadCrumbItems={mockBreadCrumbItems} />);
 
     // Check if the overflow menu is not rendered
@@ -60,8 +59,12 @@ describe('BreadCrumb Component', () => {
     expect(overflowMenu).not.toBeInTheDocument();
   });
 
-  test("renders overflow menu when items exceed threshold", () => {
-    const extendedItems = [...mockBreadCrumbItems, { title: 'Extra Item', route: '/extra', values: {} }, { title: 'Another Item', route: '/another', values: {} }];
+  test('renders overflow menu when items exceed threshold', () => {
+    const extendedItems = [
+      ...mockBreadCrumbItems,
+      { title: 'Extra Item', route: '/extra', values: {} },
+      { title: 'Another Item', route: '/another', values: {} },
+    ];
     render(<BreadCrumb breadCrumbItems={extendedItems} />);
 
     // Check if the overflow menu is rendered

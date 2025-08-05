@@ -5,10 +5,10 @@
  */
 'use client';
 
-import { SideNav, SideNavItems, SideNavItem} from '@carbon/react';
+import { SideNav, SideNavItems, SideNavItem } from '@carbon/react';
 import { useTranslations } from 'next-intl';
 
-export default function Sidebar (){
+export default function Sidebar() {
   const translations = useTranslations('Sidebar');
   return (
     <SideNav aria-label="Sidebar">
@@ -20,4 +20,4 @@ export default function Sidebar (){
       </SideNavItems>
     </SideNav>
   );
-};
+}

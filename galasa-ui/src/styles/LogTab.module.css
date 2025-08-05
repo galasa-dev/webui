@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
- .warn{
+.warn {
   color: #ffb74d;
 }
 
-.error{
+.error {
   color: #f44336;
 }
 
@@ -31,7 +31,6 @@
   gap: 1rem;
   flex: 1;
 }
-
 
 .findControls {
   display: flex;
@@ -67,7 +66,6 @@
   gap: 10px;
   margin-bottom: 8px;
   align-items: baseline;
-
 }
 
 .tabContent {

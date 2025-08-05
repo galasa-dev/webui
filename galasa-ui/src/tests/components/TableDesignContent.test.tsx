@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import TableDesignContent from "@/components/test-runs/TableDesignContent";
-import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from "@/utils/constants/common";
-import { ColumnDefinition } from "@/utils/interfaces";
+import TableDesignContent from '@/components/test-runs/TableDesignContent';
+import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import { ColumnDefinition } from '@/utils/interfaces';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock Child Components
@@ -22,8 +22,12 @@ jest.mock('@/components/test-runs/TableDesignRow', () => ({
         aria-label={value}
       />
       <span>{value}</span>
-      <button data-testid={`arrow-up-${rowId}`} onClick={onClickArrowUp}>↑</button>
-      <button data-testid={`arrow-down-${rowId}`} onClick={onClickArrowDown}>↓</button>
+      <button data-testid={`arrow-up-${rowId}`} onClick={onClickArrowUp}>
+        ↑
+      </button>
+      <button data-testid={`arrow-down-${rowId}`} onClick={onClickArrowDown}>
+        ↓
+      </button>
     </div>
   ),
 }));
@@ -39,14 +43,15 @@ jest.mock('@dnd-kit/core', () => ({
 }));
 
 // Mock the useTranslations hook from next-intl
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "description": "Customize your table view by showing, hiding, and reordering columns.",
-      "dragAndDropHeader": "Drag columns to reorder",
-      "columnName": "Column Name",
-      "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
-      "resetToDefaults": "Reset to defaults",
+      description: 'Customize your table view by showing, hiding, and reordering columns.',
+      dragAndDropHeader: 'Drag columns to reorder',
+      columnName: 'Column Name',
+      noColumnsSelected:
+        'No columns selected – nothing to display. Please select one or more columns.',
+      resetToDefaults: 'Reset to defaults',
     };
     return translations[key] || key;
   },
@@ -69,7 +74,7 @@ const mockTableRows: ColumnDefinition[] = [
   { id: 'status', columnName: 'Status' },
 ];
 
-describe("TableDesignContent Component", () => {
+describe('TableDesignContent Component', () => {
   let mockSetSelectedRowIds: jest.Mock;
   let mockSetTableRows: jest.Mock;
   let mockSetVisibleColumns: jest.Mock;
@@ -85,7 +90,7 @@ describe("TableDesignContent Component", () => {
     mockSetSortOrder = jest.fn();
 
     defaultProps = {
-      selectedRowIds: ['testName', 'requestor', 'status'], 
+      selectedRowIds: ['testName', 'requestor', 'status'],
       setSelectedRowIds: mockSetSelectedRowIds,
       tableRows: mockTableRows,
       setTableRows: mockSetTableRows,
@@ -98,60 +103,44 @@ describe("TableDesignContent Component", () => {
     };
   });
 
-  describe("Rendering", () => {
-    test("renders correctly without crashing", () => {
-      render(
-        <TableDesignContent {...defaultProps} />
-      );
+  describe('Rendering', () => {
+    test('renders correctly without crashing', () => {
+      render(<TableDesignContent {...defaultProps} />);
       expect(screen.getByText(/Customize your table view/i)).toBeInTheDocument();
       expect(screen.getByText('Column Name')).toBeInTheDocument();
     });
 
     test('should check the "Select All" checkbox if all rows are selected', () => {
-      const allRowIds = mockTableRows.map(row => row.id);
-      render(
-        <TableDesignContent {...defaultProps} selectedRowIds={allRowIds}/>
-      );
+      const allRowIds = mockTableRows.map((row) => row.id);
+      render(<TableDesignContent {...defaultProps} selectedRowIds={allRowIds} />);
       const selectAllCheckbox = screen.getByRole('checkbox', { name: 'Select all rows' });
       expect(selectAllCheckbox).toBeChecked();
     });
   });
 
-  describe("Checkbox Selection Logic", () => {
+  describe('Checkbox Selection Logic', () => {
     test("selects all rows when 'Select All' is clicked", () => {
-      render(
-        <TableDesignContent {...defaultProps} selectedRowIds={[]}/>
-      );
+      render(<TableDesignContent {...defaultProps} selectedRowIds={[]} />);
       fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
-      expect(mockSetSelectedRowIds).toHaveBeenCalledWith(mockTableRows.map(row => row.id));
+      expect(mockSetSelectedRowIds).toHaveBeenCalledWith(mockTableRows.map((row) => row.id));
     });
 
     test('deselects all rows when "Select All" is clicked while all are selected', () => {
-      const allRowIds = mockTableRows.map(row => row.id);
-      render(
-        <TableDesignContent {...defaultProps} selectedRowIds={allRowIds}/>
-      );
+      const allRowIds = mockTableRows.map((row) => row.id);
+      render(<TableDesignContent {...defaultProps} selectedRowIds={allRowIds} />);
       fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
       expect(mockSetSelectedRowIds).toHaveBeenCalledWith([]);
     });
 
-    test("displays a warning message when no columns are selected", () => {
-      render(
-        <TableDesignContent {...defaultProps} 
-          selectedRowIds={[]}
-        />
-      );
+    test('displays a warning message when no columns are selected', () => {
+      render(<TableDesignContent {...defaultProps} selectedRowIds={[]} />);
 
       expect(screen.getByText(/No columns selected – nothing to display/i)).toBeInTheDocument();
     });
 
     test('should call setSelectedRowIds with the correct row ID when a row checkbox is clicked', () => {
       const initialSelectedRowIds = ['testName'];
-      render(
-        <TableDesignContent {...defaultProps}
-          selectedRowIds={initialSelectedRowIds}
-        />
-      );
+      render(<TableDesignContent {...defaultProps} selectedRowIds={initialSelectedRowIds} />);
 
       const requestorCheckbox = screen.getByTestId('checkbox-requestor');
       requestorCheckbox.click();
@@ -163,13 +152,9 @@ describe("TableDesignContent Component", () => {
     });
   });
 
-  describe("Row Reordering Logic", () => {
+  describe('Row Reordering Logic', () => {
     test('should call setTableRows with new order on drag end', () => {
-      render(
-        <TableDesignContent {...defaultProps}
-          selectedRowIds={[]}
-        />
-      );
+      render(<TableDesignContent {...defaultProps} selectedRowIds={[]} />);
 
       // Simulate dragging 'status' (index 2) over 'testName' (index 0)
       const event = { active: { id: 'status' }, over: { id: 'testName' } };
@@ -185,7 +170,7 @@ describe("TableDesignContent Component", () => {
     });
   });
 
-  describe("Reset to Defaults Logic", () => {
+  describe('Reset to Defaults Logic', () => {
     test('calls setters with default values when "Reset to defaults" is clicked', () => {
       const modifiedProps = {
         ...defaultProps,

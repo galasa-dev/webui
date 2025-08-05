@@ -9,7 +9,6 @@ import { ConfigurationParameters } from '@/generated/galasaapi/configuration';
 import { cookies } from 'next/headers';
 import AuthCookies from './authCookies';
 
-
 export const GALASA_API_SERVER_URL = process.env.GALASA_API_SERVER_URL ?? '';
 
 /**

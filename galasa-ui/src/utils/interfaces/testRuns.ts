@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { AmPm } from "../types/common";
+import { AmPm } from '../types/common';
 
 /**
  * Interfaces related to test runs, filtering, and time-based operations

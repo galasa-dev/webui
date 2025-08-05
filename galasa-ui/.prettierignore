@@ -1,0 +1,46 @@
+# Build output
+.next/
+.swc/
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules
+
+# Environment files
+.env*
+!.env.example
+
+# Logs
+*.log
+
+# Temp or test output
+temp/
+*.tmp
+
+# Prettier config
+.prettierignore
+.prettierrc.*
+.eslintrc.*
+
+
+# Jest / testing config
+jest.config.js
+setupTests.ts
+extendedJsdonEnvironment.ts
+
+# Docs
+docs/
+
+# Gradle and shell scripts
+*.sh
+*.gradle
+gradle.properties
+
+# Generated files
+**/generated/*
+
+# Config files
+package-lock.json
+yarn.lock

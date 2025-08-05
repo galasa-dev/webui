@@ -18,9 +18,9 @@ export const handleDownload = (content: string | ArrayBuffer | Blob, fileName: s
 
 export const cleanArtifactPath = (rawPath: string) => {
   let cleanedPath = rawPath;
-  if (rawPath.startsWith("./")) {
+  if (rawPath.startsWith('./')) {
     cleanedPath = rawPath.substring(2);
-  } else if (rawPath.startsWith("/")) {
+  } else if (rawPath.startsWith('/')) {
     cleanedPath = rawPath.substring(1);
   }
 

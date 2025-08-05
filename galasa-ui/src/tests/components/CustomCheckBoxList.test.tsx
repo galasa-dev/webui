@@ -6,13 +6,13 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import CustomCheckBoxList from '@/components/test-runs/CustomCheckBoxList'; 
+import CustomCheckBoxList from '@/components/test-runs/CustomCheckBoxList';
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "save": "Save",
-      "reset": "Reset",
+      save: 'Save',
+      reset: 'Reset',
     };
     return translations[key] || key;
   },
@@ -67,9 +67,9 @@ describe('CustomCheckBoxList', () => {
   test('calls onSubmit when the save button is clicked', () => {
     render(<CustomCheckBoxList {...defaultProps} />);
     const saveButton = screen.getByRole('button', { name: 'Save' });
-        
+
     fireEvent.click(saveButton);
-        
+
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
     // Ensure other callbacks were not triggered
     expect(mockOnCancel).not.toHaveBeenCalled();
@@ -77,30 +77,34 @@ describe('CustomCheckBoxList', () => {
   });
 
   test('handles multiple selection changes correctly in sequence', () => {
-    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
+    const { rerender } = render(<CustomCheckBoxList {...defaultProps} />);
 
     fireEvent.click(screen.getByLabelText('Item B'));
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item B']);
-    
+
     rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B']} />);
 
     fireEvent.click(screen.getByLabelText('Item C'));
-    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A','Item B', 'Item C']);
+    expect(mockOnChange).toHaveBeenLastCalledWith(['Item A', 'Item B', 'Item C']);
 
-    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+    rerender(
+      <CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />
+    );
 
     fireEvent.click(screen.getByLabelText('Item A'));
     expect(mockOnChange).toHaveBeenLastCalledWith(['Item B', 'Item C']);
   });
 
   test('when checking `All` and then unchecking an item, `All` should be unchecked', () => {
-    const {rerender} = render(<CustomCheckBoxList {...defaultProps} />);
-    
+    const { rerender } = render(<CustomCheckBoxList {...defaultProps} />);
+
     // Check 'All'
     fireEvent.click(screen.getByLabelText('All'));
     expect(mockOnChange).toHaveBeenCalledWith(['Item A', 'Item B', 'Item C']);
-    
-    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+
+    rerender(
+      <CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />
+    );
 
     // Uncheck 'Item A'
     expect(screen.getByLabelText('All')).toBeChecked();
@@ -108,26 +112,30 @@ describe('CustomCheckBoxList', () => {
     expect(mockOnChange).toHaveBeenCalledWith(['Item B', 'Item C']);
 
     rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item B', 'Item C']} />);
-    
+
     // Check that 'All' is now unchecked
     expect(screen.getByLabelText('All')).not.toBeChecked();
   });
 
   test('clicking Reset calls the onCancel prop and does not change selection', () => {
     const initialSelection = ['Item A'];
-    const { rerender } = render(<CustomCheckBoxList {...defaultProps} selectedItems={initialSelection} />);
-    
+    const { rerender } = render(
+      <CustomCheckBoxList {...defaultProps} selectedItems={initialSelection} />
+    );
+
     // Check "All" checkbox
     fireEvent.click(screen.getByLabelText('All'));
     expect(mockOnChange).toHaveBeenCalledWith(['Item A', 'Item B', 'Item C']);
 
-    rerender(<CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />);
+    rerender(
+      <CustomCheckBoxList {...defaultProps} selectedItems={['Item A', 'Item B', 'Item C']} />
+    );
     expect(screen.getByLabelText('All')).toBeChecked();
 
     // Click "Cancel".
     const cancelButton = screen.getByRole('button', { name: 'Reset' });
     fireEvent.click(cancelButton);
-    
+
     // Assert that onCancel was called.
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
 
