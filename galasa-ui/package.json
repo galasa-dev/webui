@@ -10,6 +10,7 @@
     "test": "jest --coverage --collectCoverageFrom='src/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@carbon/charts-react": "^1.23.13",
     "@carbon/icons-react": "^11.45.0",
     "@carbon/react": "^1.31.3",
     "@dnd-kit/core": "^6.3.1",
@@ -26,6 +27,7 @@
     "jwt-decode": "^3.1.2",
     "markdown-it": "^14.1.0",
     "next": "^14.1.1",
+    "moment-timezone": "^0.6.0",
     "next-intl": "^4.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

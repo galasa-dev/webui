@@ -31,8 +31,12 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung"
+      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
+      "graph": "Testlauf-Diagramm"
     }
+  },
+  "DateTimeSettings": {
+  "title": "Datums-/Uhrzeitformat"
   },
   "DateTimeFormatSection": {
     "title": "Datums-/Zeitformat",
@@ -44,6 +48,15 @@
     "selectTimeFormat": "Zeitformat auswählen",
     "12-hour": "12-Stunden-Format",
     "24-hour": "24-Stunden-Format"
+  },
+  "TimeZoneSection": {
+  "description": "Konfigurieren Sie, welche Zeitzone bei der Anzeige von Datums- und Uhrzeitwerten verwendet wird.",
+  "timeZoneFormat": "Zeitzonenformat",
+  "showTimeZoneInBrowser": "Zeitzone basierend auf den Browsereinstellungen anzeigen",
+  "showTimeZoneInCustom": "Zeitzone in einem benutzerdefinierten Format anzeigen",
+  "selectTimeZone": "Wählen Sie eine Zeitzone aus",
+  "customTimeZone": "Benutzerdefinierte Zeitzone",
+  "browserTimeZone": "Browser-Zeitzone"
   },
   "AccessTokensSection": {
     "title": "Zugriffstoken",
@@ -64,19 +77,19 @@
   "usersTable": {
     "searchPlaceholder": "Suchen",
     "ariaLabel": "Benutzertabelle",
-    "headers_loginId": "Login-ID",
-    "headers_role": "Rolle",
-    "headers_lastLogin": "Letzte Anmeldung",
-    "headers_lastAccessTokenUse": "Letzte Token-Nutzung",
-    "headers_actions": "Aktionen",
+    "headersLoginId": "Login-ID",
+    "headersRole": "Rolle",
+    "headersLastLogin": "Letzte Anmeldung {timezone}",
+    "headersLastAccessTokenUse": "Letzte Token-Nutzung {timezone}",
+    "headersActions": "Aktionen",
     "editIconDescription": "Benutzer bearbeiten",
     "deleteIconDescription": "Benutzer löschen",
-    "modal_label": "Benutzer löschen",
-    "modal_heading": "Möchten Sie '{user}' wirklich löschen?",
-    "modal_primaryButton": "Löschen",
-    "modal_secondaryButton": "Abbrechen",
-    "modal_notificationTitle": "Das Löschen eines Benutzers entfernt alle gespeicherten Informationen dieses Benutzers.",
-    "modal_notificationSubtitle": "Zuvor erstellte Zugriffstoken werden ungültig. Tests dieses Benutzers bleiben erhalten. Nach einer erneuten Anmeldung wird der Benutzer wie ein neuer Benutzer behandelt."
+    "modalLabel": "Benutzer löschen",
+    "modalHeading": "Möchten Sie '{user}' wirklich löschen?",
+    "modalPrimaryButton": "Löschen",
+    "modalSecondaryButton": "Abbrechen",
+    "modalNotificationTitle": "Das Löschen eines Benutzers entfernt alle gespeicherten Informationen dieses Benutzers.",
+    "modalNotificationSubtitle": "Zuvor erstellte Zugriffstoken werden ungültig. Tests dieses Benutzers bleiben erhalten. Nach einer erneuten Anmeldung wird der Benutzer wie ein neuer Benutzer behandelt."
   },
   "TokenResponseModal": {
     "modalHeading": "Persönliche Zugriffstoken-Details",
@@ -152,7 +165,27 @@
     "title": "Testläufe",
     "status": "Wird geladen..."
   },
-  "MySettings": {
+  "MySettings": {  "TestRunDetails": {
+    "title": "Test Run: {runName}",
+    "errorTitle": "Error",
+    "successTitle": "Success",
+    "copyMessage":"Copy page URL",
+    "copiedTitle":"URL copy successful: ",
+    "copiedMessage":"The URL for this page has been copied to the clipboard.",
+    "copyFailedMessage":"Failed to copy page URL",
+    "downloadArtifacts": "Download all artifacts",
+    "downloading": "Downloading...",
+    "downloadError": "Failed to download artifacts. Please try again later.",
+    "status": "Status",
+    "result": "Result",
+    "test": "Test",
+    "tabs": {
+      "overview": "Overview",
+      "methods": "Methods",
+      "runLog": "Run Log",
+      "artifacts": "Artifacts"
+    }
+  },
     "title": "Meine Einstellungen"
   },
   "MyProfilePage": {
@@ -220,8 +253,12 @@
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
     "status": "Status",
-    "copymessage": "Seiten-URL kopieren",
-    "copiedmessage": "Kopiert",
+    "errorTitle": "Fehler",
+    "successTitle": "Erfolg",
+    "copyMessage": "Seiten-URL kopieren",
+    "copiedTitle": "URL erfolgreich kopiert: ",
+    "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
+    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL",
     "downloadArtifacts": "Alle Artefakte herunterladen",
     "downloading": "Herunterladen...",
     "downloadError": "Fehler beim Herunterladen der Artefakte. Bitte versuchen Sie es später erneut.",
@@ -232,8 +269,16 @@
       "methods": "Methoden",
       "runLog": "Laufprotokoll",
       "artifacts": "Artefakte"
-    },
-    "errorTitle": "Fehler"
+    }
+  },
+  "TestRunsDetails": {
+    "title":  "Testläufe",
+    "errorTitle": "Fehler",
+    "successTitle": "Erfolg",
+    "copyMessage": "Seiten-URL kopieren",
+    "copiedTitle": "URL erfolgreich kopiert: ",
+    "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
+    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL"
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -278,12 +323,39 @@
       "page": "Seite"
     }
   },
+  "TestRunGraph": {
+  "submittedAt": "Eingereicht am",
+  "runName": "Ausführungsname",
+  "requestor": "Anforderer",
+  "submissionId": "Einreichungs-ID",
+  "group": "Gruppe",
+  "bundle": "Paket",
+  "package": "Paket",
+  "testName": "Testname",
+  "status": "Status",
+  "tags": "Tags",
+  "result": "Ergebnis",
+  "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
+  "isloading": "Diagramm wird geladen...",
+  "errorLoadingGraph": "Beim Laden des Diagramms ist ein Fehler aufgetreten.",
+  "noTestRunsFound": "Keine Testläufe gefunden.",
+
+  "limitExceeded": {
+    "title": "Grenzwert überschritten",
+    "subtitle": "Ihre Abfrage hat mehr als {MAX_RECORDS} Ergebnisse geliefert. Es werden die ersten {MAX_RECORDS} Datensätze angezeigt."
+  },
+
+  "timeFrameText": {
+    "range": "Zeige Testläufe von {from} bis {to}"
+  }
+  },
   "TestRunsTabs": {
     "tabs": {
       "timeframe": "Zeitraum",
       "tableDesign": "Tabellendesign",
       "searchCriteria": "Suchkriterien",
-      "results": "Ergebnisse"
+      "results": "Ergebnisse",
+      "graphs": "Diagramme"
     },
     "content": {
       "timeframe": "Diese Seite befindet sich im Aufbau. Derzeit werden alle Ergebnisse der letzten 24 Stunden angezeigt.",

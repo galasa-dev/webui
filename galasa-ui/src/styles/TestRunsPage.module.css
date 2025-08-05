@@ -307,6 +307,22 @@
   visibility: hidden;
 }
 
+.toolbar {
+  position: relative; 
+  display: flex;
+  align-items: center;
+  height: 64px;
+}
+
+.toolbarActions {
+  position: absolute;
+  top: 50%;
+  right: 3rem; 
+  transform: translateY(-50%);
+}
+
+
 .clickableRow {
   cursor: pointer;
 }
+

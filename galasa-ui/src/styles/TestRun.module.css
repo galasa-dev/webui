@@ -40,8 +40,9 @@
     margin-right: 3rem;
 }
 
-.notification {
-    position: absolute;
+.notification{
+    position: fixed;
+    bottom: 5.5rem;
     right: 1rem;
-    top: 1rem;
+    z-index: 9999;
 }
