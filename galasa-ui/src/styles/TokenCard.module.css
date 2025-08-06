@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 .cardContainer {
-    margin: 1rem 1rem 1rem 0;
-    padding: 1rem;
-    width: 500px;
+  margin: 1rem 1rem 1rem 0;
+  padding: 1rem;
+  width: 500px;
 }
 
-.infoContainer{
-    margin: 1rem 0;
+.infoContainer {
+  margin: 1rem 0;
 }
 
-.icon{
-    margin-top: 1rem;
+.icon {
+  margin-top: 1rem;
 }

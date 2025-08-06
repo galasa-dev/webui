@@ -15,30 +15,29 @@ type FeatureFlags = {
 type FeatureFlagKey = keyof FeatureFlags;
 
 type FeatureFlagContextType = {
-    isFeatureEnabled: (feature: FeatureFlagKey) => boolean;
-    toggleFeatureFlag: (feature: FeatureFlagKey) => void;
+  isFeatureEnabled: (feature: FeatureFlagKey) => boolean;
+  toggleFeatureFlag: (feature: FeatureFlagKey) => void;
 };
 
 type ProviderProps = {
-    children: ReactNode;
-    initialFlags?: string;
-}
+  children: ReactNode;
+  initialFlags?: string;
+};
 
 export const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(undefined);
 
-
 /**
  * Custom React hook to access feature flag utilities.
- * 
+ *
  * This hook provides access to the current feature flag state and toggle function
  * from anywhere within the component tree wrapped by FeatureFlagProvider.
- * 
+ *
  * Usage:
  *   const { isFeatureEnabled, toggleFeatureFlag } = useFeatureFlags();
- * 
+ *
  * - isFeatureEnabled(feature): Returns true if the given feature is enabled.
  * - toggleFeatureFlag(feature): Toggles the enabled/disabled state of the feature.
- * 
+ *
  */
 export const useFeatureFlags = (): FeatureFlagContextType => {
   const context = useContext(FeatureFlagContext);
@@ -48,19 +47,18 @@ export const useFeatureFlags = (): FeatureFlagContextType => {
   return context;
 };
 
-
 /**
  * Provider component for managing feature flags.
- * 
+ *
  * This component initializes feature flags from cookies or initial props,
  * provides a context for accessing feature flag utilities, and updates cookies
  * whenever feature flags change.
- * 
+ *
  * Usage:
  *   <FeatureFlagProvider initialFlags={JSON.stringify({ featureKey: true })}>
  *     <YourComponent />
  *   </FeatureFlagProvider>
- * 
+ *
  * - initialFlags: Optional JSON string to initialize feature flags.
  */
 export const FeatureFlagProvider = ({ children, initialFlags }: ProviderProps) => {
@@ -78,31 +76,28 @@ export const FeatureFlagProvider = ({ children, initialFlags }: ProviderProps) =
     return currentFeatureFlags;
   });
 
-
   // Save feature flags to the cookie whenever they change
   useEffect(() => {
     const date = new Date();
     date.setFullYear(date.getFullYear() + 1); // Set expiry for 1 year
     const expires = `expires=${date.toUTCString()}`;
-      
+
     document.cookie = `${FeatureFlagCookies.FEATURE_FLAGS}=${JSON.stringify(featureFlags)};${expires};path=/`;
   }, [featureFlags]);
 
   const toggleFeatureFlag = (feature: FeatureFlagKey) => {
-    setFeatureFlags(prevFlags => ({
+    setFeatureFlags((prevFlags) => ({
       ...prevFlags,
-      [feature]: !prevFlags[feature]
+      [feature]: !prevFlags[feature],
     }));
   };
-    
 
   const isFeatureEnabled = (feature: FeatureFlagKey): boolean => {
-    return featureFlags[feature] ?? false; 
+    return featureFlags[feature] ?? false;
   };
 
-
   return (
-    <FeatureFlagContext.Provider value={{ isFeatureEnabled, toggleFeatureFlag}}>
+    <FeatureFlagContext.Provider value={{ isFeatureEnabled, toggleFeatureFlag }}>
       {children}
     </FeatureFlagContext.Provider>
   );

@@ -5,31 +5,31 @@
  */
 
 .profileDetails {
-    width: 95%;
+  width: 95%;
 }
 
 .userDetailsContainer {
-    width: 90%;
-    margin: 5rem auto 2rem auto;
+  width: 90%;
+  margin: 5rem auto 2rem auto;
 }
 
 .userDetailsContainer h3 {
-    margin: 1rem 0;
+  margin: 1rem 0;
 }
 
 .profileDetails p {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .loginActivityTile {
-    margin: 0.5rem 2rem;
+  margin: 0.5rem 2rem;
 }
 
 .loginActivityContainer {
-    width: 90%;
-    margin: 0 auto;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .loginActivityContainer h3 {
-    margin: 1rem 0;
+  margin: 1rem 0;
 }

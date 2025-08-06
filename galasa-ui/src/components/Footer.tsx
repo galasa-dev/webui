@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
-import styles from "@/styles/Footer.module.css";
+import styles from '@/styles/Footer.module.css';
 import { Theme } from '@carbon/react';
 import { useTranslations } from 'next-intl';
 
@@ -17,9 +17,8 @@ interface FooterProps {
 }
 
 const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) => {
-
   const [isHealthOk, setIsHealthOk] = useState(true);
-  const [apiVersion, setApiVersion] = useState("");
+  const [apiVersion, setApiVersion] = useState('');
   const translations = useTranslations('Footer');
 
   useEffect(() => {
@@ -37,17 +36,14 @@ const Footer = ({ serviceHealthyPromise, clientVersionPromise }: FooterProps) =>
 
     checkServiceHealth();
     getApiVersion();
-
   }, [serviceHealthyPromise, clientVersionPromise]); // included these to satisfy React Hook linting – their identity is stable so the effect still only runs once
 
   return (
     <Theme theme="g90">
       <footer className={styles.footer} role="footer">
-        {
-          isHealthOk && <p>{translations('versionText', { version: apiVersion })}</p>
-        }
-        <p className={styles.serviceHealthTitle}>{translations("health")}</p>
-        { isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} /> }
+        {isHealthOk && <p>{translations('versionText', { version: apiVersion })}</p>}
+        <p className={styles.serviceHealthTitle}>{translations('health')}</p>
+        {isHealthOk ? <div className={styles.healthy} /> : <div className={styles.error} />}
       </footer>
     </Theme>
   );

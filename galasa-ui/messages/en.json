@@ -12,7 +12,7 @@
     "settings": "My Settings",
     "logout": "Log out"
   },
-  "LanguageSelector":{
+  "LanguageSelector": {
     "label": "Language"
   },
   "ThemeSelector": {
@@ -32,7 +32,7 @@
     "features": {
       "testRunSearch": "Test Run searching and viewing",
       "internationalization": "Internationalization/Multiple language support",
-      "graph":" Test Run Graphs"
+      "graph": " Test Run Graphs"
     }
   },
   "DateTimeSettings": {
@@ -138,7 +138,7 @@
   },
   "ProfileRole": {
     "userRoleTitle": "User Role",
-    "changeRole" : "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
+    "changeRole": "User roles dictate what you can or can't do. Please contact your local Galasa administrator if you need this changed.",
     "currentRole": "You currently have the role",
     "roleDescription": "Details about role"
   },
@@ -235,10 +235,10 @@
     "title": "Test Run: {runName}",
     "errorTitle": "Error",
     "successTitle": "Success",
-    "copyMessage":"Copy page URL",
-    "copiedTitle":"URL copy successful: ",
-    "copiedMessage":"The URL for this page has been copied to the clipboard.",
-    "copyFailedMessage":"Failed to copy page URL",
+    "copyMessage": "Copy page URL",
+    "copiedTitle": "URL copy successful: ",
+    "copiedMessage": "The URL for this page has been copied to the clipboard.",
+    "copyFailedMessage": "Failed to copy page URL",
     "downloadArtifacts": "Download all artifacts",
     "downloading": "Downloading...",
     "downloadError": "Failed to download artifacts. Please try again later.",
@@ -285,7 +285,7 @@
     "result": "Result",
     "submissionId": "Submission ID",
     "noTestRunsFound": "No test runs were found for the selected timeframe",
-    "isloading":"Loading test results...",
+    "isloading": "Loading test results...",
     "limitExceededTitle": "Limit Exceeded",
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records.",
     "timeFrameText": {
@@ -299,12 +299,12 @@
       "itemsPerPageText": "Items per page:",
       "pageNumberText": "Page Number",
       "of": "of",
-      "items":"items",
-      "pages":"pages",
-      "page":"page"
+      "items": "items",
+      "pages": "pages",
+      "page": "page"
     }
   },
-"TestRunGraph": {
+  "TestRunGraph": {
     "submittedAt": "Submitted At",
     "runName": "Run Name",
     "requestor": "Requestor",
@@ -380,7 +380,7 @@
       "allowedValues": "Allowed Values"
     },
     "clearFilters": "Clear Filters",
- "fields": {
+    "fields": {
       "runName": {
         "label": "Test Run Name",
         "placeholder": "any",
@@ -453,7 +453,7 @@
     "noColumnsSelected": "No columns selected – nothing to display. Please select one or more columns.",
     "sortOrderHeader": "Sort Order",
     "resetToDefaults": "Reset to Defaults"
-  }, 
+  },
   "TableDesignRow": {
     "dragAndDropLabel": "Drag to reorder",
     "moveUpLabel": "Move up",

@@ -16,8 +16,8 @@ const mockGetBootstrapFunc = jest.fn().mockReturnValue(Promise.resolve('dummy bo
 const mockGetOpenApiSpecFunc = jest.fn().mockReturnValue(
   Promise.resolve({
     info: {
-      version: "my-galasa-version",
-    }
+      version: 'my-galasa-version',
+    },
   })
 );
 
@@ -38,25 +38,30 @@ jest.mock('next-intl/server', () => ({
 jest.mock('next-intl', () => ({
   useTranslations: jest.fn(() => (key: string, vars?: Record<string, any>) => {
     switch (key) {
-    case 'profile': return 'My Profile';
-    case 'settings': return 'My Settings';
-    case 'logout': return 'Log out';
-    case 'users': return 'Users';
-    case 'testRuns': return 'Test runs';
-    case 'versionText': return `Galasa version ${vars?.version ?? ''}`;
-    case 'health': return 'Service health';
-    default: return `Translated ${key}`;
+      case 'profile':
+        return 'My Profile';
+      case 'settings':
+        return 'My Settings';
+      case 'logout':
+        return 'Log out';
+      case 'users':
+        return 'Users';
+      case 'testRuns':
+        return 'Test runs';
+      case 'versionText':
+        return `Galasa version ${vars?.version ?? ''}`;
+      case 'health':
+        return 'Service health';
+      default:
+        return `Translated ${key}`;
     }
   }),
 
   NextIntlClientProvider: ({ children }: any) => <>{children}</>,
 }));
 
-
 jest.mock('next/navigation', () => ({
-
   useRouter: jest.fn(() => mockRouter),
-
 }));
 
 jest.mock('@/generated/galasaapi', () => ({
@@ -67,11 +72,10 @@ jest.mock('@/generated/galasaapi', () => ({
 
   OpenAPIAPIApi: jest.fn(() => ({
     getOpenApiSpec: mockGetOpenApiSpecFunc,
-  }))
+  })),
 }));
 
 describe('Layout', () => {
-
   afterEach(() => {
     delete process.env.GALASA_SERVICE_NAME;
   });
@@ -90,7 +94,6 @@ describe('Layout', () => {
       }),
     });
   });
-  
 
   it('renders the web UI layout', async () => {
     const children = <>Hello, world!</>;
@@ -102,21 +105,18 @@ describe('Layout', () => {
   });
 
   it('renders Galasa Service title when env GALASA_SERVICE_NAME is null or blank string', async () => {
-
-    process.env.GALASA_SERVICE_NAME = "";
+    process.env.GALASA_SERVICE_NAME = '';
     const children = <>Hello, world!</>;
 
     await act(async () => {
       const renderedLayout = await RootLayout({ children });
       return render(renderedLayout);
-
     });
     const titleElement = document.querySelector('title')?.textContent;
-    expect(titleElement).toBe("Galasa Service");
+    expect(titleElement).toBe('Galasa Service');
   });
 
   it('renders custom title when env GALASA_SERVICE_NAME is not present (not null or blank)', async () => {
-
     process.env.GALASA_SERVICE_NAME = 'Managers';
     const children = <>Hello, world!</>;
     await act(async () => {
@@ -125,7 +125,7 @@ describe('Layout', () => {
     });
 
     const titleElement = document.querySelector('title')?.textContent;
-    expect(titleElement).not.toBe("Galasa Service");
-    expect(titleElement).toBe("Managers");
+    expect(titleElement).not.toBe('Galasa Service');
+    expect(titleElement).toBe('Managers');
   });
 });

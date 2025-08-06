@@ -30,31 +30,32 @@ jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
 // Mock the useDateTimeFormat context
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
-    formatDate: (date: Date) => date.toLocaleString(), 
-  })
+    formatDate: (date: Date) => date.toLocaleString(),
+  }),
 }));
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {
-      "timeFrameText.range": "Showing test runs submitted between {from} and {to}",
-      "timeFrameText.default": "Showing test runs",
-      "pagination.forwardText": "Next page",
-      "pagination.backwardText": "Previous page",
-      "pagination.itemsPerPageText": "Items per page:",
-      "pagination.items": "items",
-      "pagination.pages": "pages",
-      "pagination.pageNumberText": "Page number",
-      "noTestRunsFound": "No test runs were found for the selected timeframe",
-      "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible.",
-      "isloading": "Loading...",
-      "submittedAt": "Submitted at",
-      "runName": "Test Run name",
-      "requestor": "Requestor",
-      "testName": "Test Name",
-      "status": "Status",
-      "result": "Result",
-      "pagination.of": "of {total}"
+      'timeFrameText.range': 'Showing test runs submitted between {from} and {to}',
+      'timeFrameText.default': 'Showing test runs',
+      'pagination.forwardText': 'Next page',
+      'pagination.backwardText': 'Previous page',
+      'pagination.itemsPerPageText': 'Items per page:',
+      'pagination.items': 'items',
+      'pagination.pages': 'pages',
+      'pagination.pageNumberText': 'Page number',
+      noTestRunsFound: 'No test runs were found for the selected timeframe',
+      noColumnsSelected:
+        'All of the columns have been hidden in the table design tab, so no result details will be visible.',
+      isloading: 'Loading...',
+      submittedAt: 'Submitted at',
+      runName: 'Test Run name',
+      requestor: 'Requestor',
+      testName: 'Test Name',
+      status: 'Status',
+      result: 'Result',
+      'pagination.of': 'of {total}',
     };
 
     let text = translations[key] || key;
@@ -69,16 +70,20 @@ jest.mock("next-intl", () => ({
   },
 }));
 
-jest.mock('@/app/error/page', () =>
-  function MockErrorPage() {
-    return <div data-testid="error-page">Error Occurred</div>;
-  }
+jest.mock(
+  '@/app/error/page',
+  () =>
+    function MockErrorPage() {
+      return <div data-testid="error-page">Error Occurred</div>;
+    }
 );
 
-jest.mock('@/components/common/StatusIndicator', () =>
-  function StatusIndicator({status}: {status: string}) {
-    return <div data-testid="status-indicator">Status: {status}</div>;
-  }
+jest.mock(
+  '@/components/common/StatusIndicator',
+  () =>
+    function StatusIndicator({ status }: { status: string }) {
+      return <div data-testid="status-indicator">Status: {status}</div>;
+    }
 );
 
 // Helper function to generate mock test runs data
@@ -93,8 +98,8 @@ const generateMockRuns = (count: number) => {
       bundle: `bundle${i}`,
       package: `package${i}`,
       testName: `test${i}`,
-      status: "finished",
-      result: i % 2 === 0 ? "Failed" : "Passed", 
+      status: 'finished',
+      result: i % 2 === 0 ? 'Failed' : 'Passed',
       submittedAt: new Date(Date.now() - i * 1000 * 60 * 60).toISOString(),
       tags: `tag${i}`,
       submissionId: `submission${i}`,
@@ -104,13 +109,12 @@ const generateMockRuns = (count: number) => {
 
 // Default props for TestRunsTable component
 const defaultProps = {
-  visibleColumns: ["submittedAt", "runName", "requestor", "testName", "status", "result"],
+  visibleColumns: ['submittedAt', 'runName', 'requestor', 'testName', 'status', 'result'],
   orderedHeaders: RESULTS_TABLE_COLUMNS,
   limitExceeded: false,
   isLoading: false,
-  isError: false
+  isError: false,
 };
-
 
 describe('TestRunsTable Component', () => {
   beforeEach(() => {
@@ -123,20 +127,21 @@ describe('TestRunsTable Component', () => {
   });
 
   describe('Rendering Logic', () => {
-    test('shows loading state when isLoading is true', async() => {
+    test('shows loading state when isLoading is true', async () => {
       // Act
-      render(<TestRunsTable runsList={[]} {...defaultProps} isLoading={true} isError={false}/>);
+      render(<TestRunsTable runsList={[]} {...defaultProps} isLoading={true} isError={false} />);
 
       // Assert: Check if the loading state is displayed
       expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
       expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
-
     });
   });
 
   test('displays table with data when loading is complete', () => {
     const mockRuns = generateMockRuns(2);
-    render(<TestRunsTable runsList={mockRuns} {...defaultProps} isLoading={false} isError={false} />);
+    render(
+      <TestRunsTable runsList={mockRuns} {...defaultProps} isLoading={false} isError={false} />
+    );
 
     expect(screen.queryByTestId('loading-table-skeleton')).not.toBeInTheDocument();
     expect(screen.getByText('Test Run 1')).toBeInTheDocument();
@@ -151,19 +156,23 @@ describe('TestRunsTable Component', () => {
     render(<TestRunsTable runsList={[]} {...defaultProps} />);
 
     // Assert: Check if the error state is displayed
-    expect(await screen.findByText(/No test runs were found for the selected timeframe/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/No test runs were found for the selected timeframe/i)
+    ).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   test('displays the record limit warning when limitExceeded is true', async () => {
     // Arrange
-    const mockRuns = generateMockRuns(5); 
+    const mockRuns = generateMockRuns(5);
 
     // Act
-    render(<TestRunsTable runsList={mockRuns} {...defaultProps} limitExceeded={true}/>);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} limitExceeded={true} />);
 
     // Assert
-    const warningMessage = await screen.findByText(`Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`);
+    const warningMessage = await screen.findByText(
+      `Your query returned more than ${MAX_RECORDS} results. Showing the first ${MAX_RECORDS} records.`
+    );
     expect(warningMessage).toBeInTheDocument();
   });
 
@@ -175,7 +184,9 @@ describe('TestRunsTable Component', () => {
     render(<TestRunsTable {...defaultProps} runsList={mockRuns} visibleColumns={[]} />);
 
     // Assert
-    const noColumnsMessage = await screen.findByText('All of the columns have been hidden in the table design tab, so no result details will be visible.');
+    const noColumnsMessage = await screen.findByText(
+      'All of the columns have been hidden in the table design tab, so no result details will be visible.'
+    );
     expect(noColumnsMessage).toBeInTheDocument();
   });
 });
@@ -195,16 +206,15 @@ describe('TestRunsTable Interactions', () => {
     expect(mockRouterPush).toHaveBeenCalledWith('/test-runs/1');
   });
 
-
   test('handles pagination changes correctly', async () => {
     // Arrange
     const mockRuns = generateMockRuns(15);
 
     render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
-    
+
     // Wait for the table to finish loading
     const table = await screen.findByRole('table');
-    
+
     // Assert initial state
     expect(within(table).getAllByRole('row')).toHaveLength(11); // 1 header + 10 data
     // Assert correct page range text

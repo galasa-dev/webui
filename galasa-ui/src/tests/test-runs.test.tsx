@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { render, screen, waitFor } from '@testing-library/react';
-import TestRunsPage from '@/app/test-runs/page'; 
+import TestRunsPage from '@/app/test-runs/page';
 import { getRequestorList, getResultsNames } from '@/utils/testRuns';
 
 jest.mock('@/app/test-runs/page', () => {
@@ -16,27 +16,33 @@ jest.mock('@/app/test-runs/page', () => {
   };
 });
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
 // Mock the child components.
-jest.mock('@/components/test-runs/TestRunsTabs', () =>
-  function MockTestRunsTabs() {
-    return <div data-testid="mock-test-runs-tabs" />;
-  }
+jest.mock(
+  '@/components/test-runs/TestRunsTabs',
+  () =>
+    function MockTestRunsTabs() {
+      return <div data-testid="mock-test-runs-tabs" />;
+    }
 );
 
-jest.mock('@/components/PageTile', () =>
-  function MockPageTile() {
-    return <div data-testid="page-tile" />;
-  }
+jest.mock(
+  '@/components/PageTile',
+  () =>
+    function MockPageTile() {
+      return <div data-testid="page-tile" />;
+    }
 );
 
-jest.mock('@/components/common/BreadCrumb', () =>
-  function MockBreadCrumb() {
-    return <div data-testid="breadcrumb" />;
-  }
+jest.mock(
+  '@/components/common/BreadCrumb',
+  () =>
+    function MockBreadCrumb() {
+      return <div data-testid="breadcrumb" />;
+    }
 );
 
 jest.mock('@/utils/testRuns', () => ({
@@ -53,7 +59,6 @@ jest.mock('@/components/test-runs/TestRunsDetails', () => {
 const mockedGetRequestorList = getRequestorList as jest.Mock;
 const mockedGetResultsNames = getResultsNames as jest.Mock;
 
-
 describe('TestRunsPage', () => {
   beforeEach(() => {
     // Clear mocks before each test.
@@ -67,15 +72,15 @@ describe('TestRunsPage', () => {
     const mockResults = Promise.resolve(['Passed', 'Failed']);
     mockedGetRequestorList.mockReturnValue(mockRequestors);
     mockedGetResultsNames.mockReturnValue(mockResults);
-    
+
     // Act
     const Page = await TestRunsPage();
     render(Page);
-    
+
     // Check that the data fetching functions were called
     expect(mockedGetRequestorList).toHaveBeenCalledTimes(1);
     expect(mockedGetResultsNames).toHaveBeenCalledTimes(1);
-    
+
     // Check that the child component was rendered
     await waitFor(() => {
       expect(screen.getByTestId('mock-test-runs-details')).toBeInTheDocument();

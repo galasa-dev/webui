@@ -11,4 +11,4 @@ export type NotificationType = {
   kind: 'error' | 'success' | 'info' | 'warning';
   title: string;
   subtitle: string;
-}
+};

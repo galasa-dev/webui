@@ -7,8 +7,8 @@
 'use client';
 
 import { Tile } from '@carbon/react';
-import "@/styles/global.scss";
-import { useTranslations } from "next-intl";
+import '@/styles/global.scss';
+import { useTranslations } from 'next-intl';
 
 export default function PageTile({
   translationKey,

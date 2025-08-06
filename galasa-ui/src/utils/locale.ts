@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use server";
+'use server';
 
 import { cookies } from 'next/headers';
 import { Locale } from '@/i18n/config';

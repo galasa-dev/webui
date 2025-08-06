@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-// Centralized feature flags 
+// Centralized feature flags
 export const FEATURE_FLAGS = {
   TEST_RUNS: 'testRuns',
   INTERNATIONALIZATION: 'internationalization',
@@ -13,7 +13,7 @@ export const FEATURE_FLAGS = {
 } as const;
 
 export const DEFAULT_FEATURE_FLAGS = {
-  testRuns: false, 
+  testRuns: false,
   internationalization: false,
   graph: false,
   // Add other feature flags here

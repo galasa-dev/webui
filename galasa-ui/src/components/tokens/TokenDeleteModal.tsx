@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { InlineNotification } from '@carbon/react';
-import { Loading, Modal } from "@carbon/react";
+import { Loading, Modal } from '@carbon/react';
 import { AuthToken } from '@/generated/galasaapi';
 import { useTranslations } from 'next-intl';
 
@@ -18,23 +18,26 @@ interface TokenDeleteModalProps {
   updateDeleteModalState: Function;
 }
 
-export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFromSet, updateDeleteModalState }: TokenDeleteModalProps) {
-
+export default function TokenDeleteModal({
+  tokens,
+  selectedTokens,
+  deleteTokenFromSet,
+  updateDeleteModalState,
+}: TokenDeleteModalProps) {
   const translations = useTranslations('TokenDeleteModal');
   const [open, setOpen] = useState(true);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const deleteTokensById = async () => {
-
     try {
       setIsLoading(true);
       //Convert set to array so we can iterate for it
       const tokensArray: AuthToken[] = Array.from(tokens);
 
-      for (const token of tokensArray) {  //using loop to handle multiple token deletion at once
+      for (const token of tokensArray) {
+        //using loop to handle multiple token deletion at once
         if (selectedTokens.has(token.tokenId!)) {
-
           const response = await fetch(`/auth/tokens`, {
             method: 'DELETE',
             headers: {
@@ -44,15 +47,12 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
           });
 
           if (response.status === 204) {
-
             //Update the tokens after deletion
             deleteTokenFromSet(token);
             setOpen(false);
-
           }
         }
       }
-
     } catch (err) {
       let errorMessage = '';
 
@@ -64,17 +64,14 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
 
       setError(errorMessage);
       console.error('Failed to delete a personal access token: %s', err);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
-
   };
 
   if (isLoading) {
     <Loading />;
   }
-
 
   return (
     <>
@@ -94,11 +91,11 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
           await deleteTokensById();
         }}
       >
-        <h6 className='margin-top-1'>
+        <h6 className="margin-top-1">
           {translations('tokensToDeleteCount', { count: selectedTokens.size })}
         </h6>
 
-        <div className='margin-top-2'>
+        <div className="margin-top-2">
           <InlineNotification
             title={translations('notificationTitle')}
             subtitle={translations('notificationSubtitle')}
@@ -122,4 +119,4 @@ export default function TokenDeleteModal({ tokens, selectedTokens, deleteTokenFr
       </Modal>
     </>
   );
-};
+}

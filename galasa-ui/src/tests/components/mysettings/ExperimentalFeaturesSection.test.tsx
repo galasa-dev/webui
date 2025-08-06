@@ -12,12 +12,13 @@ import { FEATURE_FLAGS } from '@/utils/featureFlags';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "Experimental Features",
-      "description": "Early access to new features. These are experimental and subject to change or removal.",
-      "features.testRunSearch": "Test Run searching and viewing"
+      title: 'Experimental Features',
+      description:
+        'Early access to new features. These are experimental and subject to change or removal.',
+      'features.testRunSearch': 'Test Run searching and viewing',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
 describe('ExperimentalFeaturesSection', () => {
@@ -25,7 +26,9 @@ describe('ExperimentalFeaturesSection', () => {
     const mockIsFeatureEnabled = (key: string) => key !== FEATURE_FLAGS.TEST_RUNS;
 
     render(
-      <FeatureFlagContext.Provider value={{ isFeatureEnabled: mockIsFeatureEnabled, toggleFeatureFlag: jest.fn() }}>
+      <FeatureFlagContext.Provider
+        value={{ isFeatureEnabled: mockIsFeatureEnabled, toggleFeatureFlag: jest.fn() }}
+      >
         <ExperimentalFeaturesSection />
       </FeatureFlagContext.Provider>
     );
@@ -35,12 +38,14 @@ describe('ExperimentalFeaturesSection', () => {
   });
 
   test('Renders correctly when a "testRuns" enabled: Checkbox is checked', () => {
-    const mockIsFeatureEnabled = (key:string) => {
+    const mockIsFeatureEnabled = (key: string) => {
       return key === FEATURE_FLAGS.TEST_RUNS;
     };
 
     render(
-      <FeatureFlagContext.Provider value={{isFeatureEnabled: mockIsFeatureEnabled, toggleFeatureFlag: jest.fn()}}>
+      <FeatureFlagContext.Provider
+        value={{ isFeatureEnabled: mockIsFeatureEnabled, toggleFeatureFlag: jest.fn() }}
+      >
         <ExperimentalFeaturesSection />
       </FeatureFlagContext.Provider>
     );
@@ -52,12 +57,14 @@ describe('ExperimentalFeaturesSection', () => {
     const mockToggle = jest.fn();
 
     render(
-      <FeatureFlagContext.Provider value={{isFeatureEnabled: () => false, toggleFeatureFlag: mockToggle}}>
+      <FeatureFlagContext.Provider
+        value={{ isFeatureEnabled: () => false, toggleFeatureFlag: mockToggle }}
+      >
         <ExperimentalFeaturesSection />
       </FeatureFlagContext.Provider>
     );
 
-    const checkbox = screen.getByRole('checkbox', {name: /Test Run/i});
+    const checkbox = screen.getByRole('checkbox', { name: /Test Run/i });
     fireEvent.click(checkbox);
 
     expect(mockToggle).toHaveBeenCalledTimes(1);

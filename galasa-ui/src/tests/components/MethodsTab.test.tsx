@@ -16,16 +16,16 @@ jest.mock('@/components/common/StatusIndicator', () => {
   };
 });
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      title: "Methods",
-      subtitle: "The list of methods executed during this test run.",
-      search_placeholder: "Search method",
-      "table.methodName": "Name",
-      "table.status": "Status",
-      "table.result": "Result",
-      "table.duration": "Duration",
+      title: 'Methods',
+      subtitle: 'The list of methods executed during this test run.',
+      search_placeholder: 'Search method',
+      'table.methodName': 'Name',
+      'table.status': 'Status',
+      'table.result': 'Result',
+      'table.duration': 'Duration',
     };
     return translations[key] || key;
   },
@@ -64,16 +64,18 @@ jest.mock('@carbon/react', () => ({
     return <div data-testid="data-table">{children(mockProps)}</div>;
   },
   TableContainer: ({ children }: any) => <div data-testid="table-container">{children}</div>,
-  Table: ({ children, size, ...props }: any) => <table data-testid="table" size={size} {...props}>{children}</table>,
+  Table: ({ children, size, ...props }: any) => (
+    <table data-testid="table" size={size} {...props}>
+      {children}
+    </table>
+  ),
   TableCell: ({ children }: any) => <td data-testid="table-cell">{children}</td>,
   TableHeader: ({ children }: any) => <th data-testid="table-header">{children}</th>,
-  TableToolbarContent: ({ children }: any) => <div data-testid="table-toolbar-content">{children}</div>,
+  TableToolbarContent: ({ children }: any) => (
+    <div data-testid="table-toolbar-content">{children}</div>
+  ),
   TableToolbarSearch: ({ placeholder, onChange }: any) => (
-    <input 
-      data-testid="table-search" 
-      placeholder={placeholder}
-      onChange={onChange}
-    />
+    <input data-testid="table-search" placeholder={placeholder} onChange={onChange} />
   ),
 }));
 
@@ -127,14 +129,16 @@ describe('MethodsTab Component', () => {
   describe('Component Rendering', () => {
     it('renders the title and description correctly', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       expect(screen.getByText('Methods')).toBeInTheDocument();
-      expect(screen.getByText('The list of methods executed during this test run.')).toBeInTheDocument();
+      expect(
+        screen.getByText('The list of methods executed during this test run.')
+      ).toBeInTheDocument();
     });
 
     it('renders the DataTable component', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       expect(screen.getByTestId('data-table')).toBeInTheDocument();
       expect(screen.getByTestId('table-container')).toBeInTheDocument();
       expect(screen.getByTestId('table')).toBeInTheDocument();
@@ -142,7 +146,7 @@ describe('MethodsTab Component', () => {
 
     it('renders the search functionality', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       const searchInput = screen.getByTestId('table-search');
       expect(searchInput).toBeInTheDocument();
       expect(searchInput).toHaveAttribute('placeholder', 'Search method');
@@ -150,7 +154,7 @@ describe('MethodsTab Component', () => {
 
     it('applies the correct CSS classes', () => {
       const { container } = render(<MethodsTab methods={mockMethods} />);
-      
+
       const titleContainer = container.querySelector('.mocked-title-container');
       expect(titleContainer).toBeInTheDocument();
     });
@@ -159,7 +163,7 @@ describe('MethodsTab Component', () => {
   describe('Data Processing', () => {
     it('processes methods data correctly', async () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         // Check if method names are rendered
         expect(screen.getByText('testLogin')).toBeInTheDocument();
@@ -170,7 +174,7 @@ describe('MethodsTab Component', () => {
 
     it('handles empty methods array', () => {
       render(<MethodsTab methods={[]} />);
-      
+
       expect(screen.getByTestId('data-table')).toBeInTheDocument();
       expect(screen.getByText('Methods')).toBeInTheDocument();
     });
@@ -195,7 +199,7 @@ describe('MethodsTab Component', () => {
   describe('Table Headers', () => {
     it('renders all expected table headers', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       expect(screen.getByText('Name')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
       expect(screen.getByText('Result')).toBeInTheDocument();
@@ -206,18 +210,18 @@ describe('MethodsTab Component', () => {
   describe('Table Content', () => {
     it('renders method data in table cells', async () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         // Check method names
         expect(screen.getByText('testLogin')).toBeInTheDocument();
         expect(screen.getByText('testLogout')).toBeInTheDocument();
         expect(screen.getByText('testValidation')).toBeInTheDocument();
-        
+
         // Check statuses - use getAllByText since "finished" appears multiple times
         expect(screen.getByText('running')).toBeInTheDocument();
         const finishedElements = screen.getAllByText('finished');
         expect(finishedElements).toHaveLength(2);
-        
+
         // Check that StatusCheck components are rendered for results
         const statusChecks = screen.getAllByTestId('status-check');
         expect(statusChecks).toHaveLength(3);
@@ -229,16 +233,16 @@ describe('MethodsTab Component', () => {
 
     it('applies text transformation to status cells', async () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         const runningElements = screen.getAllByText('running');
         const finishedElements = screen.getAllByText('finished');
-        
-        runningElements.forEach(element => {
+
+        runningElements.forEach((element) => {
           expect(element.closest('p')).toHaveStyle('text-transform: capitalize');
         });
-        
-        finishedElements.forEach(element => {
+
+        finishedElements.forEach((element) => {
           expect(element.closest('p')).toHaveStyle('text-transform: capitalize');
         });
       });
@@ -248,9 +252,9 @@ describe('MethodsTab Component', () => {
   describe('Duration Calculation', () => {
     it('calls getIsoTimeDifference with correct parameters', () => {
       const { getIsoTimeDifference } = require('@/utils/timeOperations');
-      
+
       render(<MethodsTab methods={mockMethods} />);
-      
+
       expect(getIsoTimeDifference).toHaveBeenCalledWith(
         '2024-01-01T10:00:00Z',
         '2024-01-01T10:05:30Z'
@@ -267,7 +271,7 @@ describe('MethodsTab Component', () => {
 
     it('displays duration in table cells', async () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         const durationElements = screen.getAllByText('00:05:30');
         expect(durationElements.length).toBeGreaterThan(0);
@@ -278,7 +282,7 @@ describe('MethodsTab Component', () => {
   describe('StatusCheck Integration', () => {
     it('passes correct status values to StatusCheck components', async () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         const statusChecks = screen.getAllByTestId('status-check');
         expect(statusChecks[0]).toHaveTextContent('Passed');
@@ -288,28 +292,27 @@ describe('MethodsTab Component', () => {
     });
   });
 
-
   describe('Search Functionality', () => {
     it('renders search input with correct placeholder', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       const searchInput = screen.getByTestId('table-search');
       expect(searchInput).toHaveAttribute('placeholder', 'Search method');
     });
 
     it('search input responds to changes', () => {
       render(<MethodsTab methods={mockMethods} />);
-      
+
       const searchInput = screen.getByTestId('table-search');
       fireEvent.change(searchInput, { target: { value: 'test' } });
-      
+
       // The onChange should be called (mocked function)
       expect(searchInput).toBeInTheDocument();
     });
   });
 
-  describe("Edge Cases", () => {
-    it("handles methods with null/undefined values", () => {
+  describe('Edge Cases', () => {
+    it('handles methods with null/undefined values', () => {
       const methodsWithNulls: TestMethod[] = [
         {
           methodName: null as any,
@@ -361,7 +364,7 @@ describe('MethodsTab Component', () => {
   describe('Component Updates', () => {
     it('updates when methods prop changes', async () => {
       const { rerender } = render(<MethodsTab methods={mockMethods} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('testLogin')).toBeInTheDocument();
       });

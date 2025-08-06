@@ -1,4 +1,4 @@
-"use client";
+'use client';
 /*
  * Copyright contributors to the Galasa project
  *
@@ -9,7 +9,15 @@ import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
 import React, { useEffect, useState } from 'react';
 import styles from '@/styles/Artifacts.module.css';
-import { CarbonIconType, CloudDownload, Document, Folder, Image, Json, Zip } from '@carbon/icons-react';
+import {
+  CarbonIconType,
+  CloudDownload,
+  Document,
+  Folder,
+  Image,
+  Json,
+  Zip,
+} from '@carbon/icons-react';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
@@ -32,19 +40,26 @@ interface FolderNode {
 
 interface ArtifactDetails {
   artifactFile: string;
-  fileSize:      string;
-  fileName:      string;
-  base64Data:    string;
-  contentType:   string;
+  fileSize: string;
+  fileName: string;
+  base64Data: string;
+  contentType: string;
 }
 
 type TreeNodeData = FileNode | FolderNode;
 
-type DownloadResult = { contentType: string; data: string; size: number; base64: string; };
+type DownloadResult = { contentType: string; data: string; size: number; base64: string };
 
-
-export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: ArtifactIndexEntry[], runId: string, runName: string }) {
-  const translations = useTranslations("Artifacts");
+export function ArtifactsTab({
+  artifacts,
+  runId,
+  runName,
+}: {
+  artifacts: ArtifactIndexEntry[];
+  runId: string;
+  runName: string;
+}) {
+  const translations = useTranslations('Artifacts');
   const [treeData, setTreeData] = useState<FolderNode>({
     name: '',
     isFile: false,
@@ -52,21 +67,21 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   });
 
   const [artifactDetails, setArtifactDetails] = useState<ArtifactDetails>({
-    artifactFile: "",
-    fileSize:      "",
-    fileName:      "",
-    base64Data:    "",
-    contentType:   "",
+    artifactFile: '',
+    fileSize: '',
+    fileName: '',
+    base64Data: '',
+    contentType: '',
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedFolders, setExpandedFolders] = useState<{[path: string]: boolean}>({});
+  const [expandedFolders, setExpandedFolders] = useState<{ [path: string]: boolean }>({});
 
-  const ZIP_EXTENSIONS = ["zip", "gz", "jar", "rar", "7z"];
-  const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg"];
+  const ZIP_EXTENSIONS = ['zip', 'gz', 'jar', 'rar', '7z'];
+  const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
 
   function formatFileSize(bytes: number) {
-    let fileSize = "";
+    let fileSize = '';
 
     if (bytes < 10000) {
       fileSize = `${bytes} bytes`;
@@ -80,7 +95,6 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
 
   const handleDownloadClick = () => {
     if (artifactDetails.base64Data) {
-      
       // (a) Turn Base64 string → binary string
       const binaryString = atob(artifactDetails.base64Data);
       // (b) Convert binary string → Uint8Array
@@ -89,19 +103,20 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
-  
-      const cleanFileName = artifactDetails.fileName.startsWith('/') ? artifactDetails.fileName.slice(1) : artifactDetails.fileName; //strip any leading slashes
-  
-      handleDownload(bytes.buffer , cleanFileName);
 
+      const cleanFileName = artifactDetails.fileName.startsWith('/')
+        ? artifactDetails.fileName.slice(1)
+        : artifactDetails.fileName; //strip any leading slashes
+
+      handleDownload(bytes.buffer, cleanFileName);
     }
   };
 
   const toggleFolder = (path: string) => {
-    setExpandedFolders(prev => ({
+    setExpandedFolders((prev) => ({
       ...prev,
       // Toggle just this folder's state
-      [path]: !prev[path]
+      [path]: !prev[path],
     }));
   };
 
@@ -110,15 +125,14 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     setError(null);
 
     try {
-
       const result: DownloadResult = await downloadArtifactFromServer(runId, artifactUrl);
 
       setArtifactDetails({
         artifactFile: result.data,
-        fileSize:     formatFileSize(result.size),
-        fileName:     artifactUrl,
-        base64Data:   result.base64,
-        contentType:  result.contentType,
+        fileSize: formatFileSize(result.size),
+        fileName: artifactUrl,
+        base64Data: result.base64,
+        contentType: result.contentType,
       });
     } catch (err: any) {
       console.error(err);
@@ -136,42 +150,36 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       result = <p>Select a file to display its content</p>;
     }
     // 2) Plain-text (or any text/* MIME)
-    else if (contentType.startsWith("text/")) {
+    else if (contentType.startsWith('text/')) {
       result = <pre>{artifactFile}</pre>;
     }
     // 3) JSON (or JS object)
-    else if (contentType.includes("json") || typeof artifactFile === "object") {
+    else if (contentType.includes('json') || typeof artifactFile === 'object') {
       // if it's a string, try to parse it first
       let data = artifactFile;
-      if (typeof artifactFile === "string") {
+      if (typeof artifactFile === 'string') {
         try {
           data = JSON.parse(artifactFile);
         } catch (err) {
-          setError("Error parsing JSON content");
-          console.error("Error parsing file: ", err);
+          setError('Error parsing JSON content');
+          console.error('Error parsing file: ', err);
         }
       }
       result = <pre>{JSON.stringify(data, null, 2)}</pre>; //preventing any filtering and ensuring identation of two spaces
     }
     // 4) Binary (zip, images, etc.)
     else {
-      result = (
-        <p>
-          This is a binary file ({contentType}), please download it to see its content.
-        </p>
-      );
+      result = <p>This is a binary file ({contentType}), please download it to see its content.</p>;
     }
 
     return result;
   }
-
 
   useEffect(() => {
     // Build the root node, which holds top-level folders and files
     const root: FolderNode = { name: '', isFile: false, children: {} };
 
     artifacts.forEach((artifact) => {
-
       // 1) Get the raw path string, default to empty if undefined
       const rawPath = artifact.path ?? '';
 
@@ -190,17 +198,19 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
       }
 
       if (segments.length > 0) {
-
         let currentNode: FolderNode = root;
         createFolderSegments(segments, currentNode, artifact);
-
       }
     });
 
     setTreeData(root);
   }, [artifacts]);
 
-  const createFolderSegments = (segments: string[], currentNode: FolderNode, artifact: ArtifactIndexEntry) => {
+  const createFolderSegments = (
+    segments: string[],
+    currentNode: FolderNode,
+    artifact: ArtifactIndexEntry
+  ) => {
     return segments.forEach((segment, idx) => {
       const isLast = idx === segments.length - 1;
 
@@ -241,15 +251,14 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
     });
   };
 
-  const renderFileIcon = (path : string) => {
-
-    const pathSplit = path.split(".");
+  const renderFileIcon = (path: string) => {
+    const pathSplit = path.split('.');
     const extension = pathSplit[pathSplit.length - 1]; // get the last split e.g some.file.ts -> we need the extension (ts)
     let icon: CarbonIconType = Document;
 
     if (ZIP_EXTENSIONS.includes(extension)) {
       icon = Zip;
-    } else if (extension == "json") {
+    } else if (extension == 'json') {
       icon = Json;
     } else if (IMAGE_EXTENSIONS.includes(extension)) {
       icon = Image;
@@ -260,28 +269,39 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
 
   // Recursive renderer: emits a <TreeNode> for each TreeNodeData
   const renderNode = (node: TreeNodeData, path: string) => {
-
     let treeNode;
     const isExpanded = expandedFolders[path] || false;
 
     if (node.isFile) {
       // Leaf file node
-      treeNode = <TreeNode
-        key={path}
-        id={path}
-        renderIcon={renderFileIcon(path)}
-        label={node.name}
-        value={node.name}
-        onSelect={() => downloadArtifact(runId, node.url)}
-      />;
+      treeNode = (
+        <TreeNode
+          key={path}
+          id={path}
+          renderIcon={renderFileIcon(path)}
+          label={node.name}
+          value={node.name}
+          onSelect={() => downloadArtifact(runId, node.url)}
+        />
+      );
     } else {
       // Folder node: render label, then recurse on children
-      treeNode = <TreeNode onToggle={() => toggleFolder(path)} isExpanded={isExpanded} key={path} id={path} label={node.name} value={node.name} renderIcon={Folder}>
-        {Object.values(node.children).map((child) => {
-          const childPath = path ? `${path}/${child.name}` : child.name;
-          return renderNode(child, childPath);
-        })}
-      </TreeNode>;
+      treeNode = (
+        <TreeNode
+          onToggle={() => toggleFolder(path)}
+          isExpanded={isExpanded}
+          key={path}
+          id={path}
+          label={node.name}
+          value={node.name}
+          renderIcon={Folder}
+        >
+          {Object.values(node.children).map((child) => {
+            const childPath = path ? `${path}/${child.name}` : child.name;
+            return renderNode(child, childPath);
+          })}
+        </TreeNode>
+      );
     }
 
     return treeNode;
@@ -290,48 +310,43 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
   return (
     <>
       <div className={styles.titleContainer}>
-        <h3>{translations("title")}</h3>
-        <p>{translations("description")}</p>
+        <h3>{translations('title')}</h3>
+        <p>{translations('description')}</p>
       </div>
       <div className={styles.artifact}>
-
-        <TreeView className={styles.tree} onSelect={() => { }}>
-          {Object.values(treeData.children).map((child) =>
-            renderNode(child, child.name)
-          )}
+        <TreeView className={styles.tree} onSelect={() => {}}>
+          {Object.values(treeData.children).map((child) => renderNode(child, child.name))}
         </TreeView>
 
         <div className={styles.artifactView}>
           {loading && (
             <InlineLoading
-              description={translations("downloading")}
-              iconDescription={translations("downloading")}
+              description={translations('downloading')}
+              iconDescription={translations('downloading')}
             />
           )}
           {error && (
             <InlineNotification
-              title={translations("error_title")}
-              subtitle={translations("error_subtitle", { runName })}
+              title={translations('error_title')}
+              subtitle={translations('error_subtitle', { runName })}
             />
           )}
 
           {!loading && !error && (
             <div>
               <div>
-                {artifactDetails.artifactFile !== "" && (
+                {artifactDetails.artifactFile !== '' && (
                   <Tile className={styles.toolbar}>
                     <div>
                       <h5>{artifactDetails.fileName}</h5>
-                      <p className={styles.fileSize}>
-                        {artifactDetails.fileSize}
-                      </p>
+                      <p className={styles.fileSize}>{artifactDetails.fileSize}</p>
                     </div>
                     <div className={styles.toolbarOptions}>
                       <Button
                         kind="ghost"
                         renderIcon={CloudDownload}
                         hasIconOnly
-                        iconDescription={translations("download_button")}
+                        iconDescription={translations('download_button')}
                         onClick={handleDownloadClick}
                       />
                     </div>
@@ -340,10 +355,7 @@ export function ArtifactsTab({ artifacts, runId, runName }: { artifacts: Artifac
               </div>
 
               <pre className={styles.fileRenderer}>
-                {renderArtifactContent(
-                  artifactDetails.artifactFile,
-                  artifactDetails.contentType,
-                )}
+                {renderArtifactContent(artifactDetails.artifactFile, artifactDetails.contentType)}
               </pre>
             </div>
           )}

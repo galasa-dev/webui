@@ -9,13 +9,12 @@ import { render } from '@testing-library/react';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "errorTitle": "Something went wrong!",
-      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+      errorTitle: 'Something went wrong!',
+      errorDescription: 'Please report the problem to your Galasa Ecosystem administrator.',
     };
     return translations[key] || key;
-  }
+  },
 }));
-  
 
 describe('Error page', () => {
   it('renders the error page', () => {

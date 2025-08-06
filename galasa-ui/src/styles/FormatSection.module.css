@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 .title {
-    font-weight: 500;
-    margin: 1rem 0;
+  font-weight: 500;
+  margin: 1rem 0;
 }
 
 .dropdownContainer {
-    display: flex;
-    gap: 1rem;
-    padding: 0.5rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 1.5rem;
 }
 
 .timeFormatDropdown :global(.cds--dropdown) {

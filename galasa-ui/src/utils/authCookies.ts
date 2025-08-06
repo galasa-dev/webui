@@ -9,7 +9,7 @@ const AuthCookies = {
   REFRESH_TOKEN: 'refresh_token',
   ID_TOKEN: 'id_token',
   TOKEN_DESCRIPTION: 'token_description',
-  SHOULD_REDIRECT_TO_SETTINGS: 'should_redirect_to_settings'
+  SHOULD_REDIRECT_TO_SETTINGS: 'should_redirect_to_settings',
 };
 
 export default AuthCookies;

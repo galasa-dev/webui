@@ -1,4 +1,3 @@
-
 /*
  * Copyright contributors to the Galasa project
  *
@@ -55,11 +54,7 @@ describe('downloadArtifactFromServer', () => {
     expect(galasaapi.ResultArchiveStoreAPIApi).toHaveBeenCalledWith(
       createConfigMock.mock.results[0].value
     );
-    expect(getArtifactMock).toHaveBeenCalledWith(
-      runId,
-      artifactUrl,
-      CLIENT_API_VERSION
-    );
+    expect(getArtifactMock).toHaveBeenCalledWith(runId, artifactUrl, CLIENT_API_VERSION);
 
     expect(result).toMatchObject({
       contentType: 'application/json; charset=utf-8',
@@ -107,5 +102,3 @@ describe('downloadArtifactFromServer', () => {
     expect(result.data).toBe(text);
   });
 });
-
-

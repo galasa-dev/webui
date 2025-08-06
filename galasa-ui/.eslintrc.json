@@ -1,9 +1,8 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals", "prettier"],
   "ignorePatterns": ["**/generated/*"],
+  "plugins": ["prettier"],
   "rules": {
-    "indent": ["error", 2],
-    "semi": "error",
-    "no-irregular-whitespace": "error"
+    "prettier/prettier": "error"
   }
 }

@@ -48,7 +48,7 @@ export interface runStructure {
   bundle: string;
   package: string;
   testName: string;
-  tags:  string;
+  tags: string;
   status: string;
   result: string;
   submissionId: string;
@@ -72,8 +72,7 @@ export interface DataPoint {
     result: string;
     submissionId: string;
   };
-};
-
+}
 
 export interface ColumnDefinition {
   id: keyof runStructure;

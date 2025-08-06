@@ -3,17 +3,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use server";
-import { UserData, UsersAPIApi } from "@/generated/galasaapi";
-import { createAuthenticatedApiConfiguration } from "@/utils/api";
-import * as Constants from "@/utils/constants/common";
-import { UpdateUserRolePayload } from "@/utils/interfaces";
-
+'use server';
+import { UserData, UsersAPIApi } from '@/generated/galasaapi';
+import { createAuthenticatedApiConfiguration } from '@/utils/api';
+import * as Constants from '@/utils/constants/common';
+import { UpdateUserRolePayload } from '@/utils/interfaces';
 
 export async function updateUserRoleAction(
   requestBody: UpdateUserRolePayload
 ): Promise<{ status: number; message: string }> {
-
   const apiConfig = createAuthenticatedApiConfiguration();
 
   if (!requestBody.userNumber || !requestBody.roleDetails?.role) {
@@ -23,7 +21,6 @@ export async function updateUserRoleAction(
   const usersApiClient = new UsersAPIApi(apiConfig);
 
   try {
-
     await usersApiClient.updateUser(
       requestBody.userNumber,
       requestBody.roleDetails,
@@ -44,7 +41,6 @@ export async function updateUserRoleAction(
 }
 
 export const fetchUserFromApiServer = async (loginId: string) => {
-
   const apiConfig = createAuthenticatedApiConfiguration();
 
   let user: UserData = {};
@@ -59,7 +55,6 @@ export const fetchUserFromApiServer = async (loginId: string) => {
 };
 
 export const deleteUserFromService = async (userNumber: string) => {
-
   if (!userNumber) {
     throw new Error('User Number is required');
   }
@@ -68,9 +63,7 @@ export const deleteUserFromService = async (userNumber: string) => {
   const usersApiClient = new UsersAPIApi(apiConfig);
 
   try {
-
     await usersApiClient.deleteUserByNumber(userNumber, Constants.CLIENT_API_VERSION);
-
   } catch (error: any) {
     console.error(error);
 

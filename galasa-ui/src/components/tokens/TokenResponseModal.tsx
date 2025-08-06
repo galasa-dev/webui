@@ -14,7 +14,11 @@ interface TokenResponseModalProps {
   onLoad: () => Promise<void>;
 }
 
-export default function TokenResponseModal({ refreshToken, clientId, onLoad }: TokenResponseModalProps) {
+export default function TokenResponseModal({
+  refreshToken,
+  clientId,
+  onLoad,
+}: TokenResponseModalProps) {
   const translations = useTranslations('TokenResponseModal');
 
   const [token, setToken] = useState('');
@@ -44,9 +48,7 @@ export default function TokenResponseModal({ refreshToken, clientId, onLoad }: T
         setOpen(false);
       }}
     >
-      <p>
-        {translations('description1')}
-      </p>
+      <p>{translations('description1')}</p>
       <CodeSnippet type="multi" wrapText>{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
       <InlineNotification
         title={translations('warningTitle')}
@@ -55,13 +57,17 @@ export default function TokenResponseModal({ refreshToken, clientId, onLoad }: T
         lowContrast
         hideCloseButton
       />
-      <p className="margin-top-1">
-        {translations('description2')}
-      </p>
-      <CodeSnippet className="margin-y-1" type="multi" align="right">{translations('commandExample')}</CodeSnippet>
+      <p className="margin-top-1">{translations('description2')}</p>
+      <CodeSnippet className="margin-y-1" type="multi" align="right">
+        {translations('commandExample')}
+      </CodeSnippet>
       <p>
         {translations('seeDocsIntro')}{' '}
-        <a href="https://galasa.dev/docs/initialising-home-folder" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://galasa.dev/docs/initialising-home-folder"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {translations('seeDocsLinkText')}
         </a>{' '}
         {translations('seeDocsOutro')}

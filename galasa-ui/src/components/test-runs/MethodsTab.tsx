@@ -3,32 +3,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
-import { TestMethod } from "@/generated/galasaapi";
-import { getIsoTimeDifference } from "@/utils/timeOperations";
-import { DataTableHeader, DataTableRow } from "@/utils/interfaces";
-import {
-  DataTable,
-  TableContainer,
-  Table,
-  TableCell,
-  TableHeader,
-} from "@carbon/react";
-import TableBody, {
-  TableBodyProps,
-} from "@carbon/react/lib/components/DataTable/TableBody";
-import TableHead, {
-  TableHeadProps,
-} from "@carbon/react/lib/components/DataTable/TableHead";
-import TableRow, {
-  TableRowProps,
-} from "@carbon/react/lib/components/DataTable/TableRow";
-import React, { useEffect, useState } from "react";
-import { TableToolbarContent } from "@carbon/react";
-import { TableToolbarSearch } from "@carbon/react";
-import StatusIndicator from "../common/StatusIndicator";
-import styles from "@/styles/MethodsTab.module.css";
-import { useTranslations } from "next-intl";
+'use client';
+import { TestMethod } from '@/generated/galasaapi';
+import { getIsoTimeDifference } from '@/utils/timeOperations';
+import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
+import { DataTable, TableContainer, Table, TableCell, TableHeader } from '@carbon/react';
+import TableBody, { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
+import TableHead, { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
+import TableRow, { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
+import React, { useEffect, useState } from 'react';
+import { TableToolbarContent } from '@carbon/react';
+import { TableToolbarSearch } from '@carbon/react';
+import StatusIndicator from '../common/StatusIndicator';
+import styles from '@/styles/MethodsTab.module.css';
+import { useTranslations } from 'next-intl';
 
 export interface MethodDetails {
   id: string;
@@ -45,7 +33,7 @@ interface MethodsTabProps {
 }
 
 function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
-  const translations = useTranslations("MethodsTab");
+  const translations = useTranslations('MethodsTab');
 
   const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
 
@@ -55,10 +43,10 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
     methods.map((method, index) => {
       const methodDetail: MethodDetails = {
         id: index.toString(),
-        methodName: method.methodName || "",
+        methodName: method.methodName || '',
         duration: getIsoTimeDifference(method.startTime!, method.endTime!),
-        status: method.status || "",
-        result: method.result || "",
+        status: method.status || '',
+        result: method.result || '',
         runLogStartLine: method.runLogStart || 0,
       };
 
@@ -72,20 +60,20 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
     // headers we want to show in the data table
     // keys should match with the prop name in the interface
     {
-      key: "methodName",
-      header: translations("table.methodName"),
+      key: 'methodName',
+      header: translations('table.methodName'),
     },
     {
-      key: "status",
-      header: translations("table.status"),
+      key: 'status',
+      header: translations('table.status'),
     },
     {
-      key: "result",
-      header: translations("table.result"),
+      key: 'result',
+      header: translations('table.result'),
     },
     {
-      key: "duration",
-      header: translations("table.duration"),
+      key: 'duration',
+      header: translations('table.duration'),
     },
   ];
 
@@ -96,8 +84,8 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
   return (
     <>
       <div className={styles.titleContainer}>
-        <h3>{translations("title")}</h3>
-        <p>{translations("subtitle")}</p>
+        <h3>{translations('title')}</h3>
+        <p>{translations('subtitle')}</p>
       </div>
       <DataTable isSortable rows={methodDetails} headers={headers}>
         {({
@@ -118,7 +106,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
           <TableContainer>
             <TableToolbarContent>
               <TableToolbarSearch
-                placeholder={translations("search_placeholder")}
+                placeholder={translations('search_placeholder')}
                 persistent
                 onChange={onInputChange}
               />
@@ -127,10 +115,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader
-                      key={header.key}
-                      {...getHeaderProps({ header })}
-                    >
+                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
                       {header.header}
                     </TableHeader>
                   ))}
@@ -140,9 +125,9 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
               <TableBody>
                 {rows.map((row) => {
                   return (
-                    <TableRow 
-                      key={row.id} 
-                      onClick={() => onMethodClick(methodDetails[parseInt(row.id)])} 
+                    <TableRow
+                      key={row.id}
+                      onClick={() => onMethodClick(methodDetails[parseInt(row.id)])}
                       className={styles.clickableRow}
                       {...getRowProps({ row })}
                     >
@@ -152,9 +137,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
                       </TableCell>
                       {/* Status */}
                       <TableCell key={row.cells[1].id}>
-                        <p style={{ textTransform: "capitalize" }}>
-                          {row.cells[1].value}
-                        </p>
+                        <p style={{ textTransform: 'capitalize' }}>{row.cells[1].value}</p>
                       </TableCell>
                       {/* Result */}
                       <TableCell key={row.cells[2].id}>

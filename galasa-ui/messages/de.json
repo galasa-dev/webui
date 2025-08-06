@@ -12,7 +12,7 @@
     "settings": "Meine Einstellungen",
     "logout": "Abmelden"
   },
-  "LanguageSelector":{
+  "LanguageSelector": {
     "label": "Sprache"
   },
   "ThemeSelector": {
@@ -36,7 +36,7 @@
     }
   },
   "DateTimeSettings": {
-  "title": "Datums-/Uhrzeitformat"
+    "title": "Datums-/Uhrzeitformat"
   },
   "DateTimeFormatSection": {
     "title": "Datums-/Zeitformat",
@@ -50,13 +50,13 @@
     "24-hour": "24-Stunden-Format"
   },
   "TimeZoneSection": {
-  "description": "Konfigurieren Sie, welche Zeitzone bei der Anzeige von Datums- und Uhrzeitwerten verwendet wird.",
-  "timeZoneFormat": "Zeitzonenformat",
-  "showTimeZoneInBrowser": "Zeitzone basierend auf den Browsereinstellungen anzeigen",
-  "showTimeZoneInCustom": "Zeitzone in einem benutzerdefinierten Format anzeigen",
-  "selectTimeZone": "Wählen Sie eine Zeitzone aus",
-  "customTimeZone": "Benutzerdefinierte Zeitzone",
-  "browserTimeZone": "Browser-Zeitzone"
+    "description": "Konfigurieren Sie, welche Zeitzone bei der Anzeige von Datums- und Uhrzeitwerten verwendet wird.",
+    "timeZoneFormat": "Zeitzonenformat",
+    "showTimeZoneInBrowser": "Zeitzone basierend auf den Browsereinstellungen anzeigen",
+    "showTimeZoneInCustom": "Zeitzone in einem benutzerdefinierten Format anzeigen",
+    "selectTimeZone": "Wählen Sie eine Zeitzone aus",
+    "customTimeZone": "Benutzerdefinierte Zeitzone",
+    "browserTimeZone": "Browser-Zeitzone"
   },
   "AccessTokensSection": {
     "title": "Zugriffstoken",
@@ -138,7 +138,7 @@
   },
   "ProfileRole": {
     "userRoleTitle": "Benutzerrolle",
-    "changeRole" : "Benutzerrollen bestimmen, was Sie tun können und was nicht. Wenden Sie sich an Ihren lokalen Galasa-Administrator, wenn Sie Änderungen benötigen.",
+    "changeRole": "Benutzerrollen bestimmen, was Sie tun können und was nicht. Wenden Sie sich an Ihren lokalen Galasa-Administrator, wenn Sie Änderungen benötigen.",
     "currentRole": "Sie haben derzeit die Rolle",
     "roleDescription": "Details zur Rolle"
   },
@@ -165,27 +165,28 @@
     "title": "Testläufe",
     "status": "Wird geladen..."
   },
-  "MySettings": {  "TestRunDetails": {
-    "title": "Test Run: {runName}",
-    "errorTitle": "Error",
-    "successTitle": "Success",
-    "copyMessage":"Copy page URL",
-    "copiedTitle":"URL copy successful: ",
-    "copiedMessage":"The URL for this page has been copied to the clipboard.",
-    "copyFailedMessage":"Failed to copy page URL",
-    "downloadArtifacts": "Download all artifacts",
-    "downloading": "Downloading...",
-    "downloadError": "Failed to download artifacts. Please try again later.",
-    "status": "Status",
-    "result": "Result",
-    "test": "Test",
-    "tabs": {
-      "overview": "Overview",
-      "methods": "Methods",
-      "runLog": "Run Log",
-      "artifacts": "Artifacts"
-    }
-  },
+  "MySettings": {
+    "TestRunDetails": {
+      "title": "Test Run: {runName}",
+      "errorTitle": "Error",
+      "successTitle": "Success",
+      "copyMessage": "Copy page URL",
+      "copiedTitle": "URL copy successful: ",
+      "copiedMessage": "The URL for this page has been copied to the clipboard.",
+      "copyFailedMessage": "Failed to copy page URL",
+      "downloadArtifacts": "Download all artifacts",
+      "downloading": "Downloading...",
+      "downloadError": "Failed to download artifacts. Please try again later.",
+      "status": "Status",
+      "result": "Result",
+      "test": "Test",
+      "tabs": {
+        "overview": "Overview",
+        "methods": "Methods",
+        "runLog": "Run Log",
+        "artifacts": "Artifacts"
+      }
+    },
     "title": "Meine Einstellungen"
   },
   "MyProfilePage": {
@@ -273,7 +274,7 @@
     }
   },
   "TestRunsDetails": {
-    "title":  "Testläufe",
+    "title": "Testläufe",
     "errorTitle": "Fehler",
     "successTitle": "Erfolg",
     "copyMessage": "Seiten-URL kopieren",
@@ -303,7 +304,7 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
-    "submissionId":"Übermittlungs-ID",
+    "submissionId": "Übermittlungs-ID",
     "noTestRunsFound": "Für den ausgewählten Zeitraum wurden keine Testläufe gefunden",
     "isloading": "Testergebnisse werden geladen...",
     "limitExceededTitle": "Limit überschritten",
@@ -325,30 +326,30 @@
     }
   },
   "TestRunGraph": {
-  "submittedAt": "Eingereicht am",
-  "runName": "Ausführungsname",
-  "requestor": "Anforderer",
-  "submissionId": "Einreichungs-ID",
-  "group": "Gruppe",
-  "bundle": "Paket",
-  "package": "Paket",
-  "testName": "Testname",
-  "status": "Status",
-  "tags": "Tags",
-  "result": "Ergebnis",
-  "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
-  "isloading": "Diagramm wird geladen...",
-  "errorLoadingGraph": "Beim Laden des Diagramms ist ein Fehler aufgetreten.",
-  "noTestRunsFound": "Keine Testläufe gefunden.",
+    "submittedAt": "Eingereicht am",
+    "runName": "Ausführungsname",
+    "requestor": "Anforderer",
+    "submissionId": "Einreichungs-ID",
+    "group": "Gruppe",
+    "bundle": "Paket",
+    "package": "Paket",
+    "testName": "Testname",
+    "status": "Status",
+    "tags": "Tags",
+    "result": "Ergebnis",
+    "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
+    "isloading": "Diagramm wird geladen...",
+    "errorLoadingGraph": "Beim Laden des Diagramms ist ein Fehler aufgetreten.",
+    "noTestRunsFound": "Keine Testläufe gefunden.",
 
-  "limitExceeded": {
-    "title": "Grenzwert überschritten",
-    "subtitle": "Ihre Abfrage hat mehr als {MAX_RECORDS} Ergebnisse geliefert. Es werden die ersten {MAX_RECORDS} Datensätze angezeigt."
-  },
+    "limitExceeded": {
+      "title": "Grenzwert überschritten",
+      "subtitle": "Ihre Abfrage hat mehr als {MAX_RECORDS} Ergebnisse geliefert. Es werden die ersten {MAX_RECORDS} Datensätze angezeigt."
+    },
 
-  "timeFrameText": {
-    "range": "Zeige Testläufe von {from} bis {to}"
-  }
+    "timeFrameText": {
+      "range": "Zeige Testläufe von {from} bis {to}"
+    }
   },
   "TestRunsTabs": {
     "tabs": {
@@ -392,7 +393,7 @@
     "from": "Von",
     "to": "Bis",
     "duration": "Dauer"
-  }, 
+  },
   "SearchCriteriaContent": {
     "description": "Bearbeiten Sie die Suchkriterien, um die gewünschten Testergebnisse anzuzeigen. Vergessen Sie nicht, auf 'Speichern' zu klicken, um Ihre Änderungen an der Abfrage zu übernehmen.",
     "table": {
@@ -400,7 +401,7 @@
       "allowedValues": "Zulässige Werte"
     },
     "clearFilters": "Filter löschen",
-"fields": {
+    "fields": {
       "runName": {
         "label": "Testlaufname",
         "placeholder": "beliebig",
@@ -463,7 +464,7 @@
     "remove": "Entfernen",
     "reset": "Zurücksetzen",
     "save": "Speichern"
-  }, 
+  },
   "TableDesignContent": {
     "description": "Passen Sie die Ansicht der Testlaufergebnisse an, indem Sie Spalten ein-, ausblenden und neu anordnen.",
     "dragAndDropHeader": "Spalten ziehen, um die Reihenfolge zu ändern",
@@ -488,7 +489,7 @@
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
-    "submissionId":"Übermittlungs-ID",
+    "submissionId": "Übermittlungs-ID",
     "none": "Keine",
     "asc": "Aufsteigend",
     "desc": "Absteigend"

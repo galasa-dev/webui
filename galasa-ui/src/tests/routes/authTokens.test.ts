@@ -6,7 +6,7 @@
  */
 import * as AuthTokenRoute from '@/app/auth/tokens/route';
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
-import { NextRequest} from 'next/server';
+import { NextRequest } from 'next/server';
 
 const mockAuthenticationApi = AuthenticationAPIApi as jest.Mock;
 
@@ -18,7 +18,7 @@ jest.mock('next/headers', () => ({
   cookies: jest.fn(() => ({
     get: jest.fn().mockReturnValue('abc'),
     set: jest.fn(),
-    delete: deleteMock
+    delete: deleteMock,
   })),
 }));
 
@@ -33,27 +33,29 @@ jest.mock('@/generated/galasaapi', () => ({
     ),
     getTokens: jest.fn().mockReturnValue(
       Promise.resolve({
-        tokens: [{
-          tokenId: "token_123",
-          description: "test_token",
-          creationTime: "2024-09-23",
-          owner: {
-            loginId: "admin"
-          }
-        }]
+        tokens: [
+          {
+            tokenId: 'token_123',
+            description: 'test_token',
+            creationTime: '2024-09-23',
+            owner: {
+              loginId: 'admin',
+            },
+          },
+        ],
       })
     ),
-    deleteToken: jest.fn().mockReturnValue(
-      Promise.resolve("Token deleted")
-    )
+    deleteToken: jest.fn().mockReturnValue(Promise.resolve('Token deleted')),
   })),
   UsersAPIApi: jest.fn(() => ({
     getUserByLoginId: jest.fn().mockReturnValue(
-      Promise.resolve([{
-        loginId: "admin"
-      }])
-    )
-  }))
+      Promise.resolve([
+        {
+          loginId: 'admin',
+        },
+      ])
+    ),
+  })),
 }));
 
 describe('POST /auth/tokens', () => {
@@ -62,10 +64,13 @@ describe('POST /auth/tokens', () => {
     const redirectUrl = 'http://my-connector/auth';
 
     const requestBody = JSON.stringify({
-      tokenDescription: "my-token"
+      tokenDescription: 'my-token',
     });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
+    const request = new NextRequest('https://my-server/auth/tokens', {
+      method: 'POST',
+      body: requestBody,
+    });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -89,10 +94,13 @@ describe('POST /auth/tokens', () => {
     const redirectUrl = 'http://my-connector/auth';
 
     const requestBody = JSON.stringify({
-      tokenDescription: "my-token"
+      tokenDescription: 'my-token',
     });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
+    const request = new NextRequest('https://my-server/auth/tokens', {
+      method: 'POST',
+      body: requestBody,
+    });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -115,10 +123,13 @@ describe('POST /auth/tokens', () => {
     const redirectUrl = 'http://my-connector/auth';
 
     const requestBody = JSON.stringify({
-      tokenDescription: "my-token"
+      tokenDescription: 'my-token',
     });
 
-    const request = new NextRequest("https://my-server/auth/tokens", { method: "POST", body: requestBody });
+    const request = new NextRequest('https://my-server/auth/tokens', {
+      method: 'POST',
+      body: requestBody,
+    });
 
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -131,7 +142,9 @@ describe('POST /auth/tokens', () => {
     });
 
     // When/Then...
-    await expect(AuthTokenRoute.POST(request)).rejects.toThrow(/failed to create personal access token/i);
+    await expect(AuthTokenRoute.POST(request)).rejects.toThrow(
+      /failed to create personal access token/i
+    );
     mockAuthenticationApi.mockReset();
   });
 });

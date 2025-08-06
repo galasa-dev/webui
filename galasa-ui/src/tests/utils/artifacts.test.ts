@@ -10,8 +10,8 @@ describe('handleDownload', () => {
 
   beforeEach(() => {
     // Inject createObjectURL & revokeObjectURL as jest.fn()
-    ;(URL as any).createObjectURL = jest.fn().mockReturnValue('blob:fake-url');
-    ;(URL as any).revokeObjectURL = jest.fn();
+    (URL as any).createObjectURL = jest.fn().mockReturnValue('blob:fake-url');
+    (URL as any).revokeObjectURL = jest.fn();
 
     // Stub document.createElement('a') to return an object with our click spy
     clickMock = jest.fn();

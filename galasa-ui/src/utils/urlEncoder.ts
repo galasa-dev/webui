@@ -6,7 +6,7 @@
 
 import {
   compressToEncodedURIComponent as compress,
-  decompressFromEncodedURIComponent as decompress
+  decompressFromEncodedURIComponent as decompress,
 } from 'lz-string';
 import { minifyState, expandState } from './urlStateMappers';
 
@@ -39,7 +39,7 @@ export function encodeStateToUrlParam(queryString: string): string {
   try {
     const params = new URLSearchParams(queryString);
     const paramObject = paramsToObject(params);
-    
+
     // T minify the object before doing anything else
     const minifiedObject = minifyState(paramObject);
     if (Object.keys(minifiedObject).length === 0) {
@@ -49,7 +49,7 @@ export function encodeStateToUrlParam(queryString: string): string {
     const jsonString = JSON.stringify(minifiedObject);
     return compress(jsonString);
   } catch (error) {
-    console.error("Failed to encode URL state:", error);
+    console.error('Failed to encode URL state:', error);
     return '';
   }
 }
@@ -65,7 +65,7 @@ export function decodeStateFromUrlParam(encodedParam: string): string | null {
     const decompressedJson = decompress(encodedParam);
     if (decompressedJson) {
       const minifiedObject = JSON.parse(decompressedJson);
-      
+
       // expand the object to restore the full state
       const expandedObject = expandState(minifiedObject);
 
@@ -73,7 +73,7 @@ export function decodeStateFromUrlParam(encodedParam: string): string | null {
     }
     return null;
   } catch (error) {
-    console.error("Failed to decode URL state:", error);
+    console.error('Failed to decode URL state:', error);
     return null;
   }
 }

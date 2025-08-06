@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
- .infoContainer {
+.infoContainer {
   margin: 2rem 0;
 }
 
@@ -50,4 +50,3 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-

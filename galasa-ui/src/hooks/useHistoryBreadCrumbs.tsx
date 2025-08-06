@@ -3,18 +3,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
-import { useCallback, useEffect, useState } from "react";
-import { BreadCrumbProps } from "@/utils/interfaces";
-import { HOME } from "@/utils/constants/breadcrumb";
-import { usePathname, useSearchParams } from "next/navigation";
-
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { BreadCrumbProps } from '@/utils/interfaces';
+import { HOME } from '@/utils/constants/breadcrumb';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const SESSION_STORAGE_KEY = 'breadCrumbHistory';
 
 /**
  * Custom Hook to manage BreadCrumbs history and save it to the sessionStorage
- * 
+ *
  * @returns breadCrumbItems - current bread crumb items in the history
  * @returns pushBreadCrumb - function to add bread crumb to the history
  * @returns resetBreadCrumbs - function to reset all breadcrumbs to HOME
@@ -48,7 +47,7 @@ export default function useHistoryBreadCrumbs() {
     });
   }, []);
 
-  // Funtion to reset the breadcrumbs (e.g. when clicking HOME) 
+  // Funtion to reset the breadcrumbs (e.g. when clicking HOME)
   const resetBreadCrumbs = useCallback((baseItems: BreadCrumbProps[] = [HOME]) => {
     sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(baseItems));
     setItems(baseItems);
@@ -64,20 +63,23 @@ export default function useHistoryBreadCrumbs() {
       resetBreadCrumbs([HOME]);
       return;
     }
-        
+
     setItems((prevItems) => {
-      const currentPathIndex = prevItems.findIndex(item => (item.route === fullPath));
+      const currentPathIndex = prevItems.findIndex((item) => item.route === fullPath);
 
       let finalItems = prevItems;
       // If the current path is found in our history, truncate the list to that point
       if (currentPathIndex > -1) {
         const truncatedItems = prevItems.slice(0, currentPathIndex);
-        sessionStorage.setItem(SESSION_STORAGE_KEY, truncatedItems.length <= 0 ? JSON.stringify([HOME]):  JSON.stringify(truncatedItems));
+        sessionStorage.setItem(
+          SESSION_STORAGE_KEY,
+          truncatedItems.length <= 0 ? JSON.stringify([HOME]) : JSON.stringify(truncatedItems)
+        );
         finalItems = truncatedItems;
       }
       return finalItems;
     });
   }, [pathname, searchParams, resetBreadCrumbs]);
 
-  return {breadCrumbItems: items, pushBreadCrumb, resetBreadCrumbs};
+  return { breadCrumbItems: items, pushBreadCrumb, resetBreadCrumbs };
 }

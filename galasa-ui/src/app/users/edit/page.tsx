@@ -6,7 +6,7 @@
 import PageTile from '@/components/PageTile';
 import UserRoleSection from '@/components/users/UserRoleSection';
 import React from 'react';
-import { RBACRole, RoleBasedAccessControlAPIApi} from '@/generated/galasaapi';
+import { RBACRole, RoleBasedAccessControlAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import { fetchAccessTokens } from '@/actions/getUserAccessTokens';
@@ -40,9 +40,15 @@ export default function EditUserPage({ searchParams }: UsersPageProps) {
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME, EDIT_USER]} />
-      <PageTile translationKey={"UserEditPage.title"} />
-      <UserRoleSection userProfilePromise={fetchUserFromApiServer(loginIdFromQueryParam)} roleDetailsPromise={fetchRBACRolesFromApiServer()}/>
-      <AccessTokensSection accessTokensPromise={fetchAccessTokens(loginIdFromQueryParam)} isAddBtnVisible={false}/>
+      <PageTile translationKey={'UserEditPage.title'} />
+      <UserRoleSection
+        userProfilePromise={fetchUserFromApiServer(loginIdFromQueryParam)}
+        roleDetailsPromise={fetchRBACRolesFromApiServer()}
+      />
+      <AccessTokensSection
+        accessTokensPromise={fetchAccessTokens(loginIdFromQueryParam)}
+        isAddBtnVisible={false}
+      />
     </main>
   );
 }

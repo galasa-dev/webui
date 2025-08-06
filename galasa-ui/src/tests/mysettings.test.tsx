@@ -21,7 +21,6 @@ jest.mock('next/headers', () => ({
   }),
 }));
 
-
 jest.mock('@/generated/galasaapi', () => {
   return {
     UsersAPIApi: jest.fn(),
@@ -39,16 +38,16 @@ jest.mock('@/actions/getUserAccessTokens', () => ({
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "Experimental Features",
-      "description": "Early access to new features. These are experimental and subject to change or removal.",
-      "features.testRunSearch": "Test Run searching and viewing",
-      "errorTitle": "Something went wrong!",
-      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+      title: 'Experimental Features',
+      description:
+        'Early access to new features. These are experimental and subject to change or removal.',
+      'features.testRunSearch': 'Test Run searching and viewing',
+      errorTitle: 'Something went wrong!',
+      errorDescription: 'Please report the problem to your Galasa Ecosystem administrator.',
     };
     return translations[key] || key;
-  }
+  },
 }));
-
 
 describe('MySettings Component', () => {
   afterEach(() => {
@@ -60,16 +59,14 @@ describe('MySettings Component', () => {
     (UsersAPIApi as jest.Mock).mockImplementation(() => ({
       getUserByLoginId: mockedGetUserByLoginId,
     }));
-  
+
     const Component = await MySettings();
     render(Component);
 
-    expect(screen.getByText("Something went wrong!")).toBeInTheDocument();
+    expect(screen.getByText('Something went wrong!')).toBeInTheDocument();
   });
-  
 
   test('renders correctly when user login id is found', async () => {
-
     const fakeUser = { loginId: 'user123' };
     const mockedGetUserByLoginId = jest.fn().mockResolvedValue([fakeUser]);
     (UsersAPIApi as jest.Mock).mockImplementation(() => ({

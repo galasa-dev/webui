@@ -4,45 +4,45 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 .testRunContainer {
-    width: 90%;
-    margin: 5rem auto 2rem auto;
+  width: 90%;
+  margin: 5rem auto 2rem auto;
 }
 
 .tabs {
-    margin: 2rem 0;
+  margin: 2rem 0;
 }
 
 .summarySection {
-    display: flex;
-    width: 25%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 0;
+  display: flex;
+  width: 25%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0;
 }
 
 .summaryStatus {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    text-transform: capitalize;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: capitalize;
 }
 
 .toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-.buttonContainer{
-    display: flex;
-    margin-right: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.notification{
-    position: fixed;
-    bottom: 5.5rem;
-    right: 1rem;
-    z-index: 9999;
+.buttonContainer {
+  display: flex;
+  margin-right: 3rem;
+}
+
+.notification {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1rem;
+  z-index: 9999;
 }

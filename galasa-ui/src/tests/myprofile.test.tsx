@@ -15,23 +15,23 @@ jest.mock('@/generated/galasaapi');
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "User Details",
-      "loggedInAs": "Currently logged in as:",
-      "role": "Role",
-      "recentActivity": "Recent Login Activity",
-      "noLastLogin": "No last login date",
-      "lastLoginWeb": "Last logged in to this web application (UTC): {date}",
-      "lastLoginToken": "Last logged in using a Galasa personal access token (UTC): {date}",
-      "errorTitle": "Something went wrong!",
-      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+      title: 'User Details',
+      loggedInAs: 'Currently logged in as:',
+      role: 'Role',
+      recentActivity: 'Recent Login Activity',
+      noLastLogin: 'No last login date',
+      lastLoginWeb: 'Last logged in to this web application (UTC): {date}',
+      lastLoginToken: 'Last logged in using a Galasa personal access token (UTC): {date}',
+      errorTitle: 'Something went wrong!',
+      errorDescription: 'Please report the problem to your Galasa Ecosystem administrator.',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
-    push: jest.fn(), 
+    push: jest.fn(),
     replace: jest.fn(),
   })),
 }));
@@ -39,8 +39,8 @@ jest.mock('next/navigation', () => ({
 // Mock the useDateTimeFormat context
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
-    formatDate: (date: Date) => date.toLocaleString(), 
-  })
+    formatDate: (date: Date) => date.toLocaleString(),
+  }),
 }));
 
 describe('MyProfilePage', () => {
@@ -61,7 +61,7 @@ describe('MyProfilePage', () => {
       }),
     });
   });
-  
+
   test('renders loading spinner initially', async () => {
     // When...
     render(<MyProfilePage />);
@@ -77,23 +77,25 @@ describe('MyProfilePage', () => {
     const expectedRoleName = 'tester';
 
     const mockRole: RBACRole = {
-      apiVersion: "v1",
-      kind: "GalasaRole",
+      apiVersion: 'v1',
+      kind: 'GalasaRole',
       metadata: {
         name: expectedRoleName,
-        description: 'a dummy role for tests'
+        description: 'a dummy role for tests',
       },
-      data: {}
+      data: {},
     };
 
     mockUsersApi.mockReturnValue({
-      getUserByLoginId: jest.fn().mockResolvedValue([{
-        loginId: expectedLoginId,
-        role: '1',
-        synthetic: {
-          role: mockRole,
-        }
-      }]),
+      getUserByLoginId: jest.fn().mockResolvedValue([
+        {
+          loginId: expectedLoginId,
+          role: '1',
+          synthetic: {
+            role: mockRole,
+          },
+        },
+      ]),
     });
 
     // When...

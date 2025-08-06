@@ -5,14 +5,16 @@
  */
 
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
-import { createApiConfiguration, GALASA_API_SERVER_URL} from './api';
+import { createApiConfiguration, GALASA_API_SERVER_URL } from './api';
 
 export const GALASA_WEBUI_HOST_URL = process.env.GALASA_WEBUI_HOST_URL ?? '';
 
 export const GALASA_WEBUI_CLIENT_ID = process.env.GALASA_WEBUI_CLIENT_ID ?? 'galasa-webui';
 
 // Initialise an auth API client
-export const authApiClient = new AuthenticationAPIApi(createApiConfiguration(GALASA_API_SERVER_URL));
+export const authApiClient = new AuthenticationAPIApi(
+  createApiConfiguration(GALASA_API_SERVER_URL)
+);
 
 /**
  * Sends a request to initiate an authentication flow and returns the response.
@@ -20,7 +22,10 @@ export const authApiClient = new AuthenticationAPIApi(createApiConfiguration(GAL
  * @param clientId the ID of the Dex client to authenticate with
  * @returns the response of the /auth request
  */
-export const sendAuthRequest = async (clientId: string, clientCallbackUrl = `${GALASA_WEBUI_HOST_URL}/callback`) => {
+export const sendAuthRequest = async (
+  clientId: string,
+  clientCallbackUrl = `${GALASA_WEBUI_HOST_URL}/callback`
+) => {
   const authRequestUrl = `/auth?client_id=${clientId}&callback_url=${clientCallbackUrl}`;
 
   return await fetch(new URL(authRequestUrl, GALASA_API_SERVER_URL), {

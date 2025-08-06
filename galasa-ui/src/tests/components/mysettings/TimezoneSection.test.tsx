@@ -13,16 +13,16 @@ import { SUPPORTED_TIMEZONES } from '@/utils/constants/timezones';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "description": "Configure which time zone is applied when displaying date and time values.",
-      "timeZoneFormat": "Time Zone Format",
-      "showTimeZoneInBrowser": "Show time zone based on the browser settings",
-      "showTimeZoneInCustom": "Show time zone in a custom format",
-      "selectTimeZone": "Select a time zone",
-      "customTimeZone": "Custom Time Zone",
-      "browserTimeZone": "Browser Time Zone"
+      description: 'Configure which time zone is applied when displaying date and time values.',
+      timeZoneFormat: 'Time Zone Format',
+      showTimeZoneInBrowser: 'Show time zone based on the browser settings',
+      showTimeZoneInCustom: 'Show time zone in a custom format',
+      selectTimeZone: 'Select a time zone',
+      customTimeZone: 'Custom Time Zone',
+      browserTimeZone: 'Browser Time Zone',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
 // Mock the useDateTimeFormat context
@@ -32,7 +32,7 @@ const defaultPreferences = {
   locale: 'en-US',
   timeFormat: '12-hour',
   timeZone: 'UTC',
-  timeZoneType: 'browser'
+  timeZoneType: 'browser',
 };
 
 let mockContextValue = {
@@ -49,8 +49,8 @@ jest.mock('@/utils/constants/timezones', () => ({
     { iana: 'UTC', label: 'Coordinated Universal Time' },
     { iana: 'America/New_York', label: 'Eastern Time' },
     { iana: 'Europe/London', label: 'London Time' },
-    { iana: 'Australia/Perth', label: 'Australian Western Time' }
-  ]
+    { iana: 'Australia/Perth', label: 'Australian Western Time' },
+  ],
 }));
 
 describe('TimezoneSection', () => {
@@ -66,8 +66,14 @@ describe('TimezoneSection', () => {
   test('renders correctly with initial preferences', () => {
     render(<DateTimeFormatSection />);
 
-    expect(screen.getByText(/Configure which time zone is applied when displaying date and time values./i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Show time zone based on the browser settings/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Configure which time zone is applied when displaying date and time values./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Show time zone based on the browser settings/i)
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/Show time zone in a custom format/i)).toBeInTheDocument();
     expect(screen.getByText(/Select a time zone/i)).toBeInTheDocument();
 
@@ -81,7 +87,7 @@ describe('TimezoneSection', () => {
   });
 
   test('enables custom locale dropdown when custom timeZoneType is selected', () => {
-    const {rerender} = render(<TimezoneSection />);
+    const { rerender } = render(<TimezoneSection />);
 
     // Select the custom timeZoneType
     const customRadio = screen.getByRole('radio', { name: /custom/i });
@@ -89,11 +95,11 @@ describe('TimezoneSection', () => {
 
     expect(mockUpdatePreferences).toHaveBeenCalledWith({ timeZoneType: 'custom' });
     mockContextValue = {
-      ...mockContextValue, 
+      ...mockContextValue,
       preferences: {
         ...mockContextValue.preferences,
         timeZoneType: 'custom',
-      }
+      },
     };
 
     rerender(<TimezoneSection />);
@@ -105,7 +111,7 @@ describe('TimezoneSection', () => {
   });
 
   test('updates time zone preferences when a new time zone is selected', () => {
-    const {rerender} = render(<TimezoneSection />);
+    const { rerender } = render(<TimezoneSection />);
 
     // Enable the custom dropdown
     fireEvent.click(screen.getByRole('radio', { name: /custom/i }));
@@ -114,7 +120,7 @@ describe('TimezoneSection', () => {
       preferences: {
         ...mockContextValue.preferences,
         timeZoneType: 'custom',
-      }
+      },
     };
     rerender(<TimezoneSection />);
     mockUpdatePreferences.mockClear();
@@ -123,7 +129,7 @@ describe('TimezoneSection', () => {
     const timezoneDropdown = screen.getByTestId('custom-timezone-dropdown-test');
     const timezoneSelect = within(timezoneDropdown).getByRole('combobox');
     fireEvent.click(timezoneSelect);
-    
+
     const newTimeZone = screen.getByText(SUPPORTED_TIMEZONES[3].label);
     fireEvent.click(newTimeZone);
 

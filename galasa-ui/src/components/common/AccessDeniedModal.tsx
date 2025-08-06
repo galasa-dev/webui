@@ -7,20 +7,19 @@
 'use client';
 
 import React from 'react';
-import { Modal, InlineNotification } from "@carbon/react";
+import { Modal, InlineNotification } from '@carbon/react';
 import { handleDeleteCookieApiOperation } from '@/utils/logout';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 function AccessDeniedModal() {
-
   const router = useRouter();
-  const translations= useTranslations('AccessDeniedModal');  
+  const translations = useTranslations('AccessDeniedModal');
 
   return (
     <Modal
-      modalHeading={translations("modalHeading")}
-      primaryButtonText={translations("logoutButton")}
+      modalHeading={translations('modalHeading')}
+      primaryButtonText={translations('logoutButton')}
       open={true}
       onRequestSubmit={async () => {
         await handleDeleteCookieApiOperation(router);
@@ -29,17 +28,15 @@ function AccessDeniedModal() {
         await handleDeleteCookieApiOperation(router);
       }}
     >
-
-      <div className='margin-top-2'>
+      <div className="margin-top-2">
         <InlineNotification
-          subtitle={translations("notificationSubtitle")}
+          subtitle={translations('notificationSubtitle')}
           kind="warning"
           lowContrast
           hideCloseButton
         />
-        <p className='margin-top-2'>{translations("helpText")}</p>
+        <p className="margin-top-2">{translations('helpText')}</p>
       </div>
-
     </Modal>
   );
 }

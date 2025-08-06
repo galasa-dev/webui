@@ -8,7 +8,11 @@ import TestRunDetails from '@/components/test-runs/TestRunDetails';
 import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';
 import { getTranslations } from 'next-intl/server';
-import { fetchRunDetailLogs, fetchRunDetailsFromApiServer, fetchTestArtifacts } from '@/utils/testRuns';
+import {
+  fetchRunDetailLogs,
+  fetchRunDetailsFromApiServer,
+  fetchTestArtifacts,
+} from '@/utils/testRuns';
 
 // Define an interface for the component's props
 interface TestRunProps {
@@ -19,7 +23,7 @@ interface TestRunProps {
 
 // Type the props directly on the function's parameter
 export default async function TestRunPage({ params: { slug } }: TestRunProps) {
-  const translations = await getTranslations("TestRunPage");
+  const translations = await getTranslations('TestRunPage');
   // Check if run exists first
   try {
     await fetchRunDetailsFromApiServer(slug);
@@ -27,8 +31,8 @@ export default async function TestRunPage({ params: { slug } }: TestRunProps) {
     if (error?.code === 404) {
       return (
         <NotFound
-          title={translations("notFoundTitle")}
-          description={translations("notFoundDescription", { id: slug })}
+          title={translations('notFoundTitle')}
+          description={translations('notFoundDescription', { id: slug })}
         />
       );
     } else {
@@ -37,11 +41,11 @@ export default async function TestRunPage({ params: { slug } }: TestRunProps) {
   }
 
   return (
-    <TestRunDetails 
-      runId={slug} 
-      runDetailsPromise={fetchRunDetailsFromApiServer(slug)} 
-      runArtifactsPromise={fetchTestArtifacts(slug)} 
-      runLogPromise={fetchRunDetailLogs(slug)} 
+    <TestRunDetails
+      runId={slug}
+      runDetailsPromise={fetchRunDetailsFromApiServer(slug)}
+      runArtifactsPromise={fetchTestArtifacts(slug)}
+      runLogPromise={fetchRunDetailLogs(slug)}
     />
   );
-};
+}

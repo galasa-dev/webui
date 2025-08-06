@@ -9,7 +9,14 @@ import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import styles from '@/styles/TestRunsPage.module.css';
 import { LOCALE_TO_FLATPICKR_FORMAT_MAP, SUPPORTED_LOCALES } from '@/utils/constants/common';
 import { parseAndValidateTime } from '@/utils/timeOperations';
-import { FormGroup, DatePicker, DatePickerInput, TimePicker, TimePickerSelect, SelectItem } from '@carbon/react';
+import {
+  FormGroup,
+  DatePicker,
+  DatePickerInput,
+  TimePicker,
+  TimePickerSelect,
+  SelectItem,
+} from '@carbon/react';
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 
@@ -48,10 +55,10 @@ export default function DateTimePicker({
   const handleTimeBlur = () => {
     const formattedTime = parseAndValidateTime(localTime);
     if (formattedTime) {
-      onTimeChange(formattedTime); 
+      onTimeChange(formattedTime);
     } else {
       // Revert to last known valid time
-      setLocalTime(time); 
+      setLocalTime(time);
     }
   };
 
@@ -59,12 +66,15 @@ export default function DateTimePicker({
 
   // Look up the required Flatpickr format
   const datePickerFormat = LOCALE_TO_FLATPICKR_FORMAT_MAP[fullLocale] || 'm/d/Y';
-  
+
   // The `locale` prop in DatePicker expects a short language code (e.g., 'en', 'fr') for calendar translation.
   const languageCodeForPicker = fullLocale.split('-')[0];
 
   // Generate a placeholder from the Flatpickr format string.
-  const placeholder = datePickerFormat.replace(/Y/g, 'yyyy').replace(/m/g, 'mm').replace(/d/g, 'dd');
+  const placeholder = datePickerFormat
+    .replace(/Y/g, 'yyyy')
+    .replace(/m/g, 'mm')
+    .replace(/d/g, 'dd');
 
   return (
     <FormGroup legendText={legend} className={styles.TimeFrameFilterItem}>
@@ -94,7 +104,9 @@ export default function DateTimePicker({
         <TimePickerSelect
           id={`${legend}-time-picker-ampm`}
           value={amPm}
-          onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onAmPmChange(event.target.value)}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+            onAmPmChange(event.target.value)
+          }
         >
           <SelectItem text={translations('AM')} value="AM" />
           <SelectItem text={translations('PM')} value="PM" />

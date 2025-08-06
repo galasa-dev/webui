@@ -13,18 +13,15 @@ import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
 import { DAY_MS, DEFAULT_VISIBLE_COLUMNS } from '@/utils/constants/common';
 
 // Mock Child Components
-const TestRunsTableMock = jest.fn((props) =>
+const TestRunsTableMock = jest.fn((props) => (
   <div>
-    <div data-testid="test-runs-table">
-    Mocked Test Runs Table
-    </div>
-    {
-      props.runsList.forEach((run: any) => {
-        const runId = run.id;
-        return <div key={runId}>{run.runName || runId}</div>;
-      })
-    }
-  </div>);
+    <div data-testid="test-runs-table">Mocked Test Runs Table</div>
+    {props.runsList.forEach((run: any) => {
+      const runId = run.id;
+      return <div key={runId}>{run.runName || runId}</div>;
+    })}
+  </div>
+));
 jest.mock('@/components/test-runs/TestRunsTable', () => ({
   __esModule: true,
   default: (props: any) => TestRunsTableMock(props),
@@ -42,7 +39,7 @@ jest.mock('@/components/test-runs/TimeFrameContent', () => ({
     toAmPm: 'PM',
     durationDays: 0,
     durationHours: 23,
-    durationMinutes: 59
+    durationMinutes: 59,
   })),
 }));
 
@@ -53,9 +50,8 @@ jest.mock('@/components/test-runs/SearchCriteriaContent', () => ({
 
 jest.mock('@/components/test-runs/TestRunGraph', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>TestRunsGraphMock</div>)
+  default: jest.fn(() => <div>TestRunsGraphMock</div>),
 }));
-
 
 let capturedSetSelectedVisibleColumns: (columns: string[]) => void;
 let capturedSetColumnsOrder: (order: { id: string; columnName: string }[]) => void;
@@ -71,13 +67,13 @@ jest.mock('@/components/test-runs/TableDesignContent', () => ({
   },
 }));
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "tabs.timeframe": "Timeframe",
-      "tabs.tableDesign": "Table Design",
-      "tabs.searchCriteria": "Search Criteria",
-      "tabs.results": "Results",
+      'tabs.timeframe': 'Timeframe',
+      'tabs.tableDesign': 'Table Design',
+      'tabs.searchCriteria': 'Search Criteria',
+      'tabs.results': 'Results',
     };
     return translations[key] || key;
   },
@@ -98,20 +94,20 @@ jest.mock('next/navigation', () => ({
 // Mock the useDateTimeFormat context
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
-    formatDate: (date: Date) => date.toLocaleString(), 
-    getResolvedTimeZone: () => 'UTC', 
-  })
+    formatDate: (date: Date) => date.toLocaleString(),
+    getResolvedTimeZone: () => 'UTC',
+  }),
 }));
 
 jest.mock('@/utils/constants/common', () => ({
-  RESULTS_TABLE_COLUMNS:  [
+  RESULTS_TABLE_COLUMNS: [
     { id: 'submittedAt', columnName: 'Submitted' },
     { id: 'runName', columnName: 'Test Run Name' },
     { id: 'requestor', columnName: 'Requestor' },
     { id: 'testName', columnName: 'Test Name' },
     { id: 'status', columnName: 'Status' },
     { id: 'result', columnName: 'Result' },
-    { id: 'tags', columnName: 'Tags' }
+    { id: 'tags', columnName: 'Tags' },
   ],
   COLUMNS_IDS: {
     SUBMITTED_AT: 'submittedAt',
@@ -121,7 +117,8 @@ jest.mock('@/utils/constants/common', () => ({
     STATUS: 'status',
     RESULT: 'result',
     TAGS: 'tags',
-  },  TEST_RUNS_QUERY_PARAMS: {
+  },
+  TEST_RUNS_QUERY_PARAMS: {
     FROM: 'from',
     TO: 'to',
     RUN_NAME: 'runName',
@@ -136,13 +133,20 @@ jest.mock('@/utils/constants/common', () => ({
     VISIBLE_COLUMNS: 'visibleColumns',
     COLUMNS_ORDER: 'columnsOrder',
     TAB: 'tab',
-    SORT_ORDER: 'sortOrder'
+    SORT_ORDER: 'sortOrder',
   },
   DAY_MS: 86400000,
   TABS_IDS: ['timeframe', 'table-design', 'search-criteria', 'results'],
   SEARCH_CRITERIA_KEYS: [
-    'runName', 'requestor', 'group', 'submissionId', 'bundle', 'testName', 
-    'result', 'status', 'tags'
+    'runName',
+    'requestor',
+    'group',
+    'submissionId',
+    'bundle',
+    'testName',
+    'result',
+    'status',
+    'tags',
   ],
   TEST_RUNS_STATUS: {
     QUEUED: 'Queued',
@@ -153,22 +157,13 @@ jest.mock('@/utils/constants/common', () => ({
     RUNNING: 'Running',
     RUNDONE: 'Rundone',
     ENDING: 'Ending',
-    FINISHED: 'Finished'
+    FINISHED: 'Finished',
   },
-  DEFAULT_VISIBLE_COLUMNS: [
-    "submittedAt",
-    "runName",
-    "requestor",
-    "testName",
-    "status",
-    "result",
-  ]
+  DEFAULT_VISIBLE_COLUMNS: ['submittedAt', 'runName', 'requestor', 'testName', 'status', 'result'],
 }));
 
-
-
 // Mock window.matchMedia
-Object.defineProperty(window, "matchMedia", {
+Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
@@ -187,14 +182,13 @@ global.fetch = jest.fn(() =>
   })
 ) as jest.Mock;
 
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Turn off retries for tests to make them run faster
       retry: false,
-    }
-  }
+    },
+  },
 });
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -202,15 +196,13 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('TestRunsTabs Component', () => {
-
   const STABLE_DATE = new Date('2024-07-15T10:00:00.000Z');
   const originalDate = global.Date;
-
 
   beforeAll(() => {
     jest.useFakeTimers().setSystemTime(STABLE_DATE);
   });
-  
+
   afterAll(() => {
     jest.useRealTimers();
   });
@@ -231,11 +223,11 @@ describe('TestRunsTabs Component', () => {
           requestorNamesPromise={mockRequestorNamesPromise}
           resultsNamesPromise={mockResultsNamesPromise}
         />
-      </FeatureFlagProvider>
-      , { wrapper }
+      </FeatureFlagProvider>,
+      { wrapper }
     );
     const tabLabels = ['Timeframe', 'Table Design', 'Search Criteria', 'Results'];
-    tabLabels.forEach(label => {
+    tabLabels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
   });
@@ -247,7 +239,8 @@ describe('TestRunsTabs Component', () => {
           requestorNamesPromise={mockRequestorNamesPromise}
           resultsNamesPromise={mockResultsNamesPromise}
         />
-      </FeatureFlagProvider>, {wrapper}
+      </FeatureFlagProvider>,
+      { wrapper }
     );
     const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
     fireEvent.click(timeframeTab);
@@ -263,7 +256,8 @@ describe('TestRunsTabs Component', () => {
           requestorNamesPromise={mockRequestorNamesPromise}
           resultsNamesPromise={mockResultsNamesPromise}
         />
-      </FeatureFlagProvider>, {wrapper}
+      </FeatureFlagProvider>,
+      { wrapper }
     );
     const resultsTab = screen.getByRole('tab', { name: 'Results' });
     fireEvent.click(resultsTab);
@@ -279,7 +273,7 @@ describe('TestRunsTabs Component', () => {
       params.set('visibleColumns', 'status,result');
       params.set('columnsOrder', 'result,status,testName');
       mockUseSearchParams.mockReturnValue(params);
-  
+
       // Act
       render(
         <FeatureFlagProvider>
@@ -287,19 +281,22 @@ describe('TestRunsTabs Component', () => {
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
           />
-        </FeatureFlagProvider>, { wrapper }
+        </FeatureFlagProvider>,
+        { wrapper }
       );
-  
+
       // Assert: Wait for the component to process the params and pass them as props
       await waitFor(() => {
-        expect(TestRunsTableMock).toHaveBeenCalledWith(expect.objectContaining({
-          visibleColumns: ['status', 'result'],
-          orderedHeaders: [
-            { id: 'result', columnName: 'Result' },
-            { id: 'status', columnName: 'Status' },
-            { id: 'testName', columnName: 'Test Name' },
-          ]
-        }));
+        expect(TestRunsTableMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            visibleColumns: ['status', 'result'],
+            orderedHeaders: [
+              { id: 'result', columnName: 'Result' },
+              { id: 'status', columnName: 'Status' },
+              { id: 'testName', columnName: 'Test Name' },
+            ],
+          })
+        );
       });
     });
 
@@ -310,9 +307,11 @@ describe('TestRunsTabs Component', () => {
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /></FeatureFlagProvider> , { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
-  
+
       // Assert: Wait for the initialization and save effect to run
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalledTimes(1);
@@ -323,13 +322,17 @@ describe('TestRunsTabs Component', () => {
 
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
-      
+
       const expectedToDate = STABLE_DATE;
-      const expectedFromDate = new Date(STABLE_DATE.getTime() - DAY_MS); 
+      const expectedFromDate = new Date(STABLE_DATE.getTime() - DAY_MS);
 
       expect(decodedParams.get('tab')).toBe('timeframe');
-      expect(decodedParams.get('visibleColumns')).toBe("submittedAt,runName,requestor,testName,status,result");
-      expect(decodedParams.get('columnsOrder')).toBe("submittedAt,runName,requestor,testName,status,result,tags");
+      expect(decodedParams.get('visibleColumns')).toBe(
+        'submittedAt,runName,requestor,testName,status,result'
+      );
+      expect(decodedParams.get('columnsOrder')).toBe(
+        'submittedAt,runName,requestor,testName,status,result,tags'
+      );
       expect(decodedParams.get('from')).toBe(expectedFromDate.toISOString());
       expect(decodedParams.get('to')).toBe(expectedToDate.toISOString());
     });
@@ -342,7 +345,8 @@ describe('TestRunsTabs Component', () => {
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
           />
-        </FeatureFlagProvider> , { wrapper }
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       // Wait for initial render and effect
@@ -355,20 +359,24 @@ describe('TestRunsTabs Component', () => {
       // Assert
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalledTimes(1);
-      });   
+      });
 
       const urlCall = mockReplace.mock.calls[0][0];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
-      
+
       // We must decode the received query to check its contents
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
-      
+
       // The only thing that should change is the tab
       expect(decodedParams.get('tab')).toBe('table-design');
       // All other params should remain at their default values
-      expect(decodedParams.get('visibleColumns')).toBe('submittedAt,runName,requestor,testName,status,result');
-      expect(decodedParams.get('columnsOrder')).toBe('submittedAt,runName,requestor,testName,status,result,tags');
+      expect(decodedParams.get('visibleColumns')).toBe(
+        'submittedAt,runName,requestor,testName,status,result'
+      );
+      expect(decodedParams.get('columnsOrder')).toBe(
+        'submittedAt,runName,requestor,testName,status,result,tags'
+      );
     });
 
     test('updates URL when column order is changed', async () => {
@@ -379,21 +387,25 @@ describe('TestRunsTabs Component', () => {
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
           />
-        </FeatureFlagProvider> , { wrapper }
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
       mockReplace.mockClear();
-  
+
       // Act: Simulate a child component updating the state
-      const newOrder = [{ id: 'result', columnName: 'Result' }, { id: 'status', columnName: 'Status' }];
+      const newOrder = [
+        { id: 'result', columnName: 'Result' },
+        { id: 'status', columnName: 'Status' },
+      ];
       act(() => {
         if (capturedSetColumnsOrder) {
           capturedSetColumnsOrder(newOrder);
         }
       });
-  
+
       // Assert: Wait for the effect to run with the new state
       await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
 
@@ -404,7 +416,9 @@ describe('TestRunsTabs Component', () => {
 
       expect(decodedParams.get('columnsOrder')).toBe('result,status');
       // The visible columns should remain unchanged at their default
-      expect(decodedParams.get('visibleColumns')).toBe('submittedAt,runName,requestor,testName,status,result');
+      expect(decodedParams.get('visibleColumns')).toBe(
+        'submittedAt,runName,requestor,testName,status,result'
+      );
     });
 
     test('clear visible columns in URL when none are selected', async () => {
@@ -414,22 +428,23 @@ describe('TestRunsTabs Component', () => {
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /> 
-        </FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
       mockReplace.mockClear();
-  
+
       // Act: Simulate a child component clearing the visible columns
       act(() => {
         capturedSetSelectedVisibleColumns([]);
       });
-  
+
       // Assert: The save-to-URL effect runs again with the new state
       await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-  
+
       const urlCall = mockReplace.mock.calls[0][0];
       const params = new URLSearchParams(urlCall.split('?')[1]);
       expect(params.get('visibleColumns')).toBeNull();
@@ -443,21 +458,25 @@ describe('TestRunsTabs Component', () => {
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
           />
-        </FeatureFlagProvider> , { wrapper }
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
       mockReplace.mockClear();
-  
+
       // Act: Simulate a child component updating the sort order
       act(() => {
-        capturedSetSortOrder([{ id: 'status', order: 'asc' }, { id: 'result', order: 'desc' }]);
+        capturedSetSortOrder([
+          { id: 'status', order: 'asc' },
+          { id: 'result', order: 'desc' },
+        ]);
       });
-  
+
       // Assert: The save-to-URL effect runs again with the new state
       await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-  
+
       const urlCall = mockReplace.mock.calls[0][0];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
       const decoded = decodeStateFromUrlParam(encodedQuery!);
@@ -473,19 +492,20 @@ describe('TestRunsTabs Component', () => {
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /> 
-        </FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1)); 
+      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
       mockReplace.mockClear();
-  
+
       // Act: Simulate a child component clearing the visible columns
       act(() => {
         capturedSetSortOrder([]);
       });
-  
+
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalled();
         const urlCall = mockReplace.mock.calls[0][0];
@@ -498,21 +518,23 @@ describe('TestRunsTabs Component', () => {
       });
     });
 
-    test('initialize sortOrder state from URL parameter', async() => {
+    test('initialize sortOrder state from URL parameter', async () => {
       // Arrange: Provide specific URL parameters for this test
       const params = new URLSearchParams();
       params.set('sortOrder', 'status:asc,result:desc');
       mockUseSearchParams.mockReturnValue(params);
-  
+
       // Act
       render(
         <FeatureFlagProvider>
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /></FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
-  
+
       // Assert: Wait for the component to process the params and pass them as props
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalled();
@@ -542,7 +564,9 @@ describe('TestRunsTabs Component', () => {
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /></FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       expect(global.fetch).not.toHaveBeenCalled();
@@ -556,7 +580,8 @@ describe('TestRunsTabs Component', () => {
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
           />
-        </FeatureFlagProvider>, { wrapper }
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
       expect(global.fetch).not.toHaveBeenCalled();
@@ -567,16 +592,18 @@ describe('TestRunsTabs Component', () => {
     });
 
     test('serves data from cache and does not refetch when switching tabs with same query', async () => {
-      mockUseSearchParams.mockReturnValue((new URLSearchParams("requestor=user1&result=passed")));
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('requestor=user1&result=passed'));
       render(
         <FeatureFlagProvider>
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /></FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
-      // Initial fetch 
+      // Initial fetch
       const resultsTab = screen.getByRole('tab', { name: 'Results' });
       fireEvent.click(resultsTab);
       await waitFor(() => expect(resultsTab).toHaveAttribute('aria-selected', 'true'));
@@ -593,21 +620,25 @@ describe('TestRunsTabs Component', () => {
     });
 
     test('does NOT trigger a new fetch when a UI-only param changes', async () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed"));
-      const {rerender} = render(
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('requestor=user1&result=passed'));
+      const { rerender } = render(
         <FeatureFlagProvider>
           <TestRunsTabs
             requestorNamesPromise={mockRequestorNamesPromise}
             resultsNamesPromise={mockResultsNamesPromise}
-          /></FeatureFlagProvider>, { wrapper }
+          />
+        </FeatureFlagProvider>,
+        { wrapper }
       );
 
-      // Initial fetch 
+      // Initial fetch
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
       await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
 
       // Change a UI-only param (e.g., visibleColumns)
-      mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&visibleColumns=status,result"));
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('requestor=user1&result=passed&visibleColumns=status,result')
+      );
       rerender(
         <FeatureFlagProvider>
           <TestRunsTabs
@@ -622,23 +653,26 @@ describe('TestRunsTabs Component', () => {
     });
   });
 
-  test('check that we are sending an API request when we expect to', async() => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed"));
-    const {rerender} = render(
+  test('check that we are sending an API request when we expect to', async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('requestor=user1&result=passed'));
+    const { rerender } = render(
       <FeatureFlagProvider>
         <TestRunsTabs
           requestorNamesPromise={mockRequestorNamesPromise}
           resultsNamesPromise={mockResultsNamesPromise}
         />
-      </FeatureFlagProvider>, { wrapper }
+      </FeatureFlagProvider>,
+      { wrapper }
     );
 
-    // Initial fetch 
+    // Initial fetch
     fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
 
     // Change tags param
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag1,tag2"));
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams('requestor=user1&result=passed&tags=tag1,tag2')
+    );
     rerender(
       <FeatureFlagProvider>
         <TestRunsTabs
@@ -651,7 +685,9 @@ describe('TestRunsTabs Component', () => {
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
 
     // Change the tags order without changing the tags themselves
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag2,tag1"));
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams('requestor=user1&result=passed&tags=tag2,tag1')
+    );
     rerender(
       <FeatureFlagProvider>
         <TestRunsTabs
@@ -664,7 +700,9 @@ describe('TestRunsTabs Component', () => {
     await waitFor(() => expect(global.fetch).not.toHaveBeenCalledTimes(3));
 
     // Delete a tag
-    mockUseSearchParams.mockReturnValue(new URLSearchParams("requestor=user1&result=passed&tags=tag2"));
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams('requestor=user1&result=passed&tags=tag2')
+    );
     rerender(
       <FeatureFlagProvider>
         <TestRunsTabs
@@ -679,17 +717,44 @@ describe('TestRunsTabs Component', () => {
   });
 
   describe('Sorting Logic', () => {
-
     const unsortedRuns = [
-      { runId: '1', testStructure: { runName: 'C Run', status: 'Passed', requestor: 'A User', tags: ['A tag'] } },
-      { runId: '2', testStructure: { runName: 'A Run', status: 'Failed', requestor: 'B User', tags: ['B tag'] } },
-      { runId: '3', testStructure: { runName: 'B Run', status: 'Passed', requestor: 'C User', tags: ['A tag', 'C tag']}},
-      { runId: '0', testStructure: { runName: 'D Run', status:'Passed', requestor: 'A User', tags: ['D tag', 'A tag']}}
+      {
+        runId: '1',
+        testStructure: { runName: 'C Run', status: 'Passed', requestor: 'A User', tags: ['A tag'] },
+      },
+      {
+        runId: '2',
+        testStructure: { runName: 'A Run', status: 'Failed', requestor: 'B User', tags: ['B tag'] },
+      },
+      {
+        runId: '3',
+        testStructure: {
+          runName: 'B Run',
+          status: 'Passed',
+          requestor: 'C User',
+          tags: ['A tag', 'C tag'],
+        },
+      },
+      {
+        runId: '0',
+        testStructure: {
+          runName: 'D Run',
+          status: 'Passed',
+          requestor: 'A User',
+          tags: ['D tag', 'A tag'],
+        },
+      },
     ];
 
     const defaultTransformedRun = {
-      bundle: "N/A", group: "N/A", package: "N/A", result: "N/A", submissionId: "N/A",
-      submittedAt: "N/A", testName: "N/A", runName: "N/A"
+      bundle: 'N/A',
+      group: 'N/A',
+      package: 'N/A',
+      result: 'N/A',
+      submissionId: 'N/A',
+      submittedAt: 'N/A',
+      testName: 'N/A',
+      runName: 'N/A',
     };
 
     beforeEach(() => {
@@ -708,8 +773,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -717,10 +785,38 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
         expect(lastCallArgs.runsList).toEqual([
-          { ...defaultTransformedRun, id: '2', runName: 'A Run', status: 'Failed', requestor: 'B User', tags: 'B tag' },
-          { ...defaultTransformedRun, id: '3', runName: 'B Run', status: 'Passed', requestor: 'C User', tags: 'A tag, C tag' },
-          { ...defaultTransformedRun, id: '1', runName: 'C Run', status: 'Passed', requestor: 'A User', tags: 'A tag' },
-          { ...defaultTransformedRun, id: '0', runName: 'D Run', status:'Passed', requestor: 'A User', tags: 'D tag, A tag'}
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            runName: 'A Run',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: 'B tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            runName: 'B Run',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: 'A tag, C tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            runName: 'C Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '0',
+            runName: 'D Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'D tag, A tag',
+          },
         ]);
       });
     });
@@ -732,8 +828,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -741,10 +840,38 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
         expect(lastCallArgs.runsList).toEqual([
-          { ...defaultTransformedRun, id: '0', runName: 'D Run', status:'Passed', requestor: 'A User', tags: 'D tag, A tag'},
-          { ...defaultTransformedRun, id: '1', runName: 'C Run', status: 'Passed', requestor: 'A User', tags: 'A tag' },
-          { ...defaultTransformedRun, id: '3', runName: 'B Run', status: 'Passed', requestor: 'C User', tags: 'A tag, C tag' },
-          { ...defaultTransformedRun, id: '2', runName: 'A Run', status: 'Failed', requestor: 'B User', tags: 'B tag' },
+          {
+            ...defaultTransformedRun,
+            id: '0',
+            runName: 'D Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'D tag, A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            runName: 'C Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            runName: 'B Run',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: 'A tag, C tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            runName: 'A Run',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: 'B tag',
+          },
         ]);
       });
     });
@@ -756,8 +883,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -765,14 +895,41 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
         expect(lastCallArgs.runsList).toEqual([
-          { ...defaultTransformedRun, id: '1', runName: 'C Run', status: 'Passed', requestor: 'A User', tags: 'A tag' },
-          { ...defaultTransformedRun, id: '3', runName: 'B Run', status: 'Passed', requestor: 'C User', tags: 'A tag, C tag' },
-          { ...defaultTransformedRun, id: '2', runName: 'A Run', status: 'Failed', requestor: 'B User', tags: 'B tag' },
-          { ...defaultTransformedRun, id: '0', runName: 'D Run', status:'Passed', requestor: 'A User', tags: 'D tag, A tag'}
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            runName: 'C Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            runName: 'B Run',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: 'A tag, C tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            runName: 'A Run',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: 'B tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '0',
+            runName: 'D Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'D tag, A tag',
+          },
         ]);
       });
     });
-
 
     test('sorts correctly with two keys where primary key has higher column order', async () => {
       const params = new URLSearchParams();
@@ -782,8 +939,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -791,19 +951,74 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
         expect(lastCallArgs.runsList).toEqual([
-          { ...defaultTransformedRun, id: '0', runName: 'D Run', status:'Passed', requestor: 'A User', tags: 'D tag, A tag'},
-          { ...defaultTransformedRun, id: '1', runName: 'C Run', status: 'Passed', requestor: 'A User', tags: 'A tag' },
-          { ...defaultTransformedRun, id: '2', runName: 'A Run', status: 'Failed', requestor: 'B User', tags: 'B tag' },
-          { ...defaultTransformedRun, id: '3', runName: 'B Run', status: 'Passed', requestor: 'C User', tags: 'A tag, C tag' },
+          {
+            ...defaultTransformedRun,
+            id: '0',
+            runName: 'D Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'D tag, A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            runName: 'C Run',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            runName: 'A Run',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: 'B tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            runName: 'B Run',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: 'A tag, C tag',
+          },
         ]);
       });
     });
 
     test('sorts by date in ascending order', async () => {
       const mockedRuns = [
-        { runId: '1', testStructure: { queued: '2023-10-11T12:00:00Z', runName: 'Run A', status: 'Passed', requestor: 'A User', tags: ['A tag'] }},
-        { runId: '2', testStructure: { queued: '2023-10-02T12:00:00Z', runName: 'Run B', status: 'Failed', requestor: 'B User', tags: ['B tag'] }},
-        { runId: '3', testStructure: { queued: '2023-10-03T12:00:00Z', runName: 'Run C', status: 'Passed', requestor: 'C User', tags: ['C tag'] }},
+        {
+          runId: '1',
+          testStructure: {
+            queued: '2023-10-11T12:00:00Z',
+            runName: 'Run A',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: ['A tag'],
+          },
+        },
+        {
+          runId: '2',
+          testStructure: {
+            queued: '2023-10-02T12:00:00Z',
+            runName: 'Run B',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: ['B tag'],
+          },
+        },
+        {
+          runId: '3',
+          testStructure: {
+            queued: '2023-10-03T12:00:00Z',
+            runName: 'Run C',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: ['C tag'],
+          },
+        },
       ];
 
       (global.fetch as jest.Mock).mockImplementation(() =>
@@ -819,8 +1034,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -833,21 +1051,51 @@ describe('TestRunsTabs Component', () => {
         const expectedDateRun1 = '2023-10-11T12:00:00Z';
 
         expect(lastCallArgs.runsList).toEqual([
-          { ...defaultTransformedRun, id: '2', submittedAt: expectedDateRun2, runName: 'Run B', status: 'Failed', requestor: 'B User', tags: 'B tag' },
-          { ...defaultTransformedRun, id: '3', submittedAt: expectedDateRun3, runName: 'Run C', status: 'Passed', requestor: 'C User', tags: 'C tag' },
-          { ...defaultTransformedRun, id: '1', submittedAt: expectedDateRun1, runName: 'Run A', status: 'Passed', requestor: 'A User', tags: 'A tag' }
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            submittedAt: expectedDateRun2,
+            runName: 'Run B',
+            status: 'Failed',
+            requestor: 'B User',
+            tags: 'B tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            submittedAt: expectedDateRun3,
+            runName: 'Run C',
+            status: 'Passed',
+            requestor: 'C User',
+            tags: 'C tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            submittedAt: expectedDateRun1,
+            runName: 'Run A',
+            status: 'Passed',
+            requestor: 'A User',
+            tags: 'A tag',
+          },
         ]);
       });
     });
 
     test('sorts correctly with three keys and handles ties at each level', async () => {
       const mockedRuns = [
-        {runId: '1', testStructure: {requestor: 'A User', status: 'Passed', tags: ['B tag'] }},
-        {runId: '2', testStructure: {requestor: 'L User', status: 'Passed', tags: ['C tag']}},
-        {runId: '3', testStructure: {requestor: 'B User', status: 'Passed', tags: ['A tag']}},
-        {runId: '4', testStructure: {requestor: 'L User', status: 'Failed', tags: ['F tag']}},
-        {runId: '5', testStructure: {requestor: 'A User', status: 'Passed', tags: ['A tag, L tag']}},
-        {runId: '6', testStructure: {requestor: 'A User', status: 'Failed', tags: ['A tag, B tag']}}
+        { runId: '1', testStructure: { requestor: 'A User', status: 'Passed', tags: ['B tag'] } },
+        { runId: '2', testStructure: { requestor: 'L User', status: 'Passed', tags: ['C tag'] } },
+        { runId: '3', testStructure: { requestor: 'B User', status: 'Passed', tags: ['A tag'] } },
+        { runId: '4', testStructure: { requestor: 'L User', status: 'Failed', tags: ['F tag'] } },
+        {
+          runId: '5',
+          testStructure: { requestor: 'A User', status: 'Passed', tags: ['A tag, L tag'] },
+        },
+        {
+          runId: '6',
+          testStructure: { requestor: 'A User', status: 'Failed', tags: ['A tag, B tag'] },
+        },
       ];
 
       (global.fetch as jest.Mock).mockImplementation(() =>
@@ -864,8 +1112,11 @@ describe('TestRunsTabs Component', () => {
 
       render(
         <FeatureFlagProvider>
-          <TestRunsTabs requestorNamesPromise={Promise.resolve([])} resultsNamesPromise={Promise.resolve([])} />
-        </FeatureFlagProvider>, 
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
+        </FeatureFlagProvider>,
         { wrapper }
       );
       fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
@@ -873,14 +1124,50 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         const lastCallArgs = TestRunsTableMock.mock.calls.slice(-1)[0][0];
         expect(lastCallArgs.runsList).toEqual([
-          {...defaultTransformedRun, id: '4', requestor: 'L User', status: 'Failed', tags: 'F tag'},
-          {...defaultTransformedRun, id: '2', requestor: 'L User', status: 'Passed', tags: 'C tag'},
-          {...defaultTransformedRun, id: '3', requestor: 'B User', status: 'Passed', tags: 'A tag'},
-          {...defaultTransformedRun, id: '6', requestor: 'A User', status: 'Failed', tags: 'A tag, B tag'},
-          {...defaultTransformedRun, id: '5', requestor: 'A User', status: 'Passed', tags: 'A tag, L tag'},
-          {...defaultTransformedRun, id: '1', requestor: 'A User', status: 'Passed', tags: 'B tag' },
+          {
+            ...defaultTransformedRun,
+            id: '4',
+            requestor: 'L User',
+            status: 'Failed',
+            tags: 'F tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '2',
+            requestor: 'L User',
+            status: 'Passed',
+            tags: 'C tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '3',
+            requestor: 'B User',
+            status: 'Passed',
+            tags: 'A tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '6',
+            requestor: 'A User',
+            status: 'Failed',
+            tags: 'A tag, B tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '5',
+            requestor: 'A User',
+            status: 'Passed',
+            tags: 'A tag, L tag',
+          },
+          {
+            ...defaultTransformedRun,
+            id: '1',
+            requestor: 'A User',
+            status: 'Passed',
+            tags: 'B tag',
+          },
         ]);
       });
     });
   });
-}); 
+});

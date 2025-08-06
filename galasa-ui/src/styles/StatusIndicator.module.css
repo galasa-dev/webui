@@ -5,35 +5,34 @@
  */
 
 .statusPassed {
-    fill: #24a148;
-    display: flex; 
-    flex-direction: column;
-    align-items: center;
+  fill: #24a148;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-  
+
 .statusFailed {
-    fill: #da1e28; 
+  fill: #da1e28;
 }
-  
+
 .statusOther {
-    fill: #8d8d8d; 
+  fill: #8d8d8d;
 }
 
 .statusRequeued {
-    fill: #0f62fe; 
+  fill: #0f62fe;
 }
-  
+
 .statusCancelled {
-    fill: #525252; 
+  fill: #525252;
 }
-  
+
 .statusHung {
-    fill: #f1c21b; 
+  fill: #f1c21b;
 }
 
 .statusContainer {
-    display: flex;     
-    align-items: center;   
-    gap: 0.3rem;        
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
-  

@@ -30,14 +30,16 @@
 }
 
 .iconButton {
-  background:#262626;
+  background: #262626;
   border: none;
   padding: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .iconButton:hover {

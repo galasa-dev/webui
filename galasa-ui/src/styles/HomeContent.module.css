@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-.homeContentWrapper{
-    max-width: 650px; 
-    height: 100%;
-    margin: 4rem auto;
-    display: grid;
-    place-items: center;
-    flex-direction: column;
-    text-align: left;
+.homeContentWrapper {
+  max-width: 650px;
+  height: 100%;
+  margin: 4rem auto;
+  display: grid;
+  place-items: center;
+  flex-direction: column;
+  text-align: left;
 }
 
-.link{
-    text-decoration: none;
+.link {
+  text-decoration: none;
 }

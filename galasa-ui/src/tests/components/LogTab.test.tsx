@@ -14,6 +14,7 @@ jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
 }));
 
+
 // Mock the next-intl translations
 jest.mock("next-intl", () => ({
   useTranslations: () => {
@@ -24,7 +25,7 @@ jest.mock("next-intl", () => ({
       }
       // Provide dummy translations for other keys used in LogTab:
       const dummy: Record<string, string> = {
-        title: "Run Log",
+        title: 'Run Log',
         description:
           "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
         searchPlaceholder: "Find in run log",
@@ -58,12 +59,24 @@ jest.mock('@carbon/react', () => ({
       {...props}
     />
   ),
-  Button: ({ children, onClick, disabled, iconDescription, hasIconOnly, renderIcon, ...props }: any) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    iconDescription,
+    hasIconOnly,
+    renderIcon,
+    ...props
+  }: any) => (
     <button
       onClick={onClick}
       disabled={disabled}
       aria-label={iconDescription}
-      data-testid={hasIconOnly ? `icon-button-${iconDescription?.toLowerCase().replace(/\s+/g, '-')}` : 'button'}
+      data-testid={
+        hasIconOnly
+          ? `icon-button-${iconDescription?.toLowerCase().replace(/\s+/g, '-')}`
+          : 'button'
+      }
       {...props}
     >
       {hasIconOnly ? iconDescription : children}
@@ -123,7 +136,6 @@ Multi-line continuation
 2024-01-01 10:00:06 ERROR Another error occurred`;
 
 describe('LogTab', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -181,14 +193,14 @@ describe('LogTab', () => {
       await screen.findByText(/Connection retry attempt 1/i);
       const targetLineElement = screen.getByText(/Connection retry attempt 1/).closest('div');
 
-      // Assert 
+      // Assert
       expect(scrollIntoViewMock).toHaveBeenCalledTimes(1);
     });
 
     it('does not scroll if initialLine is out of bounds', async () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
-      
+
       render(<LogTab logs={sampleLogs} initialLine={999} />);
 
       await screen.findByText(/Starting application/);
@@ -236,7 +248,6 @@ This is a continuation line
       expect(screen.getByText(/This is a continuation line/)).toBeInTheDocument();
     });
   });
-
 
   describe('Filtering', () => {
     it('renders all filter checkboxes', () => {

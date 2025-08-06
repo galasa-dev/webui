@@ -6,17 +6,22 @@
 
 'use client';
 
-import React, { useTransition } from "react";
-import styles from "@/styles/Selector.module.css"; 
-import { ThemeType, useTheme } from "@/contexts/ThemeContext";
+import React, { useTransition } from 'react';
+import styles from '@/styles/Selector.module.css';
+import { ThemeType, useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon, Laptop } from '@carbon/icons-react';
 import { Tooltip } from '@carbon/react';
-import { Theme } from "@carbon/react";
+import { Theme } from '@carbon/react';
 
 const themeOptions: { id: ThemeType; label: string; icon: React.ReactNode; tooltip: string }[] = [
   { id: 'light', label: 'Light', icon: <Sun size={20} />, tooltip: 'Switch to light mode' },
   { id: 'dark', label: 'Dark', icon: <Moon size={20} />, tooltip: 'Switch to dark mode' },
-  { id: 'system', label: 'System', icon: <Laptop size={20} />, tooltip: 'Switch to system preference' },
+  {
+    id: 'system',
+    label: 'System',
+    icon: <Laptop size={20} />,
+    tooltip: 'Switch to system preference',
+  },
 ];
 
 export default function ThemeSelector() {
@@ -32,7 +37,7 @@ export default function ThemeSelector() {
     });
   };
   let current: 'g10' | 'g90';
-  
+
   if (theme === 'light') {
     current = 'g10';
   } else if (theme === 'dark') {
@@ -42,7 +47,6 @@ export default function ThemeSelector() {
   } else {
     current = 'g10';
   }
-
 
   return (
     <div className={styles.themeSwitcher}>
@@ -59,5 +63,5 @@ export default function ThemeSelector() {
         </Tooltip>
       </Theme>
     </div>
-  );  
+  );
 }

@@ -10,21 +10,17 @@ import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { useRouter } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
-
 const mockRouter = {
   push: jest.fn(() => useRouter().push),
-  refresh: jest.fn(() => useRouter().refresh)
+  refresh: jest.fn(() => useRouter().refresh),
 };
 
 jest.mock('next/navigation', () => ({
-
   useRouter: jest.fn(() => mockRouter),
-
 }));
 jest.mock('@/utils/locale', () => ({
   setUserLocale: jest.fn(), // mock the function
 }));
-
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -36,38 +32,35 @@ jest.mock('next-intl', () => ({
       testRuns: 'Test runs',
     };
     return translations[key] || `Translated ${key}`;
-  }
+  },
 }));
 // Mock matchMedia
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation(query => ({})),
+    value: jest.fn().mockImplementation((query) => ({})),
   });
 });
-
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-
 test('renders the header containing the header menu', () => {
-
   render(
     <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service' />
-    </FeatureFlagProvider>);
-  
+      <PageHeader galasaServiceName="Galasa Service" />
+    </FeatureFlagProvider>
+  );
+
   const headerMenu = screen.getByTestId('header-menu');
   expect(headerMenu).toBeInTheDocument();
-  
 });
 
 test('does NOT render the "Test runs" link by default', () => {
   render(
     <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service' />
+      <PageHeader galasaServiceName="Galasa Service" />
     </FeatureFlagProvider>
   );
 
@@ -80,11 +73,10 @@ test('renders the "Test runs" link when the feature flag is enabled via prop', (
 
   render(
     <FeatureFlagProvider initialFlags={initialFlags}>
-      <PageHeader galasaServiceName='Galasa Service' />
+      <PageHeader galasaServiceName="Galasa Service" />
     </FeatureFlagProvider>
   );
 
-   
   const testRunsLink = screen.getByText('Test runs');
   expect(testRunsLink).toBeInTheDocument();
 });

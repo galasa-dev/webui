@@ -12,15 +12,15 @@ import { SUPPORTED_LOCALES } from '@/utils/constants/common';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "Date/Time Format",
-      "description": "Edit date and time format settings.",
-      "showDatesInBrowserLocale": "browser",
-      "showDatesInCustomLocale": "custom",
-      "selectLocale": "Select Locale",
-      "selectTimeFormat": "Select Time Format",
+      title: 'Date/Time Format',
+      description: 'Edit date and time format settings.',
+      showDatesInBrowserLocale: 'browser',
+      showDatesInCustomLocale: 'custom',
+      selectLocale: 'Select Locale',
+      selectTimeFormat: 'Select Time Format',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
 // Mock the useDateTimeFormat context
@@ -29,7 +29,7 @@ let mockContextValue = {
   preferences: {
     dateTimeFormatType: 'browser',
     locale: 'en-US',
-    timeFormat: '12-hour'
+    timeFormat: '12-hour',
   },
   updatePreferences: mockUpdatePreferences,
 };
@@ -38,8 +38,6 @@ jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => mockContextValue,
 }));
 
-
-
 describe('FormatSection', () => {
   beforeEach(() => {
     // Reset the context value and mock function before each test
@@ -47,7 +45,7 @@ describe('FormatSection', () => {
       preferences: {
         dateTimeFormatType: 'browser',
         locale: 'en-US',
-        timeFormat: '12-hour'
+        timeFormat: '12-hour',
       },
       updatePreferences: mockUpdatePreferences,
     };
@@ -71,7 +69,7 @@ describe('FormatSection', () => {
   });
 
   test('enables custom locale dropdown when custom dateTimeFormatType is selected', () => {
-    const {rerender} = render(<FormatSection />);
+    const { rerender } = render(<FormatSection />);
 
     // Select the custom dateTimeFormatType
     const customRadio = screen.getByRole('radio', { name: /custom/i });
@@ -79,11 +77,11 @@ describe('FormatSection', () => {
 
     expect(mockUpdatePreferences).toHaveBeenCalledWith({ dateTimeFormatType: 'custom' });
     mockContextValue = {
-      ...mockContextValue, 
+      ...mockContextValue,
       preferences: {
         ...mockContextValue.preferences,
         dateTimeFormatType: 'custom',
-      }
+      },
     };
 
     rerender(<FormatSection />);
@@ -104,7 +102,7 @@ describe('FormatSection', () => {
       preferences: {
         ...mockContextValue.preferences,
         dateTimeFormatType: 'custom',
-      }
+      },
     };
     rerender(<FormatSection />);
     mockUpdatePreferences.mockClear();
@@ -115,11 +113,11 @@ describe('FormatSection', () => {
 
     fireEvent.click(localeDropdownButton);
 
-    const frLocale = SUPPORTED_LOCALES.find(l => l.code === 'fr-FR');
+    const frLocale = SUPPORTED_LOCALES.find((l) => l.code === 'fr-FR');
     if (!frLocale) {
       throw new Error('fr-FR locale not found in SUPPORTED_LOCALES');
     }
-    const optionText = `${frLocale.code} ${frLocale.format}`; 
+    const optionText = `${frLocale.code} ${frLocale.format}`;
     fireEvent.click(screen.getByText(optionText));
 
     // Check that updatePreferences was called with the correct payload

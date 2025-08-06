@@ -13,10 +13,10 @@ import fs, { PathLike } from 'fs';
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "title": "Home",
+      title: 'Home',
     };
     return translations[key] || key;
-  }
+  },
 }));
 jest.mock('next-intl/server', () => ({
   getLocale: jest.fn(() => Promise.resolve('en')),
@@ -24,11 +24,11 @@ jest.mock('next-intl/server', () => ({
 }));
 
 jest.mock('fs/promises', () => ({
-  readFile: jest.fn(() => Promise.resolve('Dummy markdown content'))
+  readFile: jest.fn(() => Promise.resolve('Dummy markdown content')),
 }));
 
-jest.mock("path", () => ({
-  join: jest.fn((...args: string[]) => args.join("/")),
+jest.mock('path', () => ({
+  join: jest.fn((...args: string[]) => args.join('/')),
 }));
 
 jest.mock('next/navigation', () => ({
@@ -51,15 +51,14 @@ jest.mock('next/headers', () => ({
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation(query => ({})),
+    value: jest.fn().mockImplementation((query) => ({})),
   });
 });
-
 
 test('renders Galasa header', () => {
   render(
     <FeatureFlagProvider>
-      <PageHeader galasaServiceName='Galasa Service'/>
+      <PageHeader galasaServiceName="Galasa Service" />
     </FeatureFlagProvider>
   );
 
@@ -70,17 +69,14 @@ test('renders Galasa header', () => {
 test('renders Galasa Ecosystem homepage', async () => {
   const homePage = await act(async () => {
     const homePageComponent = await HomePage();
-    return render(
-      <FeatureFlagProvider>
-        {homePageComponent}
-      </FeatureFlagProvider>);
+    return render(<FeatureFlagProvider>{homePageComponent}</FeatureFlagProvider>);
   });
   expect(homePage).toMatchSnapshot();
 });
 
 test('getMarkdownFilePath returns localized path when that file exists', () => {
-  (fs.existsSync as jest.Mock) = jest.fn((filepath: PathLike) =>
-    typeof filepath === 'string' && filepath.includes('home-contents.de.md')
+  (fs.existsSync as jest.Mock) = jest.fn(
+    (filepath: PathLike) => typeof filepath === 'string' && filepath.includes('home-contents.de.md')
   );
 
   const result = getMarkdownFilePath('de');

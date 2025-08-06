@@ -4,17 +4,25 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react'; 
+import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react';
 import styles from '@/styles/TestRunsPage.module.css';
 import TimeframeContent, { calculateSynchronizedState } from './TimeFrameContent';
 import TestRunsTable from './TestRunsTable';
-import SearchCriteriaContent from "./SearchCriteriaContent";
+import SearchCriteriaContent from './SearchCriteriaContent';
 import TableDesignContent from './TableDesignContent';
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { TestRunsData } from "@/utils/testRuns";
-import { useTranslations } from "next-intl";
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { TestRunsData } from '@/utils/testRuns';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
-import { RESULTS_TABLE_COLUMNS, COLUMNS_IDS, TEST_RUNS_QUERY_PARAMS, DAY_MS, TABS_IDS, SEARCH_CRITERIA_KEYS, DEFAULT_VISIBLE_COLUMNS} from '@/utils/constants/common';
+import {
+  RESULTS_TABLE_COLUMNS,
+  COLUMNS_IDS,
+  TEST_RUNS_QUERY_PARAMS,
+  DAY_MS,
+  TABS_IDS,
+  SEARCH_CRITERIA_KEYS,
+  DEFAULT_VISIBLE_COLUMNS,
+} from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues } from '@/utils/interfaces';
@@ -36,11 +44,14 @@ interface TestRunsTabProps {
   resultsNamesPromise: Promise<string[]>;
 }
 
-export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromise}: TestRunsTabProps) {
-  const translations = useTranslations("TestRunsTabs");
+export default function TestRunsTabs({
+  requestorNamesPromise,
+  resultsNamesPromise,
+}: TestRunsTabProps) {
+  const translations = useTranslations('TestRunsTabs');
   const router = useRouter();
   const pathname = usePathname();
-  const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results','graphs'];
+  const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results', 'graphs'];
   const { isFeatureEnabled } = useFeatureFlags();
   const isGraphEnabled = isFeatureEnabled(FEATURE_FLAGS.GRAPH);
   const rawSearchParams = useSearchParams();
@@ -60,14 +71,16 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
   // Initialize selectedIndex based on URL parameters or default to first tab
   const [selectedIndex, setSelectedIndex] = useState(() => {
-    const tabParam = searchParams.get("tab");
+    const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
     return initialIndex !== -1 ? initialIndex : 0;
   });
 
   // Initialize selectedVisibleColumns  based on URL parameters or default values
   const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(
-    () => searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') || DEFAULT_VISIBLE_COLUMNS
+    () =>
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
+      DEFAULT_VISIBLE_COLUMNS
   );
 
   // Initialize columnsOrder based on URL parameters or default to RESULTS_TABLE_COLUMNS
@@ -77,8 +90,9 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
     // Parse the order from the URL parameter
     if (orderParam) {
-      correctOrder = orderParam.split(',')
-        .map(id => RESULTS_TABLE_COLUMNS.find(col => col.id === id))
+      correctOrder = orderParam
+        .split(',')
+        .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
         .filter(Boolean) as ColumnDefinition[];
     }
 
@@ -90,7 +104,9 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
     const initialToDate = toParam ? new Date(toParam) : new Date();
-    const initialFromDate = fromParam ? new Date(fromParam) : new Date(initialToDate.getTime() - DAY_MS);
+    const initialFromDate = fromParam
+      ? new Date(fromParam)
+      : new Date(initialToDate.getTime() - DAY_MS);
     const timezone = getResolvedTimeZone();
     return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
   });
@@ -98,7 +114,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   // Initialize search criteria based on URL parameters
   const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>(() => {
     const criteria: Record<string, string> = {};
-    SEARCH_CRITERIA_KEYS.forEach(key => {
+    SEARCH_CRITERIA_KEYS.forEach((key) => {
       if (searchParams.has(key)) {
         criteria[key] = searchParams.get(key) || '';
       }
@@ -108,9 +124,9 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
 
   // Initialize sortOrder based on URL parameters or default to an empty array
   // URL should look like this sortOrder?result:asc,status:desc
-  const [sortOrder, setSortOrder] = useState<{id: string; order: sortOrderType}[]>(() => {
+  const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>(() => {
     const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
-    let sortOrderArray: {id: string; order: sortOrderType}[] = [];
+    let sortOrderArray: { id: string; order: sortOrderType }[] = [];
     if (sortOrderParam) {
       sortOrderArray = sortOrderParam.split(',').map((item) => {
         const [id, order] = item.split(':');
@@ -119,30 +135,31 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     }
     return sortOrderArray;
   });
-    
+
   // State to track if the component has been initialized
   const [isInitialized, setIsInitialized] = useState(false);
-  useEffect(() => {setIsInitialized(true);}, []);
+  useEffect(() => {
+    setIsInitialized(true);
+  }, []);
 
   // Define the tabs with their corresponding labels, memoized to avoid unnecessary re-renders
   const TABS_CONFIG = useMemo<TabConfig[]>(() => {
     const tabs: TabConfig[] = [
-      { id: TABS_IDS[0], label: translations("tabs.timeframe") },
-      { id: TABS_IDS[1], label: translations("tabs.tableDesign") },
-      { id: TABS_IDS[2], label: translations("tabs.searchCriteria") },
-      { id: TABS_IDS[3], label: translations("tabs.results") },
+      { id: TABS_IDS[0], label: translations('tabs.timeframe') },
+      { id: TABS_IDS[1], label: translations('tabs.tableDesign') },
+      { id: TABS_IDS[2], label: translations('tabs.searchCriteria') },
+      { id: TABS_IDS[3], label: translations('tabs.results') },
     ];
 
     if (isGraphEnabled) {
       tabs.push({
         id: TABS_IDS[4],
-        label: translations("tabs.graph"),
+        label: translations('tabs.graph'),
       });
     }
 
     return tabs;
   }, [translations, isGraphEnabled]);
-
 
   // Save and encode current state to the URL. This is the single source of truth for URL updates.
   useEffect(() => {
@@ -155,19 +172,22 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_CONFIG[selectedIndex].id);
 
     // Table Design
-    if(selectedVisibleColumns.length > 0) {
-      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(","));
+    if (selectedVisibleColumns.length > 0) {
+      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
     } else {
       // If no columns are selected, we can clear the parameter
       params.delete(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS);
     }
     if (sortOrder.length > 0) {
-      params.set(TEST_RUNS_QUERY_PARAMS.SORT_ORDER, sortOrder.map(item => `${item.id}:${item.order}`).join(","));
+      params.set(
+        TEST_RUNS_QUERY_PARAMS.SORT_ORDER,
+        sortOrder.map((item) => `${item.id}:${item.order}`).join(',')
+      );
     } else {
       params.delete(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
     }
-    
-    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map(col => col.id).join(","));
+
+    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
     // Timeframe
     params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
@@ -191,19 +211,30 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
       // If there are no params, clear the URL.
       router.replace(pathname, { scroll: false });
     }
-  }, [selectedVisibleColumns, columnsOrder, sortOrder,isInitialized, pathname, router, selectedIndex, searchParams, timeframeValues,searchCriteria, TABS_CONFIG]);
-
+  }, [
+    selectedVisibleColumns,
+    columnsOrder,
+    sortOrder,
+    isInitialized,
+    pathname,
+    router,
+    selectedIndex,
+    searchParams,
+    timeframeValues,
+    searchCriteria,
+    TABS_CONFIG,
+  ]);
 
   /**
    * Transforms and flattens the raw API data for Carbon DataTable.
    * @param runs - The array of run objects from the API.
    * @returns A new array of flat objects, each with a unique `id` and properties matching the headers.
    */
-  const transformRunsforTable = (runs: Run[]) : runStructure[] => {
+  const transformRunsforTable = (runs: Run[]): runStructure[] => {
     if (!runs) {
       return [];
     }
-  
+
     return runs.map((run) => {
       const structure = run.testStructure || {};
       return {
@@ -223,18 +254,26 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     });
   };
 
-  const handleTabChange = (event: {selectedIndex : number}) => {
+  const handleTabChange = (event: { selectedIndex: number }) => {
     const currentIndex = event.selectedIndex;
     setSelectedIndex(currentIndex);
   };
-
 
   // Create a canonical query key based on the search parameters so that it won't refetch unnecessarily
   const queryKey = useMemo(() => {
     // Parameters that actually affect the data fetch
     const relevantParameters = [
-      TEST_RUNS_QUERY_PARAMS.FROM, TEST_RUNS_QUERY_PARAMS.TO, TEST_RUNS_QUERY_PARAMS.RUN_NAME, TEST_RUNS_QUERY_PARAMS.REQUESTOR, TEST_RUNS_QUERY_PARAMS.GROUP,
-      TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID, TEST_RUNS_QUERY_PARAMS.BUNDLE, TEST_RUNS_QUERY_PARAMS.TEST_NAME, TEST_RUNS_QUERY_PARAMS.RESULT, TEST_RUNS_QUERY_PARAMS.STATUS, TEST_RUNS_QUERY_PARAMS.TAGS
+      TEST_RUNS_QUERY_PARAMS.FROM,
+      TEST_RUNS_QUERY_PARAMS.TO,
+      TEST_RUNS_QUERY_PARAMS.RUN_NAME,
+      TEST_RUNS_QUERY_PARAMS.REQUESTOR,
+      TEST_RUNS_QUERY_PARAMS.GROUP,
+      TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID,
+      TEST_RUNS_QUERY_PARAMS.BUNDLE,
+      TEST_RUNS_QUERY_PARAMS.TEST_NAME,
+      TEST_RUNS_QUERY_PARAMS.RESULT,
+      TEST_RUNS_QUERY_PARAMS.STATUS,
+      TEST_RUNS_QUERY_PARAMS.TAGS,
     ];
 
     // Create a new URLSearchParams object with the data that actually affects data fetch
@@ -244,21 +283,27 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         let value = searchParams.get(key) || '';
 
         // Normalize order-independent parameters
-        if (key === TEST_RUNS_QUERY_PARAMS.TAGS ||
-            key === TEST_RUNS_QUERY_PARAMS.RESULT || 
-            key === TEST_RUNS_QUERY_PARAMS.STATUS || 
-            key === TEST_RUNS_QUERY_PARAMS.REQUESTOR) {
+        if (
+          key === TEST_RUNS_QUERY_PARAMS.TAGS ||
+          key === TEST_RUNS_QUERY_PARAMS.RESULT ||
+          key === TEST_RUNS_QUERY_PARAMS.STATUS ||
+          key === TEST_RUNS_QUERY_PARAMS.REQUESTOR
+        ) {
           value = value?.split(',').sort().join(',');
         }
 
         canonicalParams[key] = value;
       }
     }
-    
+
     return ['testRuns', canonicalParams];
   }, [searchParams]);
 
-  const {data: runsData, isLoading, isError } = useQuery<TestRunsData>({
+  const {
+    data: runsData,
+    isLoading,
+    isError,
+  } = useQuery<TestRunsData>({
     // Cache data based on search parameters
     queryKey: queryKey,
     queryFn: async () => {
@@ -267,7 +312,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch test runs');
       }
-      
+
       return response.json() as Promise<TestRunsData>;
     },
     // Only run the query when the results tab is selected
@@ -283,8 +328,8 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
     if (sortOrder.length !== 0 && runsToSort.length !== 0) {
       return [...runsToSort].sort((runA, runB) => {
         // Sort based on the order of columns in columnsOrder (Assumption: Leftmost has higher priority)
-        for (const {id} of columnsOrder) {
-          const sortConfig = sortOrder.find(order => order.id === id);
+        for (const { id } of columnsOrder) {
+          const sortConfig = sortOrder.find((order) => order.id === id);
 
           // Skip this column if its sort is 'none' or not set.
           if (!sortConfig) {
@@ -315,11 +360,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
   }, [runsData, sortOrder, columnsOrder]);
 
   return (
-    <Tabs 
-      className={styles.tabs}
-      selectedIndex={selectedIndex}
-      onChange={handleTabChange}
-    >
+    <Tabs className={styles.tabs} selectedIndex={selectedIndex} onChange={handleTabChange}>
       <TabList scrollDebounceWait={200} aria-label="Test Runs Tabs">
         {TABS_CONFIG.map((tab) => (
           <Tab key={tab.label}>{tab.label}</Tab>
@@ -328,7 +369,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
       <TabPanels>
         <TabPanel>
           <div className={styles.tabContent}>
-            <TimeframeContent values={timeframeValues} setValues={setTimeframeValues}/>
+            <TimeframeContent values={timeframeValues} setValues={setTimeframeValues} />
           </div>
         </TabPanel>
         <TabPanel>
@@ -369,7 +410,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
             />
           </div>
         </TabPanel>
-        { isGraphEnabled &&
+        {isGraphEnabled && (
           <TabPanel>
             <div className={styles.tabContent}>
               <TestRunGraph
@@ -381,8 +422,7 @@ export default function TestRunsTabs({ requestorNamesPromise, resultsNamesPromis
               />
             </div>
           </TabPanel>
-        }
-        
+        )}
       </TabPanels>
     </Tabs>
   );

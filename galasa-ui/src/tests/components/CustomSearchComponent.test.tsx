@@ -8,11 +8,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomSearchComponent from '@/components/test-runs/CustomSearchComponent';
 
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "save": "Save",
-      "reset": "Reset",
+      save: 'Save',
+      reset: 'Reset',
     };
     return translations[key] || key;
   },
@@ -78,45 +78,47 @@ describe('CustomSearchComponent', () => {
   it('selects a suggestion on mouse down and hides the list', () => {
     render(<CustomSearchComponent {...defaultProps} allRequestors={allRequestors} />);
     const input = screen.getByPlaceholderText('Enter a requestor name');
-        
+
     fireEvent.focus(input);
     const suggestionItem = screen.getByText('Peter Jones');
-        
+
     fireEvent.mouseDown(suggestionItem);
-        
+
     // Verify onChange was called with the correct value
-    expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: { value: 'Peter Jones' }
-    }));
-  
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { value: 'Peter Jones' },
+      })
+    );
+
     // The list should now be hidden
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
   test('calls onchange when the user types in the input', () => {
     render(<CustomSearchComponent {...defaultProps} allRequestors={allRequestors} />);
-        
+
     const input = screen.getByPlaceholderText('Enter a requestor name');
     fireEvent.change(input, { target: { value: 'Jane' } });
-        
+
     expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 
   test('calls onClear when the clear button is clicked', () => {
     render(<CustomSearchComponent {...defaultProps} value="some value" />);
     const clearButton = screen.getByLabelText('Clear search input');
-        
+
     fireEvent.click(clearButton);
     expect(mockOnClear).toHaveBeenCalledTimes(1);
   });
 
   test('calls onSubmit when the form is submitted', () => {
     render(<CustomSearchComponent {...defaultProps} />);
-    const form = screen.getByTestId('custom-search-form'); 
+    const form = screen.getByTestId('custom-search-form');
     fireEvent.submit(form);
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
   });
-    
+
   test('calls onCancel when the reset button is clicked', () => {
     render(<CustomSearchComponent {...defaultProps} />);
     const cancelButton = screen.getByRole('button', { name: 'Reset' });
@@ -132,9 +134,7 @@ describe('CustomSearchComponent', () => {
     const saveButton = screen.getByRole('button', { name: 'Save' });
     expect(saveButton).toBeEnabled();
 
-    rerender(
-      <CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={true} />
-    );
+    rerender(<CustomSearchComponent {...defaultProps} value="test" disableSaveAndReset={true} />);
     expect(saveButton).toBeDisabled();
 
     rerender(
@@ -142,9 +142,7 @@ describe('CustomSearchComponent', () => {
     );
     expect(saveButton).toBeEnabled();
 
-    rerender(
-      <CustomSearchComponent {...defaultProps} value="" disableSaveAndReset={false} />
-    );
+    rerender(<CustomSearchComponent {...defaultProps} value="" disableSaveAndReset={false} />);
     expect(saveButton).toBeEnabled();
   });
 
@@ -155,17 +153,18 @@ describe('CustomSearchComponent', () => {
     fireEvent.focus(searchInput);
 
     // Navigate to the second item
-    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
-    fireEvent.keyDown(searchInput, {key: "ArrowDown", code: "ArrowDown"});
-    
+    fireEvent.keyDown(searchInput, { key: 'ArrowDown', code: 'ArrowDown' });
+    fireEvent.keyDown(searchInput, { key: 'ArrowDown', code: 'ArrowDown' });
+
     // Press enter
-    fireEvent.keyDown(searchInput, {key: "Enter", code: "Enter"});
+    fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' });
 
     // Check that onchange was called with the selected value
-    expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: { value: 'Jane Smith' }
-    }));
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { value: 'Jane Smith' },
+      })
+    );
     expect(mockOnSubmit).not.toHaveBeenCalled();
-
   });
 });

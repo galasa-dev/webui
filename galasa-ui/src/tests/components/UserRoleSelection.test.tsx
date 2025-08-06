@@ -18,9 +18,7 @@ jest.mock('@carbon/react', () => ({
     // A simple select element that calls onChange with the selected item.
     <select
       data-testid="dropdown"
-      onChange={(e) =>
-        props.onChange({ selectedItem: props.items[Number(e.target.value)] })
-      }
+      onChange={(e) => props.onChange({ selectedItem: props.items[Number(e.target.value)] })}
     >
       {props.items.map((item: any, index: number) => (
         <option key={item.id} value={index}>
@@ -30,27 +28,25 @@ jest.mock('@carbon/react', () => ({
     </select>
   ),
   Loading: (props: any) => <div data-testid="loading">Loading...</div>,
-  InlineNotification: (props: any) => (
-    <div data-testid="notification">{props.title}</div>
-  ),
+  InlineNotification: (props: any) => <div data-testid="notification">{props.title}</div>,
 }));
-
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      "heading": "User Role",
-      "description": "The actions a user can or cannot perform on this Galasa service is controlled by their user role.",
-      "dropdownLabel": "User Role",
-      "resetButton": "Reset",
-      "saveButton": "Save",
-      "toastTitle": "Success",
-      "toastSubtitle": "User role was updated successfully.",
-      "errorTitle": "Something went wrong!",
-      "errorDescription": "Please report the problem to your Galasa Ecosystem administrator."
+      heading: 'User Role',
+      description:
+        'The actions a user can or cannot perform on this Galasa service is controlled by their user role.',
+      dropdownLabel: 'User Role',
+      resetButton: 'Reset',
+      saveButton: 'Save',
+      toastTitle: 'Success',
+      toastSubtitle: 'User role was updated successfully.',
+      errorTitle: 'Something went wrong!',
+      errorDescription: 'Please report the problem to your Galasa Ecosystem administrator.',
     };
     return translations[key] || key;
-  }
+  },
 }));
 
 // --- Mock updateUserRoleAction --- //
@@ -59,13 +55,11 @@ jest.mock('@/actions/userServerActions', () => ({
 }));
 
 const mockRouter = {
-  refresh: jest.fn(() => useRouter().refresh)
+  refresh: jest.fn(() => useRouter().refresh),
 };
 
 jest.mock('next/navigation', () => ({
-
   useRouter: jest.fn(() => mockRouter),
-
 }));
 
 // --- Dummy Data --- //
@@ -78,7 +72,7 @@ const dummyProfile: UserData = {
         id: '1',
         name: 'tester',
         description: 'Test developer and runner',
-        assignable: true
+        assignable: true,
       },
     },
   },
@@ -86,17 +80,22 @@ const dummyProfile: UserData = {
 
 const dummyRoles: RBACRole[] = [
   {
-    metadata: { id: '1', name: 'tester', description: 'Test developer and runner', assignable:true },
+    metadata: {
+      id: '1',
+      name: 'tester',
+      description: 'Test developer and runner',
+      assignable: true,
+    },
   },
   {
-    metadata: { id: '2', name: 'admin', description: 'Administrator', assignable:true },
+    metadata: { id: '2', name: 'admin', description: 'Administrator', assignable: true },
   },
   {
-    metadata: { id: '0', name: 'deactivated', description: 'User has no access', assignable:true },
+    metadata: { id: '0', name: 'deactivated', description: 'User has no access', assignable: true },
   },
   {
-    metadata: { id: '3', name: 'owner', description: 'Owner of Galasa service', assignable:false },
-  }
+    metadata: { id: '3', name: 'owner', description: 'Owner of Galasa service', assignable: false },
+  },
 ];
 
 describe('UserRoleSection', () => {
@@ -116,10 +115,7 @@ describe('UserRoleSection', () => {
     });
 
     render(
-      <UserRoleSection
-        userProfilePromise={userProfilePromise}
-        roleDetailsPromise={rolesPromise}
-      />
+      <UserRoleSection userProfilePromise={userProfilePromise} roleDetailsPromise={rolesPromise} />
     );
 
     // Initially, the loading indicator should be visible.
@@ -146,12 +142,7 @@ describe('UserRoleSection', () => {
       setTimeout(() => resolve([]), 1000);
     });
 
-    render(
-      <UserRoleSection
-        userProfilePromise={errorPromise}
-        roleDetailsPromise={rolesPromise}
-      />
-    );
+    render(<UserRoleSection userProfilePromise={errorPromise} roleDetailsPromise={rolesPromise} />);
 
     await waitFor(() => {
       expect(screen.getByText('Something went wrong!')).toBeInTheDocument();

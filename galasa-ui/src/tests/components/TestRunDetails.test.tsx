@@ -10,7 +10,6 @@ import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import { TEST_RUN_PAGE_TABS } from '@/utils/constants/common';
 
-
 function setup<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason?: any) => void;
@@ -42,16 +41,13 @@ jest.mock('next-intl', () => ({
 const mockFormatDate = (date: Date) => date.toLocaleString();
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
-    formatDate: mockFormatDate, 
-  })
+    formatDate: mockFormatDate,
+  }),
 }));
-
 
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => {
-    const testRunsItem = breadCrumbItems.find(
-      (item) => item.title === 'testRuns'
-    );
+    const testRunsItem = breadCrumbItems.find((item) => item.title === 'testRuns');
     return (
       <nav data-testid="breadcrumb" data-route={testRunsItem?.route || ''}>
         Breadcrumb
@@ -66,9 +62,7 @@ jest.mock('@/components/common/BreadCrumb', () => {
 });
 
 jest.mock('@/components/PageTile', () => {
-  const PageTile = ({ translationKey }: any) => (
-    <h1 data-testid="pagetile">{translationKey}</h1>
-  );
+  const PageTile = ({ translationKey }: any) => <h1 data-testid="pagetile">{translationKey}</h1>;
   PageTile.displayName = 'PageTile';
   return {
     __esModule: true,
@@ -77,9 +71,7 @@ jest.mock('@/components/PageTile', () => {
 });
 
 jest.mock('@/components/test-runs/OverviewTab', () => {
-  const OverviewTab = ({ metadata }: any) => (
-    <div>OverviewTab result={metadata?.result}</div>
-  );
+  const OverviewTab = ({ metadata }: any) => <div>OverviewTab result={metadata?.result}</div>;
   OverviewTab.displayName = 'OverviewTab';
   return {
     __esModule: true,
@@ -93,7 +85,7 @@ jest.mock('@/components/test-runs/MethodsTab', () => {
       <p>MethodsTab count={methods?.length}</p>
       <button
         data-testid="mock-method-button"
-        onClick={() => onMethodClick({runLogStartLine: 123})}
+        onClick={() => onMethodClick({ runLogStartLine: 123 })}
       >
         Clickable Mock Method
       </button>
@@ -147,9 +139,7 @@ jest.mock('@/components/test-runs/TestRunSkeleton', () => {
 });
 
 jest.mock('@/components/common/StatusIndicator', () => {
-  const StatusIndicator = ({ status }: any) => (
-    <span>StatusIndicator:{status}</span>
-  );
+  const StatusIndicator = ({ status }: any) => <span>StatusIndicator:{status}</span>;
   StatusIndicator.displayName = 'StatusIndicator';
   return {
     __esModule: true,
@@ -166,8 +156,10 @@ jest.mock('@carbon/react', () => {
   };
   const Tab = ({ children, renderIcon }: any) => {
     const tabText = children;
-    const tabIndex = ['tabs.overview', 'tabs.methods', 'tabs.runLog', 'tabs.artifacts'].indexOf(tabText);
-    
+    const tabIndex = ['tabs.overview', 'tabs.methods', 'tabs.runLog', 'tabs.artifacts'].indexOf(
+      tabText
+    );
+
     const Icon = renderIcon;
 
     return (
@@ -203,7 +195,7 @@ jest.mock('@carbon/react', () => {
       </button>
     );
   };
-  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification, Button].forEach(c => {
+  [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification, Button].forEach((c) => {
     // @ts-ignore
     // Assigning displayName to function components for better debugging in React DevTools.
     // TypeScript does not allow this by default, so we suppress the error.
@@ -221,17 +213,14 @@ beforeAll(() => {
   });
 });
 
-
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
   cleanArtifactPath: jest.fn((path: string) => path.replace(/^\//, '')),
 }));
 
-
 const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.Mock;
 const mockHandleDownload = handleDownload as jest.Mock;
 const mockCleanArtifactPath = cleanArtifactPath as jest.Mock;
-
 
 describe('TestRunDetails', () => {
   const runId = 'run-123';
@@ -247,7 +236,6 @@ describe('TestRunDetails', () => {
     mockHandleDownload.mockClear();
     mockCleanArtifactPath.mockClear();
   });
-
 
   it('shows the skeleton while loading', async () => {
     const runDetailsDeferred = setup<any>();
@@ -330,9 +318,7 @@ describe('TestRunDetails', () => {
     expect(screen.getByText('MethodsTab count=2')).toBeInTheDocument();
     expect(screen.getByText('LogTab logs=This is the log')).toBeInTheDocument();
     expect(
-      screen.getByText(
-        `ArtifactsTab count=2 runName=MyRun runId=${runId}`
-      )
+      screen.getByText(`ArtifactsTab count=2 runName=MyRun runId=${runId}`)
     ).toBeInTheDocument();
 
     expect(screen.getByText('StatusIndicator:FAIL')).toBeInTheDocument();
@@ -374,16 +360,32 @@ describe('TestRunDetails', () => {
         runLogPromise={runLogDeferred.promise}
       />
     );
-  
+
     await act(async () => {
-      runDetailsDeferred.resolve({ testStructure: { methods: [], result: 'PASS', status: 'OK', runName: 'X', testShortName: 't', bundle: '', submissionId: '', group: '', requestor: '', queued: '', startTime: '', endTime: '', tags: [] } });
+      runDetailsDeferred.resolve({
+        testStructure: {
+          methods: [],
+          result: 'PASS',
+          status: 'OK',
+          runName: 'X',
+          testShortName: 't',
+          bundle: '',
+          submissionId: '',
+          group: '',
+          requestor: '',
+          queued: '',
+          startTime: '',
+          endTime: '',
+          tags: [],
+        },
+      });
       runArtifactsDeferred.resolve([]);
       runLogDeferred.resolve('');
     });
-  
+
     const spy = jest.spyOn(navigator.clipboard, 'writeText');
     fireEvent.click(screen.getByTestId('icon-Share'));
-  
+
     expect(spy).toHaveBeenCalledWith(window.location.href);
     spy.mockRestore();
   });
@@ -392,7 +394,7 @@ describe('TestRunDetails', () => {
     beforeEach(() => {
       global.fetch = jest.fn();
     });
-    
+
     afterEach(() => {
       (global.fetch as jest.Mock).mockRestore();
     });
@@ -461,7 +463,7 @@ describe('TestRunDetails', () => {
       expect(fetch).toHaveBeenCalledWith(
         `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`
       );
-      
+
       expect(handleDownload).toHaveBeenCalledWith(mockBlob, 'TestRun-from-server.zip');
       // Ensure loading state is gone
       expect(screen.queryByText('Loading')).not.toBeInTheDocument();
@@ -562,9 +564,9 @@ describe('TestRunDetails', () => {
 
       // Check that the router has been called correctly
       expect(mockRouter.replace).toHaveBeenCalledTimes(1);
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        `/test-runs/some-run-id?tab=methods`, {scroll: false}
-      );
+      expect(mockRouter.replace).toHaveBeenCalledWith(`/test-runs/some-run-id?tab=methods`, {
+        scroll: false,
+      });
 
       // Click on the "Artifacts" tab
       const artifactsTabButton = screen.getByRole('tab', { name: 'tabs.artifacts' });
@@ -572,9 +574,9 @@ describe('TestRunDetails', () => {
 
       // Check that the router has been called correctly
       expect(mockRouter.replace).toHaveBeenCalledTimes(2);
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        '/test-runs/some-run-id?tab=artifacts', { scroll: false }
-      );
+      expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs/some-run-id?tab=artifacts', {
+        scroll: false,
+      });
     });
 
     test('navigates to the log tab with the correct line number when a method is clicked', async () => {
@@ -615,19 +617,15 @@ describe('TestRunDetails', () => {
       const expectedLineParam = `line=123`;
 
       expect(mockRouter.replace).toHaveBeenCalledTimes(2); // 1st for tab change, 2nd for method click
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        expect.stringContaining(expectedTabParam),
-        { scroll: false }
-      );
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        expect.stringContaining(expectedLineParam),
-        { scroll: false }
-      );
+      expect(mockRouter.replace).toHaveBeenCalledWith(expect.stringContaining(expectedTabParam), {
+        scroll: false,
+      });
+      expect(mockRouter.replace).toHaveBeenCalledWith(expect.stringContaining(expectedLineParam), {
+        scroll: false,
+      });
 
       const expectedUrl = `/test-runs/some-run-id?${expectedTabParam}&${expectedLineParam}`;
       expect(mockRouter.replace).toHaveBeenLastCalledWith(expectedUrl, { scroll: false });
-
     });
   });
-
 });

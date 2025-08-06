@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-.info{
-    display: flex;
-    align-items: center;
+.info {
+  display: flex;
+  align-items: center;
 }
 
-.infoValue{
-    margin-left: 0.5rem;
+.infoValue {
+  margin-left: 0.5rem;
 }

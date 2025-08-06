@@ -24,15 +24,12 @@ jest.mock('jszip', () => {
   }));
 });
 
-
 const mockDownloadArtifactFromServer = downloadArtifactFromServer as jest.Mock;
 const mockCleanArtifactPath = cleanArtifactPath as jest.Mock;
 const mockFetchRunDetailLogs = fetchRunDetailLogs as jest.Mock;
 const mockFetchTestArtifacts = fetchTestArtifacts as jest.Mock;
 
-
-describe('GET /internal-api/test-runs/[runId]/zip' , () => {
-   
+describe('GET /internal-api/test-runs/[runId]/zip', () => {
   beforeEach(() => {
     mockGenerateAsync.mockClear();
     jest.clearAllMocks();
@@ -40,15 +37,11 @@ describe('GET /internal-api/test-runs/[runId]/zip' , () => {
   const mockRunName = 'TestRun';
   const mockRunId = '12345';
 
-
   test('should create a zip file with run log and artifacts and returns it correctly', async () => {
     // Arrange: Set up the expected return values for all mocked functions
     const mockLogContent = 'Log Content';
-    const mockArtifacts = [
-      { path: '/log/debug.log'},
-      { path: 'images/screenshot.png' }
-    ];
-    const mockArtifactContent = {base64: 'BASE64_MOCK_CONTENT' };
+    const mockArtifacts = [{ path: '/log/debug.log' }, { path: 'images/screenshot.png' }];
+    const mockArtifactContent = { base64: 'BASE64_MOCK_CONTENT' };
     const mockZipBuffer = Buffer.from('this-is-the-mock-zip-file');
 
     mockFetchRunDetailLogs.mockResolvedValue(mockLogContent);
@@ -98,7 +91,7 @@ describe('GET /internal-api/test-runs/[runId]/zip' , () => {
   test('should use a fallback filename if runName is not provided', async () => {
     // Arrange
     mockFetchRunDetailLogs.mockResolvedValue('');
-    mockFetchTestArtifacts.mockResolvedValue([]); 
+    mockFetchTestArtifacts.mockResolvedValue([]);
     mockGenerateAsync.mockResolvedValue(Buffer.from(''));
 
     // Simulate a request without a query parameter
@@ -110,9 +103,6 @@ describe('GET /internal-api/test-runs/[runId]/zip' , () => {
 
     // Assert
     expect(response.status).toBe(200);
-    expect(response.headers.get('Content-Disposition')).toBe(
-      'attachment; filename="test-run.zip"'
-    );
+    expect(response.headers.get('Content-Disposition')).toBe('attachment; filename="test-run.zip"');
   });
-
 });

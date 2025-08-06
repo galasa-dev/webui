@@ -3,12 +3,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-"use client";
+'use client';
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styles from "@/styles/TestRun.module.css";
-import { Dashboard, Code, CloudLogging, RepoArtifact, Share, CloudDownload } from '@carbon/icons-react';
+import styles from '@/styles/TestRun.module.css';
+import {
+  Dashboard,
+  Code,
+  CloudLogging,
+  RepoArtifact,
+  Share,
+  CloudDownload,
+} from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
 import ErrorPage from '@/app/error/page';
@@ -27,7 +34,7 @@ import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {SINGLE_RUN_QUERY_PARAMS, TEST_RUN_PAGE_TABS} from '@/utils/constants/common';
+import { SINGLE_RUN_QUERY_PARAMS, TEST_RUN_PAGE_TABS } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
 
 interface TestRunDetailsProps {
@@ -38,9 +45,14 @@ interface TestRunDetailsProps {
 }
 
 // Type the props directly on the function's parameter
-const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsPromise }: TestRunDetailsProps) => {
-  const translations = useTranslations("TestRunDetails");
-  const {breadCrumbItems } = useHistoryBreadCrumbs();
+const TestRunDetails = ({
+  runId,
+  runDetailsPromise,
+  runLogPromise,
+  runArtifactsPromise,
+}: TestRunDetailsProps) => {
+  const translations = useTranslations('TestRunDetails');
+  const { breadCrumbItems } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -48,7 +60,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactIndexEntry[]>([]);
-  const [logs, setLogs] = useState<string>("");
+  const [logs, setLogs] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -57,37 +69,59 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
   const { formatDate } = useDateTimeFormat();
 
   // Get the selected tab index from the URL or default to the first tab
-  const [selectedTabIndex, setSelectedTabIndex] = useState(searchParams.get('tab') ? 
-    TEST_RUN_PAGE_TABS.indexOf(searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!) : 0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(
+    searchParams.get('tab')
+      ? TEST_RUN_PAGE_TABS.indexOf(searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!)
+      : 0
+  );
 
-  const extractRunDetails = useCallback((runDetails: Run) => {
-    setMethods(runDetails.testStructure?.methods || []);
-    // Build run metadata object
-    const runMetadata: RunMetadata = {
-      runId: runId,
-      result: runDetails.testStructure?.result!,
-      status: runDetails.testStructure?.status!,
-      runName: runDetails.testStructure?.runName!,
-      testName: runDetails.testStructure?.testShortName!,
-      bundle: runDetails.testStructure?.bundle!,
-      submissionId: runDetails.testStructure?.submissionId!,
-      group: runDetails.testStructure?.group!,
-      package: runDetails.testStructure?.testName?.substring(0, runDetails.testStructure?.testName.lastIndexOf('.')) || 'N/A',
-      requestor: runDetails.testStructure?.requestor!,
-      rawSubmittedAt: runDetails.testStructure?.queued,
-      submitted: runDetails.testStructure?.queued ? formatDate(new Date(runDetails.testStructure?.queued!)) : '-',
-      startedAt: runDetails.testStructure?.startTime ? formatDate(new Date(runDetails.testStructure?.startTime!)) : '-',
-      finishedAt: runDetails.testStructure?.endTime ? formatDate(new Date(runDetails.testStructure?.endTime)) : '-',
-      duration: (runDetails.testStructure?.startTime && runDetails.testStructure?.endTime) ? getIsoTimeDifference(runDetails.testStructure?.startTime, runDetails.testStructure?.endTime) : '-',
-      tags: runDetails.testStructure?.tags!
-    };
+  const extractRunDetails = useCallback(
+    (runDetails: Run) => {
+      setMethods(runDetails.testStructure?.methods || []);
+      // Build run metadata object
+      const runMetadata: RunMetadata = {
+        runId: runId,
+        result: runDetails.testStructure?.result!,
+        status: runDetails.testStructure?.status!,
+        runName: runDetails.testStructure?.runName!,
+        testName: runDetails.testStructure?.testShortName!,
+        bundle: runDetails.testStructure?.bundle!,
+        submissionId: runDetails.testStructure?.submissionId!,
+        group: runDetails.testStructure?.group!,
+        package:
+          runDetails.testStructure?.testName?.substring(
+            0,
+            runDetails.testStructure?.testName.lastIndexOf('.')
+          ) || 'N/A',
+        requestor: runDetails.testStructure?.requestor!,
+        rawSubmittedAt: runDetails.testStructure?.queued,
+        submitted: runDetails.testStructure?.queued
+          ? formatDate(new Date(runDetails.testStructure?.queued!))
+          : '-',
+        startedAt: runDetails.testStructure?.startTime
+          ? formatDate(new Date(runDetails.testStructure?.startTime!))
+          : '-',
+        finishedAt: runDetails.testStructure?.endTime
+          ? formatDate(new Date(runDetails.testStructure?.endTime))
+          : '-',
+        duration:
+          runDetails.testStructure?.startTime && runDetails.testStructure?.endTime
+            ? getIsoTimeDifference(
+                runDetails.testStructure?.startTime,
+                runDetails.testStructure?.endTime
+              )
+            : '-',
+        tags: runDetails.testStructure?.tags!,
+      };
 
-    setRun(runMetadata);
-  },[runId, formatDate]);
+      setRun(runMetadata);
+    },
+    [runId, formatDate]
+  );
 
   useEffect(() => {
     // If run details are already loaded, skip fetching
-    if(run) return;
+    if (run) return;
     const loadRunDetails = async () => {
       setIsLoading(true);
 
@@ -116,8 +150,8 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       await navigator.clipboard.writeText(window.location.href);
       setNotification({
         kind: 'success',
-        title: translations("copiedTitle"),
-        subtitle: translations("copiedMessage")
+        title: translations('copiedTitle'),
+        subtitle: translations('copiedMessage'),
       });
 
       // Hide notification after 6 seconds
@@ -126,17 +160,17 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       console.error('Failed to copy:', err);
       setNotification({
         kind: 'error',
-        title: translations("errorTitle"),
-        subtitle: translations("copyFailedMessage")
+        title: translations('errorTitle'),
+        subtitle: translations('copyFailedMessage'),
       });
     }
   };
 
   const handleDownloadAll = async () => {
     if (!run) return;
-    
+
     setIsDownloading(true);
-    setNotification(null); 
+    setNotification(null);
 
     try {
       const url = new URL(`/internal-api/test-runs/${run.runId}/zip`, window.location.origin);
@@ -161,14 +195,13 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
       // Read the response as a Blob
       const blob = await response.blob();
       handleDownload(blob, filename);
-
     } catch (err) {
       setNotification({
         kind: 'error',
-        title: translations("errorTitle"),
-        subtitle: translations("downloadError")
+        title: translations('errorTitle'),
+        subtitle: translations('downloadError'),
       });
-      console.error("Failed to create zip file:", err);
+      console.error('Failed to create zip file:', err);
     } finally {
       setIsDownloading(false);
     }
@@ -179,10 +212,10 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     router.replace(newUrl, { scroll: false });
   };
 
-  const handleTabChange = (event: {selectedIndex : number}) => {
+  const handleTabChange = (event: { selectedIndex: number }) => {
     const newIndex = event.selectedIndex;
     setSelectedTabIndex(newIndex);
-    
+
     const params = new URLSearchParams(searchParams.toString());
     params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[newIndex]);
     // When switching away from the log tab, remove the line parameter
@@ -218,7 +251,7 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
     <main id="content">
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <Tile id="tile" className={styles.toolbar}>
-        {translations("title", { runName: run?.runName || "Unknown Run Name" })}
+        {translations('title', { runName: run?.runName || 'Unknown Run Name' })}
         <div className={styles.buttonContainer}>
           <Button
             kind="ghost"
@@ -226,14 +259,16 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
             onClick={handleDownloadAll}
             disabled={isDownloading}
             renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
-            iconDescription={isDownloading ? translations('downloading') : translations('downloadArtifacts')}
+            iconDescription={
+              isDownloading ? translations('downloading') : translations('downloadArtifacts')
+            }
             data-testid="icon-download-all"
           />
           <Button
             kind="ghost"
             hasIconOnly
             renderIcon={Share}
-            iconDescription={translations("copyMessage")}
+            iconDescription={translations('copyMessage')}
             onClick={handleShare}
             data-testid="icon-Share"
           />
@@ -255,32 +290,29 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
           <div className={styles.summarySection}>
             <div>
               <span className={styles.summaryStatus}>
-                {translations("status")}: {run?.status}
+                {translations('status')}: {run?.status}
               </span>
               <span className={styles.summaryStatus}>
-                {translations("result")}: <StatusIndicator status={run?.result!} />
+                {translations('result')}: <StatusIndicator status={run?.result!} />
               </span>
             </div>
             <span className={styles.summaryStatus}>
-              {translations("test")}: {run?.testName}
+              {translations('test')}: {run?.testName}
             </span>
           </div>
-          <Tabs
-            selectedIndex={selectedTabIndex}
-            onChange={handleTabChange}
-          >
+          <Tabs selectedIndex={selectedTabIndex} onChange={handleTabChange}>
             <TabList iconSize="lg" className={styles.tabs}>
               <Tab renderIcon={Dashboard} href="#">
-                {translations("tabs.overview")}
+                {translations('tabs.overview')}
               </Tab>
               <Tab renderIcon={Code} href="#">
-                {translations("tabs.methods")}
+                {translations('tabs.methods')}
               </Tab>
               <Tab renderIcon={CloudLogging} href="#">
-                {translations("tabs.runLog")}
+                {translations('tabs.runLog')}
               </Tab>
               <Tab renderIcon={RepoArtifact} href="#">
-                {translations("tabs.artifacts")}
+                {translations('tabs.artifacts')}
               </Tab>
             </TabList>
             <TabPanels>
@@ -288,23 +320,13 @@ const TestRunDetails = ({ runId, runDetailsPromise, runLogPromise, runArtifactsP
                 <OverviewTab metadata={run!} />
               </TabPanel>
               <TabPanel>
-                <MethodsTab 
-                  methods={methods} 
-                  onMethodClick={handleNavigateToLog}
-                />
+                <MethodsTab methods={methods} onMethodClick={handleNavigateToLog} />
               </TabPanel>
               <TabPanel>
-                <LogTab 
-                  logs={logs} 
-                  initialLine={initialLine}
-                />
+                <LogTab logs={logs} initialLine={initialLine} />
               </TabPanel>
               <TabPanel>
-                <ArtifactsTab
-                  artifacts={artifacts}
-                  runId={runId}
-                  runName={run?.runName!}
-                />
+                <ArtifactsTab artifacts={artifacts} runId={runId} runName={run?.runName!} />
               </TabPanel>
             </TabPanels>
           </Tabs>

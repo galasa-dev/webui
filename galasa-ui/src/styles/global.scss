@@ -3,31 +3,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
- @use '@carbon/react';
- @use '@carbon/themes/scss/themes' as *;
- @use '@carbon/themes';
- @use '@carbon/styles';
- 
- :root {
-   @include themes.theme($white); /*Set default to white theme*/}
- @media (prefers-color-scheme: white) {
-   :root {
-     @include themes.theme($g100); /*Use dark theme for dark system preference*/}}
- 
- [data-carbon-theme='light'] {
-   @include themes.theme($white);
- }
- 
- [data-carbon-theme='dark'] {
-   @include themes.theme($g100);
- }
- 
- 
+@use '@carbon/react';
+@use '@carbon/themes/scss/themes' as *;
+@use '@carbon/themes';
+@use '@carbon/styles';
+
+:root {
+  @include themes.theme($white); /*Set default to white theme*/
+}
+@media (prefers-color-scheme: white) {
+  :root {
+    @include themes.theme($g100); /*Use dark theme for dark system preference*/
+  }
+}
+
+[data-carbon-theme='light'] {
+  @include themes.theme($white);
+}
+
+[data-carbon-theme='dark'] {
+  @include themes.theme($g100);
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
@@ -35,13 +37,12 @@ body {
   min-height: 100vh;
 }
 
-main { 
-  flex-grow: 1 //ensure the main content takes up all the space on the page
+main {
+  flex-grow: 1; //ensure the main content takes up all the space on the page
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 #content {

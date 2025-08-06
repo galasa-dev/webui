@@ -3,18 +3,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { AmPm } from "./types/common";
-import moment from "moment-timezone";
+import { AmPm } from './types/common';
+import moment from 'moment-timezone';
 
 export function parseIsoDateTime(isoString: string) {
   // Construct a Date object
   const dt = new Date(isoString);
-  let formattedDateTime = "";
+  let formattedDateTime = '';
 
   if (isNaN(dt.getTime())) {
-    formattedDateTime = "Invalid date";
+    formattedDateTime = 'Invalid date';
   } else {
-
     // Pad helper
     const pad = (n: number) => n.toString().padStart(2, '0');
 
@@ -33,9 +32,7 @@ export function parseIsoDateTime(isoString: string) {
   }
 
   return formattedDateTime;
-
 }
-
 
 /**
  * Calculates the absolute time difference between two ISO timestamps
@@ -52,48 +49,44 @@ export function parseIsoDateTime(isoString: string) {
  * @returns formatted duration string
  */
 export function getIsoTimeDifference(startTime: string, endTime: string): string {
-
-  
   let result: string;
   const dt1 = new Date(startTime);
   const dt2 = new Date(endTime);
 
   // If either parse failed, produce an error message
   if (isNaN(dt1.getTime()) || isNaN(dt2.getTime())) {
-    result = "N/A";
+    result = 'N/A';
   } else {
-
     const startedAt = Date.parse(startTime);
-    const endedAt   = Date.parse(endTime);
+    const endedAt = Date.parse(endTime);
     // Compute absolute delta in seconds
     let delta = Math.abs(endedAt - startedAt) / 1000;
 
     // Break into components
-    const hours   = Math.floor(delta / 3600);
-    delta         -= hours * 3600;
+    const hours = Math.floor(delta / 3600);
+    delta -= hours * 3600;
     const minutes = Math.floor(delta / 60);
     const seconds = Math.round((delta - minutes * 60) * 10) / 10;
 
     const parts = buildTimeDifference(hours, minutes, seconds);
-    result = parts.join(" ");
+    result = parts.join(' ');
   }
 
   return result;
 }
 
-const buildTimeDifference = (hours : number, minutes : number, seconds: number) => {
-
+const buildTimeDifference = (hours: number, minutes: number, seconds: number) => {
   const parts: string[] = [];
 
-  if (hours   > 0) {
-    parts.push(`${hours} hr${hours   !== 1 ? "s" : ""}`);
-  } 
-  
+  if (hours > 0) {
+    parts.push(`${hours} hr${hours !== 1 ? 's' : ''}`);
+  }
+
   if (minutes > 0) {
-    parts.push(`${minutes} min${minutes !== 1 ? "s" : ""}`);
+    parts.push(`${minutes} min${minutes !== 1 ? 's' : ''}`);
   }
   if (seconds > 0 || parts.length === 0) {
-    parts.push(`${seconds} sec${seconds !== 1 ? "s" : ""}`);
+    parts.push(`${seconds} sec${seconds !== 1 ? 's' : ''}`);
   }
 
   return parts;
@@ -119,7 +112,7 @@ const buildTimeDifference = (hours : number, minutes : number, seconds: number) 
  *  To create a Date for July 31, 2025, at 9:55 PM in New York (which is UTC-4):
  * dateTimeLocal2UTC(new Date('2025-07-31'), '09:55', 'PM', 'America/New_York');
  *  The returned Date object's .toISOString() will be "2025-08-01T01:55:00.000Z"
-*/
+ */
 export const dateTimeLocal2UTC = (date: Date, time: string, amPm: AmPm, timezone: string): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   let hours = parseInt(hoursStr, 10);
@@ -128,7 +121,8 @@ export const dateTimeLocal2UTC = (date: Date, time: string, amPm: AmPm, timezone
   if (amPm === 'PM' && hours < 12) {
     hours += 12;
   }
-  if (amPm === 'AM' && hours === 12) { // Handle midnight case
+  if (amPm === 'AM' && hours === 12) {
+    // Handle midnight case
     hours = 0;
   }
 
@@ -178,47 +172,44 @@ export const dateTimeUTC2Local = (date: Date, timezone: string) => {
 
 /**
  * Gets the date and time for "yesterday" at midnight.
- * 
+ *
  * @returns A Date object representing yesterday at midnight.
  */
 export function getYesterday(): Date {
   const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1); 
+  yesterday.setDate(yesterday.getDate() - 1);
 
   // Reset time to midnight
-  yesterday.setHours(0, 0, 0, 0); 
+  yesterday.setHours(0, 0, 0, 0);
   return yesterday;
-};
+}
 
 /**
  * Gets the date and time for "two days ago" at midnight.
- * 
+ *
  * @returns A Date object representing two days ago at midnight.
  */
 export function getAWeekBeforeSubmittedTime(submittedAt: string): string | null {
-
   let result: string | null;
   const submittedDate = new Date(submittedAt);
 
-  if(isNaN(submittedDate.getTime())) {
+  if (isNaN(submittedDate.getTime())) {
     result = null;
   } else {
-
     const weekBefore = new Date();
-    weekBefore.setDate(weekBefore.getDate() - 7); 
+    weekBefore.setDate(weekBefore.getDate() - 7);
 
     // Reset time to midnight
-    weekBefore.setHours(0, 0, 0, 0); 
+    weekBefore.setHours(0, 0, 0, 0);
     result = weekBefore.toISOString();
-  
   }
 
   return result;
-};
+}
 
 /**
  * Gets the date and time for "one month ago" at midnight.
- * 
+ *
  * @returns A Date object representing one month ago at midnight.
  */
 export function getOneMonthAgo(): string {
@@ -231,7 +222,7 @@ export function getOneMonthAgo(): string {
 /**
  * Accurately adds a number of months to a date, handling end-of-month edge cases.
  * If the original day doesn't exist in the target month, it will use the last valid day.
- * 
+ *
  * @param date The starting date.
  * @param months The number of months to add.
  * @returns A new Date object.
@@ -248,7 +239,6 @@ export function addMonths(date: Date, months: number): Date {
   return newDate;
 }
 
-
 /**
  * Parses a time string and validates it.
  * If the string is a valid time (e.g., "9:5", "14:30"), it returns an object with the hour and minute.
@@ -258,7 +248,7 @@ export function addMonths(date: Date, months: number): Date {
  * @returns {{hour: number, minute: number} | null} The parsed time parts or null if invalid.
  */
 export const parseAndValidateTime = (timeString: string) => {
-  if(!timeString) return null;
+  if (!timeString) return null;
 
   let parsedTime = null;
 
@@ -269,15 +259,13 @@ export const parseAndValidateTime = (timeString: string) => {
   const parts = timeString.trim().split(':');
 
   if (parts.length === TIME_PARTS_EXPECTED) {
-    
     // Parse hours and minutes as base-10 integers
     const hour = parseInt(parts[0], DECIMAL_RADIX);
     const minute = parseInt(parts[1], DECIMAL_RADIX);
 
     // Validate hour and minute ranges for 12-hour time
-    const isValid = !isNaN(hour) && !isNaN(minute) &&
-                    hour >= 0 && hour <= 12 &&
-                    minute >= 0 && minute <= 59;
+    const isValid =
+      !isNaN(hour) && !isNaN(minute) && hour >= 0 && hour <= 12 && minute >= 0 && minute <= 59;
 
     // If valid, format the time as "HH:MM"
     if (isValid) {

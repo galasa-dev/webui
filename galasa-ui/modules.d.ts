@@ -3,4 +3,4 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-declare module '@carbon/react'
+declare module '@carbon/react';

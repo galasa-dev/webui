@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { TimeZone } from "../types/dateTimeSettings";
+import { TimeZone } from '../types/dateTimeSettings';
 
 export const SUPPORTED_TIMEZONES: TimeZone[] = [
   // --- Core & Reference ---
