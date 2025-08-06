@@ -48,6 +48,8 @@ interface LogTabProps {
 interface selectedRange {
   startLine: number;
   endLine: number;
+  startOffset: number;
+  endOffset: number;
 }
 
 export default function LogTab({ logs, initialLine }: LogTabProps) {
@@ -109,39 +111,45 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     }));
   };
 
-  const handleSelection = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+  const handleSelection = useCallback(() => {
     // Get the current selection from the browser
     const selected = window.getSelection();
 
     // Ignore if no selection or just a single click
-    if (!selected || selected.isCollapsed) {
-      setSelectedRange(null);
-      return;
-    }
+    if (!selected || selected.isCollapsed) return;
 
     // Set the selection state with start and end lines
-    const startLine = selected.anchorNode?.parentElement?.closest('[id^="log-line-"]');
-    const endLine = selected.focusNode?.parentElement?.closest('[id^="log-line-"]');
+    const startLineEl = selected.anchorNode?.parentElement?.closest('[id^="log-line-"]');
+    const endLineEl = selected.focusNode?.parentElement?.closest('[id^="log-line-"]');
 
-    if (startLine && endLine) {
-      setSelectedRange({
-        startLine: startLine ? parseInt(startLine.attributes[0].value.split('-')[2]) : 0,
-        endLine: endLine ? parseInt(endLine.attributes[0].value.split('-')[2]) : 0,
-      });
+    if (startLineEl && endLineEl) {
+      const anchorLineNum = parseInt(startLineEl.id.split('-')[2]);
+      const focusLineNum = parseInt(endLineEl.id.split('-')[2]);
+
+      // Determine the true start/end regardless of selection direction
+      const isSelectingForward =
+        anchorLineNum < focusLineNum ||
+        (anchorLineNum === focusLineNum && selected.anchorOffset <= selected.focusOffset);
+
+      const startLine = isSelectingForward ? anchorLineNum : focusLineNum;
+      const endLine = isSelectingForward ? focusLineNum : anchorLineNum;
+      const startOffset = isSelectingForward ? selected.anchorOffset : selected.focusOffset;
+      const endOffset = isSelectingForward ? selected.focusOffset : selected.anchorOffset;
+
+      setSelectedRange({ startLine, endLine, startOffset, endOffset });
     }
   }, []);
 
   const handleCopyPermalink = () => {
     if (!selectedRange) return;
 
-    // Ensure start/end lines are ordered correctly, as users can select upwards
-    const start = Math.min(selectedRange.startLine, selectedRange.endLine);
-    const end = Math.max(selectedRange.startLine, selectedRange.endLine);
+    // Use the stored logical start/end from the state
+    const { startLine, endLine, startOffset, endOffset } = selectedRange;
 
     // Construct the base URL from its parts to explicitly exclude any existing hash
     const baseUrl = window.location.origin + window.location.pathname + window.location.search;
 
-    const permalink = `${baseUrl}#log-${start}-${end}`;
+    const permalink = `${baseUrl}#log-${startLine}-${startOffset}-${endLine}-${endOffset}`;
 
     navigator.clipboard.writeText(permalink);
 
@@ -336,39 +344,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     [searchRegex, debouncedSearchTerm, searchMatches, currentMatchIndex]
   );
 
-  const highlightSelection = useCallback(() => {
-    if (!selectedRange || !logContainerRef.current) return;
-
-    // Ensure start/end lines are ordered correctly, as user can select upwards
-    const startLineNum = Math.min(selectedRange.startLine, selectedRange.endLine);
-    const endLineNum = Math.max(selectedRange.startLine, selectedRange.endLine);
-
-    const startElement = document.getElementById(`log-line-${startLineNum}`);
-    const endElement = document.getElementById(`log-line-${endLineNum}`);
-
-    // Target the tags which contain the actual log content
-    const startPre = startElement?.querySelector(`.${styles.lineNumberCol}`);
-    const endPre = endElement?.querySelector('pre');
-
-    if (startPre?.firstChild && endPre?.lastChild) {
-      const range = document.createRange();
-
-      // Set range start at the beginning of the <pre> tag's content
-      range.setStart(startPre.firstChild, 0);
-
-      const endNode = endPre.lastChild;
-      const endOffset = endNode.textContent?.length || 0;
-      range.setEnd(endNode, endOffset);
-
-      // Clear any existing selection and apply the new range
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  }, [selectedRange]);
-
   const visibleLines = useMemo(() => {
     return processedLines.filter((line) => line.isVisible);
   }, [processedLines]);
@@ -383,20 +358,17 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         const levelClass = logLine.level.toLowerCase();
         const colorClass = styles[levelClass as keyof typeof styles] || '';
 
-        // Highlight the selection if it exists
-        if (
+        // Add a background highlight to all lines in the selected range
+        const isLineSelected =
           selectedRange &&
           logLine.lineNumber >= selectedRange.startLine &&
-          logLine.lineNumber <= selectedRange.endLine
-        ) {
-          highlightSelection();
-        }
+          logLine.lineNumber <= selectedRange.endLine;
 
         return (
           <div
             key={logLine.lineNumber}
             id={`log-line-${logLine.lineNumber}`}
-            className={`${colorClass} ${styles.logEntry}`}
+            className={`${colorClass} ${styles.logEntry} ${isLineSelected ? styles.lineSelected : ''}`}
           >
             <span className={styles.lineNumberCol}>{logLine.lineNumber}.</span>
             <pre>{highlightText(logLine.content, processedLines.indexOf(logLine))}</pre>
@@ -450,24 +422,40 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
 
       // Check for a line range in the URL hash
       if (hash.startsWith('#log-')) {
-        const parts = hash.substring(1).split('-');
-        if (parts.length === 3 && parts[0] === 'log') {
-          startLine = parseInt(parts[1], 10);
-          endLine = parseInt(parts[2], 10);
-        }
-      }
+        const parts = hash.substring(5).split('-');
+        if (parts.length === 4) {
+          const [startLine, startOffset, endLine, endOffset] = parts.map((p) => parseInt(p, 10));
 
-      if (startLine && endLine && !isNaN(startLine) && !isNaN(endLine)) {
-        // Set the selection state
-        setSelectedRange({ startLine, endLine });
+          if (![startLine, startOffset, endLine, endOffset].some(isNaN)) {
+            // Set the selection state
+            setSelectedRange({ startLine, startOffset, endLine, endOffset });
 
-        // Find the element to scroll to
-        const targetElement = document.getElementById(`log-line-${startLine}`);
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'auto',
-            block: 'center',
-          });
+            // Find the elements and text nodes to create the selection
+            const startElement = document.getElementById(`log-line-${startLine}`);
+            const endElement = document.getElementById(`log-line-${endLine}`);
+            const startNode = startElement?.querySelector('pre')?.firstChild;
+            const endNode = endElement?.querySelector('pre')?.firstChild;
+
+            if (startNode && endNode) {
+              // Validate offsets
+              const validStartOffset = Math.min(startOffset, startNode.textContent?.length || 0);
+              const validEndOffset = Math.min(endOffset, endNode.textContent?.length || 0);
+
+              // Create the highlighted range
+              const range = document.createRange();
+              range.setStart(startNode, validStartOffset);
+              range.setEnd(endNode, validEndOffset);
+
+              // Override any existing selection
+              const selection = window.getSelection();
+              if (selection) {
+                selection.removeAllRanges();
+                selection.addRange(range);
+              }
+
+              startElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+            }
+          }
         }
       }
     }, 0);
