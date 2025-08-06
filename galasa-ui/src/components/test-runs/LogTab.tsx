@@ -7,9 +7,8 @@
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Search, OverflowMenu, Button } from '@carbon/react';
-<<<<<<< HEAD
-import styles from "@/styles/LogTab.module.css";
-import { Checkbox } from "@carbon/react";
+import styles from '@/styles/LogTab.module.css';
+import { Checkbox } from '@carbon/react';
 import {
   Filter,
   ChevronUp,
@@ -18,16 +17,9 @@ import {
   Term,
   LetterAa,
   Copy,
-} from "@carbon/icons-react";
-import { handleDownload } from "@/utils/artifacts";
-import { useTranslations } from "next-intl";
-=======
-import styles from '@/styles/LogTab.module.css';
-import { Checkbox } from '@carbon/react';
-import { Filter, ChevronUp, ChevronDown, CloudDownload, Term, LetterAa } from '@carbon/icons-react';
+} from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
->>>>>>> main
 
 interface LogLine {
   content: string;
@@ -82,7 +74,9 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
 
   // State to track the URL hash, initialized to the value of the first render
-  const [currentHash, setCurrentHash] = useState<string>(typeof window !== 'undefined' ? window.location.hash : '');
+  const [currentHash, setCurrentHash] = useState<string>(
+    typeof window !== 'undefined' ? window.location.hash : ''
+  );
 
   const logContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -146,13 +140,13 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
 
     // Construct the base URL from its parts to explicitly exclude any existing hash
     const baseUrl = window.location.origin + window.location.pathname + window.location.search;
-    
+
     const permalink = `${baseUrl}#log-${start}-${end}`;
 
     navigator.clipboard.writeText(permalink);
 
     // Clear selection after copying
-    setSelectedRange(null); 
+    setSelectedRange(null);
   };
 
   const toggleMatchCase = () => {
@@ -375,7 +369,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     }
   }, [selectedRange]);
 
-
   const visibleLines = useMemo(() => {
     return processedLines.filter((line) => line.isVisible);
   }, [processedLines]);
@@ -391,7 +384,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         const colorClass = styles[levelClass as keyof typeof styles] || '';
 
         // Highlight the selection if it exists
-        if (selectedRange && logLine.lineNumber >= selectedRange.startLine && logLine.lineNumber <= selectedRange.endLine) {
+        if (
+          selectedRange &&
+          logLine.lineNumber >= selectedRange.startLine &&
+          logLine.lineNumber <= selectedRange.endLine
+        ) {
           highlightSelection();
         }
 
@@ -420,10 +417,10 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       }
     };
 
-    document.addEventListener("selectionchange", handleSelectionChange);
+    document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
-      document.removeEventListener("selectionchange", handleSelectionChange);
+      document.removeEventListener('selectionchange', handleSelectionChange);
     };
   }, []);
 
@@ -439,7 +436,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     };
   }, []);
 
-  // Effect to scroll to selected lines 
+  // Effect to scroll to selected lines
   useEffect(() => {
     // Exit if logs aren't processed
     if (processedLines.length === 0) {
@@ -452,13 +449,13 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       const hash = currentHash || window.location.hash;
 
       // Check for a line range in the URL hash
-      if (hash.startsWith("#log-")) {
+      if (hash.startsWith('#log-')) {
         const parts = hash.substring(1).split('-');
         if (parts.length === 3 && parts[0] === 'log') {
           startLine = parseInt(parts[1], 10);
           endLine = parseInt(parts[2], 10);
         }
-      } 
+      }
 
       if (startLine && endLine && !isNaN(startLine) && !isNaN(endLine)) {
         // Set the selection state
@@ -468,17 +465,16 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         const targetElement = document.getElementById(`log-line-${startLine}`);
         if (targetElement) {
           targetElement.scrollIntoView({
-            behavior: "auto",
-            block: "center",
+            behavior: 'auto',
+            block: 'center',
           });
         }
       }
-    }, 0); 
+    }, 0);
 
     // Cleanup function to clear the timeout if the component unmounts
     return () => clearTimeout(scrollTimer);
-
-  }, [processedLines, currentHash]); 
+  }, [processedLines, currentHash]);
 
   // Effect to scroll to the initial line
   useEffect(() => {
@@ -593,7 +589,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       <div className={styles.logContainer}>
         <div className={styles.searchContainer}>
           <Search
-            placeholder={translations("searchPlaceholder")}
+            placeholder={translations('searchPlaceholder')}
             size="lg"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -602,11 +598,11 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
             <div className={styles.findControls}>
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
-                  ? translations("matchCounter", {
-                    current: currentMatchIndex + 1,
-                    total: totalMatches,
-                  })
-                  : translations("noMatches")}
+                  ? translations('matchCounter', {
+                      current: currentMatchIndex + 1,
+                      total: totalMatches,
+                    })
+                  : translations('noMatches')}
               </span>
               <Button
                 kind="ghost"
@@ -614,7 +610,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToPreviousMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronUp}
-                iconDescription={translations("matchPrevious")}
+                iconDescription={translations('matchPrevious')}
                 hasIconOnly
               />
               <Button
@@ -623,7 +619,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 onClick={goToNextMatch}
                 disabled={totalMatches === 0}
                 renderIcon={ChevronDown}
-                iconDescription={translations("matchNext")}
+                iconDescription={translations('matchNext')}
                 hasIconOnly
               />
               <Button
@@ -631,7 +627,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 size="sm"
                 onClick={toggleMatchCase}
                 renderIcon={LetterAa}
-                iconDescription={translations("matchCase")}
+                iconDescription={translations('matchCase')}
                 hasIconOnly
               />
               <Button
@@ -639,7 +635,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
                 size="sm"
                 onClick={toggleMatchWholeWord}
                 renderIcon={Term}
-                iconDescription={translations("matchWholeWord")}
+                iconDescription={translations('matchWholeWord')}
                 hasIconOnly
               />
             </div>
@@ -648,37 +644,37 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
         <div className={styles.filterBtn}>
           <OverflowMenu
             size="lg"
-            iconDescription={translations("filtersMenuTitle")}
+            iconDescription={translations('filtersMenuTitle')}
             renderIcon={Filter}
             flipped={true}
           >
             <Checkbox
               id="checkbox-error"
-              labelText={translations("filterError")}
+              labelText={translations('filterError')}
               checked={filters.ERROR}
               onChange={() => handleFilterChange('ERROR')}
             />
             <Checkbox
               id="checkbox-warn"
-              labelText={translations("filterWarn")}
+              labelText={translations('filterWarn')}
               checked={filters.WARN}
               onChange={() => handleFilterChange('WARN')}
             />
             <Checkbox
               id="checkbox-info"
-              labelText={translations("filterInfo")}
+              labelText={translations('filterInfo')}
               checked={filters.INFO}
               onChange={() => handleFilterChange('INFO')}
             />
             <Checkbox
               id="checkbox-debug"
-              labelText={translations("filterDebug")}
+              labelText={translations('filterDebug')}
               checked={filters.DEBUG}
               onChange={() => handleFilterChange('DEBUG')}
             />
             <Checkbox
               id="checkbox-trace"
-              labelText={translations("filterTrace")}
+              labelText={translations('filterTrace')}
               checked={filters.TRACE}
               onChange={() => handleFilterChange('TRACE')}
             />
@@ -688,25 +684,21 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           kind="ghost"
           renderIcon={CloudDownload}
           hasIconOnly
-          iconDescription={translations("downloadButton")}
-          onClick={() => handleDownload(logContent, "run.log")}
+          iconDescription={translations('downloadButton')}
+          onClick={() => handleDownload(logContent, 'run.log')}
         />
         <Button
           kind="ghost"
           renderIcon={Copy}
           hasIconOnly
-          iconDescription={translations("copyPermalinkButton")}
+          iconDescription={translations('copyPermalinkButton')}
           onClick={handleCopyPermalink}
           disabled={!selectedRange?.startLine}
           data-testid="icon-button-copy-permalink"
         />
       </div>
       <div className={styles.runLog}>
-        <div 
-          className={styles.runLogContent} 
-          ref={logContainerRef} 
-          onMouseUp={handleSelection}
-        >
+        <div className={styles.runLogContent} ref={logContainerRef} onMouseUp={handleSelection}>
           {renderLogContent()}
         </div>
       </div>

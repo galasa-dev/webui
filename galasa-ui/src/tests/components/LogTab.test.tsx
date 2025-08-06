@@ -14,34 +14,33 @@ jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
 }));
 
-
 // Mock the next-intl translations
-jest.mock("next-intl", () => ({
+jest.mock('next-intl', () => ({
   useTranslations: () => {
     return (key: string, vars?: Record<string, any>) => {
       // For matchCounter, return formatted "current of total"
-      if (key === "matchCounter" && vars) {
+      if (key === 'matchCounter' && vars) {
         return `${vars.current} of ${vars.total}`;
       }
       // Provide dummy translations for other keys used in LogTab:
       const dummy: Record<string, string> = {
         title: 'Run Log',
         description:
-          "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
-        searchPlaceholder: "Find in run log",
-        noMatches: "No matches",
-        matchCounter: "{current} of {total}",
-        matchPrevious: "Previous match",
-        matchNext: "Next match",
-        matchCase: "Match case",
-        matchWholeWord: "Match whole word",
-        filtersMenuTitle: "Hide / Show Content",
-        filterError: "Error",
-        filterWarn: "Warning",
-        filterInfo: "Info",
-        filterDebug: "Debug",
-        filterTrace: "Trace",
-        downloadButton: "Download Run Log",
+          'A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.',
+        searchPlaceholder: 'Find in run log',
+        noMatches: 'No matches',
+        matchCounter: '{current} of {total}',
+        matchPrevious: 'Previous match',
+        matchNext: 'Next match',
+        matchCase: 'Match case',
+        matchWholeWord: 'Match whole word',
+        filtersMenuTitle: 'Hide / Show Content',
+        filterError: 'Error',
+        filterWarn: 'Warning',
+        filterInfo: 'Info',
+        filterDebug: 'Debug',
+        filterTrace: 'Trace',
+        downloadButton: 'Download Run Log',
       };
       return dummy[key] ?? key;
     };
@@ -464,7 +463,7 @@ Line with $dollar and ^caret`;
 
   describe('Selection and Permalink Functionality', () => {
     beforeEach(() => {
-    // Mock the clipboard API for permalink tests
+      // Mock the clipboard API for permalink tests
       Object.assign(navigator, {
         clipboard: {
           writeText: jest.fn(),
@@ -472,15 +471,14 @@ Line with $dollar and ^caret`;
       });
     });
 
-
     it('copies permalink button is initially disabled', () => {
       render(<LogTab logs={sampleLogs} />);
 
       const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
-      expect(copyPermalinkButton).toBeDisabled(); 
+      expect(copyPermalinkButton).toBeDisabled();
     });
 
-    it('enables permalink button when a log line is selected', async  () => {
+    it('enables permalink button when a log line is selected', async () => {
       render(<LogTab logs={sampleLogs} />);
 
       // Wait for the lines to be rendered
@@ -490,7 +488,9 @@ Line with $dollar and ^caret`;
       });
 
       // Get lines selected nodes
-      const logContainer = screen.getByText(/Starting application/).closest('div[class*="runLogContent"]');
+      const logContainer = screen
+        .getByText(/Starting application/)
+        .closest('div[class*="runLogContent"]');
       const startLineNode = screen.getByText(/Starting application/);
       const endLineNode = screen.getByText(/Failed to connect to database/);
 
@@ -509,15 +509,17 @@ Line with $dollar and ^caret`;
 
     it('copies the correct permalink to the clipboard and disables the button', async () => {
       render(<LogTab logs={sampleLogs} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Initializing database connection/)).toBeInTheDocument();
         expect(screen.getByText(/Connection retry attempt 1/)).toBeInTheDocument();
       });
 
-      const logContainer = screen.getByText(/Initializing database connection/).closest('div[class*="runLogContent"]');
+      const logContainer = screen
+        .getByText(/Initializing database connection/)
+        .closest('div[class*="runLogContent"]');
       const startLineNode = screen.getByText(/Initializing database connection/); // Line 2
-      const endLineNode = screen.getByText(/Connection retry attempt 1/);         // Line 4
+      const endLineNode = screen.getByText(/Connection retry attempt 1/); // Line 4
 
       // Simulate selection
       mockSelection(startLineNode, endLineNode);
@@ -553,8 +555,8 @@ Line with $dollar and ^caret`;
         const targetLineElement = screen.getByText(/Failed to connect to database/).closest('div'); // Line 3
         expect(targetLineElement).not.toBeNull();
         expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
-          behavior: "auto",
-          block: "center",
+          behavior: 'auto',
+          block: 'center',
         });
       });
     });
@@ -578,8 +580,8 @@ Line with $dollar and ^caret`;
         const targetLineElement = screen.getByText(/Detailed execution trace/).closest('div'); // Line 5
         expect(targetLineElement).not.toBeNull();
         expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
-          behavior: "auto",
-          block: "center",
+          behavior: 'auto',
+          block: 'center',
         });
       });
     });
