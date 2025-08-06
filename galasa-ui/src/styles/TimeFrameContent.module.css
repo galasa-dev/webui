@@ -45,10 +45,6 @@
   padding-bottom: 1rem;
 }
 
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
 
 @media (max-width: 1055px) {
   .TimeFrameFilterContainer {
