@@ -103,15 +103,6 @@ export function applyTimeFrameRules(
     };
   }
 
-  const now = new Date();
-  if (correctedTo > now) {
-    correctedTo = now;
-    notification = {
-      text: translations('dateRangeCapped'),
-      kind: 'warning',
-    };
-  }
-
   return { correctedFrom, correctedTo, notification };
 }
 

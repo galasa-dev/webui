@@ -85,7 +85,6 @@ export default function DateTimePicker({
         dateFormat={datePickerFormat}
         datePickerType="single"
         value={date}
-        maxDate={new Date()}
         onChange={(dates: Date[]) => onDateChange(dates?.[0] || null)}
       >
         <DatePickerInput
