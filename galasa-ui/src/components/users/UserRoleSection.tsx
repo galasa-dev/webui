@@ -7,13 +7,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ProfileDetailsProps, UpdateUserRolePayload } from '@/utils/interfaces';
 import { RBACRole, UserData } from '@/generated/galasaapi';
-import styles from '@/styles/UserRole.module.css';
+import styles from '@/styles/users/UserRole.module.css';
 import { ButtonSet, Button, Dropdown, Loading } from '@carbon/react';
 import ErrorPage from '@/app/error/page';
 import { InlineNotification } from '@carbon/react';
 import { updateUserRoleAction } from '@/actions/userServerActions';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
 
 interface DropdownItem {
   name?: string;
@@ -151,10 +152,10 @@ export default function UserRoleSection({
 
         router.refresh(); //refresh page so that the component latest user data from api server
 
-        // Set timeout to hide the toast after 5 seconds.
+        // Set timeout to hide the toast.
         toastTimer.current = setTimeout(() => {
           setIsToastVisible(false);
-        }, 5000);
+        }, NOTIFICATION_VISIBLE_MILLISECS);
       }
     } catch (err) {
       setIsError(true);

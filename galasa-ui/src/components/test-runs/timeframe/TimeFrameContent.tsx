@@ -5,7 +5,7 @@
  */
 'use client';
 
-import styles from '@/styles/TimeFrameContent.module.css';
+import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';

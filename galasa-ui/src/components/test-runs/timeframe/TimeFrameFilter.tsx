@@ -5,11 +5,11 @@
  */
 'use client';
 
-import styles from '@/styles/TimeFrameContent.module.css';
+import { fromToSelectionEnum } from './TimeFrameContent';
+import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import DateTimePicker from './DateTimePicker';
 import { useTranslations } from 'next-intl';
-import { FromSelectionOptions, fromToSelectionEnum } from './TimeFrameContent';
 
 export default function TimeFrameFilter({
   values,

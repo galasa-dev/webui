@@ -24,7 +24,7 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import { Edit, TrashCan } from '@carbon/icons-react';
-import styles from '@/styles/UsersList.module.css';
+import styles from '@/styles/users/UsersList.module.css';
 import Link from 'next/link';
 import { InlineNotification } from '@carbon/react';
 import { deleteUserFromService } from '@/actions/userServerActions';

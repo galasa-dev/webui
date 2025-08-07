@@ -9,7 +9,7 @@
 import React, { useState, useTransition } from 'react';
 import { Dropdown } from '@carbon/react';
 import { setUserLocale } from '@/utils/locale';
-import styles from '@/styles/Selector.module.css';
+import styles from '@/styles/headers/Selector.module.css';
 import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/i18n/config';
 import { useRouter } from 'next/navigation';

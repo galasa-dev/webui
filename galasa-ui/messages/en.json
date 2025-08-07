@@ -32,7 +32,8 @@
     "features": {
       "testRunSearch": "Test Run searching and viewing",
       "internationalization": "Internationalization/Multiple language support",
-      "graph": " Test Run Graphs"
+      "is3270ScreenEnabled": "Support for viewing and downloading 3270 terminals",
+      "graph": "Test Run Graphs"
     }
   },
   "DateTimeSettings": {
@@ -188,20 +189,22 @@
   "LogTab": {
     "title": "Run Log",
     "description": "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
-    "search_placeholder": "Find in run log",
-    "no_matches": "No matches",
-    "match_counter": "{current} of {total}",
-    "match_previous": "Previous match",
-    "match_next": "Next match",
-    "match_case": "Match case",
-    "match_whole_word": "Match whole word",
-    "filters_menu_title": "Hide / Show Content",
-    "filter_error": "Error",
-    "filter_warn": "Warning",
-    "filter_info": "Info",
-    "filter_debug": "Debug",
-    "filter_trace": "Trace",
-    "download_button": "Download Run Log"
+    "searchPlaceholder": "Find in run log",
+    "noMatches": "No matches",
+    "matchCounter": "{current} of {total}",
+    "matchPrevious": "Previous match",
+    "matchNext": "Next match",
+    "matchCase": "Match case",
+    "matchWholeWord": "Match whole word",
+    "filtersMenuTitle": "Hide / Show Content",
+    "filterError": "Error",
+    "filterWarn": "Warning",
+    "filterInfo": "Info",
+    "filterDebug": "Debug",
+    "filterTrace": "Trace",
+    "downloadButton": "Download Run Log",
+    "copyPermalinkButton": "Copy permalink with selected lines",
+    "selectLinesToCreatePermalink": "Select log lines for permalink"
   },
   "MethodsTab": {
     "title": "Methods",
@@ -216,7 +219,8 @@
   },
   "OverviewTab": {
     "bundle": "Bundle",
-    "test": "Test",
+    "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "package": "Package",
     "group": "Group",
     "submissionId": "Submission ID",
@@ -279,6 +283,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
@@ -286,7 +291,7 @@
     "noTestRunsFound": "No test runs were found for the selected timeframe",
     "isloading": "Loading test results...",
     "limitExceededTitle": "Limit Exceeded",
-    "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records.",
+    "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
       "range": "Showing test runs submitted between {from} and {to}"
@@ -322,7 +327,7 @@
 
     "limitExceeded": {
       "title": "Limit Exceeded",
-      "subtitle": "Your query returned more than {MAX_RECORDS} results. Showing the first {MAX_RECORDS} records."
+      "subtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results."
     },
 
     "timeFrameText": {
@@ -412,7 +417,7 @@
       "testName": {
         "label": "Test Name",
         "placeholder": "any",
-        "description": "Enter the name of a specific test contained within the test runs you want to find."
+        "description": "Enter the fully qualified (long) test name of a specific test contained within the test runs you want to find."
       },
       "status": {
         "label": "Status",
@@ -468,6 +473,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
