@@ -354,7 +354,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     return result;
   };
 
-  // Effect to clear selection state when the user deselects text anywhere.
+  // Effect to select/deselect lines based on user selection
   useEffect(() => {
     const handleSelectionChange = () => {
       const selected = window.getSelection();
