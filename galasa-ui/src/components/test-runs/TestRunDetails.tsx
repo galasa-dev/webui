@@ -34,7 +34,11 @@ import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { SINGLE_RUN_QUERY_PARAMS, TEST_RUN_PAGE_TABS } from '@/utils/constants/common';
+import {
+  SINGLE_RUN_QUERY_PARAMS,
+  TEST_RUN_PAGE_TABS,
+  NOTIFICATION_VISIBLE_MILLISECS,
+} from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
 
 interface TestRunDetailsProps {
@@ -154,8 +158,7 @@ const TestRunDetails = ({
         subtitle: translations('copiedMessage'),
       });
 
-      // Hide notification after 6 seconds
-      setTimeout(() => setNotification(null), 6000);
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
       console.error('Failed to copy:', err);
       setNotification({

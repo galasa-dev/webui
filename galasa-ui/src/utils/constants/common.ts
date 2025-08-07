@@ -20,8 +20,9 @@ const COLORS = {
   BLUE_GRAY: '#607d8b',
 };
 
-// Maximum number of records to fetch in one go
-const MAX_RECORDS = 1000;
+const MAX_DISPLAYABLE_TEST_RUNS = 2000;
+
+const NOTIFICATION_VISIBLE_MILLISECS = 6000;
 
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;
@@ -154,7 +155,8 @@ const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
 export {
   CLIENT_API_VERSION,
   COLORS,
-  MAX_RECORDS,
+  MAX_DISPLAYABLE_TEST_RUNS,
+  NOTIFICATION_VISIBLE_MILLISECS,
   MINUTE_MS,
   HOUR_MS,
   DAY_MS,
