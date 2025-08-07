@@ -79,17 +79,23 @@ export function applyTimeFrameRules(
   fromDate: Date,
   toDate: Date,
   translations: (key: string, values?: Record<string, any>) => string
-): { correctedFrom: Date; correctedTo: Date; notification: Notification | null } {
+): {
+  correctedFrom: Date;
+  correctedTo: Date;
+  notification: Notification | null;
+} {
   let correctedFrom = new Date(fromDate.getTime());
   let correctedTo = new Date(toDate.getTime());
   let notification: Notification | null = null;
+
+  // If the 'from' date is after the 'to' date, adjust the to date to be 1 minute after the from date
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
-      correctedTo: toDate,
+      correctedTo: new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
       notification: {
         text: translations('toBeforeFrom'),
-        kind: 'error',
+        kind: 'warning',
       },
     };
   }
