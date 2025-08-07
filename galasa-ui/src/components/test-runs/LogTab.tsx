@@ -111,35 +111,6 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     }));
   };
 
-  // const handleSelection = useCallback(() => {
-  //   // Get the current selection from the browser
-  //   const selected = window.getSelection();
-
-  //   // Ignore if no selection or just a single click
-  //   if (!selected || selected.isCollapsed) return;
-
-  //   // Set the selection state with start and end lines
-  //   const startLineEl = selected.anchorNode?.parentElement?.closest('[id^="log-line-"]');
-  //   const endLineEl = selected.focusNode?.parentElement?.closest('[id^="log-line-"]');
-
-  //   if (startLineEl && endLineEl) {
-  //     const anchorLineNum = parseInt(startLineEl.id.split('-')[2]);
-  //     const focusLineNum = parseInt(endLineEl.id.split('-')[2]);
-
-  //     // Determine the true start/end regardless of selection direction
-  //     const isSelectingForward =
-  //       anchorLineNum < focusLineNum ||
-  //       (anchorLineNum === focusLineNum && selected.anchorOffset <= selected.focusOffset);
-
-  //     const startLine = isSelectingForward ? anchorLineNum : focusLineNum;
-  //     const endLine = isSelectingForward ? focusLineNum : anchorLineNum;
-  //     const startOffset = isSelectingForward ? selected.anchorOffset : selected.focusOffset;
-  //     const endOffset = isSelectingForward ? selected.focusOffset : selected.anchorOffset;
-
-  //     setSelectedRange({ startLine, endLine, startOffset, endOffset });
-  //   }
-  // }, []);
-
   const handleCopyPermalink = () => {
     if (!selectedRange) return;
 
