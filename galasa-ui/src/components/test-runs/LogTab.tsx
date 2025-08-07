@@ -52,6 +52,9 @@ interface selectedRange {
   endOffset: number;
 }
 
+const SELECTION_CHANGE_EVENT = 'selectionchange';
+const HASH_CHANGE_EVENT = 'hashchange';
+
 export default function LogTab({ logs, initialLine }: LogTabProps) {
   const translations = useTranslations('LogTab');
 
@@ -384,10 +387,10 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       }
     };
 
-    document.addEventListener('selectionchange', handleSelectionChange);
+    document.addEventListener(SELECTION_CHANGE_EVENT, handleSelectionChange);
 
     return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange);
+      document.removeEventListener(SELECTION_CHANGE_EVENT, handleSelectionChange);
     };
   }, []);
 
@@ -397,9 +400,9 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       setCurrentHash(window.location.hash);
     };
 
-    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener(HASH_CHANGE_EVENT, handleHashChange);
     return () => {
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener(HASH_CHANGE_EVENT, handleHashChange);
     };
   }, []);
 
