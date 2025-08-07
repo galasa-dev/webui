@@ -223,7 +223,7 @@
     "filterDebug": "Debug",
     "filterTrace": "Trace",
     "downloadButton": "Laufprotokoll herunterladen",
-    "copyPermalinkButton": "Seiten-URL kopieren"
+    "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren"
   },
   "MethodsTab": {
     "title": "Methoden",
