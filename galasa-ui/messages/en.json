@@ -218,7 +218,8 @@
   },
   "OverviewTab": {
     "bundle": "Bundle",
-    "test": "Test",
+    "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "package": "Package",
     "group": "Group",
     "submissionId": "Submission ID",
@@ -281,6 +282,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
@@ -410,7 +412,7 @@
       "testName": {
         "label": "Test Name",
         "placeholder": "any",
-        "description": "Enter the name of a specific test contained within the test runs you want to find."
+        "description": "Enter the fully qualified (long) test name of a specific test contained within the test runs you want to find."
       },
       "status": {
         "label": "Status",
@@ -466,6 +468,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",

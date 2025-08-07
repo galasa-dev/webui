@@ -58,6 +58,7 @@ export default function TableDesignContent({
   setColumnsOrder,
 }: TableDesignContentProps) {
   const translations = useTranslations('TableDesignContent');
+
   const handleRowSelect = (rowId: string) => {
     setSelectedRowIds((prev: string[]) => {
       if (prev.includes(rowId)) {

@@ -88,7 +88,8 @@ const TestRunDetails = ({
         result: runDetails.testStructure?.result!,
         status: runDetails.testStructure?.status!,
         runName: runDetails.testStructure?.runName!,
-        testName: runDetails.testStructure?.testShortName!,
+        testShortName: runDetails.testStructure?.testShortName!,
+        testName: runDetails.testStructure?.testName!,
         bundle: runDetails.testStructure?.bundle!,
         submissionId: runDetails.testStructure?.submissionId!,
         group: runDetails.testStructure?.group!,
@@ -117,7 +118,6 @@ const TestRunDetails = ({
             : '-',
         tags: runDetails.testStructure?.tags!,
       };
-
       setRun(runMetadata);
     },
     [runId, formatDate]
@@ -300,7 +300,7 @@ const TestRunDetails = ({
               </span>
             </div>
             <span className={styles.summaryStatus}>
-              {translations('test')}: {run?.testName}
+              {translations('test')}: {run?.testShortName}
             </span>
           </div>
           <Tabs selectedIndex={selectedTabIndex} onChange={handleTabChange}>
