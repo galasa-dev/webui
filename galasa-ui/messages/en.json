@@ -361,8 +361,9 @@
     "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
     "dateRangeCapped": "Date range was capped at the current time.",
     "invalidTimeText": "Please enter a valid time in HH:MM format.",
-    "fromToSelection": "Exact dates and times",
-    "durationSelection": "Relative to current time"
+    "specificTimeTitle": "A specific time",
+    "durationTitle": "Duration before 'To' time",
+    "nowTitle": "The time the query results are viewed or refreshed"
   },
   "DateTimePicker": {
     "invalidTimeText": "Please enter a valid time in HH:MM format.",

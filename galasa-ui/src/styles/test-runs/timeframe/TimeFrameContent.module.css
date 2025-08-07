@@ -10,12 +10,25 @@
   width: 100%;
 }
 
+.formGroup {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5rem;
+}
+
+.fromContainer,
+.toContainer {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
 .optionRow {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.5rem;
-  padding-bottom: 2rem;
+  padding: 1rem;
 }
 
 .timeFrameFilterContainer {
@@ -45,9 +58,9 @@
   padding-bottom: 1rem;
 }
 
-
 @media (max-width: 1055px) {
-  .TimeFrameFilterContainer {
+  .TimeFrameFilterContainer,
+  .formGroup {
     flex-direction: column;
   }
 
