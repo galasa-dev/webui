@@ -413,53 +413,46 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       return;
     }
 
-    // Use a timeout to ensure the DOM is fully rendered before we try to scroll
-    const scrollTimer = setTimeout(() => {
-      let startLine, endLine;
-      const hash = currentHash || window.location.hash;
+    const hash = currentHash || window.location.hash;
 
-      // Check for a line range in the URL hash
-      if (hash.startsWith('#log-')) {
-        const parts = hash.substring(5).split('-');
-        if (parts.length === 4) {
-          const [startLine, startOffset, endLine, endOffset] = parts.map((p) => parseInt(p, 10));
+    // Check for a line range in the URL hash
+    if (hash.startsWith('#log-')) {
+      const parts = hash.substring(5).split('-');
+      if (parts.length === 4) {
+        const [startLine, startOffset, endLine, endOffset] = parts.map((p) => parseInt(p, 10));
 
-          if (![startLine, startOffset, endLine, endOffset].some(isNaN)) {
-            // Set the selection state
-            setSelectedRange({ startLine, startOffset, endLine, endOffset });
+        if (![startLine, startOffset, endLine, endOffset].some(isNaN)) {
+          // Set the selection state
+          setSelectedRange({ startLine, startOffset, endLine, endOffset });
 
-            // Find the elements and text nodes to create the selection
-            const startElement = document.getElementById(`log-line-${startLine}`);
-            const endElement = document.getElementById(`log-line-${endLine}`);
-            const startNode = startElement?.querySelector('pre')?.firstChild;
-            const endNode = endElement?.querySelector('pre')?.firstChild;
+          // Find the elements and text nodes to create the selection
+          const startElement = document.getElementById(`log-line-${startLine}`);
+          const endElement = document.getElementById(`log-line-${endLine}`);
+          const startNode = startElement?.querySelector('pre')?.firstChild;
+          const endNode = endElement?.querySelector('pre')?.firstChild;
 
-            if (startNode && endNode) {
-              // Validate offsets
-              const validStartOffset = Math.min(startOffset, startNode.textContent?.length || 0);
-              const validEndOffset = Math.min(endOffset, endNode.textContent?.length || 0);
+          if (startNode && endNode) {
+            // Validate offsets
+            const validStartOffset = Math.min(startOffset, startNode.textContent?.length || 0);
+            const validEndOffset = Math.min(endOffset, endNode.textContent?.length || 0);
 
-              // Create the highlighted range
-              const range = document.createRange();
-              range.setStart(startNode, validStartOffset);
-              range.setEnd(endNode, validEndOffset);
+            // Create the highlighted range
+            const range = document.createRange();
+            range.setStart(startNode, validStartOffset);
+            range.setEnd(endNode, validEndOffset);
 
-              // Override any existing selection
-              const selection = window.getSelection();
-              if (selection) {
-                selection.removeAllRanges();
-                selection.addRange(range);
-              }
-
-              startElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+            // Override any existing selection
+            const selection = window.getSelection();
+            if (selection) {
+              selection.removeAllRanges();
+              selection.addRange(range);
             }
+
+            startElement.scrollIntoView({ behavior: 'auto', block: 'center' });
           }
         }
       }
-    }, 0);
-
-    // Cleanup function to clear the timeout if the component unmounts
-    return () => clearTimeout(scrollTimer);
+    }
   }, [processedLines, currentHash]);
 
   // Effect to scroll to the initial line

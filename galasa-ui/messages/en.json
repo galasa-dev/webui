@@ -202,7 +202,7 @@
     "filterDebug": "Debug",
     "filterTrace": "Trace",
     "downloadButton": "Download Run Log",
-    "copyPermalinkButton": "Copy Permalink with selected lines"
+    "copyPermalinkButton": "Copy permalink with selected lines"
   },
   "MethodsTab": {
     "title": "Methods",

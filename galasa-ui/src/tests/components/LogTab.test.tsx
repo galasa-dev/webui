@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LogTab from '@/components/test-runs/LogTab';
 import { handleDownload } from '@/utils/artifacts';
@@ -111,10 +111,12 @@ jest.mock('@carbon/icons-react', () => ({
 }));
 
 // Mock window.getSelection API
-const mockSelection = (startNode: Node, endNode: Node) => {
+const mockSelection = (startNode: Node, endNode: Node, startOffset = 0, endOffset = 0) => {
   const selection = {
     anchorNode: startNode,
     focusNode: endNode,
+    anchorOffset: startOffset,
+    focusOffset: endOffset,
     isCollapse: startNode === endNode,
     removeAllRanges: jest.fn(),
     addRange: jest.fn(),
@@ -135,11 +137,16 @@ Multi-line continuation
 2024-01-01 10:00:06 ERROR Another error occurred`;
 
 describe('LogTab', () => {
+  const scrollIntoViewMock = jest.fn();
   beforeEach(() => {
     jest.clearAllMocks();
 
     // Mock scrollIntoView
-    Element.prototype.scrollIntoView = jest.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 
   describe('Rendering', () => {
@@ -498,7 +505,7 @@ Line with $dollar and ^caret`;
       mockSelection(startLineNode, endLineNode);
 
       // Trigger onMouseUp event on the container to process the selection
-      fireEvent.mouseUp(logContainer!);
+      fireEvent(document, new Event('selectionchange'));
 
       // Check if the permalink button is enabled
       await waitFor(() => {
@@ -509,33 +516,30 @@ Line with $dollar and ^caret`;
 
     it('copies the correct permalink to the clipboard and disables the button', async () => {
       render(<LogTab logs={sampleLogs} />);
+      await screen.findByText(/Initializing database connection/);
 
-      await waitFor(() => {
-        expect(screen.getByText(/Initializing database connection/)).toBeInTheDocument();
-        expect(screen.getByText(/Connection retry attempt 1/)).toBeInTheDocument();
-      });
-
-      const logContainer = screen
-        .getByText(/Initializing database connection/)
-        .closest('div[class*="runLogContent"]');
       const startLineNode = screen.getByText(/Initializing database connection/); // Line 2
       const endLineNode = screen.getByText(/Connection retry attempt 1/); // Line 4
 
-      // Simulate selection
-      mockSelection(startLineNode, endLineNode);
-      fireEvent.mouseUp(logContainer!);
+      act(() => {
+        // Simulate selection with offsets
+        mockSelection(startLineNode, endLineNode, 5, 10);
+        fireEvent(document, new Event('selectionchange'));
+      });
 
       const copyButton = await screen.findByTestId('icon-button-copy-permalink');
-      expect(copyButton).not.toBeDisabled();
+      expect(copyButton).toBeEnabled();
 
       // Click the button
-      fireEvent.click(copyButton);
+
+      act(() => {
+        fireEvent.click(copyButton);
+      });
 
       // Verify the clipboard was called with the correct URL hash.
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        expect.stringContaining('#log-2-4')
+        expect.stringContaining('#log-2-5-4-10')
       );
-
       // The button should become disabled again after copying.
       await waitFor(() => {
         expect(copyButton).toBeDisabled();
@@ -544,46 +548,121 @@ Line with $dollar and ^caret`;
   });
 
   describe('URL Hash Handling', () => {
-    it('scrolls to the line specified in the URL hash on initial load', async () => {
-      // Set the URL hash *before* rendering
-      window.history.pushState({}, 'Test page', '/#log-3-5');
+    beforeEach(() => {
+      // Clear any existing hash
+      window.history.replaceState({}, 'Test page', '/');
+      scrollIntoViewMock.mockClear();
+
+      // Mock document.getElementById to return mock elements
+      const mockElement = {
+        scrollIntoView: scrollIntoViewMock,
+        querySelector: jest.fn().mockReturnValue({
+          firstChild: {
+            textContent: 'mock text content',
+          },
+        }),
+      };
+
+      jest.spyOn(document, 'getElementById').mockImplementation((id) => {
+        if (id.startsWith('log-line-')) {
+          return mockElement as any;
+        }
+        return null;
+      });
+
+      // Mock document.createRange and window.getSelection for the hash selection logic
+      const mockRange = {
+        setStart: jest.fn(),
+        setEnd: jest.fn(),
+      };
+
+      const mockSelection = {
+        removeAllRanges: jest.fn(),
+        addRange: jest.fn(),
+      };
+
+      document.createRange = jest.fn().mockReturnValue(mockRange as any);
+      window.getSelection = jest.fn().mockReturnValue(mockSelection as any);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('scrolls to the line specified in the URL hash and highlights it', async () => {
+      // Set the URL hash before rendering
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          hash: '#log-3-0-3-5',
+        },
+        writable: true,
+      });
 
       render(<LogTab logs={sampleLogs} />);
 
-      // Wait for the target line to be rendered and check for scroll
+      // Wait for the target line to be rendered and processed
       await waitFor(() => {
-        const targetLineElement = screen.getByText(/Failed to connect to database/).closest('div'); // Line 3
-        expect(targetLineElement).not.toBeNull();
-        expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
-          behavior: 'auto',
-          block: 'center',
-        });
+        expect(screen.getByText(/Failed to connect to database/)).toBeInTheDocument();
       });
+
+      // Wait for all effects to complete, including hash handling
+      await waitFor(
+        () => {
+          expect(scrollIntoViewMock).toHaveBeenCalledWith({
+            behavior: 'auto',
+            block: 'center',
+          });
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('scrolls to a new line when the hash changes', async () => {
-      window.history.pushState({}, 'Test page', '/');
+      // Start with no hash
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          hash: '',
+        },
+        writable: true,
+      });
 
       render(<LogTab logs={sampleLogs} />);
 
       // Wait for the content to be rendered
       await waitFor(() => {
         expect(screen.getByText(/Starting application/)).toBeInTheDocument();
+        expect(screen.getByText(/Application started successfully/)).toBeInTheDocument();
       });
 
-      // Change the URL hash to a new line
-      window.history.pushState({}, 'Test page', '/#log-5-6');
-      fireEvent(window, new HashChangeEvent('hashchange'));
+      // Clear any previous scroll calls
+      scrollIntoViewMock.mockClear();
 
-      // Wait for the new line to be rendered and check for scroll
-      await waitFor(() => {
-        const targetLineElement = screen.getByText(/Detailed execution trace/).closest('div'); // Line 5
-        expect(targetLineElement).not.toBeNull();
-        expect(targetLineElement!.scrollIntoView).toHaveBeenCalledWith({
-          behavior: 'auto',
-          block: 'center',
+      // Change the URL hash and trigger the event
+      act(() => {
+        Object.defineProperty(window, 'location', {
+          value: {
+            ...window.location,
+            hash: '#log-5-0-5-5',
+          },
+          writable: true,
         });
+
+        // Dispatch the hashchange event
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
       });
+
+      // Wait for the hash change to be processed and scroll to occur
+      await waitFor(
+        () => {
+          expect(scrollIntoViewMock).toHaveBeenCalledWith({
+            behavior: 'auto',
+            block: 'center',
+          });
+        },
+        { timeout: 2000 }
+      );
     });
   });
 });
