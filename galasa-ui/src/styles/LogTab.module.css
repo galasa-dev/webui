@@ -101,3 +101,8 @@
   font-weight: bold;
   box-shadow: 0 0 0 1px #ff9800;
 }
+
+.buttonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

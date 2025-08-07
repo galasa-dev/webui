@@ -224,7 +224,8 @@
     "filterDebug": "Debug",
     "filterTrace": "Trace",
     "downloadButton": "Laufprotokoll herunterladen",
-    "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren"
+    "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren",
+    "selectLinesToCreatePermalink": "Zeilen für Permalink wählen"
   },
   "MethodsTab": {
     "title": "Methoden",

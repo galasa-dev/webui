@@ -482,7 +482,7 @@ Line with $dollar and ^caret`;
       render(<LogTab logs={sampleLogs} />);
 
       const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
-      expect(copyPermalinkButton).toBeDisabled();
+      expect(copyPermalinkButton).toHaveClass('buttonDisabled');
     });
 
     it('enables permalink button when a log line is selected', async () => {
@@ -495,9 +495,6 @@ Line with $dollar and ^caret`;
       });
 
       // Get lines selected nodes
-      const logContainer = screen
-        .getByText(/Starting application/)
-        .closest('div[class*="runLogContent"]');
       const startLineNode = screen.getByText(/Starting application/);
       const endLineNode = screen.getByText(/Failed to connect to database/);
 
@@ -510,7 +507,7 @@ Line with $dollar and ^caret`;
       // Check if the permalink button is enabled
       await waitFor(() => {
         const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
-        expect(copyPermalinkButton).toBeEnabled();
+        expect(copyPermalinkButton).not.toHaveClass('buttonDisabled');
       });
     });
 
@@ -528,7 +525,7 @@ Line with $dollar and ^caret`;
       });
 
       const copyButton = await screen.findByTestId('icon-button-copy-permalink');
-      expect(copyButton).toBeEnabled();
+      expect(copyButton).not.toHaveClass('buttonDisabled');
 
       // Click the button
 
@@ -542,7 +539,7 @@ Line with $dollar and ^caret`;
       );
       // The button should become disabled again after copying.
       await waitFor(() => {
-        expect(copyButton).toBeDisabled();
+        expect(copyButton).toHaveClass('buttonDisabled');
       });
     });
   });

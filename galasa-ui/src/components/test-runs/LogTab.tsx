@@ -561,6 +561,10 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     };
   }, []);
 
+  const copyPermalinkText = selectedRange?.startLine
+    ? translations('copyPermalinkButton')
+    : translations('selectLinesToCreatePermalink');
+
   return (
     <div className={styles.tabContent}>
       <h3>{translations('title')}</h3>
@@ -670,9 +674,10 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           kind="ghost"
           renderIcon={Copy}
           hasIconOnly
-          iconDescription={translations('copyPermalinkButton')}
-          onClick={handleCopyPermalink}
-          disabled={!selectedRange?.startLine}
+          aria-label={copyPermalinkText}
+          iconDescription={copyPermalinkText}
+          onClick={selectedRange?.startLine ? handleCopyPermalink : undefined}
+          className={!selectedRange?.startLine ? styles.buttonDisabled : ''}
           data-testid="icon-button-copy-permalink"
         />
       </div>
