@@ -338,6 +338,7 @@
     "bundle": "Paket",
     "package": "Paket",
     "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "status": "Status",
     "tags": "Tags",
     "result": "Ergebnis",

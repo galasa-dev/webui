@@ -317,6 +317,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "status": "Status",
     "tags": "Tags",
     "result": "Result",

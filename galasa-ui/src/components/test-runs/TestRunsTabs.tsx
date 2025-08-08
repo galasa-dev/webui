@@ -21,6 +21,8 @@ import {
   DAY_MS,
   SEARCH_CRITERIA_KEYS,
   DEFAULT_VISIBLE_COLUMNS,
+  MINUTE_MS,
+  HOUR_MS,
 } from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
@@ -32,6 +34,7 @@ import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import TestRunGraph from './graph/TestRunsGraph';
+import { relative } from 'path';
 
 interface TabConfig {
   id: string;
@@ -100,14 +103,29 @@ export default function TestRunsTabs({
 
   // Initialize timeframe values based on URL parameters or default to last 24 hours
   const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>(() => {
-    const fromParam = searchParams.get('from');
-    const toParam = searchParams.get('to');
-    const initialToDate = toParam ? new Date(toParam) : new Date();
-    const initialFromDate = fromParam
-      ? new Date(fromParam)
-      : new Date(initialToDate.getTime() - DAY_MS);
+    const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
+    const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);
+    const durationParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
+
+    let toDate: Date,
+      fromDate: Date,
+      relativeToNow = false;
+    if (durationParam) {
+      // If duration is specified, calculate fromDate and toDate based on it
+      const [days, hours, minutes] = durationParam.split(',').map(Number);
+      toDate = new Date();
+      fromDate = new Date(
+        toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
+      );
+      relativeToNow = true;
+    } else {
+      // If no duration is specified, use the provided from/to dates or default values
+      toDate = toParam ? new Date(toParam) : new Date();
+      fromDate = fromParam ? new Date(fromParam) : new Date(toDate.getTime() - DAY_MS);
+    }
+
     const timezone = getResolvedTimeZone();
-    return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
+    return { ...calculateSynchronizedState(fromDate, toDate, timezone), relativeToNow };
   });
 
   // Initialize search criteria based on URL parameters
@@ -189,8 +207,18 @@ export default function TestRunsTabs({
     params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
     // Timeframe
-    params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
-    params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+    console.log(timeframeValues.relativeToNow);
+    if (timeframeValues.relativeToNow) {
+      // If relative to now, we can use the "duration" parameter
+      params.set(
+        TEST_RUNS_QUERY_PARAMS.DURATION,
+        `${timeframeValues.durationDays},${timeframeValues.durationHours},${timeframeValues.durationMinutes}`
+      );
+    } else {
+      // If not relative to now, we can use the "from" and "to" parameters
+      params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
+      params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+    }
 
     // Search Criteria
     Object.entries(searchCriteria).forEach(([key, value]) => {
@@ -265,6 +293,7 @@ export default function TestRunsTabs({
     const relevantParameters = [
       TEST_RUNS_QUERY_PARAMS.FROM,
       TEST_RUNS_QUERY_PARAMS.TO,
+      TEST_RUNS_QUERY_PARAMS.DURATION,
       TEST_RUNS_QUERY_PARAMS.RUN_NAME,
       TEST_RUNS_QUERY_PARAMS.REQUESTOR,
       TEST_RUNS_QUERY_PARAMS.GROUP,

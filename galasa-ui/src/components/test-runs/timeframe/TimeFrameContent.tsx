@@ -7,7 +7,7 @@
 
 import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
 import { addMonths, dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
 import { InlineNotification } from '@carbon/react';
@@ -123,10 +123,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
   const [notification, setNotification] = useState<Notification | null>(null);
   const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions>(
-    FromSelectionOptions.specificFromTime
+    values.relativeToNow ? FromSelectionOptions.duration : FromSelectionOptions.specificFromTime
   );
   const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
-    ToSelectionOptions.now
+    values.relativeToNow ? ToSelectionOptions.now : ToSelectionOptions.specificToTime
   );
 
   const handleValueChange = useCallback(
@@ -168,7 +168,8 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         if (selectedFromOption === FromSelectionOptions.duration) {
           fromDate = new Date(toDate.getTime() - durationInMs);
         }
-      } else if (field.startsWith('now')) {
+      } else if (field.startsWith('relativeToNow')) {
+        // If the 'now' option is selected, set the 'to' date to the current date
         toDate = new Date();
       }
 
@@ -184,11 +185,17 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
       // Update the state with the corrected values
       if (validationNotification?.kind !== 'error') {
         const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
-        setValues(finalState);
+        setValues((prevValues) => ({ ...prevValues, ...finalState }));
       }
     },
     [values, translations, setValues, getResolvedTimeZone, selectedFromOption]
   );
+
+  // Update the relativeToNow state when the selectedToOption changes
+  useEffect(() => {
+    const relativeToNow = selectedToOption === ToSelectionOptions.now;
+    setValues((prevValues) => ({ ...prevValues, relativeToNow }));
+  }, [selectedToOption, setValues]);
 
   return (
     <Section className={styles.timeFrameContainer}>
@@ -265,7 +272,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               checked={selectedToOption === ToSelectionOptions.now}
               onChange={() => {
                 setSelectedToOption(ToSelectionOptions.now);
-                handleValueChange('now', new Date());
+                handleValueChange('relativeToNow', true);
               }}
             />
           </div>
