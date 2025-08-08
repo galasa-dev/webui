@@ -6,8 +6,8 @@
 'use client';
 
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { LOCALE_TO_FLATPICKR_FORMAT_MAP, SUPPORTED_LOCALES } from '@/utils/constants/common';
+import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
+import { LOCALE_TO_FLATPICKR_FORMAT_MAP } from '@/utils/constants/common';
 import { parseAndValidateTime } from '@/utils/timeOperations';
 import {
   FormGroup,
@@ -28,6 +28,7 @@ interface DateTimePickerProps {
   onDateChange: (date: Date | null) => void;
   onTimeChange: (time: string) => void;
   onAmPmChange: (amPm: string) => void;
+  disabled?: boolean;
 }
 
 /**
@@ -41,6 +42,7 @@ export default function DateTimePicker({
   onDateChange,
   onTimeChange,
   onAmPmChange,
+  disabled = false,
 }: DateTimePickerProps) {
   const [localTime, setLocalTime] = useState(time);
   const { preferences } = useDateTimeFormat();
@@ -83,13 +85,13 @@ export default function DateTimePicker({
         dateFormat={datePickerFormat}
         datePickerType="single"
         value={date}
-        maxDate={new Date()}
         onChange={(dates: Date[]) => onDateChange(dates?.[0] || null)}
       >
         <DatePickerInput
           id={`${legend}-date-picker`}
           labelText={translations('date')}
           placeholder={placeholder}
+          disabled={disabled}
         />
       </DatePicker>
       <TimePicker
@@ -100,6 +102,7 @@ export default function DateTimePicker({
         invalidText={invalidTimeText}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLocalTime(event.target.value)}
         onBlur={handleTimeBlur}
+        disabled={disabled}
       >
         <TimePickerSelect
           id={`${legend}-time-picker-ampm`}

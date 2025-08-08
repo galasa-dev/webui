@@ -74,6 +74,7 @@ const RESULTS_TABLE_COLUMNS: ColumnDefinition[] = [
 const TEST_RUNS_QUERY_PARAMS = {
   FROM: 'from',
   TO: 'to',
+  DURATION: 'duration',
   RUN_NAME: 'runName',
   REQUESTOR: 'requestor',
   GROUP: 'group',

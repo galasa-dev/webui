@@ -338,6 +338,7 @@
     "bundle": "Paket",
     "package": "Paket",
     "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "status": "Status",
     "tags": "Tags",
     "result": "Ergebnis",
@@ -381,7 +382,9 @@
     "toBeforeFrom": "'Bis'-Datum darf nicht vor dem 'Von'-Datum liegen.",
     "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
     "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
-    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein."
+    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein.",
+    "fromToSelection": "Genaue Daten und Uhrzeiten",
+    "durationSelection": "Relativ zur aktuellen Zeit"
   },
   "DateTimePicker": {
     "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:mm ein.",
@@ -391,11 +394,14 @@
     "time": "Uhrzeit"
   },
   "TimeFrameFilter": {
+    "from": "Von",
+    "to": "Bis"
+  },
+  "DurationFilter": {
     "days": "Tage",
     "hours": "Stunden",
     "minutes": "Minuten",
-    "from": "Von",
-    "to": "Bis",
+
     "duration": "Dauer"
   },
   "SearchCriteriaContent": {
