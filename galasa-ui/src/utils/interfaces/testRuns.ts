@@ -40,6 +40,7 @@ export interface TimeFrameValues {
   durationDays: number;
   durationHours: number;
   durationMinutes: number;
+  now: Date;
 }
 
 export interface RunLog {

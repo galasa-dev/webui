@@ -114,7 +114,7 @@ export function applyTimeFrameRules(
 
 interface TimeFrameContentProps {
   values: TimeFrameValues;
-  setValues: (values: TimeFrameValues) => void;
+  setValues: React.Dispatch<React.SetStateAction<TimeFrameValues>>;
 }
 
 export default function TimeFrameContent({ values, setValues }: TimeFrameContentProps) {
@@ -141,32 +141,35 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
       const timezone = getResolvedTimeZone();
 
       // Combine date and time into Date objects
-      let fromDate: Date, toDate: Date;
+      let fromDate = dateTimeLocal2UTC(
+        draftValues.fromDate,
+        draftValues.fromTime,
+        draftValues.fromAmPm,
+        timezone
+      );
+
+      let toDate = dateTimeLocal2UTC(
+        draftValues.toDate,
+        draftValues.toTime,
+        draftValues.toAmPm,
+        timezone
+      );
+
+      const durationInMs =
+        draftValues.durationDays * DAY_MS +
+        draftValues.durationHours * HOUR_MS +
+        draftValues.durationMinutes * MINUTE_MS;
+
       if (field.startsWith('duration')) {
-        fromDate = dateTimeLocal2UTC(
-          draftValues.fromDate,
-          draftValues.fromTime,
-          draftValues.fromAmPm,
-          timezone
-        );
-        const durationInMs =
-          draftValues.durationDays * DAY_MS +
-          draftValues.durationHours * HOUR_MS +
-          draftValues.durationMinutes * MINUTE_MS;
-        toDate = new Date(fromDate.getTime() + durationInMs);
-      } else {
-        fromDate = dateTimeLocal2UTC(
-          draftValues.fromDate,
-          draftValues.fromTime,
-          draftValues.fromAmPm,
-          timezone
-        );
-        toDate = dateTimeLocal2UTC(
-          draftValues.toDate,
-          draftValues.toTime,
-          draftValues.toAmPm,
-          timezone
-        );
+        // Adjust 'from' date according to 'to' date and duration
+        fromDate = new Date(toDate.getTime() - durationInMs);
+      } else if (field.startsWith('to')) {
+        // If the 'from' options is "duration", then change the "from" time
+        if (selectedFromOption === FromSelectionOptions.duration) {
+          fromDate = new Date(toDate.getTime() - durationInMs);
+        }
+      } else if (field.startsWith('now')) {
+        toDate = new Date();
       }
 
       const {
@@ -184,7 +187,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         setValues(finalState);
       }
     },
-    [values, translations, setValues, getResolvedTimeZone]
+    [values, translations, setValues, getResolvedTimeZone, selectedFromOption]
   );
 
   return (
@@ -260,7 +263,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               id="to-now"
               name="to-timeframe-options"
               checked={selectedToOption === ToSelectionOptions.now}
-              onChange={() => setSelectedToOption(ToSelectionOptions.now)}
+              onChange={() => {
+                setSelectedToOption(ToSelectionOptions.now);
+                handleValueChange('now', new Date());
+              }}
             />
           </div>
         </div>
