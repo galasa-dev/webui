@@ -28,6 +28,21 @@ jest.mock('next-intl', () => ({
   },
 }));
 
+// Mock the DurationFilter component
+jest.mock('@/components/test-runs/timeframe/DurationFilter', () => {
+  const DurationFilterMock = (props: any) => {
+    return (
+      <div data-testid="duration-filter">
+        <p>duration</p>
+        <input type="number" value={props.values.durationDays} aria-label="days" />
+        <input type="number" value={props.values.durationHours} aria-label="hours" />
+        <input type="number" value={props.values.durationMinutes} aria-label="minutes" />
+      </div>
+    );
+  };
+  return DurationFilterMock;
+});
+
 const mockTranslator = (key: string, values?: Record<string, any>) => {
   if (key === 'toBeforeFrom') return "'To' date cannot be before 'From' date.";
   if (key === 'dateRangeCapped') return 'Date range was capped at the current time.';

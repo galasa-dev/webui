@@ -9,6 +9,7 @@ import { render, screen, within } from '@testing-library/react';
 import TimeFrameFilter from '@/components/test-runs/timeframe/TimeFrameFilter';
 import { TimeFrameValues } from '@/utils/interfaces';
 import userEvent from '@testing-library/user-event';
+import { fromToSelectionEnum } from '@/components/test-runs/timeframe/TimeFrameContent';
 
 const mockValues: TimeFrameValues = {
   fromDate: new Date('2023-10-01'),
@@ -43,23 +44,31 @@ beforeEach(() => {
 describe('TimeFrameFilter', () => {
   test('initial render and prop display', () => {
     // Act: render the component with the mock values
-    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+    render(
+      <TimeFrameFilter
+        values={mockValues}
+        handleValueChange={mockHandleValueChange}
+        fromToSelection={fromToSelectionEnum.FromSelectionOptions}
+      />
+    );
 
     // Assert: check if the component renders correctly with the mocked values
     const fromGroup = screen.getByRole('group', { name: /from/i });
 
     expect(within(fromGroup).getByLabelText(/date/i)).toHaveValue('10/01/2023');
     expect(within(fromGroup).getByLabelText(/time/i)).toHaveValue('10:00');
-
-    const durationGroup = screen.getByRole('group', { name: /duration/i });
-    expect(within(durationGroup).getByLabelText(/days/i)).toHaveValue(1);
-    expect(within(durationGroup).getByLabelText(/hours/i)).toHaveValue(10);
   });
 
   test('should call handleValueChange when a date is selected from the calendar', async () => {
     const user = userEvent.setup();
     // Act
-    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+    render(
+      <TimeFrameFilter
+        values={mockValues}
+        handleValueChange={mockHandleValueChange}
+        fromToSelection={fromToSelectionEnum.FromSelectionOptions}
+      />
+    );
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the date input changes
     const fromGroup = screen.getByRole('group', { name: /from/i });
@@ -70,7 +79,6 @@ describe('TimeFrameFilter', () => {
     await user.tab();
 
     expect(mockHandleValueChange).toHaveBeenCalled();
-    console.log(mockHandleValueChange.mock.calls);
     const calledDate = mockHandleValueChange.mock.calls[0][1];
 
     expect(calledDate).toBeInstanceOf(Date);
@@ -82,7 +90,13 @@ describe('TimeFrameFilter', () => {
   test('should call handleValueChange when AM/PM select is changed', async () => {
     const user = userEvent.setup();
     // Act
-    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+    render(
+      <TimeFrameFilter
+        values={mockValues}
+        handleValueChange={mockHandleValueChange}
+        fromToSelection={fromToSelectionEnum.FromSelectionOptions}
+      />
+    );
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the time input changes
     const fromGroup = screen.getByRole('group', { name: /from/i });
@@ -93,19 +107,38 @@ describe('TimeFrameFilter', () => {
     expect(mockHandleValueChange).toHaveBeenCalledWith('fromAmPm', 'PM');
   });
 
-  test('should call handleValueChange when a NumberInput is changed', async () => {
-    // Arrange
-    const user = userEvent.setup();
-    render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+  test('should be disabled when "disabled" prop is passed', () => {
+    render(
+      <TimeFrameFilter
+        values={mockValues}
+        handleValueChange={mockHandleValueChange}
+        fromToSelection={fromToSelectionEnum.FromSelectionOptions}
+        disabled={true}
+      />
+    );
+    const fromGroup = screen.getByRole('group', { name: /from/i });
+    const dateInput = within(fromGroup).getByLabelText(/date/i);
+    const timeInput = within(fromGroup).getByLabelText(/time/i);
+    const amPmSelect = within(fromGroup).getAllByRole('combobox')[0];
 
-    const minutesInput = screen.getByLabelText('minutes');
-
-    // Act: Change the value of the minutes input
-    await user.clear(minutesInput);
-    await user.type(minutesInput, '45');
-    await user.tab();
-
-    // Assert: Check that the callback was fired with the final, correct value.
-    expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', '45');
+    expect(dateInput).toBeDisabled();
+    expect(timeInput).toBeDisabled();
+    expect(amPmSelect).toBeDisabled();
   });
+
+  // test('should call handleValueChange when a NumberInput is changed', async () => {
+  //   // Arrange
+  //   const user = userEvent.setup();
+  //   render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+
+  //   const minutesInput = screen.getByLabelText('minutes');
+
+  //   // Act: Change the value of the minutes input
+  //   await user.clear(minutesInput);
+  //   await user.type(minutesInput, '45');
+  //   await user.tab();
+
+  //   // Assert: Check that the callback was fired with the final, correct value.
+  //   expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', '45');
+  // });
 });
