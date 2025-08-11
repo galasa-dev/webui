@@ -37,6 +37,8 @@ export enum fromToSelectionEnum {
   ToSelectionOptions,
 }
 
+const ONE_MINUTE = 60 * 1000;
+
 /*
  * Calculates the final, fully synchronized state object from two valid dates.
  */
@@ -98,7 +100,7 @@ export function applyTimeFrameRules(
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
-      correctedTo: isRelativeToNow ? toDate : new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
+      correctedTo: isRelativeToNow ? toDate : new Date(fromDate.getTime() + ONE_MINUTE),
       notification: {
         text: isRelativeToNow
           ? translations('toBeforeFromWarningOnly')
