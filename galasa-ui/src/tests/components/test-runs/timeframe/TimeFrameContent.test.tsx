@@ -143,7 +143,7 @@ describe('applyTimeFrameRules', () => {
     expect(notification).toBeNull();
   });
 
-  test('should return a warning if "From" date is after "To" date and adjust "To" date one minute after the "From" date when relativeToNow prop is false', () => {
+  test('should return a warning if "From" date is after "To" date and adjust "To" date one minute after the "From" date when isRelativeToNow prop is false', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-14T10:00:00.000Z');
     const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(
@@ -161,7 +161,7 @@ describe('applyTimeFrameRules', () => {
     expect(correctedTo).toEqual(new Date(fromDate.getTime() + 60 * 1000));
   });
 
-  test('should return a warning if "From" date is after the current time when relativeToNow prop is true', () => {
+  test('should return a warning if "From" date is after the current time when isRelativeToNow prop is true', () => {
     const fromDate = new Date('2025-08-15T10:00:00.000Z');
     const toDate = new Date('2025-08-14T10:00:00.000Z');
     const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(

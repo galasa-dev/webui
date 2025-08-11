@@ -52,7 +52,7 @@ interface TestRunsTableProps {
   orderedHeaders?: ColumnDefinition[];
   isLoading?: boolean;
   isError?: boolean;
-  relativeToNow?: boolean;
+  isRelativeToNow?: boolean;
   durationDays?: number;
   durationHours?: number;
   durationMinutes?: number;
@@ -65,7 +65,7 @@ export default function TestRunsTable({
   orderedHeaders,
   isLoading,
   isError,
-  relativeToNow,
+  isRelativeToNow,
   durationDays,
   durationHours,
   durationMinutes,
@@ -101,7 +101,7 @@ export default function TestRunsTable({
   const timeFrameText = useMemo(() => {
     return getTimeframeText(
       runsList,
-      relativeToNow,
+      isRelativeToNow,
       durationDays,
       durationHours,
       durationMinutes,
@@ -112,7 +112,7 @@ export default function TestRunsTable({
     runsList,
     translations,
     formatDate,
-    relativeToNow,
+    isRelativeToNow,
     durationDays,
     durationHours,
     durationMinutes,

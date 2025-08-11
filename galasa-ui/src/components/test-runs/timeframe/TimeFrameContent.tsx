@@ -78,7 +78,7 @@ export const calculateSynchronizedState = (
 export function applyTimeFrameRules(
   fromDate: Date,
   toDate: Date,
-  relativeToNow: boolean | undefined,
+  isRelativeToNow: boolean | undefined,
   translations: (key: string, values?: Record<string, any>) => string
 ): {
   correctedFrom: Date;
@@ -98,9 +98,9 @@ export function applyTimeFrameRules(
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
-      correctedTo: relativeToNow ? toDate : new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
+      correctedTo: isRelativeToNow ? toDate : new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
       notification: {
-        text: relativeToNow
+        text: isRelativeToNow
           ? translations('toBeforeFromWarningOnly')
           : translations('toBeforeFromAutoAdjust'),
         kind: 'warning',
@@ -131,10 +131,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
   const [notification, setNotification] = useState<Notification | null>(null);
   const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions>(
-    values.relativeToNow ? FromSelectionOptions.duration : FromSelectionOptions.specificFromTime
+    values.isRelativeToNow ? FromSelectionOptions.duration : FromSelectionOptions.specificFromTime
   );
   const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
-    values.relativeToNow ? ToSelectionOptions.now : ToSelectionOptions.specificToTime
+    values.isRelativeToNow ? ToSelectionOptions.now : ToSelectionOptions.specificToTime
   );
 
   const handleValueChange = useCallback(
@@ -176,17 +176,17 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         if (selectedFromOption === FromSelectionOptions.duration) {
           fromDate = new Date(toDate.getTime() - durationInMs);
         }
-      } else if (field.startsWith('relativeToNow')) {
+      } else if (field.startsWith('isRelativeToNow')) {
         // If the 'now' option is selected, set the 'to' date to the current date
         toDate = new Date();
       }
 
-      const isRelativeToNow = field === 'relativeToNow' ? value : values.relativeToNow;
+      const isisRelativeToNow = field === 'isRelativeToNow' ? value : values.isRelativeToNow;
       const {
         correctedFrom,
         correctedTo,
         notification: validationNotification,
-      } = applyTimeFrameRules(fromDate, toDate, isRelativeToNow, translations);
+      } = applyTimeFrameRules(fromDate, toDate, isisRelativeToNow, translations);
 
       // Set the notification if there is one
       setNotification(validationNotification);
@@ -200,10 +200,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
     [values, translations, setValues, getResolvedTimeZone, selectedFromOption]
   );
 
-  // Update the relativeToNow state when the selectedToOption changes
+  // Update the isRelativeToNow state when the selectedToOption changes
   useEffect(() => {
-    const relativeToNow = selectedToOption === ToSelectionOptions.now;
-    setValues((prevValues) => ({ ...prevValues, relativeToNow }));
+    const isRelativeToNow = selectedToOption === ToSelectionOptions.now;
+    setValues((prevValues) => ({ ...prevValues, isRelativeToNow }));
   }, [selectedToOption, setValues]);
 
   return (
@@ -266,7 +266,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               checked={selectedToOption === ToSelectionOptions.specificToTime}
               onChange={() => {
                 setSelectedToOption(ToSelectionOptions.specificToTime);
-                handleValueChange('relativeToNow', false);
+                handleValueChange('isRelativeToNow', false);
               }}
             />
             <div className={styles.filterWrapper}>
@@ -287,7 +287,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               checked={selectedToOption === ToSelectionOptions.now}
               onChange={() => {
                 setSelectedToOption(ToSelectionOptions.now);
-                handleValueChange('relativeToNow', true);
+                handleValueChange('isRelativeToNow', true);
               }}
             />
             <p className={styles.nowDescription}>{translations('nowDescription')}</p>

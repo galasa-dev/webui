@@ -40,7 +40,7 @@ export interface TimeFrameValues {
   durationDays: number;
   durationHours: number;
   durationMinutes: number;
-  relativeToNow?: boolean;
+  isRelativeToNow?: boolean;
 }
 
 export interface RunLog {

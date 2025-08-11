@@ -108,7 +108,7 @@ export default function TestRunsTabs({
 
     let toDate: Date,
       fromDate: Date,
-      relativeToNow = false;
+      isRelativeToNow = false;
     if (durationParam) {
       // If duration is specified, calculate fromDate and toDate based on it
       const [days, hours, minutes] = durationParam.split(',').map(Number);
@@ -116,7 +116,7 @@ export default function TestRunsTabs({
       fromDate = new Date(
         toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
       );
-      relativeToNow = true;
+      isRelativeToNow = true;
     } else {
       // If no duration is specified, use the provided from/to dates or default values
       toDate = toParam ? new Date(toParam) : new Date();
@@ -124,7 +124,7 @@ export default function TestRunsTabs({
     }
 
     const timezone = getResolvedTimeZone();
-    return { ...calculateSynchronizedState(fromDate, toDate, timezone), relativeToNow };
+    return { ...calculateSynchronizedState(fromDate, toDate, timezone), isRelativeToNow };
   });
 
   // Initialize search criteria based on URL parameters
@@ -206,8 +206,7 @@ export default function TestRunsTabs({
     params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
     // Timeframe
-    console.log(timeframeValues.relativeToNow);
-    if (timeframeValues.relativeToNow) {
+    if (timeframeValues.isRelativeToNow) {
       // If relative to now, we can use the "duration" parameter
       params.set(
         TEST_RUNS_QUERY_PARAMS.DURATION,
@@ -435,7 +434,7 @@ export default function TestRunsTabs({
               orderedHeaders={columnsOrder}
               isLoading={isLoading}
               isError={isError}
-              relativeToNow={timeframeValues.relativeToNow}
+              isRelativeToNow={timeframeValues.isRelativeToNow}
               durationDays={timeframeValues.durationDays}
               durationHours={timeframeValues.durationHours}
               durationMinutes={timeframeValues.durationMinutes}

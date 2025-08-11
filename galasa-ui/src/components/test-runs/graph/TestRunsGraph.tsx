@@ -31,7 +31,7 @@ interface TestRunGraphProps {
   orderedHeaders?: ColumnDefinition[];
   isLoading?: boolean;
   isError?: boolean;
-  relativeToNow?: boolean;
+  isRelativeToNow?: boolean;
   durationDays?: number;
   durationHours?: number;
   durationMinutes?: number;
@@ -51,7 +51,7 @@ export default function TestRunGraph({
   limitExceeded,
   isLoading,
   isError,
-  relativeToNow,
+  isRelativeToNow,
   durationDays,
   durationHours,
   durationMinutes,
@@ -233,7 +233,7 @@ export default function TestRunGraph({
   const timeFrameText = useMemo(() => {
     return getTimeframeText(
       runsList,
-      relativeToNow,
+      isRelativeToNow,
       durationDays,
       durationHours,
       durationMinutes,
@@ -244,7 +244,7 @@ export default function TestRunGraph({
     runsList,
     translations,
     formatDate,
-    relativeToNow,
+    isRelativeToNow,
     durationDays,
     durationHours,
     durationMinutes,

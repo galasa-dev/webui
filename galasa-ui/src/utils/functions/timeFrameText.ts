@@ -9,7 +9,7 @@ import { runStructure } from '@/utils/interfaces';
 /**
  * Generate a time frame text based on the runs data.
  * @param runsList - The list of test runs.
- * @param relativeToNow - Whether the time frame is relative to now.
+ * @param isRelativeToNow - Whether the time frame is relative to now.
  * @param durationDays - The duration in days.
  * @param durationHours - The duration in hours.
  * @param durationMinutes - The duration in minutes.
@@ -19,7 +19,7 @@ import { runStructure } from '@/utils/interfaces';
  */
 export const getTimeframeText = (
   runsList: runStructure[],
-  relativeToNow: boolean = false,
+  isRelativeToNow: boolean = false,
   durationDays: number = 0,
   durationHours: number = 0,
   durationMinutes: number = 0,
@@ -32,8 +32,8 @@ export const getTimeframeText = (
 
   let text = translations('timeFrameText.default');
 
-  if (relativeToNow) {
-    text = translations('timeFrameText.relativeToNow', {
+  if (isRelativeToNow) {
+    text = translations('timeFrameText.isRelativeToNow', {
       days: durationDays || 0,
       hours: durationHours || 0,
       minutes: durationMinutes || 0,

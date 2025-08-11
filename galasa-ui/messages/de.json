@@ -316,7 +316,7 @@
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
       "range": "Zeige Testläufe von {from} bis {to}",
-      "relativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     },
     "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
@@ -355,7 +355,7 @@
 
     "timeFrameText": {
       "range": "Zeige Testläufe von {from} bis {to}",
-      "relativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     }
   },
   "TestRunsTabs": {
