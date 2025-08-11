@@ -78,6 +78,7 @@ export const calculateSynchronizedState = (
 export function applyTimeFrameRules(
   fromDate: Date,
   toDate: Date,
+  relativeToNow: boolean | undefined,
   translations: (key: string, values?: Record<string, any>) => string
 ): {
   correctedFrom: Date;
@@ -88,13 +89,20 @@ export function applyTimeFrameRules(
   let correctedTo = new Date(toDate.getTime());
   let notification: Notification | null = null;
 
-  // If the 'from' date is after the 'to' date, adjust the to date to be 1 minute after the from date
+  /*
+   If the 'from' date is after the 'to' date:
+   - If the query is relative to now, show a warning without adjusting the 'to' time,
+       since the user may want to save a query for the future.
+   - Otherwise, set the 'to' time to one minute after the 'from' time.
+  */
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
-      correctedTo: new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
+      correctedTo: relativeToNow ? toDate : new Date(fromDate.getTime() + 60 * 1000), // 1 minute later
       notification: {
-        text: translations('toBeforeFrom'),
+        text: relativeToNow
+          ? translations('toBeforeFromWarningOnly')
+          : translations('toBeforeFromAutoAdjust'),
         kind: 'warning',
       },
     };
@@ -173,11 +181,12 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         toDate = new Date();
       }
 
+      const isRelativeToNow = field === 'relativeToNow' ? value : values.relativeToNow;
       const {
         correctedFrom,
         correctedTo,
         notification: validationNotification,
-      } = applyTimeFrameRules(fromDate, toDate, translations);
+      } = applyTimeFrameRules(fromDate, toDate, isRelativeToNow, translations);
 
       // Set the notification if there is one
       setNotification(validationNotification);
@@ -255,7 +264,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               id="to-specific-time"
               name="to-timeframe-options"
               checked={selectedToOption === ToSelectionOptions.specificToTime}
-              onChange={() => setSelectedToOption(ToSelectionOptions.specificToTime)}
+              onChange={() => {
+                setSelectedToOption(ToSelectionOptions.specificToTime);
+                handleValueChange('relativeToNow', false);
+              }}
             />
             <div className={styles.filterWrapper}>
               <TimeFrameFilter
@@ -293,7 +305,6 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               : translations('autoCorrection')
           }
           subtitle={notification.text}
-          hideCloseButton={true}
         />
       )}
     </div>
