@@ -161,6 +161,24 @@ describe('applyTimeFrameRules', () => {
     expect(correctedTo).toEqual(new Date(fromDate.getTime() + 60 * 1000));
   });
 
+  test('should return a warning if "From" date is after the current time when relativeToNow prop is true', () => {
+    const fromDate = new Date('2025-08-15T10:00:00.000Z');
+    const toDate = new Date('2025-08-14T10:00:00.000Z');
+    const { correctedFrom, correctedTo, notification } = applyTimeFrameRules(
+      fromDate,
+      toDate,
+      true,
+      mockTranslator
+    );
+
+    expect(notification?.kind).toEqual('warning');
+    expect(notification?.text).toEqual('toBeforeFromWarningOnly');
+
+    // Ensure nothing changes
+    expect(correctedFrom).toEqual(fromDate);
+    expect(correctedTo).toEqual(toDate);
+  });
+
   test('should return null notification if "From" and "To" dates are the same', () => {
     jest.setSystemTime(new Date('2025-09-01T00:00:00.000Z'));
     const sameDate = new Date('2025-08-15T10:00:00.000Z');
@@ -447,5 +465,34 @@ describe('TimeFrameContent Tests', () => {
     );
     expect(daysInput).toHaveValue(0);
     expect(minutesInput).toHaveValue(1);
+  });
+
+  test('To Date should jump to the current time when Now is selected', async () => {
+    const initialFrom = '2025-08-10T12:00:00.000Z';
+    const initialTo = '2025-08-13T12:00:00.000Z';
+
+    const TestWrapper = () => {
+      const [values, setValues] = useState<TimeFrameValues>(() => {
+        const initialFromDate = new Date(initialFrom);
+        const initialToDate = new Date(initialTo);
+
+        return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
+      });
+
+      return <TimeFrameContent values={values} setValues={setValues} />;
+    };
+
+    render(<TestWrapper />);
+    const toDateInput = screen.getByLabelText('To Date');
+    const nowRadio = screen.getByLabelText('Now');
+    // Check the initial value before the click
+    expect(toDateInput).toHaveValue(new Date(initialTo).toLocaleDateString('en-US'));
+
+    // Act: Click the radio button
+    fireEvent.click(nowRadio);
+
+    await waitFor(() => {
+      expect(toDateInput).toHaveValue(MOCK_NOW.toLocaleDateString('en-US'));
+    });
   });
 });
