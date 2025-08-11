@@ -547,6 +547,43 @@ describe('TestRunsTabs Component', () => {
         expect(newParams.get('sortOrder')).toBe('status:asc,result:desc');
       });
     });
+
+    describe('URL State for Duration', () => {
+      test('initializes from "duration" param and uses it for API call', async () => {
+        // Create a URL with duration parameter
+        const params = new URLSearchParams();
+        params.set('duration', '1,2,30'); // 1 day, 2 hours, 30 minutes
+        mockUseSearchParams.mockReturnValue(params);
+
+        // Act
+        render(
+          <FeatureFlagProvider>
+            <TestRunsTabs
+              requestorNamesPromise={mockRequestorNamesPromise}
+              resultsNamesPromise={mockResultsNamesPromise}
+            />
+          </FeatureFlagProvider>,
+          { wrapper }
+        );
+
+        // Trigger API call by switching to the results tab
+        fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
+
+        // Assert
+        await waitFor(() => {
+          expect(global.fetch).toHaveBeenCalledTimes(1);
+        });
+
+        const fetchUrl = (global.fetch as jest.Mock).mock.calls[0][0];
+        const fetchParams = new URLSearchParams(fetchUrl.split('?')[1]);
+
+        // The API call should use the 'duration' parameter directly from the URL
+        expect(fetchParams.get('duration')).toBe('1,2,30');
+        // The 'from' and 'to' params should not be present when 'duration' is used
+        expect(fetchParams.has('from')).toBe(false);
+        expect(fetchParams.has('to')).toBe(false);
+      });
+    });
   });
 
   describe('Data Fetching with useQuery', () => {

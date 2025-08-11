@@ -34,7 +34,6 @@ import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import TestRunGraph from './graph/TestRunsGraph';
-import { relative } from 'path';
 
 interface TabConfig {
   id: string;
