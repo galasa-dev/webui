@@ -238,7 +238,16 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
           </div>
           <div className={styles.optionRow}>
             <RadioButton
-              labelText={translations('durationTitle')}
+              labelText={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: translations('durationTitle').replace(
+                      '{boldTo}',
+                      `<strong>${translations('boldTo')}</strong>`
+                    ),
+                  }}
+                />
+              }
               value={FromSelectionOptions.duration}
               id="from-duration"
               name="from-timeframe-options"
