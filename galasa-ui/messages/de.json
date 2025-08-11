@@ -389,7 +389,9 @@
     "specificTimeTitle": "Eine bestimmte Uhrzeit",
     "durationTitle": "Dauer vor der 'Bis'-Zeit",
     "nowTitle": "Jetzt",
-    "nowDescription": "Der Zeitpunkt, an dem die Abfrageergebnisse angezeigt oder aktualisiert werden"
+    "nowDescription": "Der Zeitpunkt, an dem die Abfrageergebnisse angezeigt oder aktualisiert werden",
+    "from": "Von",
+    "to": "Bis"
   },
   "DateTimePicker": {
     "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:mm ein.",

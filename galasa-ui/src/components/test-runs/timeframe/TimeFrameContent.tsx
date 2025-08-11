@@ -217,7 +217,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
       <FormGroup className={styles.formGroup} legendText="" role="radiogroup">
         <div className={styles.fromContainer}>
-          <h3 className={styles.heading}>From</h3>
+          <h3 className={styles.heading}>{translations('from')}</h3>
           <div className={styles.optionRow}>
             <RadioButton
               labelText={translations('specificTimeTitle')}
@@ -258,7 +258,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         <div className={styles.divider}></div>
 
         <div className={styles.toContainer}>
-          <h3 className={styles.heading}>To</h3>
+          <h3 className={styles.heading}>{translations('to')}</h3>
           <div className={styles.optionRow}>
             <RadioButton
               labelText={translations('specificTimeTitle')}

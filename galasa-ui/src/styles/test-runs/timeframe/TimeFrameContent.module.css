@@ -32,7 +32,7 @@
 .heading {
   font-size: 1.5rem;
   font-weight: bold;
-  background-color: #f4f4f4;
+  background-color: var(--cds-layer-01);
   padding: 0.5rem;
 }
 
