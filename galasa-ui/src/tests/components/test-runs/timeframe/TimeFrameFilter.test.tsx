@@ -125,20 +125,4 @@ describe('TimeFrameFilter', () => {
     expect(timeInput).toBeDisabled();
     expect(amPmSelect).toBeDisabled();
   });
-
-  // test('should call handleValueChange when a NumberInput is changed', async () => {
-  //   // Arrange
-  //   const user = userEvent.setup();
-  //   render(<TimeFrameFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
-
-  //   const minutesInput = screen.getByLabelText('minutes');
-
-  //   // Act: Change the value of the minutes input
-  //   await user.clear(minutesInput);
-  //   await user.type(minutesInput, '45');
-  //   await user.tab();
-
-  //   // Assert: Check that the callback was fired with the final, correct value.
-  //   expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', '45');
-  // });
 });
