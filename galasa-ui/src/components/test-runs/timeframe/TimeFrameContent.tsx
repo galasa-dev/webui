@@ -15,7 +15,7 @@ import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import DurationFilter from './DurationFilter';
-import { RadioButton, FormGroup, Heading, Section } from '@carbon/react';
+import { RadioButton, FormGroup } from '@carbon/react';
 
 type Notification = {
   text: string;
@@ -198,7 +198,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   }, [selectedToOption, setValues]);
 
   return (
-    <Section className={styles.timeFrameContainer}>
+    <div className={styles.timeFrameContainer}>
       <div>
         <p>{translations('selectEnvelope')}</p>
         <p>{translations('envelopeDescription')}</p>
@@ -206,7 +206,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
       <FormGroup className={styles.formGroup} legendText="" role="radiogroup">
         <div className={styles.fromContainer}>
-          <Heading>From</Heading>
+          <h3 className={styles.heading}>From</h3>
           <div className={styles.optionRow}>
             <RadioButton
               labelText={translations('specificTimeTitle')}
@@ -243,8 +243,11 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
             </div>
           </div>
         </div>
+
+        <div className={styles.divider}></div>
+
         <div className={styles.toContainer}>
-          <Heading>To</Heading>
+          <h3 className={styles.heading}>To</h3>
           <div className={styles.optionRow}>
             <RadioButton
               labelText={translations('specificTimeTitle')}
@@ -275,6 +278,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
                 handleValueChange('relativeToNow', true);
               }}
             />
+            <p className={styles.nowDescription}>{translations('nowDescription')}</p>
           </div>
         </div>
       </FormGroup>
@@ -292,6 +296,6 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
           hideCloseButton={true}
         />
       )}
-    </Section>
+    </div>
   );
 }

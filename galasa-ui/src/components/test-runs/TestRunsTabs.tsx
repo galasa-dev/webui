@@ -436,6 +436,10 @@ export default function TestRunsTabs({
               orderedHeaders={columnsOrder}
               isLoading={isLoading}
               isError={isError}
+              relativeToNow={timeframeValues.relativeToNow}
+              durationDays={timeframeValues.durationDays}
+              durationHours={timeframeValues.durationHours}
+              durationMinutes={timeframeValues.durationMinutes}
             />
           </div>
         </TabPanel>

@@ -38,6 +38,7 @@ import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS } from '@/utils/constants/breadcrumb';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useDisappearingNotification } from '@/hooks/useDisappearingNotification';
+import { getTimeframeText } from '@/utils/functions/timeFrameText';
 
 interface CustomCellProps {
   header: string;
@@ -51,6 +52,10 @@ interface TestRunsTableProps {
   orderedHeaders?: ColumnDefinition[];
   isLoading?: boolean;
   isError?: boolean;
+  relativeToNow?: boolean;
+  durationDays?: number;
+  durationHours?: number;
+  durationMinutes?: number;
 }
 
 export default function TestRunsTable({
@@ -60,6 +65,10 @@ export default function TestRunsTable({
   orderedHeaders,
   isLoading,
   isError,
+  relativeToNow,
+  durationDays,
+  durationHours,
+  durationMinutes,
 }: TestRunsTableProps) {
   const translations = useTranslations('TestRunsTable');
   const { pushBreadCrumb } = useHistoryBreadCrumbs();
@@ -90,29 +99,24 @@ export default function TestRunsTable({
 
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
-    if (!runsList || runsList.length === 0) {
-      return translations('noTestRunsFound');
-    }
-
-    let text = translations('timeFrameText.default');
-
-    // Filter out any runs that don't have a valid `submittedAt` date
-    const runsWithDates = runsList.filter((run) => run.submittedAt);
-
-    if (runsWithDates.length !== 0) {
-      const dates = runsWithDates.map((run) => new Date(run.submittedAt).getTime());
-      const earliestDate = new Date(Math.min(...dates));
-      const latestDate = new Date(Math.max(...dates));
-
-      if (earliestDate && latestDate) {
-        text = translations('timeFrameText.range', {
-          from: formatDate(earliestDate),
-          to: formatDate(latestDate),
-        });
-      }
-    }
-    return text;
-  }, [runsList, translations, formatDate]);
+    return getTimeframeText(
+      runsList,
+      relativeToNow,
+      durationDays,
+      durationHours,
+      durationMinutes,
+      translations,
+      formatDate
+    );
+  }, [
+    runsList,
+    translations,
+    formatDate,
+    relativeToNow,
+    durationDays,
+    durationHours,
+    durationMinutes,
+  ]);
 
   if (isError) {
     return <ErrorPage />;

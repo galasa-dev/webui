@@ -315,7 +315,8 @@
     "limitExceededSubtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten.",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
-      "range": "Zeige Testläufe von {from} bis {to}"
+      "range": "Zeige Testläufe von {from} bis {to}",
+      "relativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     },
     "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
@@ -353,7 +354,8 @@
     },
 
     "timeFrameText": {
-      "range": "Zeige Testläufe von {from} bis {to}"
+      "range": "Zeige Testläufe von {from} bis {to}",
+      "relativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     }
   },
   "TestRunsTabs": {
@@ -379,12 +381,14 @@
     "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern keine anderen Filter angewendet werden.",
     "invalidTimeFrame": "Ungültiger Zeitraum",
     "autoCorrection": "Automatische Korrektur",
-    "toBeforeFrom": "'Bis'-Datum darf nicht vor dem 'Von'-Datum liegen.",
+    "toBeforeFrom": "Sie haben eine 'Von'-Zeit ausgewählt, die neuer ist als die 'Bis'-Zeit. Dies ist kein gültiger Zeitraum. Die 'Bis'-Zeit wurde so angepasst, dass sie etwas neuer ist als die von Ihnen gewählte 'Von'-Zeit.",
     "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
     "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
     "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein.",
-    "fromToSelection": "Genaue Daten und Uhrzeiten",
-    "durationSelection": "Relativ zur aktuellen Zeit"
+    "specificTimeTitle": "Eine bestimmte Uhrzeit",
+    "durationTitle": "Dauer vor der 'Bis'-Zeit",
+    "nowTitle": "Jetzt",
+    "nowDescription": "Der Zeitpunkt, an dem die Abfrageergebnisse angezeigt oder aktualisiert werden"
   },
   "DateTimePicker": {
     "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:mm ein.",

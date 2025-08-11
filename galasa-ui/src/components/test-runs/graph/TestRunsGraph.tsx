@@ -22,6 +22,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { getTooltipHTML } from '@/utils/generateTooltipHTML';
 import { useDisappearingNotification } from '@/hooks/useDisappearingNotification';
+import { getTimeframeText } from '@/utils/functions/timeFrameText';
 
 interface TestRunGraphProps {
   runsList: runStructure[];
@@ -30,6 +31,10 @@ interface TestRunGraphProps {
   orderedHeaders?: ColumnDefinition[];
   isLoading?: boolean;
   isError?: boolean;
+  relativeToNow?: boolean;
+  durationDays?: number;
+  durationHours?: number;
+  durationMinutes?: number;
 }
 const resultColorMap: Record<string, string> = {
   passed: COLORS.GREEN,
@@ -46,6 +51,10 @@ export default function TestRunGraph({
   limitExceeded,
   isLoading,
   isError,
+  relativeToNow,
+  durationDays,
+  durationHours,
+  durationMinutes,
 }: TestRunGraphProps) {
   const translations = useTranslations('TestRunGraph');
   const themeContext = useTheme();
@@ -220,6 +229,27 @@ export default function TestRunGraph({
     return () => container.removeEventListener('click', handleClick);
   }, [chartData, pushBreadCrumb, router, searchParams]);
 
+  // Generate the time frame text based on the runs data
+  const timeFrameText = useMemo(() => {
+    return getTimeframeText(
+      runsList,
+      relativeToNow,
+      durationDays,
+      durationHours,
+      durationMinutes,
+      translations,
+      formatDate
+    );
+  }, [
+    runsList,
+    translations,
+    formatDate,
+    relativeToNow,
+    durationDays,
+    durationHours,
+    durationMinutes,
+  ]);
+
   if (isError) {
     return <p>{translations('errorLoadingGraph')}</p>;
   }
@@ -229,10 +259,6 @@ export default function TestRunGraph({
   if (!runsList.length) {
     return <p>{translations('noTestRunsFound')}</p>;
   }
-  const dates = runsList.map((run) => new Date(run.submittedAt || 0).getTime());
-
-  const earliestDate = new Date(Math.min(...dates));
-  const latestDate = new Date(Math.max(...dates));
 
   return (
     <div className={styles.resultsPageContainer}>
@@ -246,12 +272,7 @@ export default function TestRunGraph({
           className={styles.notification}
         />
       )}
-      <p className={styles.timeFrameText}>
-        {translations('timeFrameText.range', {
-          from: formatDate(earliestDate),
-          to: formatDate(latestDate),
-        })}
-      </p>
+      <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div ref={chartContainerRef}>
         <ScatterChart data={chartData} options={chartOptions} />
       </div>
