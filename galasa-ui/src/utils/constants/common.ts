@@ -156,6 +156,8 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
 
+const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
+
 export {
   CLIENT_API_VERSION,
   COLORS,
@@ -179,4 +181,5 @@ export {
   TEST_RUN_PAGE_TABS,
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
+  RESULTS_TABLE_PAGE_SIZES,
 };

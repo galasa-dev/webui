@@ -66,6 +66,11 @@
     "deleteButtontext": "Delete {count} selected access token",
     "error": "Failed to fetch tokens from the Galasa API server"
   },
+  "ResultsTablePageSizingSetting": {
+    "title": "Test run query results",
+    "description": "Modifying this setting changes the default number of test run results which are shown on the test run table for all your queries.",
+    "defaultTestRunsLabel": "Default test run records per page of results"
+  },
   "userRole": {
     "heading": "User Role",
     "description": "The actions a user can or cannot perform on this Galasa service is controlled by their user role.",
