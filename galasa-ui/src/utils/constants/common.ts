@@ -150,7 +150,7 @@ const PREFERENCE_KEYS = {
   TIME_ZONE: 'timeZone' as const,
 } as const;
 
-const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
+const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
 export {
   CLIENT_API_VERSION,

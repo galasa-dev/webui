@@ -231,6 +231,24 @@
     "recentRunsLink": "View recent runs of the same test...",
     "runRetriesLink": "View all attempts of this test run..."
   },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "ScreenNumber": "Screen Number",
+    "Time": "Time",
+    "Method": "Method",
+    "searchPlaceholder": "Start typing...",
+    "ariaLabel": "ariaLabel",
+    "pagination": {
+      "backwardText": "Previous page",
+      "forwardText": "Next page",
+      "itemsPerPageText": "Items per page:",
+      "pageNumberText": "Page Number",
+      "of": "of",
+      "items": "items",
+      "pages": "pages",
+      "page": "page"
+    }
+  },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
     "errorTitle": "Error",
