@@ -26,8 +26,12 @@ export default function DurationFilter({
   const translations = useTranslations('DurationFilter');
 
   return (
-    <FormGroup legendText={translations('duration')} className={styles.durationFilterContainer}>
-      <div className={styles.durationInputsContainer} key={values.toDate?.getTime() || 0}>
+    <FormGroup className={styles.durationFilterContainer}>
+      <div
+        className={styles.durationInputsContainer}
+        key={values.toDate?.getTime() || 0}
+        data-testid="duration-filter"
+      >
         <NumberInput
           id="duration-days"
           label={translations('days')}

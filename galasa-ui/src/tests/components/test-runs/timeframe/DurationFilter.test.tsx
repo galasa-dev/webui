@@ -37,7 +37,7 @@ describe('DurationFilter', () => {
   test('render initially without crashing and number inputs enabled', () => {
     render(<DurationFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
 
-    expect(screen.getByText('duration')).toBeInTheDocument();
+    expect(screen.getByTestId('duration-filter')).toBeInTheDocument();
 
     const daysInput = screen.getByLabelText('days');
     expect(daysInput).toBeInTheDocument();

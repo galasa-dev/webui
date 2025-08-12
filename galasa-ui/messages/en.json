@@ -355,8 +355,8 @@
     "notFoundDescription": "Unable to find a run with id: {id}"
   },
   "TimeFrame": {
-    "selectEnvelope": "Select the time envelope against which the submission time of each test run will be compared.",
-    "envelopeDescription": "Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.",
+    "selectEnvelope": "Select the timeframe against which the submission time of each test run will be compared.",
+    "envelopeDescription": "Test runs submitted within this period will be shown in the results, subject to other filters being applied.",
     "invalidTimeFrame": "Invalid Time Frame",
     "autoCorrection": "Auto-Correction",
     "toBeforeFromAutoAdjust": "You selected a 'From' time which is more recent than the 'To' time. This is not a valid time period. The 'To' time has been changed to be slightly more recent than your selected 'From' time.",
@@ -379,15 +379,10 @@
     "date": "Date",
     "time": "Time"
   },
-  "TimeFrameFilter": {
-    "from": "From",
-    "to": "To"
-  },
   "DurationFilter": {
     "days": "Days",
     "hours": "Hours",
-    "minutes": "Minutes",
-    "duration": "Duration"
+    "minutes": "Minutes"
   },
   "SearchCriteriaContent": {
     "description": "Edit search criteria to describe the test results you wish to view. Remember to click 'Save' to preserve your changes to the query.",

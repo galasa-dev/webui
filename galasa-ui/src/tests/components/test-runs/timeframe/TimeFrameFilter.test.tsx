@@ -53,10 +53,10 @@ describe('TimeFrameFilter', () => {
     );
 
     // Assert: check if the component renders correctly with the mocked values
-    const fromGroup = screen.getByRole('group', { name: /from/i });
+    const fromContainer = screen.getByTestId('from-timeframe-filter');
 
-    expect(within(fromGroup).getByLabelText(/date/i)).toHaveValue('10/01/2023');
-    expect(within(fromGroup).getByLabelText(/time/i)).toHaveValue('10:00');
+    expect(within(fromContainer).getByLabelText(/date/i)).toHaveValue('10/01/2023');
+    expect(within(fromContainer).getByLabelText(/time/i)).toHaveValue('10:00');
   });
 
   test('should call handleValueChange when a date is selected from the calendar', async () => {
@@ -71,8 +71,8 @@ describe('TimeFrameFilter', () => {
     );
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the date input changes
-    const fromGroup = screen.getByRole('group', { name: /from/i });
-    const dateInput = within(fromGroup).getByLabelText(/date/i);
+    const fromContainer = screen.getByTestId('from-timeframe-filter');
+    const dateInput = within(fromContainer).getByLabelText(/date/i);
 
     await user.clear(dateInput);
     await user.type(dateInput, '10/25/2023');
@@ -99,8 +99,8 @@ describe('TimeFrameFilter', () => {
     );
 
     // Assert: check if mockHandleValueChange is called with the correct parameters when the time input changes
-    const fromGroup = screen.getByRole('group', { name: /from/i });
-    const amPmSelect = within(fromGroup).getAllByRole('combobox')[0];
+    const fromContainer = screen.getByTestId('from-timeframe-filter');
+    const amPmSelect = within(fromContainer).getAllByRole('combobox')[0];
 
     await user.selectOptions(amPmSelect, 'PM');
 
@@ -116,10 +116,10 @@ describe('TimeFrameFilter', () => {
         disabled={true}
       />
     );
-    const fromGroup = screen.getByRole('group', { name: /from/i });
-    const dateInput = within(fromGroup).getByLabelText(/date/i);
-    const timeInput = within(fromGroup).getByLabelText(/time/i);
-    const amPmSelect = within(fromGroup).getAllByRole('combobox')[0];
+    const fromContainer = screen.getByTestId('from-timeframe-filter');
+    const dateInput = within(fromContainer).getByLabelText(/date/i);
+    const timeInput = within(fromContainer).getByLabelText(/time/i);
+    const amPmSelect = within(fromContainer).getAllByRole('combobox')[0];
 
     expect(dateInput).toBeDisabled();
     expect(timeInput).toBeDisabled();

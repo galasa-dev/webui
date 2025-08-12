@@ -21,7 +21,6 @@ import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 
 interface DateTimePickerProps {
-  legend: string;
   date: Date;
   time: string;
   amPm: string;
@@ -29,13 +28,13 @@ interface DateTimePickerProps {
   onTimeChange: (time: string) => void;
   onAmPmChange: (amPm: string) => void;
   disabled?: boolean;
+  prefixId: string;
 }
 
 /**
  * A self-contained component for selecting a date and time.
  */
 export default function DateTimePicker({
-  legend,
   date,
   time,
   amPm,
@@ -43,6 +42,7 @@ export default function DateTimePicker({
   onTimeChange,
   onAmPmChange,
   disabled = false,
+  prefixId,
 }: DateTimePickerProps) {
   const [localTime, setLocalTime] = useState(time);
   const { preferences } = useDateTimeFormat();
@@ -79,7 +79,7 @@ export default function DateTimePicker({
     .replace(/d/g, 'dd');
 
   return (
-    <FormGroup legendText={legend} className={styles.TimeFrameFilterItem}>
+    <FormGroup className={styles.TimeFrameFilterItem}>
       <DatePicker
         locale={languageCodeForPicker}
         dateFormat={datePickerFormat}
@@ -88,14 +88,14 @@ export default function DateTimePicker({
         onChange={(dates: Date[]) => onDateChange(dates?.[0] || null)}
       >
         <DatePickerInput
-          id={`${legend}-date-picker`}
+          id={`${prefixId}-date-picker`}
           labelText={translations('date')}
           placeholder={placeholder}
           disabled={disabled}
         />
       </DatePicker>
       <TimePicker
-        id={`${legend}-time-picker`}
+        id={`${prefixId}-time-picker`}
         labelText={translations('time')}
         value={localTime}
         invalid={!parseAndValidateTime(localTime)}
@@ -105,7 +105,7 @@ export default function DateTimePicker({
         disabled={disabled}
       >
         <TimePickerSelect
-          id={`${legend}-time-picker-ampm`}
+          id={`${prefixId}-time-picker-ampm`}
           value={amPm}
           onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
             onAmPmChange(event.target.value)

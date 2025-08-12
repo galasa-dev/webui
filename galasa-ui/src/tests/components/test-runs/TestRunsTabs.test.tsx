@@ -10,7 +10,6 @@ import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
-import { DAY_MS } from '@/utils/constants/common';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => (
@@ -30,19 +29,33 @@ jest.mock('@/components/test-runs/results/TestRunsTable', () => ({
 jest.mock('@/components/test-runs/timeframe/TimeFrameContent', () => ({
   __esModule: true,
   default: () => <div>Mocked Timeframe Content</div>,
-  calculateSynchronizedState: jest.fn((fromDate, toDate) => ({
-    fromDate,
-    toDate,
-    fromTime: '00:00',
-    fromAmPm: 'AM',
-    toTime: '23:59',
-    toAmPm: 'PM',
-    durationDays: 0,
-    durationHours: 23,
-    durationMinutes: 59,
-  })),
-}));
+  calculateSynchronizedState: jest.fn((fromDate, toDate) => {
+    const DAY_MS_MOCK = 86400000;
+    const HOUR_MS_MOCK = 3600000;
+    const MINUTE_MS_MOCK = 60000;
 
+    const diff = toDate.getTime() - fromDate.getTime();
+    const roundedDiff = Math.round(diff / 1000) * 1000;
+
+    const durationDays = Math.floor(roundedDiff / DAY_MS_MOCK);
+    const remainderHours = roundedDiff % DAY_MS_MOCK;
+    const durationHours = Math.floor(remainderHours / HOUR_MS_MOCK);
+    const remainderMinutes = remainderHours % HOUR_MS_MOCK;
+    const durationMinutes = Math.floor(remainderMinutes / MINUTE_MS_MOCK);
+
+    return {
+      fromDate,
+      toDate,
+      fromTime: '00:00',
+      fromAmPm: 'AM',
+      toTime: '23:59',
+      toAmPm: 'PM',
+      durationDays,
+      durationHours,
+      durationMinutes,
+    };
+  }),
+}));
 jest.mock('@/components/test-runs/search-criteria/SearchCriteriaContent', () => ({
   __esModule: true,
   default: () => <div>Mocked Search Criteria Content</div>,
@@ -134,6 +147,7 @@ jest.mock('@/utils/constants/common', () => ({
     COLUMNS_ORDER: 'columnsOrder',
     TAB: 'tab',
     SORT_ORDER: 'sortOrder',
+    DURATION: 'duration',
   },
   DAY_MS: 86400000,
   TABS_IDS: ['timeframe', 'table-design', 'search-criteria', 'results'],
@@ -322,9 +336,6 @@ describe('TestRunsTabs Component', () => {
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
 
-      const expectedToDate = STABLE_DATE;
-      const expectedFromDate = new Date(STABLE_DATE.getTime() - DAY_MS);
-
       expect(decodedParams.get('tab')).toBe('results');
       expect(decodedParams.get('visibleColumns')).toBe(
         'submittedAt,runName,requestor,testName,status,result'
@@ -332,8 +343,7 @@ describe('TestRunsTabs Component', () => {
       expect(decodedParams.get('columnsOrder')).toBe(
         'submittedAt,runName,requestor,testName,status,result,tags'
       );
-      expect(decodedParams.get('from')).toBe(expectedFromDate.toISOString());
-      expect(decodedParams.get('to')).toBe(expectedToDate.toISOString());
+      expect(decodedParams.get('duration')).toBe('1,0,0'); // 1 day
     });
 
     test('updates URL when selected visible columns are changed', async () => {

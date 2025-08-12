@@ -9,7 +9,6 @@ import { fromToSelectionEnum } from './TimeFrameContent';
 import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import DateTimePicker from './DateTimePicker';
-import { useTranslations } from 'next-intl';
 
 export default function TimeFrameFilter({
   values,
@@ -22,15 +21,16 @@ export default function TimeFrameFilter({
   fromToSelection: fromToSelectionEnum;
   disabled?: boolean;
 }) {
-  const translations = useTranslations('TimeFrameFilter');
-
   // Determine which set of values to use based on the component's role
   const isFromSelection = fromToSelection === fromToSelectionEnum.FromSelectionOptions;
 
   return (
-    <div className={styles.timeFrameFilterContainer}>
+    <div
+      className={styles.timeFrameFilterContainer}
+      data-testid={isFromSelection ? 'from-timeframe-filter' : 'to-timeframe-filter'}
+    >
       <DateTimePicker
-        legend={isFromSelection ? translations('from') : translations('to')}
+        prefixId={isFromSelection ? 'from' : 'to'}
         date={isFromSelection ? values.fromDate : values.toDate}
         time={isFromSelection ? values.fromTime : values.toTime}
         amPm={isFromSelection ? values.fromAmPm : values.toAmPm}

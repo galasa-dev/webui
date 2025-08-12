@@ -117,10 +117,15 @@ export default function TestRunsTabs({
         toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
       );
       isRelativeToNow = true;
+    } else if (fromParam && toParam) {
+      // If no duration is specified, use the provided from/to dates
+      toDate = new Date(toParam);
+      fromDate = new Date(fromParam);
     } else {
-      // If no duration is specified, use the provided from/to dates or default values
-      toDate = toParam ? new Date(toParam) : new Date();
-      fromDate = fromParam ? new Date(fromParam) : new Date(toDate.getTime() - DAY_MS);
+      // If no from/to dates are specified, default to last 1 day (duration-based) from now
+      toDate = new Date();
+      fromDate = new Date(toDate.getTime() - DAY_MS);
+      isRelativeToNow = true;
     }
 
     const timezone = getResolvedTimeZone();
