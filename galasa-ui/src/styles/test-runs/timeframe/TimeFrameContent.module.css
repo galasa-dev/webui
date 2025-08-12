@@ -25,7 +25,7 @@
 
 .divider {
   width: 3px;
-  background-color: #ccc;
+  background-color: var(--cds-layer-01);
   align-self: stretch;
 }
 

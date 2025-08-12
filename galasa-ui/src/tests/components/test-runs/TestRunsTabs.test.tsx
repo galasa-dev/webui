@@ -336,7 +336,7 @@ describe('TestRunsTabs Component', () => {
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
 
-      expect(decodedParams.get('tab')).toBe('timeframe');
+      expect(decodedParams.get('tab')).toBe('results');
       expect(decodedParams.get('visibleColumns')).toBe(
         'submittedAt,runName,requestor,testName,status,result'
       );
@@ -603,7 +603,7 @@ describe('TestRunsTabs Component', () => {
       queryClient.clear();
     });
 
-    test('does not fetch data on initial render if "Results" tab is not active', () => {
+    test('fetches data on initial render as "Results" tab is active', () => {
       mockUseSearchParams.mockReturnValue(new URLSearchParams());
       render(
         <FeatureFlagProvider>
@@ -615,11 +615,12 @@ describe('TestRunsTabs Component', () => {
         { wrapper }
       );
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(global.fetch).toHaveBeenCalled();
     });
 
     test('fetches data when "Results" tab is selected', async () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+      // Mock default tab
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('tab=timeframe'));
       render(
         <FeatureFlagProvider>
           <TestRunsTabs

@@ -74,7 +74,7 @@ export default function TestRunsTabs({
   const [selectedIndex, setSelectedIndex] = useState(() => {
     const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    return initialIndex !== -1 ? initialIndex : 0;
+    return initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
   });
 
   // Initialize selectedVisibleColumns  based on URL parameters or default values

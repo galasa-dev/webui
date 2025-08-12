@@ -371,7 +371,7 @@
     "invalidTimeText": "Please enter a valid time in HH:MM format.",
     "specificTimeTitle": "A specific time",
     "durationTitle": "Duration before '{boldTo}' time",
-    "boldTo": "'To'",
+    "boldTo": "To",
     "nowTitle": "Now",
     "nowDescription": "The time the query results are viewed or refreshed",
     "from": "From",
