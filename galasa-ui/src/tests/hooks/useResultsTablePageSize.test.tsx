@@ -49,7 +49,7 @@ describe('useResultsTablePageSize', () => {
     });
 
     await waitFor(() => {
-      expect(localStorage.getItem('resultsTablePageSize')).toBe(JSON.stringify(30));
+      expect(localStorage.getItem('resultsTablePageSize')).toBe(String(30));
     });
   });
 
@@ -58,7 +58,7 @@ describe('useResultsTablePageSize', () => {
 
     await waitFor(() => {
       // Default is 10
-      expect(localStorage.getItem('resultsTablePageSize')).toBe(JSON.stringify(10));
+      expect(localStorage.getItem('resultsTablePageSize')).toBe(String(10));
     });
   });
 });

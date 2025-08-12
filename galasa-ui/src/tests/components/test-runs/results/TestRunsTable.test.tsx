@@ -8,7 +8,11 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/results/TestRunsTable';
-import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
+import {
+  MAX_DISPLAYABLE_TEST_RUNS,
+  RESULTS_TABLE_COLUMNS,
+  RESULTS_TABLE_PAGE_SIZES,
+} from '@/utils/constants/common';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const mockRouterPush = jest.fn();
@@ -31,6 +35,14 @@ jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
     formatDate: (date: Date) => date.toLocaleString(),
+  }),
+}));
+
+// Mock the useResultsTablePageSize hook
+jest.mock('@/hooks/useResultsTablePageSize', () => ({
+  __esModule: true,
+  default: () => ({
+    defaultPageSize: 20,
   }),
 }));
 
@@ -195,6 +207,18 @@ describe('TestRunsTable Component', () => {
     );
     expect(noColumnsMessage).toBeInTheDocument();
   });
+
+  test('display the table with page size in defaultPageSize', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(2);
+
+    // Act
+    render(<TestRunsTable {...defaultProps} runsList={mockRuns} />);
+
+    // Assert
+    expect(screen.getByText('Items per page:')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('20')).toBeInTheDocument();
+  });
 });
 
 describe('TestRunsTable Interactions', () => {
@@ -214,18 +238,18 @@ describe('TestRunsTable Interactions', () => {
 
   test('handles pagination changes correctly', async () => {
     // Arrange
-    const mockRuns = generateMockRuns(15);
+    const mockRuns = generateMockRuns(25);
 
     render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
 
     // Wait for the table to finish loading
     const table = await screen.findByRole('table');
 
-    // Assert initial state
-    expect(within(table).getAllByRole('row')).toHaveLength(11); // 1 header + 10 data
+    // Assert initial state - default items per page is 20 as set in the useResultsTablePageSize hook
+    expect(within(table).getAllByRole('row')).toHaveLength(21); // 1 header + 20 data
     // Assert correct page range text
     expect(screen.getByText(/of 2/i)).toBeInTheDocument();
-    expect(screen.queryByText('Test Run 11')).not.toBeInTheDocument();
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
 
     // Act
     const nextPageButton = screen.getByRole('button', { name: /next page/i });
@@ -233,7 +257,7 @@ describe('TestRunsTable Interactions', () => {
 
     // Assert final state
     await waitFor(() => {
-      expect(screen.getByText('Test Run 11')).toBeInTheDocument();
+      expect(screen.getByText('Test Run 21')).toBeInTheDocument();
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
   });
