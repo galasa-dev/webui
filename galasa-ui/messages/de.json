@@ -66,6 +66,11 @@
     "deleteButtontext": "{count} ausgewählte Zugriffstoken löschen",
     "error": "Fehler beim Abrufen der Token vom Galasa API-Server"
   },
+  "ResultsTablePageSizingSetting": {
+    "title": "Testergebnisabfrage",
+    "description": "Durch Ändern dieser Einstellung wird die Standardanzahl der Testergebnisse festgelegt, die in der Tabelle für alle Ihre Abfragen pro Seite angezeigt werden.",
+    "defaultTestRunsLabel": "Standardanzahl der Testergebnisse pro Seite"
+  },
   "userRole": {
     "heading": "Benutzerrolle",
     "description": "Welche Aktionen ein Benutzer im Galasa-Dienst ausführen darf, wird durch seine Benutzerrolle bestimmt.",
