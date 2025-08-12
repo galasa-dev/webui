@@ -7,7 +7,7 @@
 // (TODO: Delete me) Test run with 3270 terminal example: CEMTManagerIVT http://localhost:3000/test-runs/cdb-230fb4cb-f339-43de-8ef7-559a3c2c249d-1754373621270-C25104
 
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Table,
   TableHead,
@@ -24,6 +24,8 @@ import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody
 import styles from '@/styles/tab3270.module.css';
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
+import { pages } from 'next/dist/build/templates/app-page';
+import { mock } from 'node:test';
 
 interface Cell {
   id: number;
@@ -33,7 +35,7 @@ interface Cell {
   Method: string;
 }
 
-const rows: Cell[] = [
+const mockData: Cell[] = [
   { id: 1, Terminal: 1, ScreenNumber: 1, Time: '2023-01-01 12:00:00', Method: 'Method A' },
   { id: 2, Terminal: 1, ScreenNumber: 2, Time: '2023-01-02 14:30:00', Method: 'Method B' },
   { id: 3, Terminal: 1, ScreenNumber: 3, Time: '2023-01-03 09:45:00', Method: 'Method B' },
@@ -50,7 +52,7 @@ const rows: Cell[] = [
 
 export default function ThirtyTwoSeventyTab() {
   const translations = useTranslations('3270Tab');
-
+  const [data, setData] = useState<Cell[]>(mockData);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -73,11 +75,20 @@ export default function ThirtyTwoSeventyTab() {
     },
   ];
 
+  // Paginated data based on currentPage and pageSize
   const paginatedRows = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return rows.slice(startIndex, endIndex);
-  }, [rows, currentPage, pageSize]);
+
+    return data.slice(startIndex, endIndex);
+  }, [currentPage, pageSize]);
+
+  // useEffect(() => {
+  //   const startIndex = (currentPage - 1) * pageSize;
+  //   const endIndex = startIndex + pageSize;
+  //   setData(mockData.slice(startIndex, endIndex));
+  //   console.log("Test:" + data);
+  // }, [currentPage, pageSize]);
 
   const handlePaginationChange = ({ page, pageSize }: { page: number; pageSize: number }) => {
     setCurrentPage(page);
@@ -135,11 +146,10 @@ export default function ThirtyTwoSeventyTab() {
           page={currentPage}
           pageSize={pageSize}
           pageSizes={[10, 20, 30, 40, 50]}
-          totalItems={rows.length}
+          totalItems={mockData.length}
           onChange={handlePaginationChange}
         />
       </div>
     </div>
   );
 }
-
