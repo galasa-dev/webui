@@ -31,7 +31,7 @@ import StatusIndicator from '../../common/StatusIndicator';
 import { useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
-import { MAX_DISPLAYABLE_TEST_RUNS } from '@/utils/constants/common';
+import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
 import { InlineNotification } from '@carbon/react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
@@ -39,6 +39,7 @@ import { TEST_RUNS } from '@/utils/constants/breadcrumb';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useDisappearingNotification } from '@/hooks/useDisappearingNotification';
 import { getTimeframeText } from '@/utils/functions/timeFrameText';
+import useResultsTablePageSize from '@/hooks/useResultsTablePageSize';
 
 interface CustomCellProps {
   header: string;
@@ -78,7 +79,10 @@ export default function TestRunsTable({
   const searchParams = useSearchParams();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+
+  // Get the default page size from the custom hook (which is set in the settings page)
+  const { defaultPageSize } = useResultsTablePageSize();
+  const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const isNotificationVisible = useDisappearingNotification(limitExceeded);
 
@@ -261,7 +265,7 @@ export default function TestRunsTable({
           pageNumberText={translations('pagination.pageNumberText')}
           page={currentPage}
           pageSize={pageSize}
-          pageSizes={[10, 20, 30, 40, 50]}
+          pageSizes={RESULTS_TABLE_PAGE_SIZES}
           totalItems={runsList.length}
           onChange={handlePaginationChange}
         />
