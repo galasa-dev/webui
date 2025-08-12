@@ -15,6 +15,7 @@ import {
   RepoArtifact,
   Share,
   CloudDownload,
+  Terminal_3270,
 } from '@carbon/icons-react';
 import OverviewTab from './OverviewTab';
 import { ArtifactIndexEntry, Run, TestMethod } from '@/generated/galasaapi';
@@ -23,6 +24,7 @@ import { RunMetadata } from '@/utils/interfaces';
 import { getIsoTimeDifference } from '@/utils/timeOperations';
 import MethodsTab, { MethodDetails } from './MethodsTab';
 import { ArtifactsTab } from './ArtifactsTab';
+import TabFor3270 from './TabFor3270';
 import LogTab from './LogTab';
 import TestRunSkeleton from './TestRunSkeleton';
 import { useTranslations } from 'next-intl';
@@ -72,12 +74,18 @@ const TestRunDetails = ({
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const { formatDate } = useDateTimeFormat();
 
+  const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
+
   // Get the selected tab index from the URL or default to the first tab
   const [selectedTabIndex, setSelectedTabIndex] = useState(
     searchParams.get('tab')
       ? TEST_RUN_PAGE_TABS.indexOf(searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!)
       : 0
   );
+
+  const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
+    setZos3270TerminalFolderExists(newZos3270TerminalFolderExists);
+  };
 
   const extractRunDetails = useCallback(
     (runDetails: Run) => {
@@ -317,6 +325,11 @@ const TestRunDetails = ({
               <Tab renderIcon={RepoArtifact} href="#">
                 {translations('tabs.artifacts')}
               </Tab>
+              {zos3270TerminalFolderExists && (
+                <Tab renderIcon={Terminal_3270} href="#">
+                  3270
+                </Tab>
+              )}
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -329,8 +342,18 @@ const TestRunDetails = ({
                 <LogTab logs={logs} initialLine={initialLine} />
               </TabPanel>
               <TabPanel>
-                <ArtifactsTab artifacts={artifacts} runId={runId} runName={run?.runName!} />
+                <ArtifactsTab
+                  artifacts={artifacts}
+                  runId={runId}
+                  runName={run?.runName!}
+                  setZos3270TerminalFolderExists={handleZos3270TerminalFolderCheck}
+                />
               </TabPanel>
+              {zos3270TerminalFolderExists && (
+                <TabPanel>
+                  <TabFor3270 />
+                </TabPanel>
+              )}
             </TabPanels>
           </Tabs>
         </div>

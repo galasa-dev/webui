@@ -1,9 +1,9 @@
-'use client';
 /*
  * Copyright contributors to the Galasa project
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+'use client';
 
 import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
@@ -23,41 +23,26 @@ import { Tile } from '@carbon/react';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
 import { Button } from '@carbon/react';
-
-interface FileNode {
-  name: string;
-  runId: string;
-  url: string;
-  isFile: true;
-  children: {};
-}
-
-interface FolderNode {
-  name: string;
-  isFile: false;
-  children: { [key: string]: TreeNodeData };
-}
-
-interface ArtifactDetails {
-  artifactFile: string;
-  fileSize: string;
-  fileName: string;
-  base64Data: string;
-  contentType: string;
-}
-
-type TreeNodeData = FileNode | FolderNode;
-
-type DownloadResult = { contentType: string; data: string; size: number; base64: string };
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FEATURE_FLAGS } from '@/utils/featureFlags';
+import {
+  FolderNode,
+  ArtifactDetails,
+  TreeNodeData,
+  DownloadResult,
+} from '@/utils/functions/artifacts';
+import { checkForZosTerminalFolderStructure } from '@/utils/checkFor3270FolderStructure';
 
 export function ArtifactsTab({
   artifacts,
   runId,
   runName,
+  setZos3270TerminalFolderExists,
 }: {
   artifacts: ArtifactIndexEntry[];
   runId: string;
   runName: string;
+  setZos3270TerminalFolderExists: (exists: boolean) => void;
 }) {
   const translations = useTranslations('Artifacts');
   const [treeData, setTreeData] = useState<FolderNode>({
@@ -79,6 +64,9 @@ export function ArtifactsTab({
 
   const ZIP_EXTENSIONS = ['zip', 'gz', 'jar', 'rar', '7z'];
   const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
+
+  const { isFeatureEnabled } = useFeatureFlags();
+  const is3270ScreenEnabled = isFeatureEnabled(FEATURE_FLAGS.IS_3270_SCREEN_ENABLED);
 
   function formatFileSize(bytes: number) {
     let fileSize = '';
@@ -201,19 +189,19 @@ export function ArtifactsTab({
         let currentNode: FolderNode = root;
         createFolderSegments(segments, currentNode, artifact);
       }
-
-      // Check for zos3270/terminals folder
-      if (segments[0] === 'zos3270' && segments[1] === 'terminals') {
-        // const folderExists = Object.values(currentNode.children).some(child => child.isFile === false);
-        console.log(`zos3270/terminals folder exists:`);
-        // You can add additional logic here if needed, e.g., highlight or mark this folder
-      } else {
-        console.log(`zos3270/terminals DOESN'T EXIST`);
-      }
     });
 
     setTreeData(root);
-  }, [artifacts]);
+
+    if (is3270ScreenEnabled) {
+      checkForZosTerminalFolderStructure(root, setZos3270TerminalFolderExists);
+    }
+  }, [
+    artifacts,
+    checkForZosTerminalFolderStructure,
+    is3270ScreenEnabled,
+    setZos3270TerminalFolderExists,
+  ]);
 
   const createFolderSegments = (
     segments: string[],
