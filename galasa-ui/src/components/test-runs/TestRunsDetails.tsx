@@ -15,6 +15,7 @@ import { Button } from '@carbon/react';
 import { Share } from '@carbon/icons-react';
 import { InlineNotification } from '@carbon/react';
 import PageTile from '../PageTile';
+import CollapsableSideBar from './saved-queries/CollapsableSideBar';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -77,12 +78,15 @@ export default function TestRunsDetails({
         </div>
       )}
       <div className={styles.testRunsContentWrapper}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <TestRunsTabs
-            requestorNamesPromise={requestorNamesPromise}
-            resultsNamesPromise={resultsNamesPromise}
-          />
-        </Suspense>
+        <CollapsableSideBar />
+        <div>
+          <Suspense fallback={<p>Loading...</p>}>
+            <TestRunsTabs
+              requestorNamesPromise={requestorNamesPromise}
+              resultsNamesPromise={resultsNamesPromise}
+            />
+          </Suspense>
+        </div>
       </div>
     </main>
   );
