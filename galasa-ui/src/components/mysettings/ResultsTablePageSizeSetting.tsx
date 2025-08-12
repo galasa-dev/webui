@@ -9,9 +9,12 @@ import { RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
 import { Dropdown } from '@carbon/react';
 import { useTranslations } from 'next-intl';
 import styles from '@/styles/mysettings/ResultsTablePageSizingSetting.module.css';
+import useResultsTablePageSize from '@/hooks/useResultsTablePageSize';
 
 export default function ResultsTablePageSizingSetting() {
   const translations = useTranslations('ResultsTablePageSizingSetting');
+  const { defaultPageSize, setDefaultPageSize } = useResultsTablePageSize();
+
   return (
     <section className={styles.section}>
       <h3 className={styles.heading}>{translations('title')}</h3>
@@ -23,12 +26,8 @@ export default function ResultsTablePageSizingSetting() {
             data-testid="custom-items-per-page-dropdown-test"
             items={RESULTS_TABLE_PAGE_SIZES}
             itemToString={(item: number) => item.toString()}
-            // selectedItem={RESULTS_TABLE_PAGE_SIZES.find(
-            //   (item) => item === preferences.itemsPerPage
-            // )}
-            // onChange={(e: { selectedItem: number }) =>
-
-            // }
+            selectedItem={defaultPageSize}
+            onChange={(e: { selectedItem: number }) => setDefaultPageSize(e.selectedItem)}
             size="md"
           />
         </div>

@@ -19,7 +19,7 @@ import { HOME } from '@/utils/constants/breadcrumb';
 import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import ProfileRole from '@/components/users/UserRole';
 import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
-import ResultsTablePageSizingSetting from '@/components/mysettings/ResultsTablePageSizingSetting';
+import ResultsTablePageSizeSetting from '@/components/mysettings/ResultsTablePageSizeSetting';
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
 
@@ -66,7 +66,7 @@ export default async function MySettings() {
       />
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeSettings />
-      <ResultsTablePageSizingSetting />
+      <ResultsTablePageSizeSetting />
       <ExperimentalFeaturesSection />
     </main>
   );
