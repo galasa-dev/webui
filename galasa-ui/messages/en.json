@@ -67,7 +67,7 @@
     "error": "Failed to fetch tokens from the Galasa API server"
   },
   "ResultsTablePageSizingSetting": {
-    "title": "Test run query results",
+    "title": "Test Run Query Results",
     "description": "Modifying this setting changes the default number of test run results which are shown on the test run table for all your queries.",
     "defaultTestRunsLabel": "Default test run records per page of results"
   },
