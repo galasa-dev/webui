@@ -66,6 +66,11 @@
     "deleteButtontext": "Delete {count} selected access token",
     "error": "Failed to fetch tokens from the Galasa API server"
   },
+  "ResultsTablePageSizingSetting": {
+    "title": "Test Run Query Results",
+    "description": "Modifying this setting changes the default number of test run results which are shown on the test run table for all your queries.",
+    "defaultTestRunsLabel": "Default test run records per page of results"
+  },
   "userRole": {
     "heading": "User Role",
     "description": "The actions a user can or cannot perform on this Galasa service is controlled by their user role.",
@@ -189,20 +194,22 @@
   "LogTab": {
     "title": "Run Log",
     "description": "A step-by-step log of what happened over time when the Run was preparing a TestClass for execution, what happened when the TestClass was executed, and when the test environment was cleaned up. The RunLog is an Artifact, which can be downloaded and viewed.",
-    "search_placeholder": "Find in run log",
-    "no_matches": "No matches",
-    "match_counter": "{current} of {total}",
-    "match_previous": "Previous match",
-    "match_next": "Next match",
-    "match_case": "Match case",
-    "match_whole_word": "Match whole word",
-    "filters_menu_title": "Hide / Show Content",
-    "filter_error": "Error",
-    "filter_warn": "Warning",
-    "filter_info": "Info",
-    "filter_debug": "Debug",
-    "filter_trace": "Trace",
-    "download_button": "Download Run Log"
+    "searchPlaceholder": "Find in run log",
+    "noMatches": "No matches",
+    "matchCounter": "{current} of {total}",
+    "matchPrevious": "Previous match",
+    "matchNext": "Next match",
+    "matchCase": "Match case",
+    "matchWholeWord": "Match whole word",
+    "filtersMenuTitle": "Hide / Show Content",
+    "filterError": "Error",
+    "filterWarn": "Warning",
+    "filterInfo": "Info",
+    "filterDebug": "Debug",
+    "filterTrace": "Trace",
+    "downloadButton": "Download Run Log",
+    "copyPermalinkButton": "Copy permalink with selected lines",
+    "selectLinesToCreatePermalink": "Select log lines for permalink"
   },
   "MethodsTab": {
     "title": "Methods",
@@ -217,7 +224,8 @@
   },
   "OverviewTab": {
     "bundle": "Bundle",
-    "test": "Test",
+    "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "package": "Package",
     "group": "Group",
     "submissionId": "Submission ID",
@@ -298,6 +306,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",
@@ -308,7 +317,8 @@
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
-      "range": "Showing test runs submitted between {from} and {to}"
+      "range": "Showing test runs submitted between {from} and {to}",
+      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
     },
     "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible. Please adjust the table design to show the columns that you would like to see.",
     "pagination": {
@@ -331,6 +341,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "status": "Status",
     "tags": "Tags",
     "result": "Result",
@@ -343,9 +354,9 @@
       "title": "Limit Exceeded",
       "subtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results."
     },
-
     "timeFrameText": {
-      "range": "Showing test runs submitted between {from} and {to}"
+      "range": "Showing test runs submitted between {from} and {to}",
+      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
     }
   },
   "TestRunsTabs": {
@@ -367,14 +378,22 @@
     "notFoundDescription": "Unable to find a run with id: {id}"
   },
   "TimeFrame": {
-    "selectEnvelope": "Select the time envelope against which the submission time of each test run will be compared.",
-    "envelopeDescription": "Test runs submitted within this envelope will be shown in the results, subject to other filters being applied.",
+    "selectEnvelope": "Select the timeframe against which the submission time of each test run will be compared.",
+    "envelopeDescription": "Test runs submitted within this period will be shown in the results, subject to other filters being applied.",
     "invalidTimeFrame": "Invalid Time Frame",
     "autoCorrection": "Auto-Correction",
-    "toBeforeFrom": "'To' date cannot be before 'From' date.",
+    "toBeforeFromAutoAdjust": "You selected a 'From' time which is more recent than the 'To' time. This is not a valid time period. The 'To' time has been changed to be slightly more recent than your selected 'From' time.",
+    "toBeforeFromWarningOnly": "'From' time is set to the future. Current query will return no results.",
     "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
     "dateRangeCapped": "Date range was capped at the current time.",
-    "invalidTimeText": "Please enter a valid time in HH:MM format."
+    "invalidTimeText": "Please enter a valid time in HH:MM format.",
+    "specificTimeTitle": "A specific time",
+    "durationTitle": "Duration before '{boldTo}' time",
+    "boldTo": "To",
+    "nowTitle": "Now",
+    "nowDescription": "The time the query results are viewed or refreshed",
+    "from": "From",
+    "to": "To"
   },
   "DateTimePicker": {
     "invalidTimeText": "Please enter a valid time in HH:MM format.",
@@ -383,13 +402,10 @@
     "date": "Date",
     "time": "Time"
   },
-  "TimeFrameFilter": {
+  "DurationFilter": {
     "days": "Days",
     "hours": "Hours",
-    "minutes": "Minutes",
-    "from": "From",
-    "to": "To",
-    "duration": "Duration"
+    "minutes": "Minutes"
   },
   "SearchCriteriaContent": {
     "description": "Edit search criteria to describe the test results you wish to view. Remember to click 'Save' to preserve your changes to the query.",
@@ -427,7 +443,7 @@
       "testName": {
         "label": "Test Name",
         "placeholder": "any",
-        "description": "Enter the name of a specific test contained within the test runs you want to find."
+        "description": "Enter the fully qualified (long) test name of a specific test contained within the test runs you want to find."
       },
       "status": {
         "label": "Status",
@@ -483,6 +499,7 @@
     "bundle": "Bundle",
     "package": "Package",
     "testName": "Test Name",
+    "testShortName": "Test Name (short)",
     "tags": "Tags",
     "status": "Status",
     "result": "Result",

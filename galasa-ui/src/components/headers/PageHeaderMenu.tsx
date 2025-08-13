@@ -16,7 +16,6 @@ import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
 import { setUserLocale } from '@/utils/locale';
 import ThemeSelector from './ThemeSelector';
-import { useTheme } from '@/contexts/ThemeContext';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const translations = useTranslations('PageHeaderMenu');

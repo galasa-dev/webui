@@ -50,6 +50,7 @@ const COLUMNS_IDS = {
   BUNDLE: 'bundle',
   PACKAGE: 'package',
   TEST_NAME: 'testName',
+  TEST_SHORT_NAME: 'testShortName',
   STATUS: 'status',
   TAGS: 'tags',
   RESULT: 'result',
@@ -63,7 +64,8 @@ const RESULTS_TABLE_COLUMNS: ColumnDefinition[] = [
   { id: 'group', columnName: 'Group' },
   { id: 'bundle', columnName: 'Bundle' },
   { id: 'package', columnName: 'Package' },
-  { id: 'testName', columnName: 'Test Name' },
+  { id: 'testShortName', columnName: 'Test Name (short)' },
+  { id: 'testName', columnName: 'Test Name (full)' },
   { id: 'status', columnName: 'Status' },
   { id: 'tags', columnName: 'Tags' },
   { id: 'result', columnName: 'Result' },
@@ -72,11 +74,13 @@ const RESULTS_TABLE_COLUMNS: ColumnDefinition[] = [
 const TEST_RUNS_QUERY_PARAMS = {
   FROM: 'from',
   TO: 'to',
+  DURATION: 'duration',
   RUN_NAME: 'runName',
   REQUESTOR: 'requestor',
   GROUP: 'group',
   BUNDLE: 'bundle',
   PACKAGE: 'package',
+  TEST_SHORT_NAME: 'testShortName',
   TEST_NAME: 'testName',
   SUBMISSION_ID: 'submissionId',
   STATUS: 'status',
@@ -112,7 +116,7 @@ const DEFAULT_VISIBLE_COLUMNS: string[] = [
   COLUMNS_IDS.SUBMITTED_AT,
   COLUMNS_IDS.TEST_RUN_NAME,
   COLUMNS_IDS.REQUESTOR,
-  COLUMNS_IDS.TEST_NAME,
+  COLUMNS_IDS.TEST_SHORT_NAME,
   COLUMNS_IDS.STATUS,
   COLUMNS_IDS.RESULT,
 ];
@@ -152,6 +156,8 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
+const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
+
 export {
   CLIENT_API_VERSION,
   COLORS,
@@ -175,4 +181,5 @@ export {
   TEST_RUN_PAGE_TABS,
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
+  RESULTS_TABLE_PAGE_SIZES,
 };

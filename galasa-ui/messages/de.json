@@ -66,6 +66,11 @@
     "deleteButtontext": "{count} ausgewählte Zugriffstoken löschen",
     "error": "Fehler beim Abrufen der Token vom Galasa API-Server"
   },
+  "ResultsTablePageSizingSetting": {
+    "title": "Testergebnisabfrage",
+    "description": "Durch Ändern dieser Einstellung wird die Standardanzahl der Testergebnisse festgelegt, die in der Tabelle für alle Ihre Abfragen pro Seite angezeigt werden.",
+    "defaultTestRunsLabel": "Standardanzahl der Testergebnisse pro Seite"
+  },
   "userRole": {
     "heading": "Benutzerrolle",
     "description": "Welche Aktionen ein Benutzer im Galasa-Dienst ausführen darf, wird durch seine Benutzerrolle bestimmt.",
@@ -210,20 +215,22 @@
   "LogTab": {
     "title": "Ablaufprotokoll",
     "description": "Schrittweises Protokoll des Testlaufs. Kann heruntergeladen werden.",
-    "search_placeholder": "Protokoll durchsuchen",
-    "no_matches": "Keine Treffer",
-    "match_counter": "{current} von {total}",
-    "match_previous": "Vorheriger Treffer",
-    "match_next": "Nächster Treffer",
-    "match_case": "Groß-/Kleinschreibung beachten",
-    "match_whole_word": "Ganzes Wort",
-    "filters_menu_title": "Inhalte filtern",
-    "filter_error": "Fehler",
-    "filter_warn": "Warnung",
-    "filter_info": "Info",
-    "filter_debug": "Debug",
-    "filter_trace": "Trace",
-    "download_button": "Laufprotokoll herunterladen"
+    "searchPlaceholder": "Protokoll durchsuchen",
+    "noMatches": "Keine Treffer",
+    "matchCounter": "{current} von {total}",
+    "matchPrevious": "Vorheriger Treffer",
+    "matchNext": "Nächster Treffer",
+    "matchCase": "Groß-/Kleinschreibung beachten",
+    "matchWholeWord": "Ganzes Wort",
+    "filtersMenuTitle": "Inhalte filtern",
+    "filterError": "Fehler",
+    "filterWarn": "Warnung",
+    "filterInfo": "Info",
+    "filterDebug": "Debug",
+    "filterTrace": "Trace",
+    "downloadButton": "Laufprotokoll herunterladen",
+    "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren",
+    "selectLinesToCreatePermalink": "Zeilen für Permalink wählen"
   },
   "MethodsTab": {
     "title": "Methoden",
@@ -238,7 +245,8 @@
   },
   "OverviewTab": {
     "bundle": "Bundle",
-    "test": "Test",
+    "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "package": "Paket",
     "group": "Gruppe",
     "submissionId": "Übermittlungs-ID",
@@ -301,6 +309,7 @@
     "bundle": "Bundle",
     "package": "Paket",
     "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",
@@ -311,7 +320,8 @@
     "limitExceededSubtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten.",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
-      "range": "Zeige Testläufe von {from} bis {to}"
+      "range": "Zeige Testläufe von {from} bis {to}",
+      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     },
     "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
@@ -334,6 +344,7 @@
     "bundle": "Paket",
     "package": "Paket",
     "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "status": "Status",
     "tags": "Tags",
     "result": "Ergebnis",
@@ -348,7 +359,8 @@
     },
 
     "timeFrameText": {
-      "range": "Zeige Testläufe von {from} bis {to}"
+      "range": "Zeige Testläufe von {from} bis {to}",
+      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
     }
   },
   "TestRunsTabs": {
@@ -370,14 +382,22 @@
     "notFoundDescription": "Kein Lauf mit ID: {id} gefunden"
   },
   "TimeFrame": {
-    "selectEnvelope": "Wählen Sie den Zeitraum aus, gegen den die Einreichungszeit jedes Testlaufs verglichen wird.",
-    "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern keine anderen Filter angewendet werden.",
+    "selectEnvelope": "Wählen Sie den Zeitraum aus, mit dem die Einreichungszeit jedes Testlaufs verglichen wird.",
+    "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern andere Filter angewendet werden.",
     "invalidTimeFrame": "Ungültiger Zeitraum",
     "autoCorrection": "Automatische Korrektur",
-    "toBeforeFrom": "'Bis'-Datum darf nicht vor dem 'Von'-Datum liegen.",
+    "toBeforeFromAutoAdjust": "Sie haben eine 'Von'-Zeit ausgewählt, die neuer ist als die 'Bis'-Zeit. Dies ist kein gültiger Zeitraum. Die 'Bis'-Zeit wurde so angepasst, dass sie etwas neuer ist als die von Ihnen gewählte 'Von'-Zeit.",
+    "toBeforeFromWarningOnly": "'Von'-Zeitpunkt ist in der Zukunft. Die aktuelle Abfrage liefert keine Ergebnisse.",
     "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
     "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
-    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein."
+    "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:MM ein.",
+    "specificTimeTitle": "Eine bestimmte Uhrzeit",
+    "durationTitle": "Dauer vor der '{boldTo}'-Zeit",
+    "boldTo": "'Bis'",
+    "nowTitle": "Jetzt",
+    "nowDescription": "Der Zeitpunkt, an dem die Abfrageergebnisse angezeigt oder aktualisiert werden",
+    "from": "Von",
+    "to": "Bis"
   },
   "DateTimePicker": {
     "invalidTimeText": "Bitte geben Sie eine gültige Uhrzeit im Format HH:mm ein.",
@@ -386,13 +406,10 @@
     "date": "Datum",
     "time": "Uhrzeit"
   },
-  "TimeFrameFilter": {
+  "DurationFilter": {
     "days": "Tage",
     "hours": "Stunden",
-    "minutes": "Minuten",
-    "from": "Von",
-    "to": "Bis",
-    "duration": "Dauer"
+    "minutes": "Minuten"
   },
   "SearchCriteriaContent": {
     "description": "Bearbeiten Sie die Suchkriterien, um die gewünschten Testergebnisse anzuzeigen. Vergessen Sie nicht, auf 'Speichern' zu klicken, um Ihre Änderungen an der Abfrage zu übernehmen.",
@@ -430,7 +447,7 @@
       "testName": {
         "label": "Testname",
         "placeholder": "beliebig",
-        "description": "Geben Sie den Namen eines bestimmten Tests ein, der in den Testläufen enthalten ist, die Sie finden möchten."
+        "description": "Gib den vollständig qualifizierten (langen) Testnamen eines bestimmten Tests ein, der in den Testläufen enthalten ist, die du finden möchtest."
       },
       "status": {
         "label": "Status",
@@ -486,6 +503,7 @@
     "bundle": "Bundle",
     "package": "Paket",
     "testName": "Testname",
+    "testShortName": "Testname (kurz)",
     "tags": "Tags",
     "status": "Status",
     "result": "Ergebnis",

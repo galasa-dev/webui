@@ -5,7 +5,7 @@
  */
 
 import { DataPoint } from './interfaces';
-import styles from '@/styles/TestRunsGraph.module.css';
+import styles from '@/styles/test-runs/graph/TestRunsGraph.module.css';
 
 export function getTooltipHTML(
   points: DataPoint[],

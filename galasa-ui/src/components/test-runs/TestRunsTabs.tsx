@@ -5,11 +5,11 @@
  */
 'use client';
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@carbon/react';
-import styles from '@/styles/TestRunsPage.module.css';
-import TimeframeContent, { calculateSynchronizedState } from './TimeFrameContent';
-import TestRunsTable from './TestRunsTable';
-import SearchCriteriaContent from './SearchCriteriaContent';
-import TableDesignContent from './TableDesignContent';
+import styles from '@/styles/test-runs/TestRunsPage.module.css';
+import TimeframeContent, { calculateSynchronizedState } from './timeframe/TimeFrameContent';
+import TestRunsTable from './results/TestRunsTable';
+import SearchCriteriaContent from './search-criteria/SearchCriteriaContent';
+import TableDesignContent from './table-design/TableDesignContent';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { TestRunsData } from '@/utils/testRuns';
 import { useTranslations } from 'next-intl';
@@ -19,9 +19,10 @@ import {
   COLUMNS_IDS,
   TEST_RUNS_QUERY_PARAMS,
   DAY_MS,
-  TABS_IDS,
   SEARCH_CRITERIA_KEYS,
   DEFAULT_VISIBLE_COLUMNS,
+  MINUTE_MS,
+  HOUR_MS,
 } from '@/utils/constants/common';
 import { useQuery } from '@tanstack/react-query';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
@@ -32,7 +33,7 @@ import { Run } from '@/generated/galasaapi';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
-import TestRunGraph from './TestRunGraph';
+import TestRunGraph from './graph/TestRunsGraph';
 
 interface TabConfig {
   id: string;
@@ -73,7 +74,7 @@ export default function TestRunsTabs({
   const [selectedIndex, setSelectedIndex] = useState(() => {
     const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    return initialIndex !== -1 ? initialIndex : 0;
+    return initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
   });
 
   // Initialize selectedVisibleColumns  based on URL parameters or default values
@@ -101,14 +102,34 @@ export default function TestRunsTabs({
 
   // Initialize timeframe values based on URL parameters or default to last 24 hours
   const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>(() => {
-    const fromParam = searchParams.get('from');
-    const toParam = searchParams.get('to');
-    const initialToDate = toParam ? new Date(toParam) : new Date();
-    const initialFromDate = fromParam
-      ? new Date(fromParam)
-      : new Date(initialToDate.getTime() - DAY_MS);
+    const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
+    const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);
+    const durationParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
+
+    let toDate: Date,
+      fromDate: Date,
+      isRelativeToNow = false;
+    if (durationParam) {
+      // If duration is specified, calculate fromDate and toDate based on it
+      const [days, hours, minutes] = durationParam.split(',').map(Number);
+      toDate = new Date();
+      fromDate = new Date(
+        toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
+      );
+      isRelativeToNow = true;
+    } else if (fromParam && toParam) {
+      // If no duration is specified, use the provided from/to dates
+      toDate = new Date(toParam);
+      fromDate = new Date(fromParam);
+    } else {
+      // If no from/to dates are specified, default to last 1 day (duration-based) from now
+      toDate = new Date();
+      fromDate = new Date(toDate.getTime() - DAY_MS);
+      isRelativeToNow = true;
+    }
+
     const timezone = getResolvedTimeZone();
-    return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
+    return { ...calculateSynchronizedState(fromDate, toDate, timezone), isRelativeToNow };
   });
 
   // Initialize search criteria based on URL parameters
@@ -190,8 +211,17 @@ export default function TestRunsTabs({
     params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
     // Timeframe
-    params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
-    params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+    if (timeframeValues.isRelativeToNow) {
+      // If relative to now, we can use the "duration" parameter
+      params.set(
+        TEST_RUNS_QUERY_PARAMS.DURATION,
+        `${timeframeValues.durationDays},${timeframeValues.durationHours},${timeframeValues.durationMinutes}`
+      );
+    } else {
+      // If not relative to now, we can use the "from" and "to" parameters
+      params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
+      params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+    }
 
     // Search Criteria
     Object.entries(searchCriteria).forEach(([key, value]) => {
@@ -245,7 +275,8 @@ export default function TestRunsTabs({
         group: structure.group || 'N/A',
         bundle: structure.bundle || 'N/A',
         package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
-        testName: structure.testShortName || structure.testName || 'N/A',
+        testShortName: structure.testShortName || structure.testName || 'N/A',
+        testName: structure.testName || 'N/A',
         tags: structure.tags ? structure.tags.join(', ') : 'N/A',
         status: structure.status || 'N/A',
         result: structure.result || 'N/A',
@@ -265,6 +296,7 @@ export default function TestRunsTabs({
     const relevantParameters = [
       TEST_RUNS_QUERY_PARAMS.FROM,
       TEST_RUNS_QUERY_PARAMS.TO,
+      TEST_RUNS_QUERY_PARAMS.DURATION,
       TEST_RUNS_QUERY_PARAMS.RUN_NAME,
       TEST_RUNS_QUERY_PARAMS.REQUESTOR,
       TEST_RUNS_QUERY_PARAMS.GROUP,
@@ -407,6 +439,10 @@ export default function TestRunsTabs({
               orderedHeaders={columnsOrder}
               isLoading={isLoading}
               isError={isError}
+              isRelativeToNow={timeframeValues.isRelativeToNow}
+              durationDays={timeframeValues.durationDays}
+              durationHours={timeframeValues.durationHours}
+              durationMinutes={timeframeValues.durationMinutes}
             />
           </div>
         </TabPanel>

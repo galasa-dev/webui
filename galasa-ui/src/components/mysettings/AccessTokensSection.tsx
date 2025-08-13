@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { Loading, Button } from '@carbon/react';
-import styles from '@/styles/MySettings.module.css';
+import styles from '@/styles/mysettings/MySettings.module.css';
 import TokenCard from '@/components/tokens/TokenCard';
 import ErrorPage from '@/app/error/page';
 import TokenRequestModal from '@/components/tokens/TokenRequestModal';

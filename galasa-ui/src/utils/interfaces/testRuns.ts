@@ -15,6 +15,7 @@ export interface RunMetadata {
   result: string;
   status: string;
   testName: string;
+  testShortName: string;
   runName: string;
   bundle: string;
   submissionId: string;
@@ -39,6 +40,7 @@ export interface TimeFrameValues {
   durationDays: number;
   durationHours: number;
   durationMinutes: number;
+  isRelativeToNow?: boolean;
 }
 
 export interface RunLog {

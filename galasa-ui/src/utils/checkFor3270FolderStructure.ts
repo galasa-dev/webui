@@ -1,4 +1,10 @@
-import { FolderNode } from './types/artifacts';
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+import { FolderNode } from './functions/artifacts';
 
 export const checkForZosTerminalFolderStructure = (
   root: FolderNode,

@@ -6,7 +6,7 @@
 'use client';
 
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
-import styles from '@/styles/MySettings.module.css';
+import styles from '@/styles/mysettings/MySettings.module.css';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
 
