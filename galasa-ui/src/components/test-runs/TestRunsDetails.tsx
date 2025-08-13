@@ -16,6 +16,7 @@ import { Share } from '@carbon/icons-react';
 import { InlineNotification } from '@carbon/react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
+import useSavedQueries from '@/hooks/useSavedQueries';
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
   resultsNamesPromise: Promise<string[]>;
@@ -29,6 +30,7 @@ export default function TestRunsDetails({
   const translations = useTranslations('TestRunsDetails');
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
+  const { savedQueries } = useSavedQueries();
 
   const handleShare = async () => {
     try {
@@ -77,6 +79,7 @@ export default function TestRunsDetails({
         </div>
       )}
       <div className={styles.testRunsContentWrapper}>
+        <h3></h3>
         <CollapsibleSideBar />
         <div className={styles.mainContent}>
           <Suspense fallback={<p>Loading...</p>}>

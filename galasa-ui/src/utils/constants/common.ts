@@ -97,7 +97,7 @@ const SINGLE_RUN_QUERY_PARAMS = {
   LOG_LINE: 'line',
 } as const;
 
-const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results'];
+const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results', 'graph'];
 
 // Keys that are managed by the SearchCriteriaContent component
 const SEARCH_CRITERIA_KEYS = [
