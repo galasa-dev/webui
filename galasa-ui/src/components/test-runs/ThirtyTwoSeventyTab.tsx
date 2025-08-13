@@ -26,6 +26,7 @@ import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
 import { pages } from 'next/dist/build/templates/app-page';
 import { mock } from 'node:test';
+import { TableContainer } from '@carbon/react';
 
 interface Cell {
   id: number;
@@ -42,17 +43,16 @@ const mockData: Cell[] = [
   { id: 4, Terminal: 2, ScreenNumber: 1, Time: '2023-01-04 11:15:00', Method: 'Method C' },
   { id: 5, Terminal: 2, ScreenNumber: 2, Time: '2023-01-05 16:20:00', Method: 'Method C' },
   { id: 6, Terminal: 2, ScreenNumber: 3, Time: '2023-01-06 08:30:00', Method: 'Method C' },
-  { id: 1, Terminal: 1, ScreenNumber: 1, Time: '2023-01-01 12:00:00', Method: 'Method A' },
-  { id: 2, Terminal: 1, ScreenNumber: 2, Time: '2023-01-02 14:30:00', Method: 'Method B' },
-  { id: 3, Terminal: 1, ScreenNumber: 3, Time: '2023-01-03 09:45:00', Method: 'Method B' },
-  { id: 4, Terminal: 2, ScreenNumber: 1, Time: '2023-01-04 11:15:00', Method: 'Method C' },
-  { id: 5, Terminal: 2, ScreenNumber: 2, Time: '2023-01-05 16:20:00', Method: 'Method C' },
-  { id: 6, Terminal: 2, ScreenNumber: 3, Time: '2023-01-06 08:30:00', Method: 'Method C' },
+  { id: 7, Terminal: 1, ScreenNumber: 1, Time: '2023-01-01 12:00:00', Method: 'Method A' },
+  { id: 8, Terminal: 1, ScreenNumber: 2, Time: '2023-01-02 14:30:00', Method: 'Method B' },
+  { id: 9, Terminal: 1, ScreenNumber: 3, Time: '2023-01-03 09:45:00', Method: 'Method B' },
+  { id: 10, Terminal: 2, ScreenNumber: 1, Time: '2023-01-04 11:15:00', Method: 'Method C' },
+  { id: 11, Terminal: 2, ScreenNumber: 2, Time: '2023-01-05 16:20:00', Method: 'Method C' },
+  { id: 12, Terminal: 2, ScreenNumber: 3, Time: '2023-01-06 08:30:00', Method: 'Method C' },
 ];
 
 export default function ThirtyTwoSeventyTab() {
   const translations = useTranslations('3270Tab');
-  const [data, setData] = useState<Cell[]>(mockData);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -79,16 +79,8 @@ export default function ThirtyTwoSeventyTab() {
   const paginatedRows = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-
-    return data.slice(startIndex, endIndex);
+    return mockData.slice(startIndex, endIndex);
   }, [currentPage, pageSize]);
-
-  // useEffect(() => {
-  //   const startIndex = (currentPage - 1) * pageSize;
-  //   const endIndex = startIndex + pageSize;
-  //   setData(mockData.slice(startIndex, endIndex));
-  //   console.log("Test:" + data);
-  // }, [currentPage, pageSize]);
 
   const handlePaginationChange = ({ page, pageSize }: { page: number; pageSize: number }) => {
     setCurrentPage(page);
@@ -112,24 +104,26 @@ export default function ThirtyTwoSeventyTab() {
             getRowProps: (options: any) => TableRowProps;
             getTableProps: () => TableBodyProps;
           }) => (
-            <Table {...getTableProps()}>
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })}>{header.header}</TableHeader>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} {...getRowProps({ row })}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
+            <TableContainer>
+              <Table {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader {...getHeaderProps({ header })}>{header.header}</TableHeader>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}> {cell.value} </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </DataTable>
         <Pagination
