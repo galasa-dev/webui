@@ -6,42 +6,100 @@
 'use client';
 
 import { useState } from 'react';
-import { HeaderMenuButton, SideNavItems, SideNavLink } from '@carbon/react';
-import { StarFilled, Query } from '@carbon/icons-react';
+import { HeaderMenuButton, SideNavItems } from '@carbon/react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  closestCorners,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { savedQueryType } from '@/utils/types/common';
+import QueryItem from './QueryItem';
+
+const mockedQueries = [
+  {
+    title: 'Tests ran in the last 24 hours',
+    url: 'http://localhost:3000/test-runs?q=N4IgLiBc4GYgNCAbgYyiAzgQXgJwHZ4CO8YAphmAMoAWA9rmAHICGAtmfJXhgiCnXTY8hXCQwBLACbwA5vABG8AA6kK1eo1YdShbmFkYefKQFdcLMBLr50AdngAGJyAC+QA',
+  },
+  {
+    title: 'Failed Runs - Last 7 Days',
+    url: 'http://localhost:3000/test-runs?q=N4IgLiBcIE4gNCAbgYyiAzgQXjAdrgI7xgCmGYAygBYD2MYAcgIYC2p8FuGCIKt6bLgIxiGAJYATeAHN4AI3gAHEuSp0GLdiQJcwMjN16SArjGZhxtPOgCc8AAzwAjCAC+QA',
+  },
+  {
+    title: 'Cancelled Runs - Last 7 Days',
+    url: 'http://localhost:3000/test-runs?q=N4IgLiBcIE4gNCAbgYyiAzgQXjAdrgI7xgCmGYAygBYD2MYAcgIYC2p8FuGCIKt6bLgIxiGAJYATeAHN4AI3gAHEuSp0GLdiQJcwMjN14AzdK0kAPGdVYBWNIjADo7ZvOoArUgEYQAXyA',
+  },
+];
 
 export default function CollapsibleSideBar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const activeHref = '#';
+  // TODO: Get saved queries from a custom hook that stores them in localStorage
+  const [savedQueries, setSavedQueries] = useState<savedQueryType[]>(mockedQueries);
+  const [defaultQuery, setDefaultQuery] = useState<savedQueryType | null>(null);
+
+  const getQueryPosition = (url: string) => savedQueries.findIndex((query) => query.url === url);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setSavedQueries((queries) => {
+        const originalPosition = getQueryPosition(String(active.id));
+        const newPosition = getQueryPosition(String(over.id));
+        return arrayMove(queries, originalPosition, newPosition);
+      });
+    }
+  };
+
+  // All sensors used for drag and drop functionality (Pointer, Touch, and Keyboard)
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
-    <div className={styles.container} aria-label="Saved Queries Header">
-      <HeaderMenuButton
-        className={styles.headerMenuButton}
-        aria-label="Open menu"
-        isCollapsible
-        isActive={isExpanded}
-        onClick={() => setIsExpanded(!isExpanded)}
-      />
-      <div
-        className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
-        aria-label="Saved Queries Sidebar"
-      >
-        <p className={styles.headerTitle}>Saved Queries</p>
-        <SideNavItems>
-          <SideNavLink renderIcon={StarFilled} href="#" isActive={activeHref === '#'}>
-            Tests ran in the last 24 hours
-          </SideNavLink>
+    <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCorners}>
+      <div className={styles.container} aria-label="Saved Queries Header">
+        <HeaderMenuButton
+          className={styles.headerMenuButton}
+          aria-label="Open menu"
+          isCollapsible
+          isActive={isExpanded}
+          onClick={() => setIsExpanded(!isExpanded)}
+        />
 
-          <SideNavLink renderIcon={Query} href="#">
-            Failed Runs - Last 7 Days
-          </SideNavLink>
-          <SideNavLink renderIcon={Query} href="#">
-            Cancelled Runs - Last 7 Days
-          </SideNavLink>
-        </SideNavItems>
+        <div
+          className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
+          aria-label="Saved Queries Sidebar"
+        >
+          <p className={styles.headerTitle}>Saved Queries</p>
+          <SideNavItems>
+            <SortableContext
+              items={savedQueries.map((query) => query.url)}
+              strategy={verticalListSortingStrategy}
+            >
+              {savedQueries.map((query) => (
+                <QueryItem query={query} key={query.url} />
+              ))}
+            </SortableContext>
+          </SideNavItems>
+        </div>
       </div>
-    </div>
+    </DndContext>
   );
 }

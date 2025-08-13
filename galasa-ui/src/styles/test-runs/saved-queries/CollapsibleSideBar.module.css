@@ -9,12 +9,15 @@
   align-items: center;
 }
 
+.container {
+  background-color: var(--cds-layer);
+}
 .headerMenuButton {
   border: none;
 }
 
 .sideNavExpanded {
-  width: 300px;
+  width: 250px;
 }
 
 .sideNavCollapsed {
@@ -29,5 +32,7 @@
 
 .sideNavCollapsed,
 .sideNavExpanded {
+  overflow: hidden;
+  white-space: nowrap;
   transition: width 0.2s ease-in-out;
 }

@@ -12,3 +12,8 @@ export type NotificationType = {
   title: string;
   subtitle: string;
 };
+
+export type savedQueryType = {
+  title: string;
+  url: string;
+};
