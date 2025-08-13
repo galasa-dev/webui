@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 .testRunsContentWrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mainContent {
   width: 90%;
-  height: 70vh;
   margin: 4rem auto;
 }
 
