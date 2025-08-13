@@ -20,6 +20,7 @@
 
 .sideNavItem:hover {
   background-color: var(--cds-layer-selected);
+  cursor: pointer;
 }
 
 .sideNavItem:hover .dragHandle {

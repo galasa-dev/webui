@@ -5,21 +5,20 @@
  */
 'use client';
 
-import { savedQueryType } from '@/utils/types/common';
+import { SavedQueryType } from '@/utils/types/common';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
 import { usePathname, useRouter } from 'next/navigation';
-
 import Link from 'next/link';
 
-export default function QueryItem({ query }: { query: savedQueryType }) {
+export default function QueryItem({ query }: { query: SavedQueryType }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: query.url,
+    id: query.createdAt,
   });
 
   const style = {
@@ -27,7 +26,10 @@ export default function QueryItem({ query }: { query: savedQueryType }) {
     transition,
   };
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    console.log('Event: ', e);
+
     try {
       const savedUrl = new URL(query.url);
       const newQueryParam = savedUrl.searchParams.get('q');
@@ -49,9 +51,9 @@ export default function QueryItem({ query }: { query: savedQueryType }) {
     >
       <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
 
-      <Link href={query.url} className={styles.sideNavLink}>
+      <span onClick={handleClick} className={styles.sideNavLink}>
         {query.title}
-      </Link>
+      </span>
     </div>
   );
 }
