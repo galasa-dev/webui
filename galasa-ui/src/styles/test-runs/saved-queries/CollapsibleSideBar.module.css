@@ -11,7 +11,10 @@
 
 .container {
   background-color: var(--cds-layer);
+  display: flex;
+  flex-direction: column;
 }
+
 .headerMenuButton {
   border: none;
 }
@@ -35,4 +38,6 @@
   overflow: hidden;
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
+  flex-grow: 1;
+  overflow-y: auto;
 }

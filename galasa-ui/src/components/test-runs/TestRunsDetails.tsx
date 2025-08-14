@@ -79,7 +79,6 @@ export default function TestRunsDetails({
         </div>
       )}
       <div className={styles.testRunsContentWrapper}>
-        <h3></h3>
         <CollapsibleSideBar />
         <div className={styles.mainContent}>
           <Suspense fallback={<p>Loading...</p>}>

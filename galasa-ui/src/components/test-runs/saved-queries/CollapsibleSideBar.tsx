@@ -77,8 +77,8 @@ export default function CollapsibleSideBar() {
   );
 
   return (
-    <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCorners}>
-      <div className={styles.container} aria-label="Saved Queries Header">
+    <div className={styles.container} aria-label="Saved Queries Header">
+      <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCorners}>
         <HeaderMenuButton
           className={styles.headerMenuButton}
           aria-label="Open menu"
@@ -103,7 +103,7 @@ export default function CollapsibleSideBar() {
             </SortableContext>
           </SideNavItems>
         </div>
-      </div>
-    </DndContext>
+      </DndContext>
+    </div>
   );
 }

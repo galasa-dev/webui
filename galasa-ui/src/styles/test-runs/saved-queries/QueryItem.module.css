@@ -42,8 +42,16 @@
 
 .sideNavLink {
   text-decoration: none;
-  color: inherit;
+  color: var(--cds-text-primary) !important;
   font-size: 0.9rem;
   flex-grow: 1;
   padding: 0.5rem;
+  outline: none;
+}
+
+.sideNavLink:hover,
+.sideNavLink:focus,
+.sideNavLink:active {
+  text-decoration: none;
+  color: var(--cds-text-primary) !important;
 }

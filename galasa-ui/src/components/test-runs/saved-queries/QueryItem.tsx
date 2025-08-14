@@ -11,7 +11,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@carbon/react';
 
 export default function QueryItem({ query }: { query: SavedQueryType }) {
   const router = useRouter();
@@ -26,23 +26,6 @@ export default function QueryItem({ query }: { query: SavedQueryType }) {
     transition,
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    console.log('Event: ', e);
-
-    try {
-      const savedUrl = new URL(query.url);
-      const newQueryParam = savedUrl.searchParams.get('q');
-
-      if (newQueryParam) {
-        // Construct the new URL and navigate
-        router.push(`${pathname}?q=${newQueryParam}`);
-      }
-    } catch (error) {
-      console.error('Invalid URL in saved query:', query.url);
-    }
-  };
-
   return (
     <div
       ref={setNodeRef}
@@ -51,9 +34,9 @@ export default function QueryItem({ query }: { query: SavedQueryType }) {
     >
       <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
 
-      <span onClick={handleClick} className={styles.sideNavLink}>
+      <Link href={query.url} className={styles.sideNavLink}>
         {query.title}
-      </span>
+      </Link>
     </div>
   );
 }
