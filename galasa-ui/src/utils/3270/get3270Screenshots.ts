@@ -24,21 +24,21 @@ function splitScreenAndTerminal(input: string) {
   const screenNumber = parseInt(parts[parts.length - 1], 10);
 
   // Rejoin all parts before the last one, just in case the terminal name had a '-' in it.
-  const terminalName = parts.slice(0, -1).join('-'); 
+  const terminalName = parts.slice(0, -1).join('-');
 
-  console.log("HELLO.   " + input + " " + terminalName + " " + screenNumber);
+  console.log('HELLO.   ' + input + ' ' + terminalName + ' ' + screenNumber);
 
   return {
     screenNumber,
-    terminalName
+    terminalName,
   };
 }
 
 export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], runId: string) => {
   for (var terminal of zos3270TerminalData) {
     const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
-      .filter(node => (node as FileNode).isFile)
-      .map(node => (node as FileNode));
+      .filter((node) => (node as FileNode).isFile)
+      .map((node) => node as FileNode);
 
     for (var file of zippedFilesContainingImageJSON) {
       await downloadArtifactFromServer(runId, file.url)
@@ -55,15 +55,15 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
           const decompressedUint8Array = pako.inflate(gzippedUint8Array);
 
           // 3. Convert the decompressed Uint8Array back to a string.
-          const resultString : any = JSON.parse(new TextDecoder().decode(decompressedUint8Array));
+          const resultString: any = JSON.parse(new TextDecoder().decode(decompressedUint8Array));
 
           const images = resultString.images;
 
-          images.forEach((image : any) => {
+          images.forEach((image: any) => {
             // Example image id: "term1-33"
             const id = image.id;
             const result = splitScreenAndTerminal(id);
-            const method = 'Method A';          // TODO: Placeholder - needed from backend.
+            const method = 'Method A'; // TODO: Placeholder - needed from backend.
             const time = '2023-01-01 12:00:00'; // TODO: Placeholder - needed from backend.
 
             rawData.push({

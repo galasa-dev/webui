@@ -134,7 +134,9 @@ export default function TableOfScreenshots({
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })}>{header.header}</TableHeader>
+                    <TableHeader key={header.header} {...getHeaderProps({ header })}>
+                      {header.header}
+                    </TableHeader>
                   ))}
                 </TableRow>
               </TableHead>

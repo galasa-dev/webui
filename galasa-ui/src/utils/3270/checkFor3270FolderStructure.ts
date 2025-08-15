@@ -22,7 +22,7 @@ export const checkForZosTerminalFolderStructure = (
         const terminalsFolder = childNode.children['terminals'];
         if (terminalsFolder.isFile === false && Object.keys(terminalsFolder.children).length > 0) {
           setZos3270TerminalFolderExists(true);
-          
+
           const terminals: TreeNodeData[] = Object.values(terminalsFolder.children);
           setZos3270TerminalData(terminals);
 

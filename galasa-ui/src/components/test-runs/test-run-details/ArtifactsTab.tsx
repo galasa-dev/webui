@@ -203,11 +203,7 @@ export function ArtifactsTab({
         setZos3270TerminalData
       );
     }
-  }, [
-    artifacts,
-    checkForZosTerminalFolderStructure,
-    is3270ScreenEnabled,
-  ]);
+  }, [artifacts, checkForZosTerminalFolderStructure, is3270ScreenEnabled]);
 
   const createFolderSegments = (
     segments: string[],

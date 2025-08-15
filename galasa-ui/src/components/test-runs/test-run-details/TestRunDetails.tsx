@@ -358,12 +358,7 @@ const TestRunDetails = ({
               </TabPanel>
               {zos3270TerminalFolderExists && (
                 <TabPanel>
-                  <TabFor3270
-                    runId={runId}
-                    zos3270TerminalData={
-                      zos3270TerminalData
-                    }
-                  />
+                  <TabFor3270 runId={runId} zos3270TerminalData={zos3270TerminalData} />
                 </TabPanel>
               )}
             </TabPanels>

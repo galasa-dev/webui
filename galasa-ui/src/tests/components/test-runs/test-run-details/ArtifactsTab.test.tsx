@@ -12,6 +12,7 @@ import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270Fol
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { handleDownload } from '@/utils/artifacts';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+import { mock } from 'node:test';
 
 // Mock dependencies
 jest.mock('@/actions/runsAction');
@@ -25,6 +26,7 @@ jest.mock('next-intl', () => ({
 }));
 
 const mockSetZos3270TerminalFolderExists = jest.fn();
+const mockSetZos3270TerminalData = jest.fn();
 
 // Mock Carbon components
 jest.mock('@carbon/react', () => ({
@@ -150,6 +152,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -167,6 +170,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -184,6 +188,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -201,6 +206,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -230,6 +236,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -252,6 +259,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -270,6 +278,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -310,6 +319,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -351,6 +361,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -383,6 +394,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -410,6 +422,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -434,6 +447,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -469,6 +483,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -501,6 +516,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -535,6 +551,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -576,6 +593,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -594,6 +612,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -618,6 +637,7 @@ describe('ArtifactsTab', () => {
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
+            setZos3270TerminalData={mockSetZos3270TerminalData}
           />
         </FeatureFlagProvider>
       );
@@ -682,12 +702,20 @@ describe('ArtifactsTab', () => {
     });
 
     test('sets Zos3270TerminalFolderExists to true when the structure is found', () => {
-      checkForZosTerminalFolderStructure(mockRootFolder, setZos3270TerminalFolderExists);
+      checkForZosTerminalFolderStructure(
+        mockRootFolder,
+        setZos3270TerminalFolderExists,
+        mockSetZos3270TerminalData
+      );
       expect(setZos3270TerminalFolderExists).toHaveBeenCalledWith(true);
     });
 
     test('sets Zos3270TerminalFolderExists to false when empty file structure is found', () => {
-      checkForZosTerminalFolderStructure(mockEmptyRootFolder, setZos3270TerminalFolderExists);
+      checkForZosTerminalFolderStructure(
+        mockEmptyRootFolder,
+        setZos3270TerminalFolderExists,
+        mockSetZos3270TerminalData
+      );
       expect(setZos3270TerminalFolderExists).toHaveBeenCalledWith(false);
     });
 
@@ -695,7 +723,11 @@ describe('ArtifactsTab', () => {
       (mockRootFolder.children as { [key: string]: any })['zos3270'] = {
         children: {},
       };
-      checkForZosTerminalFolderStructure(mockRootFolder, setZos3270TerminalFolderExists);
+      checkForZosTerminalFolderStructure(
+        mockRootFolder,
+        setZos3270TerminalFolderExists,
+        mockSetZos3270TerminalData
+      );
       expect(setZos3270TerminalFolderExists).toHaveBeenCalledWith(false);
     });
 
@@ -703,7 +735,11 @@ describe('ArtifactsTab', () => {
       (mockRootFolder.children.zos3270.children as { [key: string]: any })['terminals'] = {
         children: {},
       };
-      checkForZosTerminalFolderStructure(mockRootFolder, setZos3270TerminalFolderExists);
+      checkForZosTerminalFolderStructure(
+        mockRootFolder,
+        setZos3270TerminalFolderExists,
+        mockSetZos3270TerminalData
+      );
       expect(setZos3270TerminalFolderExists).toHaveBeenCalledWith(false);
     });
   });
