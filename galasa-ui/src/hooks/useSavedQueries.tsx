@@ -6,8 +6,7 @@
 'use client';
 
 import { SavedQueryType } from '@/utils/types/common';
-import { use, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { DEFAULT_QUERY } from '@/utils/constants/common';
 
 const LOCAL_STORAGE_KEY = 'savedQueries';
@@ -38,6 +37,16 @@ export default function useSavedQueries() {
   const saveQuery = (query: SavedQueryType) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = [...prevQueries, query];
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
+      return updatedQueries;
+    });
+  };
+
+  const updateQuery = (createdAt: string, updatedQuery: SavedQueryType) => {
+    setSavedQueries((prevQueries) => {
+      const updatedQueries = prevQueries.map((query) =>
+        query.createdAt === createdAt ? updatedQuery : query
+      );
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
@@ -89,6 +98,7 @@ export default function useSavedQueries() {
     saveQuery,
     renameQuery,
     deleteQuery,
+    updateQuery,
     isQuerySaved,
     getQuery,
   };

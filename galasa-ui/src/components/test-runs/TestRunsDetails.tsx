@@ -32,11 +32,11 @@ export default function TestRunsDetails({
   const { breadCrumbItems } = useHistoryBreadCrumbs();
   const translations = useTranslations('TestRunsDetails');
 
-  const { renameQuery, saveQuery, isQuerySaved, getQuery } = useSavedQueries();
+  const { renameQuery, saveQuery, isQuerySaved, getQuery, updateQuery } = useSavedQueries();
   const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
 
-  const [editedQueryName, setEditedQueryName] = useState<string>(queryName || '');
   const [notification, setNotification] = useState<NotificationType | null>(null);
+  const [editedQueryName, setEditedQueryName] = useState<string>(queryName || '');
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -106,14 +106,34 @@ export default function TestRunsDetails({
     setQueryName(newName);
   };
 
+  // Save new query or update an existing one
   const handleSaveQuery = () => {
-    const originalName = editedQueryName.trim();
-    if (!originalName) return;
+    const nameToSave = editedQueryName.trim();
+    if (!nameToSave) return; // Do not save if the name is empty
 
-    // Determine the base name by stripping any existing " (n)" suffix.
-    const baseName = originalName.replace(/\(\d+\)$/, '').trim();
+    const currentUrlParams = new URLSearchParams(searchParams).toString();
+    const existingQuery = getQuery(nameToSave);
 
-    let finalQueryTitle = originalName;
+    // Case 1: A query with this name already exists. Update its filters.
+    if (existingQuery) {
+      updateQuery(existingQuery.createdAt, {
+        ...existingQuery,
+        url: currentUrlParams,
+      });
+
+      setNotification({
+        kind: 'success',
+        title: translations('queryUpdatedTitle'),
+        subtitle: translations('queryUpdatedMessage', { name: nameToSave }),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      return;
+    }
+
+    // Case 2: This is a new query. Save it.
+    // This also handles the "Save As" scenario where the name was changed from an existing query.
+    const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
+    let finalQueryTitle = nameToSave;
     let counter = 1;
 
     // Loop until it finds a title that is not already saved
@@ -124,15 +144,21 @@ export default function TestRunsDetails({
 
     const newQuery = {
       title: finalQueryTitle,
-      url: new URLSearchParams(searchParams).toString(),
+      url: currentUrlParams,
       createdAt: new Date().toISOString(),
     };
 
     saveQuery(newQuery);
 
-    // Update the UI state with the final, saved name
+    // Update the UI with the final, saved name
     setQueryName(finalQueryTitle);
-    // setEditedQueryName(finalQueryTitle);
+
+    setNotification({
+      kind: 'success',
+      title: translations('querySavedTitle'),
+      subtitle: translations('querySavedMessage', { name: finalQueryTitle }),
+    });
+    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
   return (

@@ -159,7 +159,7 @@ const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
 
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
-  url: '/test-runs',
+  url: '',
   title: 'Tests ran in the last 24 hours',
   createdAt: new Date().toISOString(),
 };
