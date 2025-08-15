@@ -24,6 +24,7 @@ const keyMap: Record<string, string> = {
   [TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS]: 'vc',
   [TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER]: 'co',
   [TEST_RUNS_QUERY_PARAMS.SORT_ORDER]: 'so',
+  [TEST_RUNS_QUERY_PARAMS.QUERY_NAME]: 'qn',
 };
 
 const valueMap: Record<string, string> = {

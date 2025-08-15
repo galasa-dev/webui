@@ -262,7 +262,9 @@
     "copyMessage": "Copy page URL",
     "copiedTitle": "URL copy successful: ",
     "copiedMessage": "The URL for this page has been copied to the clipboard.",
-    "copyFailedMessage": "Failed to copy page URL"
+    "copyFailedMessage": "Failed to copy page URL",
+    "saveQuery": "Save Query",
+    "editQueryName": "Edit Query Name"
   },
   "TestRunSkeleton": {
     "status": "Status",

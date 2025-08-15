@@ -11,7 +11,7 @@
 
 .mainContent {
   width: 90%;
-  margin: 4rem auto;
+  margin: 2rem auto;
 }
 
 .tabContent {
@@ -23,6 +23,46 @@
 .titleText {
   font-size: 1rem;
   margin: 0.5rem 0.5rem;
+}
+
+.queryNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.queryNameBlock {
+  display: flex;
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.queryNameHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  margin: 0;
+  color: var(--cds-text-primary);
+  width: 100%;
+}
+
+.queryNameInput {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  padding: 0.5rem;
+  border: none;
+  border-bottom: 1px solid var(--cds-border-subtle-01);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  width: 100%;
+  color: var(--cds-text-primary);
+}
+
+.queryNameInput:focus {
+  outline-color: var(--cds-focus);
 }
 
 .searchCriteriaContainer {

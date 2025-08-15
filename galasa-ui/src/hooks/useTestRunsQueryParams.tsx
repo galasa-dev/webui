@@ -16,10 +16,11 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
+  DEFAULT_QUERY,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues } from '@/utils/interfaces';
-import { ColumnDefinition, runStructure } from '@/utils/interfaces';
+import { ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
@@ -30,7 +31,7 @@ export default function useTestRunsQueryParams() {
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
 
-  // Decode the search params from the URL every time the searchParams change
+  // Memoize the decoded search params. This will only re-calculate when the raw URL changes.
   const searchParams = useMemo(() => {
     const encodedQueryString = rawSearchParams.get('q');
     if (encodedQueryString) {
@@ -39,41 +40,77 @@ export default function useTestRunsQueryParams() {
         return new URLSearchParams(decodedQueryString);
       }
     }
+    // Fallback to rawSearchParams if 'q' is not present or invalid
     return rawSearchParams;
   }, [rawSearchParams]);
 
-  // Initialize selectedTabIndex based on URL parameters or default to first tab
-  const [selectedTabIndex, setSelectedTabIndex] = useState(() => {
-    const tabParam = searchParams.get('tab');
-    const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    return initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
+  // Initialize State with default values.
+  // The state will be synchronized from the URL by the 'reader' effect below.
+  const [selectedTabIndex, setSelectedTabIndex] = useState(TABS_IDS.indexOf('results'));
+  const [selectedVisibleColumns, setSelectedVisibleColumns] =
+    useState<string[]>(DEFAULT_VISIBLE_COLUMNS);
+  const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>(RESULTS_TABLE_COLUMNS);
+  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>(() => {
+    const toDate = new Date();
+    const fromDate = new Date(toDate.getTime() - DAY_MS);
+    const timezone = getResolvedTimeZone();
+    return { ...calculateSynchronizedState(fromDate, toDate, timezone), isRelativeToNow: true };
   });
+  const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>({});
+  const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
+  const [queryName, setQueryName] = useState<string>(DEFAULT_QUERY.title);
 
-  // Initialize selectedVisibleColumns  based on URL parameters or default values
-  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(
-    () =>
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // It reads the URL and updates the component's internal state.
+  useEffect(() => {
+    // Tab
+    const tabParam = searchParams.get('tab');
+    setSelectedTabIndex(tabParam ? TABS_IDS.indexOf(tabParam) : TABS_IDS.indexOf('results'));
+
+    // Query Name
+    setQueryName(searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || DEFAULT_QUERY.title);
+
+    // Visible Columns
+    setSelectedVisibleColumns(
       searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
-      DEFAULT_VISIBLE_COLUMNS
-  );
+        DEFAULT_VISIBLE_COLUMNS
+    );
 
-  // Initialize columnsOrder based on URL parameters or default to RESULTS_TABLE_COLUMNS
-  const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>(() => {
+    // Columns Order
     const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
-    let correctOrder: ColumnDefinition[] = RESULTS_TABLE_COLUMNS;
-
-    // Parse the order from the URL parameter
     if (orderParam) {
-      correctOrder = orderParam
+      const correctOrder = orderParam
         .split(',')
         .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
         .filter(Boolean) as ColumnDefinition[];
+      setColumnsOrder(correctOrder);
+    } else {
+      setColumnsOrder(RESULTS_TABLE_COLUMNS);
     }
 
-    return correctOrder;
-  });
+    // Sort Order
+    const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
+    if (sortOrderParam) {
+      const sortOrderArray = sortOrderParam.split(',').map((item) => {
+        const [id, order] = item.split(':');
+        return { id, order: order as sortOrderType };
+      });
+      setSortOrder(sortOrderArray);
+    } else {
+      setSortOrder([]);
+    }
 
-  // Initialize timeframe values based on URL parameters or default to last 24 hours
-  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>(() => {
+    // Search Criteria
+    const criteria: Record<string, string> = {};
+    SEARCH_CRITERIA_KEYS.forEach((key) => {
+      if (searchParams.has(key)) {
+        criteria[key] = searchParams.get(key) || '';
+      }
+    });
+    setSearchCriteria(criteria);
+
+    // Timeframe
     const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
     const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);
     const durationParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
@@ -82,7 +119,6 @@ export default function useTestRunsQueryParams() {
       fromDate: Date,
       isRelativeToNow = false;
     if (durationParam) {
-      // If duration is specified, calculate fromDate and toDate based on it
       const [days, hours, minutes] = durationParam.split(',').map(Number);
       toDate = new Date();
       fromDate = new Date(
@@ -90,121 +126,73 @@ export default function useTestRunsQueryParams() {
       );
       isRelativeToNow = true;
     } else if (fromParam && toParam) {
-      // If no duration is specified, use the provided from/to dates
       toDate = new Date(toParam);
       fromDate = new Date(fromParam);
     } else {
-      // If no from/to dates are specified, default to last 1 day (duration-based) from now
       toDate = new Date();
       fromDate = new Date(toDate.getTime() - DAY_MS);
       isRelativeToNow = true;
     }
-
     const timezone = getResolvedTimeZone();
-    return { ...calculateSynchronizedState(fromDate, toDate, timezone), isRelativeToNow };
-  });
-
-  // Initialize search criteria based on URL parameters
-  const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>(() => {
-    const criteria: Record<string, string> = {};
-    SEARCH_CRITERIA_KEYS.forEach((key) => {
-      if (searchParams.has(key)) {
-        criteria[key] = searchParams.get(key) || '';
-      }
+    setTimeframeValues({
+      ...calculateSynchronizedState(fromDate, toDate, timezone),
+      isRelativeToNow,
     });
-    return criteria;
-  });
 
-  // Initialize sortOrder based on URL parameters or default to an empty array
-  // URL should look like this sortOrder?result:asc,status:desc
-  const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>(() => {
-    const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
-    let sortOrderArray: { id: string; order: sortOrderType }[] = [];
-    if (sortOrderParam) {
-      sortOrderArray = sortOrderParam.split(',').map((item) => {
-        const [id, order] = item.split(':');
-        return { id, order: order as sortOrderType };
-      });
-    }
-    return sortOrderArray;
-  });
-
-  // State to track if the component has been initialized
-  const [isInitialized, setIsInitialized] = useState(false);
-  useEffect(() => {
+    // Mark as initialized after the first sync from URL
     setIsInitialized(true);
-  }, []);
+  }, [searchParams, getResolvedTimeZone]);
 
-  // Save and encode current state to the URL. This is the single source of truth for URL updates.
+  // This effect runs when any piece of state changes, but NOT when the URL itself changes.
   useEffect(() => {
+    // Don't update the URL until the state has been initialized from the URL first.
     if (!isInitialized) return;
 
-    // Build the query string from the current state
     const params = new URLSearchParams();
 
-    // Tab
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[selectedTabIndex]);
+    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
+    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
+    params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
-    // Table Design
-    if (selectedVisibleColumns.length > 0) {
-      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
-    } else {
-      // If no columns are selected, we can clear the parameter
-      params.delete(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS);
-    }
     if (sortOrder.length > 0) {
       params.set(
         TEST_RUNS_QUERY_PARAMS.SORT_ORDER,
         sortOrder.map((item) => `${item.id}:${item.order}`).join(',')
       );
-    } else {
-      params.delete(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
     }
 
-    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
-
-    // Timeframe
     if (timeframeValues.isRelativeToNow) {
-      // If relative to now, we can use the "duration" parameter
       params.set(
         TEST_RUNS_QUERY_PARAMS.DURATION,
         `${timeframeValues.durationDays},${timeframeValues.durationHours},${timeframeValues.durationMinutes}`
       );
     } else {
-      // If not relative to now, we can use the "from" and "to" parameters
       params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
       params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
     }
 
-    // Search Criteria
     Object.entries(searchCriteria).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);
-      } else {
-        // Remove empty criteria
-        params.delete(key);
       }
     });
 
-    // Encode the URL parameters to shorten the URL
     const encodedQuery = encodeStateToUrlParam(params.toString());
-    if (encodedQuery) {
-      router.replace(`${pathname}?q=${encodedQuery}`, { scroll: false });
-    } else {
-      // If there are no params, clear the URL.
-      router.replace(pathname, { scroll: false });
-    }
+    const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
+
+    router.replace(newUrl, { scroll: false });
   }, [
     selectedVisibleColumns,
     columnsOrder,
     sortOrder,
+    selectedTabIndex,
+    timeframeValues,
+    searchCriteria,
+    queryName,
     isInitialized,
     pathname,
     router,
-    selectedTabIndex,
-    searchParams,
-    timeframeValues,
-    searchCriteria,
   ]);
 
   return {
@@ -220,6 +208,8 @@ export default function useTestRunsQueryParams() {
     setSortOrder,
     columnsOrder,
     setColumnsOrder,
+    queryName,
+    setQueryName,
     isInitialized,
     searchParams,
   };

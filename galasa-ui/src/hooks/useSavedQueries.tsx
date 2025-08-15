@@ -6,7 +6,9 @@
 'use client';
 
 import { SavedQueryType } from '@/utils/types/common';
-import { useState } from 'react';
+import { use, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { DEFAULT_QUERY } from '@/utils/constants/common';
 
 const LOCAL_STORAGE_KEY = 'savedQueries';
 
@@ -19,10 +21,15 @@ export default function useSavedQueries() {
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
       const storedQueries = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return storedQueries ? JSON.parse(storedQueries) : [];
+      return storedQueries ? JSON.parse(storedQueries) : [DEFAULT_QUERY];
     }
     return [];
   });
+
+  // Get the current active query from the URL
+  // const [activeQuery, setActiveQuery] = useState<SavedQueryType>(() => {
+  //   const queryName = searchParams.get('q');
+  // });
 
   /**
    * Save a new query to the list of saved queries.
@@ -38,7 +45,7 @@ export default function useSavedQueries() {
 
   /**
    * Rename an existing saved query.
-   * @param createdAt The creation timestamp of the query to rename.
+   * @param currentTitle The current title of the query to rename.
    * @param newTitle The new title for the query.
    */
   const renameQuery = (createdAt: string, newTitle: string) => {
@@ -53,7 +60,7 @@ export default function useSavedQueries() {
 
   /**
    * Delete a saved query.
-   * @param createdAt The creation timestamp of the query to delete.
+   * @param createdAt The createdAt of the query to delete.
    */
   const deleteQuery = (createdAt: string) => {
     setSavedQueries((prevQueries) => {
@@ -63,11 +70,26 @@ export default function useSavedQueries() {
     });
   };
 
+  /**
+   * Check if a query with the given name is saved.
+   * @param queryName The name of the query to check.
+   * @returns True if the query is saved, false otherwise.
+   */
+  const isQuerySaved = (queryName: string) => {
+    return savedQueries.some((query) => query.title === queryName);
+  };
+
+  const getQuery = (queryName: string) => {
+    return savedQueries.find((query) => query.title === queryName) || null;
+  };
+
   return {
     savedQueries,
     setSavedQueries,
     saveQuery,
     renameQuery,
     deleteQuery,
+    isQuerySaved,
+    getQuery,
   };
 }

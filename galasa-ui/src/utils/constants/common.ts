@@ -90,6 +90,7 @@ const TEST_RUNS_QUERY_PARAMS = {
   COLUMNS_ORDER: 'columnsOrder',
   TAB: 'tab',
   SORT_ORDER: 'sortOrder',
+  QUERY_NAME: 'queryName',
 };
 
 const SINGLE_RUN_QUERY_PARAMS = {
@@ -156,6 +157,13 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
 
+const DEFAULT_QUERY = {
+  // The URL here is the filter state, not the browser URL
+  url: '/test-runs',
+  title: 'Tests ran in the last 24 hours',
+  createdAt: new Date().toISOString(),
+};
+
 export {
   CLIENT_API_VERSION,
   COLORS,
@@ -179,4 +187,5 @@ export {
   TEST_RUN_PAGE_TABS,
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
+  DEFAULT_QUERY,
 };

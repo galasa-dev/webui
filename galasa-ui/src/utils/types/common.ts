@@ -14,7 +14,8 @@ export type NotificationType = {
 };
 
 export type SavedQueryType = {
-  createdAt: string;
   title: string;
   url: string;
+  createdAt: string;
+  isActive?: boolean;
 };

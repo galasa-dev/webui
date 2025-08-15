@@ -24,33 +24,18 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { SavedQueryType } from '@/utils/types/common';
 import QueryItem from './QueryItem';
+import useSavedQueries from '@/hooks/useSavedQueries';
 
-const mockedQueries = [
-  {
-    createdAt: '2023-03-01T12:00:00Z',
-    title: 'Tests ran in the last 24 hours',
-    url: 'http://localhost:3000/test-runs?q=N4IgLiBc4GYgNCAbgYyiAzgQXgJwHZ4CO8YAphmAMoAWA9rmAHICGAtmfJXhgiCnXTY8hXCQwBLACbwA5vABG8AA6kK1eo1YdShbmFkYefKQFdcLMBLr50AdngAGJyAC+QA',
-  },
-  {
-    createdAt: '2023-03-02T12:00:00Z',
-    title: 'Failed Runs - Last 7 Days',
-    url: 'http://localhost:3000/test-runs?q=N4IgLiBcIE4gNCAbgYyiAzgQXjAdrgI7xgCmGYAygBYD2MYAcgIYC2p8FuGCIKt6bLgIxiGAJYATeAHN4AI3gAHEuSp0GLdiQJcwMjN16SArjGZhxtPOgCc8AAzwAjCAC+QA',
-  },
-  {
-    createdAt: '2023-03-03T12:00:00Z',
-    title: 'Cancelled Runs - Last 7 Days',
-    url: 'http://localhost:3000/test-runs?q=N4IgLiBcIE4gNCAbgYyiAzgQXjAdrgI7xgCmGYAygBYD2MYAcgIYC2p8FuGCIKt6bLgIxiGAJYATeAHN4AI3gAHEuSp0GLdiQJcwMjN14AzdK0kAPGdVYBWNIjADo7ZvOoArUgEYQAXyA',
-  },
-];
-
+const DEFAULT_QUERY = {
+  url: window.location.href,
+  title: 'Tests ran in the last 24 hours',
+};
 export default function CollapsibleSideBar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // TODO: Get saved queries from a custom hook that stores them in localStorage
-  const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(mockedQueries);
-  const [defaultQuery, setDefaultQuery] = useState<SavedQueryType | null>(null);
+  const { savedQueries, setSavedQueries } = useSavedQueries();
 
   const getQueryPosition = (createdAt: string) =>
     savedQueries.findIndex((query) => query.createdAt === createdAt);
