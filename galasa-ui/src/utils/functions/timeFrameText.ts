@@ -19,10 +19,6 @@ import { runStructure } from '@/utils/interfaces';
  */
 export const getTimeframeText = (
   runsList: runStructure[],
-  isRelativeToNow: boolean = false,
-  durationDays: number = 0,
-  durationHours: number = 0,
-  durationMinutes: number = 0,
   translations: any,
   formatDate: (date: Date) => string
 ): string => {
@@ -32,27 +28,19 @@ export const getTimeframeText = (
 
   let text = translations('timeFrameText.default');
 
-  if (isRelativeToNow) {
-    text = translations('timeFrameText.isRelativeToNow', {
-      days: durationDays || 0,
-      hours: durationHours || 0,
-      minutes: durationMinutes || 0,
-    });
-  } else {
-    // Filter out any runs that don't have a valid `submittedAt` date
-    const runsWithDates = runsList.filter((run) => run.submittedAt);
+  // Filter out any runs that don't have a valid `submittedAt` date
+  const runsWithDates = runsList.filter((run) => run.submittedAt);
 
-    if (runsWithDates.length !== 0) {
-      const dates = runsWithDates.map((run) => new Date(run.submittedAt).getTime());
-      const earliestDate = new Date(Math.min(...dates));
-      const latestDate = new Date(Math.max(...dates));
+  if (runsWithDates.length !== 0) {
+    const dates = runsWithDates.map((run) => new Date(run.submittedAt).getTime());
+    const earliestDate = new Date(Math.min(...dates));
+    const latestDate = new Date(Math.max(...dates));
 
-      if (earliestDate && latestDate) {
-        text = translations('timeFrameText.range', {
-          from: formatDate(earliestDate),
-          to: formatDate(latestDate),
-        });
-      }
+    if (earliestDate && latestDate) {
+      text = translations('timeFrameText.range', {
+        from: formatDate(earliestDate),
+        to: formatDate(latestDate),
+      });
     }
   }
 

@@ -10,7 +10,6 @@ import { FormGroup, NumberInput } from '@carbon/react';
 import { useTranslations } from 'next-intl';
 import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
 
-const MAX_DAYS = 90;
 const MAX_HOURS = 23;
 const MAX_MINUTES = 59;
 
@@ -36,13 +35,13 @@ export default function DurationFilter({
           id="duration-days"
           label={translations('days')}
           min={0}
-          max={MAX_DAYS}
           value={values.durationDays}
           onChange={(
             _: React.ChangeEvent<HTMLInputElement>,
             { value }: { value: number | string }
           ) => handleValueChange('durationDays', value)}
           disabled={disabled}
+          className={styles.durationInput}
         />
         <NumberInput
           id="duration-hours"
@@ -55,6 +54,7 @@ export default function DurationFilter({
             { value }: { value: number | string }
           ) => handleValueChange('durationHours', value)}
           disabled={disabled}
+          className={styles.durationInput}
         />
         <NumberInput
           id="duration-minutes"
@@ -67,6 +67,7 @@ export default function DurationFilter({
             { value }: { value: number | string }
           ) => handleValueChange('durationMinutes', value)}
           disabled={disabled}
+          className={styles.durationInput}
         />
       </div>
     </FormGroup>

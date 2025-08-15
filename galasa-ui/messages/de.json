@@ -320,8 +320,7 @@
     "limitExceededSubtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten.",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
-      "range": "Zeige Testläufe von {from} bis {to}",
-      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "range": "Zeige Testläufe von {from} bis {to}"
     },
     "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
@@ -359,8 +358,7 @@
     },
 
     "timeFrameText": {
-      "range": "Zeige Testläufe von {from} bis {to}",
-      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "range": "Zeige Testläufe von {from} bis {to}"
     }
   },
   "TestRunsTabs": {
@@ -386,7 +384,7 @@
     "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern andere Filter angewendet werden.",
     "invalidTimeFrame": "Ungültiger Zeitraum",
     "autoCorrection": "Automatische Korrektur",
-    "toBeforeFromAutoAdjust": "Sie haben eine 'Von'-Zeit ausgewählt, die neuer ist als die 'Bis'-Zeit. Dies ist kein gültiger Zeitraum. Die 'Bis'-Zeit wurde so angepasst, dass sie etwas neuer ist als die von Ihnen gewählte 'Von'-Zeit.",
+    "toBeforeFromErrorMessage": "Die 'Von'-Zeit muss vor der 'Bis'-Zeit liegen. Wählen Sie einen gültigen Zeitraum aus.",
     "toBeforeFromWarningOnly": "'Von'-Zeitpunkt ist in der Zukunft. Die aktuelle Abfrage liefert keine Ergebnisse.",
     "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
     "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
