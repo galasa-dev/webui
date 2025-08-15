@@ -42,6 +42,7 @@ import {
   NOTIFICATION_VISIBLE_MILLISECS,
 } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
+import { TreeNodeData } from '@/utils/functions/artifacts';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -75,6 +76,7 @@ const TestRunDetails = ({
   const { formatDate } = useDateTimeFormat();
 
   const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
+  const [zos3270TerminalData, setZos3270TerminalData] = useState<TreeNodeData[]>([]);
 
   // Get the selected tab index from the URL or default to the first tab
   const [selectedTabIndex, setSelectedTabIndex] = useState(
@@ -85,6 +87,10 @@ const TestRunDetails = ({
 
   const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
     setZos3270TerminalFolderExists(newZos3270TerminalFolderExists);
+  };
+
+  const handleSetZos3270TerminalData = (newZos3270TerminalData: TreeNodeData[]) => {
+    setZos3270TerminalData(newZos3270TerminalData);
   };
 
   const extractRunDetails = useCallback(
@@ -347,12 +353,16 @@ const TestRunDetails = ({
                   runId={runId}
                   runName={run?.runName!}
                   setZos3270TerminalFolderExists={handleZos3270TerminalFolderCheck}
+                  setZos3270TerminalData={handleSetZos3270TerminalData}
                 />
               </TabPanel>
               {zos3270TerminalFolderExists && (
                 <TabPanel>
-                  <TabFor3270 
+                  <TabFor3270
                     runId={runId}
+                    zos3270TerminalData={
+                      zos3270TerminalData
+                    }
                   />
                 </TabPanel>
               )}

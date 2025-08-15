@@ -31,18 +31,20 @@ import {
   TreeNodeData,
   DownloadResult,
 } from '@/utils/functions/artifacts';
-import { checkForZosTerminalFolderStructure } from '@/utils/checkFor3270FolderStructure';
+import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270FolderStructure';
 
 export function ArtifactsTab({
   artifacts,
   runId,
   runName,
   setZos3270TerminalFolderExists,
+  setZos3270TerminalData,
 }: {
   artifacts: ArtifactIndexEntry[];
   runId: string;
   runName: string;
   setZos3270TerminalFolderExists: (exists: boolean) => void;
+  setZos3270TerminalData: (zos3270TerminalData: TreeNodeData[]) => void;
 }) {
   const translations = useTranslations('Artifacts');
   const [treeData, setTreeData] = useState<FolderNode>({
@@ -194,13 +196,17 @@ export function ArtifactsTab({
     setTreeData(root);
 
     if (is3270ScreenEnabled) {
-      checkForZosTerminalFolderStructure(root, setZos3270TerminalFolderExists);
+      // This checks for the terminal structure, and sets the zosTerminalData hook in TestRunDetails for later use in get3270Screenshots.ts.
+      checkForZosTerminalFolderStructure(
+        root,
+        setZos3270TerminalFolderExists,
+        setZos3270TerminalData
+      );
     }
   }, [
     artifacts,
     checkForZosTerminalFolderStructure,
     is3270ScreenEnabled,
-    setZos3270TerminalFolderExists,
   ]);
 
   const createFolderSegments = (

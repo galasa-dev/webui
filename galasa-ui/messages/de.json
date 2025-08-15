@@ -260,6 +260,24 @@
     "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
     "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
   },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "ScreenNumber": "Bildschirmnummer",
+    "Time": "Zeit",
+    "Method": "Methode",
+    "searchPlaceholder": "Beginne mit der Eingabe...",
+    "ariaLabel": "ariaLabel",
+    "pagination": {
+      "backwardText": "Vorherige Seite",
+      "forwardText": "Nächste Seite",
+      "itemsPerPageText": "Elemente pro Seite:",
+      "pageNumberText": "Seitenzahl",
+      "of": "von",
+      "items": "Elemente",
+      "pages": "Seiten",
+      "page": "Seite"
+    }
+  },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
     "status": "Status",

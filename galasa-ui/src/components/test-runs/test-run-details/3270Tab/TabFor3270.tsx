@@ -10,19 +10,18 @@
 import React from 'react';
 import TableOfScreenshots from './TableOfScreenshots';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
+import { TreeNodeData } from '@/utils/functions/artifacts';
 
 export default function TabFor3270({
   runId,
+  zos3270TerminalData,
 }: {
   runId: string;
-})  {
-  
-
+  zos3270TerminalData: TreeNodeData[];
+}) {
   return (
     <div className={styles.terminalScreenshotTableContainer}>
-      <TableOfScreenshots 
-        runId={runId}
-      />
+      <TableOfScreenshots runId={runId} zos3270TerminalData={zos3270TerminalData} />
     </div>
   );
 }

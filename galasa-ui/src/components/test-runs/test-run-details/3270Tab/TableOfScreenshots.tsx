@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Table,
   TableHead,
@@ -15,56 +15,29 @@ import {
   TableHeader,
   DataTable,
   Pagination,
+  DataTableSkeleton,
 } from '@carbon/react';
 import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
+import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TableContainer } from '@carbon/react';
 import { useRouter } from 'next/navigation';
+import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-
-interface Cell {
-  id: string;
-  Terminal: number;
-  ScreenNumber: number;
-  Time: string;
-  Method: string;
-}
-
-const rawData = [
-  { Terminal: 1, ScreenNumber: 1, Time: '2023-01-01 12:00:00', Method: 'Method A' },
-  { Terminal: 1, ScreenNumber: 2, Time: '2023-01-02 14:30:00', Method: 'Method B' },
-  { Terminal: 1, ScreenNumber: 3, Time: '2023-01-03 09:45:00', Method: 'Method B' },
-  { Terminal: 2, ScreenNumber: 1, Time: '2023-01-04 11:15:00', Method: 'Method C' },
-  { Terminal: 2, ScreenNumber: 2, Time: '2023-01-05 16:20:00', Method: 'Method C' },
-  { Terminal: 2, ScreenNumber: 3, Time: '2023-01-06 08:30:00', Method: 'Method C' },
-  { Terminal: 3, ScreenNumber: 1, Time: '2023-01-01 12:00:00', Method: 'Method D' },
-  { Terminal: 3, ScreenNumber: 2, Time: '2023-01-02 14:30:00', Method: 'Method D' },
-  { Terminal: 3, ScreenNumber: 3, Time: '2023-01-03 09:45:00', Method: 'Method E' },
-  { Terminal: 3, ScreenNumber: 4, Time: '2023-01-04 11:15:00', Method: 'Method E' },
-  { Terminal: 3, ScreenNumber: 5, Time: '2023-01-05 16:20:00', Method: 'Method E' },
-  { Terminal: 3, ScreenNumber: 6, Time: '2023-01-06 08:30:00', Method: 'Method E' },
-];
-
-const mockData: Cell[] = rawData.map((item) => ({
-  ...item,
-  id: `${item.Terminal}-${item.ScreenNumber}`,
-}));
+import ErrorPage from '@/app/error/page';
 
 export default function TableOfScreenshots({
   runId,
+  zos3270TerminalData,
 }: {
   runId: string;
+  zos3270TerminalData: TreeNodeData[];
 }) {
   const translations = useTranslations('3270Tab');
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
   const router = useRouter();
-
   const headers = [
     {
       key: 'Terminal',
@@ -84,12 +57,13 @@ export default function TableOfScreenshots({
     },
   ];
 
-  // Paginated data based on currentPage and pageSize
-  const paginatedRows = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return mockData.slice(startIndex, endIndex);
-  }, [currentPage, pageSize]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<any>([]);
+  let paginatedRows: any = [];
 
   const handleRowClick = (runId: string, screenshotId: string) => {
     // Navigate to the test run details page
@@ -100,6 +74,44 @@ export default function TableOfScreenshots({
     setCurrentPage(page);
     setPageSize(pageSize);
   };
+
+  paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return flattenedZos3270TerminalData.slice(startIndex, endIndex);
+  }, [currentPage, pageSize, flattenedZos3270TerminalData]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
+      try {
+        setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId));
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setIsError(true);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [zos3270TerminalData, runId]);
+
+  if (isError) {
+    return <ErrorPage />;
+  }
+
+  if (isLoading) {
+    return (
+      <div>
+        <DataTableSkeleton
+          data-testid="loading-table-skeleton"
+          columnCount={headers.length}
+          rowCount={pageSize}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -158,7 +170,7 @@ export default function TableOfScreenshots({
         page={currentPage}
         pageSize={pageSize}
         pageSizes={[10, 20, 30, 40, 50]}
-        totalItems={mockData.length}
+        totalItems={flattenedZos3270TerminalData.length}
         onChange={handlePaginationChange}
       />
     </div>
