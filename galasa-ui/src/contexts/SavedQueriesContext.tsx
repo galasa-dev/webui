@@ -3,20 +3,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 'use client';
 
+import { createContext, ReactNode, useContext } from 'react';
 import { SavedQueryType } from '@/utils/types/common';
 import { useState } from 'react';
 import { DEFAULT_QUERY } from '@/utils/constants/common';
 
 const LOCAL_STORAGE_KEY = 'savedQueries';
 
-/**
- * Custom hook to manage saved queries in local storage.
- * @returns An object containing saved queries and functions to manipulate them.
- *
- */
-export default function useSavedQueries() {
+type SavedQueriesContextType = {
+  savedQueries: SavedQueryType[];
+  setSavedQueries: (queries: SavedQueryType[]) => void;
+  saveQuery: (query: SavedQueryType) => void;
+  updateQuery: (createdAt: string, updatedQuery: SavedQueryType) => void;
+  renameQuery: (createdAt: string, newTitle: string) => void;
+  deleteQuery: (createdAt: string) => void;
+  isQuerySaved: (queryName: string) => boolean;
+  getQuery: (queryName: string) => SavedQueryType | null;
+};
+
+const SavedQueriesContext = createContext<SavedQueriesContextType | undefined>(undefined);
+
+export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
       const storedQueries = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -92,7 +102,7 @@ export default function useSavedQueries() {
     return savedQueries.find((query) => query.title === queryName) || null;
   };
 
-  return {
+  const value = {
     savedQueries,
     setSavedQueries,
     saveQuery,
@@ -102,4 +112,19 @@ export default function useSavedQueries() {
     isQuerySaved,
     getQuery,
   };
+  return <SavedQueriesContext.Provider value={value}>{children}</SavedQueriesContext.Provider>;
+}
+
+/**
+ * Custom hook to easily access the saved queries context.
+ * @returns An object containing saved queries and functions to manipulate them.
+ */
+export function useSavedQueries() {
+  const context = useContext(SavedQueriesContext);
+
+  if (context === undefined) {
+    throw new Error('useSavedQueries must be used within a SavedQueriesProvider');
+  }
+
+  return context;
 }

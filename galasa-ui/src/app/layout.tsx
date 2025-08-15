@@ -16,6 +16,7 @@ import { getLocale } from 'next-intl/server';
 import ReactQueryProvider from '@/contexts/ReactQueryProvider';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { DateTimeFormatProvider } from '@/contexts/DateTimeFormatContext';
+import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,12 +37,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <FeatureFlagProvider initialFlags={featureFlagsCookie}>
             <ThemeProvider>
               <DateTimeFormatProvider>
-                <PageHeader galasaServiceName={galasaServiceName} />
-                <ReactQueryProvider>{children}</ReactQueryProvider>
-                <Footer
-                  serviceHealthyPromise={getServiceHealthStatus()}
-                  clientVersionPromise={getClientApiVersion()}
-                />
+                <SavedQueriesProvider>
+                  <PageHeader galasaServiceName={galasaServiceName} />
+                  <ReactQueryProvider>{children}</ReactQueryProvider>
+                  <Footer
+                    serviceHealthyPromise={getServiceHealthStatus()}
+                    clientVersionPromise={getClientApiVersion()}
+                  />
+                </SavedQueriesProvider>
               </DateTimeFormatProvider>
             </ThemeProvider>
           </FeatureFlagProvider>

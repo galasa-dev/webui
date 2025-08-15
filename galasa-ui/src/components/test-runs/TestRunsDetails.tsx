@@ -16,7 +16,7 @@ import { Edit, Share } from '@carbon/icons-react';
 import { InlineNotification } from '@carbon/react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
-import useSavedQueries from '@/hooks/useSavedQueries';
+import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import useTestRunsQueryParams from '@/hooks/useTestRunsQueryParams';
 import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
 
@@ -48,6 +48,10 @@ export default function TestRunsDetails({
       inputRef.current?.select();
     }
   }, [isEditingName]);
+
+  useEffect(() => {
+    setEditedQueryName(queryName);
+  }, [queryName]);
 
   const handleShare = async () => {
     try {
@@ -214,7 +218,10 @@ export default function TestRunsDetails({
                 hasIconOnly
                 renderIcon={Edit}
                 iconDescription={translations('editQueryName')}
-                onClick={() => setIsEditingName(true)}
+                onClick={() => {
+                  setEditedQueryName(queryName);
+                  setIsEditingName(true);
+                }}
                 size="md"
               />
             </div>

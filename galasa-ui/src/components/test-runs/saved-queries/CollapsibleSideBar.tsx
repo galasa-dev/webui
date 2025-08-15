@@ -25,7 +25,8 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import QueryItem from './QueryItem';
-import useSavedQueries from '@/hooks/useSavedQueries';
+import { useSavedQueries } from '@/contexts/SavedQueriesContext';
+import { SavedQueryType } from '@/utils/types/common';
 
 const DEFAULT_QUERY = {
   url: window.location.href,
@@ -44,11 +45,9 @@ export default function CollapsibleSideBar() {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setSavedQueries((queries) => {
-        const originalPosition = getQueryPosition(String(active.id));
-        const newPosition = getQueryPosition(String(over.id));
-        return arrayMove(queries, originalPosition, newPosition);
-      });
+      const originalPosition = getQueryPosition(String(active.id));
+      const newPosition = getQueryPosition(String(over.id));
+      setSavedQueries(arrayMove(savedQueries, originalPosition, newPosition));
     }
   };
 
