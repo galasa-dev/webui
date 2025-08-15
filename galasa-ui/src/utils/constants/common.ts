@@ -154,7 +154,7 @@ const PREFERENCE_KEYS = {
   TIME_ZONE: 'timeZone' as const,
 } as const;
 
-const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
+const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
 const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
 
