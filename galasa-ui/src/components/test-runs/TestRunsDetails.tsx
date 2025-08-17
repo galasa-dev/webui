@@ -101,7 +101,7 @@ export default function TestRunsDetails({
     // Find the original query using the old name
     const queryToRename = getQuery(oldName);
 
-    // If it was a saved query, perform the rename in storag
+    // If it was a saved query, perform the rename in storage
     if (queryToRename) {
       renameQuery(queryToRename.createdAt, newName);
     }
