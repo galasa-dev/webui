@@ -65,7 +65,6 @@ export default function TestRunsDetails({
       // Hide notification after 6 seconds
       setTimeout(() => setNotification(null), 6000);
     } catch (err) {
-      console.error('Failed to copy:', err);
       setNotification({
         kind: 'error',
         title: translations('errorTitle'),
@@ -98,22 +97,31 @@ export default function TestRunsDetails({
       return;
     }
 
+    // Update the main query name in the UI and URL
+    setQueryName(newName);
+
     // Find the original query using the old name
     const queryToRename = getQuery(oldName);
+    const currentUrlParams = new URLSearchParams(searchParams).toString();
 
     // If it was a saved query, perform the rename in storage
     if (queryToRename) {
-      renameQuery(queryToRename.createdAt, newName);
+      // Rename query and update its URL
+      // renameQuery(queryToRename.createdAt, newName);
+      updateQuery(queryToRename.createdAt, {
+        ...queryToRename,
+        title: newName,
+        url: currentUrlParams,
+      });
     }
-
-    // Update the main query name in the UI
-    setQueryName(newName);
   };
 
   // Save new query or update an existing one
   const handleSaveQuery = () => {
     const nameToSave = editedQueryName.trim();
-    if (!nameToSave) return; // Do not save if the name is empty
+
+    // Do not save if the name is empty
+    if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams).toString();
     const existingQuery = getQuery(nameToSave);
