@@ -64,6 +64,7 @@ export default function TableOfScreenshots({
   const [pageSize, setPageSize] = useState(10);
   const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<any>([]);
   let paginatedRows: any = [];
+  let screenshotsCollected: boolean = false;
 
   const handleRowClick = (runId: string, screenshotId: string) => {
     // Navigate to the test run details page
@@ -82,20 +83,25 @@ export default function TableOfScreenshots({
   }, [currentPage, pageSize, flattenedZos3270TerminalData]);
 
   useEffect(() => {
-    setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId));
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
+    if (!screenshotsCollected) {
+      screenshotsCollected = true;
 
-    fetchData();
-  }, [zos3270TerminalData, runId]);
+      setIsLoading(true);
+      const fetchData = async () => {
+        try {
+          setFlattenedZos3270TerminalData([]);
+          setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId));
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          setIsError(true);
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, []);
 
   if (isError) {
     return <ErrorPage />;

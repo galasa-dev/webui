@@ -26,8 +26,6 @@ function splitScreenAndTerminal(input: string) {
   // Rejoin all parts before the last one, just in case the terminal name had a '-' in it.
   const terminalName = parts.slice(0, -1).join('-');
 
-  console.log('HELLO.   ' + input + ' ' + terminalName + ' ' + screenNumber);
-
   return {
     screenNumber,
     terminalName,
@@ -75,8 +73,17 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
             });
           });
         })
-        .catch((error) => console.error('Error downloading artifact:', error));
+        .catch((error) => console.error('Error downloading artifact: ', error));
     }
   }
+
+  // Sort according to terminal, then screen number.
+  rawData.sort(function (a, b) {
+    if (a.Terminal === b.Terminal) {
+      return a.ScreenNumber - b.ScreenNumber;
+    }
+    return a.Terminal > b.Terminal ? 1 : -1;
+  });
+
   return rawData;
 };
