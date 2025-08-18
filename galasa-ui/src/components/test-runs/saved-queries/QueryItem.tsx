@@ -13,9 +13,15 @@ import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
 import { Link } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 
-export default function QueryItem({ query }: { query: SavedQueryType }) {
+interface QueryItemProps {
+  query: SavedQueryType;
+  disabled?: boolean;
+}
+
+export default function QueryItem({ query, disabled = false }: QueryItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
+    disabled,
   });
 
   const style = {
@@ -24,14 +30,15 @@ export default function QueryItem({ query }: { query: SavedQueryType }) {
   };
 
   const { defaultQuery } = useSavedQueries();
+  const isDefault = defaultQuery.createdAt === query.createdAt;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${styles.sideNavItem} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.sideNavItem} ${isDragging ? styles.dragging : ''} ${disabled ? styles.disabled : ''}`}
     >
-      {defaultQuery.createdAt === query.createdAt ? (
+      {isDefault ? (
         <StarFilled size={18} className={styles.starIcon} />
       ) : (
         <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />

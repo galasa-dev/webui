@@ -13,14 +13,28 @@
   background-color: var(--cds-layer);
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .headerMenuButton {
   border: none;
 }
 
+.toolbar {
+  display: flex;
+  padding: 0.7rem;
+}
+
+.searchBar {
+  padding: 0.4rem;
+}
+
+.addButton {
+  z-index: 999;
+}
+
 .sideNavExpanded {
-  width: 250px;
+  width: 320px;
 }
 
 .sideNavCollapsed {
@@ -30,7 +44,7 @@
 .headerTitle {
   font-weight: bold;
   font-size: 1rem;
-  padding: 0.5rem;
+  padding: 0.7rem;
 }
 
 .sideNavCollapsed,
@@ -40,4 +54,11 @@
   transition: width 0.2s ease-in-out;
   flex-grow: 1;
   overflow-y: auto;
+}
+
+.notification {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1rem;
+  z-index: 9999;
 }

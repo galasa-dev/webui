@@ -136,6 +136,10 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(QUERIES_METADATA_STORAGE_KEY, JSON.stringify(metaData));
   }, [metaData]);
 
+  useEffect(() => {
+    localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(savedQueries));
+  }, [savedQueries]);
+
   const value = {
     savedQueries,
     setSavedQueries,

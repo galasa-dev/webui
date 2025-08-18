@@ -24,12 +24,14 @@ import { ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
+import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 
 export default function useTestRunsQueryParams() {
   const router = useRouter();
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
+  const { defaultQuery } = useSavedQueries();
 
   // Memoize the decoded search params. This will only re-calculate when the raw URL changes.
   const searchParams = useMemo(() => {
@@ -69,7 +71,7 @@ export default function useTestRunsQueryParams() {
     setSelectedTabIndex(tabParam ? TABS_IDS.indexOf(tabParam) : TABS_IDS.indexOf('results'));
 
     // Query Name
-    setQueryName(searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || DEFAULT_QUERY.title);
+    setQueryName(searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title);
 
     // Visible Columns
     setSelectedVisibleColumns(
