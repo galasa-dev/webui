@@ -233,7 +233,7 @@ export default function TestRunsDetails({
               kind="primary"
               type="button"
               onClick={handleSaveQuery}
-              data-testid="share-button"
+              data-testid="save-query-button"
             >
               {translations('saveQuery')}
             </Button>
