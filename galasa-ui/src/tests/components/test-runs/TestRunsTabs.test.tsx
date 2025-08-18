@@ -105,14 +105,16 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock the useDateTimeFormat context
+const mockGetResolvedTimeZone = jest.fn(() => 'UTC');
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
     formatDate: (date: Date) => date.toLocaleString(),
-    getResolvedTimeZone: () => 'UTC',
+    getResolvedTimeZone: mockGetResolvedTimeZone,
   }),
 }));
 
 jest.mock('@/utils/constants/common', () => ({
+  ...jest.requireActual('@/utils/constants/common'),
   RESULTS_TABLE_COLUMNS: [
     { id: 'submittedAt', columnName: 'Submitted' },
     { id: 'runName', columnName: 'Test Run Name' },

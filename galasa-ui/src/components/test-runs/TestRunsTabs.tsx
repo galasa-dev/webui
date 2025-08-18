@@ -170,7 +170,7 @@ export default function TestRunsTabs({
       return response.json() as Promise<TestRunsData>;
     },
     // Only run the query when the results tab is selected
-    enabled: ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]),
+    enabled: ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]) && isInitialized,
     // Only refetch when the canonical query key changes
     staleTime: Infinity,
   });
