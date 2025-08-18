@@ -29,16 +29,14 @@
   padding: 0.4rem;
 }
 
-.addButton {
-  z-index: 999;
-}
-
 .sideNavExpanded {
   width: 320px;
 }
 
 .sideNavCollapsed {
   width: 0;
+  overflow: hidden;
+
 }
 
 .headerTitle {
@@ -60,5 +58,4 @@
   position: fixed;
   bottom: 5.5rem;
   right: 1rem;
-  z-index: 9999;
 }

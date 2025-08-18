@@ -7,54 +7,54 @@
 .sideNavItem {
   display: flex;
   gap: 0.5rem;
-  align-items: center;
+  align-items: flex-start;
+  padding: 0.5rem 0;
   position: relative;
   transition: background-color 0.15s ease-in-out;
 }
 
-.dragHandle {
+.dragHandle,
+.starIcon {
   cursor: grab;
   visibility: hidden;
-  margin-left: 0.5rem;
+  margin-left: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.starIcon {
+  visibility: visible;
+  cursor: default;
 }
 
 .sideNavItem:hover {
   background-color: var(--cds-layer-selected);
-  cursor: pointer;
 }
 
 .sideNavItem:hover .dragHandle {
   visibility: visible;
 }
 
-.sideNavItem .active {
-  background-color: var(--cds-layer-selected);
-}
-
 .dragging {
   cursor: grabbing;
   background-color: var(--cds-layer-selected);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .dragging .dragHandle {
   visibility: visible;
 }
 
-.starIcon {
-  margin-left: 0.5rem;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
 .sideNavLink {
   text-decoration: none;
   color: var(--cds-text-primary) !important;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  padding-right: 1rem;
   flex-grow: 1;
-  padding: 0.5rem;
   outline: none;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 .sideNavLink:hover,
@@ -62,4 +62,8 @@
 .sideNavLink:active {
   text-decoration: none;
   color: var(--cds-text-primary) !important;
+}
+
+.disabled {
+  cursor: default;
 }

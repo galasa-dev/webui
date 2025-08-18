@@ -27,6 +27,7 @@ export default function QueryItem({ query, disabled = false }: QueryItemProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0 : 1,
   };
 
   const { defaultQuery } = useSavedQueries();
@@ -36,15 +37,14 @@ export default function QueryItem({ query, disabled = false }: QueryItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`${styles.sideNavItem} ${isDragging ? styles.dragging : ''} ${disabled ? styles.disabled : ''}`}
+      className={`${styles.sideNavItem} ${disabled ? styles.disabled : ''}`}
     >
       {isDefault ? (
         <StarFilled size={18} className={styles.starIcon} />
       ) : (
         <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
       )}
-
-      <Link href={`?${query.url}`} className={styles.sideNavLink}>
+      <Link href={`/?q=${query.url}`} className={styles.sideNavLink}>
         {query.title}
       </Link>
     </div>
