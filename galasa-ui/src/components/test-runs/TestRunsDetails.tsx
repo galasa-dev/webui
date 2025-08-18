@@ -36,7 +36,6 @@ export default function TestRunsDetails({
   const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
-  // const [editedQueryName, setEditedQueryName] = useState<string>(queryName || '');
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
 
   // State holds the name as it was when the user clicked the "Edit" button.

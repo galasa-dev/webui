@@ -19,3 +19,7 @@ export type SavedQueryType = {
   createdAt: string;
   isActive?: boolean;
 };
+
+export type SavedQueriesMetaData = {
+  defaultQueryId: string | null;
+};

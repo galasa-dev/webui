@@ -6,12 +6,13 @@
 
 'use client';
 
-import { createContext, ReactNode, useContext } from 'react';
-import { SavedQueryType } from '@/utils/types/common';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { SavedQueriesMetaData, SavedQueryType } from '@/utils/types/common';
 import { useState } from 'react';
 import { DEFAULT_QUERY } from '@/utils/constants/common';
 
-const LOCAL_STORAGE_KEY = 'savedQueries';
+const SAVED_QUERIES_STORAGE_KEY = 'savedQueries';
+const QUERIES_METADATA_STORAGE_KEY = 'queriesMetaData';
 
 type SavedQueriesContextType = {
   savedQueries: SavedQueryType[];
@@ -22,6 +23,8 @@ type SavedQueriesContextType = {
   deleteQuery: (createdAt: string) => void;
   isQuerySaved: (queryName: string) => boolean;
   getQuery: (queryName: string) => SavedQueryType | null;
+  defaultQuery: SavedQueryType;
+  setDefaultQuery: (createdAt: string) => void;
 };
 
 const SavedQueriesContext = createContext<SavedQueriesContextType | undefined>(undefined);
@@ -29,16 +32,27 @@ const SavedQueriesContext = createContext<SavedQueriesContextType | undefined>(u
 export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
-      const storedQueries = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return storedQueries ? JSON.parse(storedQueries) : [DEFAULT_QUERY];
+      const storedQueries = localStorage.getItem(SAVED_QUERIES_STORAGE_KEY);
+      if (storedQueries) {
+        return JSON.parse(storedQueries);
+      }
     }
-    return [];
+    return [DEFAULT_QUERY];
   });
 
-  // Get the current active query from the URL
-  // const [activeQuery, setActiveQuery] = useState<SavedQueryType>(() => {
-  //   const queryName = searchParams.get('q');
-  // });
+  const [metaData, setMetaData] = useState<SavedQueriesMetaData>(() => {
+    if (typeof window !== 'undefined') {
+      const storedMetaData = localStorage.getItem(QUERIES_METADATA_STORAGE_KEY);
+      if (storedMetaData) {
+        return JSON.parse(storedMetaData);
+      }
+    }
+    return { defaultQueryId: DEFAULT_QUERY.createdAt };
+  });
+
+  // Find the default query based on metadata.
+  const defaultQuery =
+    savedQueries.find((query) => query.createdAt === metaData.defaultQueryId) || savedQueries[0];
 
   /**
    * Save a new query to the list of saved queries.
@@ -47,7 +61,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const saveQuery = (query: SavedQueryType) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = [...prevQueries, query];
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
+      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -57,7 +71,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       const updatedQueries = prevQueries.map((query) =>
         query.createdAt === createdAt ? updatedQuery : query
       );
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
+      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -72,7 +86,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       const updatedQueries = prevQueries.map((query) =>
         query.createdAt === createdAt ? { ...query, title: newTitle } : query
       );
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
+      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -84,7 +98,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const deleteQuery = (createdAt: string) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = prevQueries.filter((query) => query.createdAt !== createdAt);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedQueries));
+      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -98,9 +112,29 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     return savedQueries.some((query) => query.title === queryName);
   };
 
+  /**
+   * Get a saved query by its name.
+   * @param queryName The name of the query to retrieve.
+   * @returns The saved query if found, null otherwise.
+   */
   const getQuery = (queryName: string) => {
     return savedQueries.find((query) => query.title === queryName) || null;
   };
+
+  /**
+   * Set the default query by its createdAt timestamp.
+   * @param createdAt The createdAt timestamp of the query to set as default.
+   */
+  const setDefaultQuery = (createdAt: string) => {
+    setMetaData((prevMetaData) => ({
+      ...prevMetaData,
+      defaultQueryId: createdAt,
+    }));
+  };
+
+  useEffect(() => {
+    localStorage.setItem(QUERIES_METADATA_STORAGE_KEY, JSON.stringify(metaData));
+  }, [metaData]);
 
   const value = {
     savedQueries,
@@ -111,6 +145,8 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     updateQuery,
     isQuerySaved,
     getQuery,
+    defaultQuery,
+    setDefaultQuery,
   };
   return <SavedQueriesContext.Provider value={value}>{children}</SavedQueriesContext.Provider>;
 }

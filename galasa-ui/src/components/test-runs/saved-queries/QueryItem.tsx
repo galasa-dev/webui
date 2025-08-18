@@ -11,6 +11,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
 import { Link } from '@carbon/react';
+import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 
 export default function QueryItem({ query }: { query: SavedQueryType }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -22,13 +23,19 @@ export default function QueryItem({ query }: { query: SavedQueryType }) {
     transition,
   };
 
+  const { defaultQuery } = useSavedQueries();
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={`${styles.sideNavItem} ${isDragging ? styles.dragging : ''}`}
     >
-      <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
+      {defaultQuery.createdAt === query.createdAt ? (
+        <StarFilled size={18} className={styles.starIcon} />
+      ) : (
+        <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
+      )}
 
       <Link href={`?${query.url}`} className={styles.sideNavLink}>
         {query.title}

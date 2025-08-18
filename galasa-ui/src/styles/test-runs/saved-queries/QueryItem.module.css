@@ -40,6 +40,10 @@
   visibility: visible;
 }
 
+.starIcon {
+  margin-left: 0.5rem;
+}
+
 .hidden {
   visibility: hidden;
 }

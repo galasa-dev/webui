@@ -26,12 +26,7 @@ import {
 } from '@dnd-kit/core';
 import QueryItem from './QueryItem';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import { SavedQueryType } from '@/utils/types/common';
 
-const DEFAULT_QUERY = {
-  url: window.location.href,
-  title: 'Tests ran in the last 24 hours',
-};
 export default function CollapsibleSideBar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
