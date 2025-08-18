@@ -14,4 +14,10 @@
 
 .tableOfScreenshotsContainer{
   width: 44%;
+  overflow-x: hidden;
+}
+
+.tableOfScreenshotsContainer:hover{
+  width: 44%;
+  overflow-x: visible;
 }
