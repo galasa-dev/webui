@@ -203,7 +203,7 @@ export default function TableOfScreenshots({
         page={currentPage}
         pageSize={pageSize}
         pageSizes={[10, 20, 30, 40, 50]}
-        totalItems={flattenedZos3270TerminalData.length}
+        totalItems={filteredRows.length}
         onChange={handlePaginationChange}
       />
     </div>
