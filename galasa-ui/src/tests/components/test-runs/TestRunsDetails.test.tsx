@@ -20,8 +20,7 @@ const mockRouter = {
   }),
 };
 
-const mockGetResolvedTimeZone = jest.fn(() => 'UTC'); 
-
+const mockGetResolvedTimeZone = jest.fn(() => 'UTC');
 
 // Mock useHistoryBreadCrumbs hook
 jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
@@ -31,7 +30,7 @@ jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
   }),
 }));
 
-// Mock next/navigation 
+// Mock next/navigation
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/mock-path'),
   useSearchParams: jest.fn(() => mockSearchParams),
