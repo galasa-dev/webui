@@ -32,7 +32,11 @@ function splitScreenAndTerminal(input: string) {
   };
 }
 
-export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], runId: string) => {
+export const get3270Screenshots = async (
+  zos3270TerminalData: TreeNodeData[],
+  runId: string,
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   for (var terminal of zos3270TerminalData) {
     const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
       .filter((node) => (node as FileNode).isFile)
@@ -73,7 +77,10 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
             });
           });
         })
-        .catch((error) => console.error('Error downloading artifact: ', error));
+        .catch((error) => {
+          console.error('Error downloading artifact: ', error);
+          setIsError(true); // Add this line to set the error state
+        });
     }
   }
 

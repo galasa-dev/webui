@@ -7,10 +7,12 @@
 // (TODO: Delete me) Test run with 3270 terminal example: CEMTManagerIVT http://localhost:3000/test-runs/cdb-20ca574c-40cb-435e-8741-deec9097e4e2-1754114441408-C25051?tab=overview
 
 'use client';
-import React from 'react';
-import TableOfScreenshots from './TableOfScreenshots';
+import React, {useState} from 'react';
+import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
+import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
+import ErrorPage from '@/app/error/page';
 
 export default function TabFor3270({
   runId,
@@ -19,9 +21,18 @@ export default function TabFor3270({
   runId: string;
   zos3270TerminalData: TreeNodeData[];
 }) {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageData, setImageData] = useState<any>([]);
+  
+  if (isError) {
+    return <ErrorPage />;
+  }
+
   return (
-    <div className={styles.terminalScreenshotTableContainer}>
-      <TableOfScreenshots runId={runId} zos3270TerminalData={zos3270TerminalData} />
+    <div className={styles.tabFor3270Container}>
+      <TableOfScreenshots runId={runId} zos3270TerminalData={zos3270TerminalData} setIsError={setIsError} isLoading={isLoading} setIsLoading={setIsLoading} />
+      <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
     </div>
   );
 }

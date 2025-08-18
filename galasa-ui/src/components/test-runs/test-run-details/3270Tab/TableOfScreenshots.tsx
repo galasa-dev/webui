@@ -27,14 +27,21 @@ import { TableContainer } from '@carbon/react';
 import { useRouter } from 'next/navigation';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import ErrorPage from '@/app/error/page';
+import { TableToolbarContent } from '@carbon/react';
+import { TableToolbarSearch } from '@carbon/react';
 
 export default function TableOfScreenshots({
   runId,
   zos3270TerminalData,
+  setIsError,
+  isLoading,
+  setIsLoading,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const translations = useTranslations('3270Tab');
   const router = useRouter();
@@ -57,13 +64,11 @@ export default function TableOfScreenshots({
     },
   ];
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<any>([]);
-  let paginatedRows: any = [];
+  const [searchTerm, setSearchTerm] = useState('');
+
   let screenshotsCollected: boolean = false;
 
   const handleRowClick = (runId: string, screenshotId: string) => {
@@ -76,11 +81,25 @@ export default function TableOfScreenshots({
     setPageSize(pageSize);
   };
 
-  paginatedRows = useMemo(() => {
+  // 1. Filter all rows based on the search term
+  const filteredRows = useMemo(() => {
+    if (!searchTerm || searchTerm === '') {
+      return flattenedZos3270TerminalData;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return flattenedZos3270TerminalData.filter((row: any) =>
+      Object.values(row).some(value =>
+        String(value).toLowerCase().includes(lowerCaseSearchTerm)
+      )
+    );
+  }, [searchTerm, flattenedZos3270TerminalData]);
+
+  // 2. Paginate filtered rows
+  const paginatedRows = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return flattenedZos3270TerminalData.slice(startIndex, endIndex);
-  }, [currentPage, pageSize, flattenedZos3270TerminalData]);
+    return filteredRows.slice(startIndex, endIndex);
+  }, [currentPage, pageSize, filteredRows]);
 
   useEffect(() => {
     if (!screenshotsCollected) {
@@ -90,7 +109,7 @@ export default function TableOfScreenshots({
       const fetchData = async () => {
         try {
           setFlattenedZos3270TerminalData([]);
-          setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId));
+          setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId, setIsError));
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -102,10 +121,6 @@ export default function TableOfScreenshots({
       fetchData();
     }
   }, []);
-
-  if (isError) {
-    return <ErrorPage />;
-  }
 
   if (isLoading) {
     return (
@@ -120,7 +135,7 @@ export default function TableOfScreenshots({
   }
 
   return (
-    <div>
+    <div className={styles.tableOfScreenshotsContainer}>
       <DataTable isSortable rows={paginatedRows} headers={headers}>
         {({
           rows,
@@ -136,6 +151,16 @@ export default function TableOfScreenshots({
           getTableProps: () => TableBodyProps;
         }) => (
           <TableContainer>
+            <TableToolbarContent>
+              <TableToolbarSearch
+                placeholder={translations('searchPlaceholder')}
+                persistent
+                onChange={(e:any) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </TableToolbarContent>
             <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>
@@ -169,7 +194,7 @@ export default function TableOfScreenshots({
         forwardText={translations('pagination.forwardText')}
         itemsPerPageText={translations('pagination.itemsPerPageText')}
         itemRangeText={(min: number, max: number, total: number) =>
-          `${min}–${max} ${translations('pagination.of')} ${total} ${translations('pagination.items')}`
+          `${total} ${translations('pagination.items')}`
         }
         pageRangeText={(current: number, total: number) =>
           `${translations('pagination.of')} ${total} ${translations('pagination.pages')}`

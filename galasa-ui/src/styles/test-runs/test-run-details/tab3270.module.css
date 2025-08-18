@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-.terminalScreenshotTableContainer {
-  width: 44%;
+.tabFor3270Container {
+  
 }
 
 .clickableRow {
   cursor: pointer;
+}
+
+.tableOfScreenshotsContainer{
+  width: 44%;
 }

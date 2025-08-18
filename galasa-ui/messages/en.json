@@ -244,7 +244,7 @@
     "ScreenNumber": "Screen Number",
     "Time": "Time",
     "Method": "Method",
-    "searchPlaceholder": "Start typing...",
+    "searchPlaceholder": "Search",
     "ariaLabel": "ariaLabel",
     "pagination": {
       "backwardText": "Previous page",
@@ -253,8 +253,7 @@
       "pageNumberText": "Page Number",
       "of": "of",
       "items": "items",
-      "pages": "pages",
-      "page": "page"
+      "pages": "pages"
     }
   },
   "TestRunDetails": {
