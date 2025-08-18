@@ -6,15 +6,8 @@
 
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
+import { CellFor3270 } from '@/utils/interfaces/common';
 import pako from 'pako';
-
-interface CellFor3270 {
-  id: string;
-  Terminal: string;
-  ScreenNumber: number;
-  Time: string;
-  Method: string;
-}
 
 const rawData: CellFor3270[] = [];
 

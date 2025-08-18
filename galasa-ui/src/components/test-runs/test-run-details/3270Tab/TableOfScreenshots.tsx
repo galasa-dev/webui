@@ -16,6 +16,10 @@ import {
   DataTable,
   Pagination,
   DataTableSkeleton,
+  Dropdown,
+  TableToolbarSearch,
+  TableToolbarContent,
+  TableContainer,
 } from '@carbon/react';
 import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
@@ -23,12 +27,15 @@ import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
-import { TableContainer } from '@carbon/react';
 import { useRouter } from 'next/navigation';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { TableToolbarContent } from '@carbon/react';
-import { TableToolbarSearch } from '@carbon/react';
+import { CellFor3270 } from '@/utils/interfaces/common';
+
+interface DropdownOption {
+  id: string;
+  label: string;
+}
 
 export default function TableOfScreenshots({
   runId,
@@ -66,8 +73,11 @@ export default function TableOfScreenshots({
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<any>([]);
+  const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<CellFor3270[]>(
+    []
+  );
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
 
   let screenshotsCollected: boolean = false;
 
@@ -81,18 +91,34 @@ export default function TableOfScreenshots({
     setPageSize(pageSize);
   };
 
-  // 1. Filter all rows based on the search term
+  const terminalnames = useMemo(() => {
+    const names = new Set(flattenedZos3270TerminalData.map((row: CellFor3270) => row.Terminal));
+    return [
+      { id: 'all', label: 'All' },
+      ...Array.from(names).map((name) => ({ id: name, label: name })),
+    ];
+  }, [flattenedZos3270TerminalData]);
+  // const terminalnames : DropdownOption[] = [{id:'IYK2ZNB5_1', label:'IYK2ZNB5_1'},{id:'IYK2ZNB5_2', label:'IYK2ZNB5_2'}];
+
+  // 1. Filter all rows based on the search term and temrinal selection
   const filteredRows = useMemo(() => {
-    if (!searchTerm || searchTerm === '') {
-      return flattenedZos3270TerminalData;
+    let result: CellFor3270[] = flattenedZos3270TerminalData;
+
+    if (searchTerm) {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      result = result.filter((row: CellFor3270) =>
+        Object.values(row).some((value) =>
+          String(value).toLowerCase().includes(lowerCaseSearchTerm)
+        )
+      );
     }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return flattenedZos3270TerminalData.filter((row: any) =>
-      Object.values(row).some(value =>
-        String(value).toLowerCase().includes(lowerCaseSearchTerm)
-      )
-    );
-  }, [searchTerm, flattenedZos3270TerminalData]);
+
+    if (selectedTerminal && selectedTerminal.id !== 'all') {
+      result = result.filter((row) => row.Terminal === selectedTerminal.id);
+    }
+
+    return result;
+  }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
 
   // 2. Paginate filtered rows
   const paginatedRows = useMemo(() => {
@@ -109,7 +135,9 @@ export default function TableOfScreenshots({
       const fetchData = async () => {
         try {
           setFlattenedZos3270TerminalData([]);
-          setFlattenedZos3270TerminalData(await get3270Screenshots(zos3270TerminalData, runId, setIsError));
+          setFlattenedZos3270TerminalData(
+            await get3270Screenshots(zos3270TerminalData, runId, setIsError)
+          );
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -155,10 +183,21 @@ export default function TableOfScreenshots({
               <TableToolbarSearch
                 placeholder={translations('searchPlaceholder')}
                 persistent
-                onChange={(e:any) => {
+                onChange={(e: any) => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
+              />
+              <Dropdown
+                id="type-filter-dropdown"
+                label="Select a terminal"
+                items={terminalnames}
+                itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
+                onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
+                  setSelectedTerminal(selectedItem);
+                  setCurrentPage(1);
+                }}
+                selectedItem={selectedTerminal}
               />
             </TableToolbarContent>
             <Table {...getTableProps()}>

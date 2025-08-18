@@ -5,19 +5,17 @@
  */
 
 .tabFor3270Container {
-  
 }
 
 .clickableRow {
   cursor: pointer;
 }
 
-.tableOfScreenshotsContainer{
+.tableOfScreenshotsContainer {
   width: 44%;
   overflow-x: hidden;
 }
 
-.tableOfScreenshotsContainer:hover{
-  width: 44%;
+.tableOfScreenshotsContainer:hover {
   overflow-x: visible;
 }

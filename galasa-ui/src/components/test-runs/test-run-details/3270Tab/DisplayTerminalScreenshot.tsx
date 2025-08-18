@@ -12,22 +12,12 @@ export default function DisplayTerminalScreenshot({
   imageData,
   isLoading,
 }: {
-  imageData:any;
-  isLoading:boolean;
+  imageData: any;
+  isLoading: boolean;
 }) {
-
-
   if (isLoading) {
-    return (
-      <div>
-        
-      </div>
-    );
+    return <div></div>;
   }
 
-  return (
-    <div>
-      
-    </div>
-  );
+  return <div></div>;
 }
