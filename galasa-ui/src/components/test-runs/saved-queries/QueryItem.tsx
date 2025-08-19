@@ -44,7 +44,7 @@ export default function QueryItem({ query, disabled = false }: QueryItemProps) {
       ) : (
         <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
       )}
-      <Link href={`/?q=${query.url}`} className={styles.sideNavLink}>
+      <Link href={`?q=${query.url}`} className={styles.sideNavLink}>
         {query.title}
       </Link>
     </div>
