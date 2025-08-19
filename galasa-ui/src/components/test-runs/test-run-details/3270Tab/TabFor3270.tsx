@@ -30,15 +30,21 @@ export default function TabFor3270({
   }
 
   return (
-    <div className={styles.tabFor3270Container}>
-      <TableOfScreenshots
-        runId={runId}
-        zos3270TerminalData={zos3270TerminalData}
-        setIsError={setIsError}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-      />
-      <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
+    <div className={styles.tab3270Container}>
+      <div className={styles.tableOfScreenshotsContainer}>
+        <TableOfScreenshots
+          runId={runId}
+          zos3270TerminalData={zos3270TerminalData}
+          isLoading={isLoading}
+          setIsError={setIsError}
+          setIsLoading={setIsLoading}
+          setImageData={setImageData}
+        />
+      </div>
+
+      <div className={styles.screenshotContainer}>
+        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
+      </div>
     </div>
   );
 }

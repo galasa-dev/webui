@@ -54,3 +54,7 @@
 .active {
   color: var(--cds-icon-on-color);
 }
+
+.icon {
+  padding-right: 10px;
+}

@@ -15,9 +15,11 @@ export default function DisplayTerminalScreenshot({
   imageData: any;
   isLoading: boolean;
 }) {
-  if (isLoading) {
-    return <div></div>;
-  }
-
-  return <div></div>;
+  return (
+    <img
+      className={styles.screenshot}
+      src={`/static/example-terminal-screenshot.png`}
+      alt="Placeholder image"
+    />
+  );
 }

@@ -46,7 +46,7 @@ export default function LanguageSelector() {
 
   return (
     <div className={styles.container}>
-      <span className={styles.icon}>{translations('label')} :</span>
+      <span className={styles.icon}>{translations('label')}</span>
       <Dropdown
         id="language-selector"
         items={languages}

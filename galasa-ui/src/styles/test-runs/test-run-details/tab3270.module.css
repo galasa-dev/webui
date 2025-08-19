@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-.tabFor3270Container {
+.tab3270Container {
+  height: 100vh;
 }
 
 .clickableRow {
@@ -12,10 +13,35 @@
 }
 
 .tableOfScreenshotsContainer {
-  width: 44%;
+  width: 43%;
   overflow-x: hidden;
+  padding-right: 1px;
+  padding-bottom: 60px;
+  float: left;
 }
 
 .tableOfScreenshotsContainer:hover {
   overflow-x: visible;
+}
+
+.terminalDropdownMenu {
+  padding-left: 8px;
+  width: max-content;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.screenshotContainer {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  padding-top: 50px;
+  padding-left: 50px;
+  height: var(--viewport-height, '100vh');
+}
+
+.screenshot {
+  position: sticky;
+  top: 90px;
+  align-self: stretch;
 }

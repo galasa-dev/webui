@@ -40,15 +40,17 @@ interface DropdownOption {
 export default function TableOfScreenshots({
   runId,
   zos3270TerminalData,
-  setIsError,
   isLoading,
+  setIsError,
   setIsLoading,
+  setImageData,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
-  setIsError: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setImageData: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const translations = useTranslations('3270Tab');
   const router = useRouter();
@@ -61,14 +63,15 @@ export default function TableOfScreenshots({
       key: 'ScreenNumber',
       header: translations('ScreenNumber'),
     },
-    {
-      key: 'Time',
-      header: translations('Time'),
-    },
-    {
-      key: 'Method',
-      header: translations('Method'),
-    },
+    // TODO 3270: Once the server-side logic is completed, these headers can be placed back in. Leaving this commented out for now to save time for later.
+    // {
+    //   key: 'Time',
+    //   header: translations('Time'),
+    // },
+    // {
+    //   key: 'Method',
+    //   header: translations('Method'),
+    // },
   ];
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,14 +84,27 @@ export default function TableOfScreenshots({
 
   let screenshotsCollected: boolean = false;
 
+  function updateViewportHeight(newHeight: string) {
+    const element = document.querySelector('.tab3270_tab3270Container__scykF') as HTMLElement;
+    element.style.setProperty('--viewport-height', newHeight);
+  }
+
   const handleRowClick = (runId: string, screenshotId: string) => {
     // Navigate to the test run details page
-    router.push(`/test-runs/${runId}/${screenshotId}`);
+    // router.push(`/test-runs/${runId}/${screenshotId}`);
   };
 
   const handlePaginationChange = ({ page, pageSize }: { page: number; pageSize: number }) => {
     setCurrentPage(page);
     setPageSize(pageSize);
+
+    // Manually update height due to flexbox interfering with position: sticky.
+    if (pageSize > 16) {
+      const amountToIncreaseBy = 48 * (pageSize - 16);
+      updateViewportHeight(`calc(100vh + ` + amountToIncreaseBy + `px)`);
+    } else {
+      updateViewportHeight(`100vh`);
+    }
   };
 
   const terminalnames = useMemo(() => {
@@ -98,7 +114,6 @@ export default function TableOfScreenshots({
       ...Array.from(names).map((name) => ({ id: name, label: name })),
     ];
   }, [flattenedZos3270TerminalData]);
-  // const terminalnames : DropdownOption[] = [{id:'IYK2ZNB5_1', label:'IYK2ZNB5_1'},{id:'IYK2ZNB5_2', label:'IYK2ZNB5_2'}];
 
   // 1. Filter all rows based on the search term and temrinal selection
   const filteredRows = useMemo(() => {
@@ -147,23 +162,26 @@ export default function TableOfScreenshots({
       };
 
       fetchData();
+
+      // Initial setting to 100vh for terminal image.
+      updateViewportHeight(`100vh`);
     }
   }, []);
 
   if (isLoading) {
     return (
-      <div>
+      <>
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
           rowCount={pageSize}
         />
-      </div>
+      </>
     );
   }
 
   return (
-    <div className={styles.tableOfScreenshotsContainer}>
+    <>
       <DataTable isSortable rows={paginatedRows} headers={headers}>
         {({
           rows,
@@ -189,7 +207,7 @@ export default function TableOfScreenshots({
                 }}
               />
               <Dropdown
-                id="type-filter-dropdown"
+                className={styles.terminalDropdownMenu}
                 label="Select a terminal"
                 items={terminalnames}
                 itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
@@ -245,6 +263,6 @@ export default function TableOfScreenshots({
         totalItems={filteredRows.length}
         onChange={handlePaginationChange}
       />
-    </div>
+    </>
   );
 }

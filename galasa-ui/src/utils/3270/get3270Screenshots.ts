@@ -58,8 +58,8 @@ export const get3270Screenshots = async (
             // Example image id: "term1-33"
             const id = image.id;
             const result = splitScreenAndTerminal(id);
-            const method = 'Method A'; // TODO: Placeholder - needed from backend.
-            const time = '2023-01-01 12:00:00'; // TODO: Placeholder - needed from backend.
+            const method = 'Method A'; // TODO 3270:          Placeholder - needed from backend.
+            const time = '2023-01-01 12:00:00'; // TODO 3270: Placeholder - needed from backend.
 
             rawData.push({
               id: image.id,
