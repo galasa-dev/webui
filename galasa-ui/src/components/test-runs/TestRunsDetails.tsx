@@ -37,10 +37,7 @@ export default function TestRunsDetails({
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
-
-  // State holds the name as it was when the user clicked the "Edit" button.
-  // It is used when reverting changes if the user enters enters an invalid name
-  const [originalNameOnEdit, setOriginalNameOnEdit] = useState<string>(queryName || '');
+  const [editedName, setEditedName] = useState<string>('');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,8 +57,6 @@ export default function TestRunsDetails({
         title: translations('copiedTitle'),
         subtitle: translations('copiedMessage'),
       });
-
-      // Hide notification after 6 seconds
       setTimeout(() => setNotification(null), 6000);
     } catch (err) {
       setNotification({
@@ -72,14 +67,14 @@ export default function TestRunsDetails({
     }
   };
 
+  // CHANGED: Rewrote the function to use the local `editedName` state.
   const handleFinishEditing = () => {
     setIsEditingName(false);
-    const newName = queryName.trim();
-    const oldName = originalNameOnEdit;
+    const newName = editedName.trim();
+    const oldName = queryName;
 
-    // Do nothing if the name is empty or unchanged
+    // Do nothing if the name is empty or unchanged.
     if (!newName || newName === oldName) {
-      setQueryName(oldName);
       return;
     }
 
@@ -91,9 +86,7 @@ export default function TestRunsDetails({
         subtitle: translations('nameExistsError', { name: newName }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      // Revert the input to the original name
-      setQueryName(oldName);
-      return;
+      return; 
     }
 
     // Find the original query using the old name
@@ -109,27 +102,26 @@ export default function TestRunsDetails({
         title: newName,
         url: updatedUrlParams.toString(),
       });
-      console.log('Updated query:', { ...queryToRename, title: newName, url: updatedUrlParams });
     }
+
+    // Update the local state to reflect the new name and save it to the URL
+    setQueryName(newName);
   };
 
   // Save new query or update an existing one
   const handleSaveQuery = () => {
     const nameToSave = queryName.trim();
 
-    // Do not save if the name is empty
     if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams).toString();
     const existingQuery = getQuery(nameToSave);
 
-    // Case 1: A query with this name already exists. Update its filters.
     if (existingQuery) {
       updateQuery(existingQuery.createdAt, {
         ...existingQuery,
         url: currentUrlParams,
       });
-
       setNotification({
         kind: 'success',
         title: translations('queryUpdatedTitle'),
@@ -139,13 +131,10 @@ export default function TestRunsDetails({
       return;
     }
 
-    // Case 2: This is a new query. Save it.
-    // This also handles the "Save As" scenario where the name was changed from an existing query.
     const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
     let finalQueryTitle = nameToSave;
     let counter = 1;
 
-    // Loop until it finds a title that is not already saved
     while (isQuerySaved(finalQueryTitle)) {
       finalQueryTitle = `${baseName} (${counter})`;
       counter++;
@@ -156,7 +145,6 @@ export default function TestRunsDetails({
       url: currentUrlParams,
       createdAt: new Date().toISOString(),
     };
-
     saveQuery(newQuery);
 
     setNotification({
@@ -202,8 +190,8 @@ export default function TestRunsDetails({
                 <input
                   ref={inputRef}
                   type="text"
-                  value={queryName}
-                  onChange={(e) => setQueryName(e.target.value)}
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
                   onBlur={handleFinishEditing}
                   onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === 'Enter') {
@@ -221,7 +209,7 @@ export default function TestRunsDetails({
                 renderIcon={Edit}
                 iconDescription={translations('editQueryName')}
                 onClick={() => {
-                  setOriginalNameOnEdit(queryName);
+                  setEditedName(queryName);
                   setIsEditingName(true);
                 }}
                 size="md"
