@@ -67,7 +67,11 @@ export default function TestRunsDetails({
     }
   };
 
-  // CHANGED: Rewrote the function to use the local `editedName` state.
+  const handleStartEditingName = () => {
+    setEditedName(queryName);
+    setIsEditingName(true);
+  };
+
   const handleFinishEditing = () => {
     setIsEditingName(false);
     const newName = editedName.trim();
@@ -156,7 +160,7 @@ export default function TestRunsDetails({
   };
 
   return (
-    <main id="content" className={styles.testRunsPage}>
+    <div id="content" className={styles.testRunsPage}>
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile translationKey="TestRun.title" className={styles.toolbar}>
         <div className={styles.toolbarActions}>
@@ -181,7 +185,7 @@ export default function TestRunsDetails({
         </div>
       )}
       <div className={styles.testRunsContentWrapper}>
-        <CollapsibleSideBar />
+        <CollapsibleSideBar handleEditQueryName={handleStartEditingName} />
 
         <div className={styles.mainContent}>
           <div className={styles.queryNameContainer}>
@@ -235,6 +239,6 @@ export default function TestRunsDetails({
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

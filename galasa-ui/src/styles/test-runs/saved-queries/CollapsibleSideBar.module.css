@@ -20,13 +20,11 @@
 
 .sidebarWrapper {
   display: flex;
-  height: 100%;
   padding-top: 48px;
 }
 
 .sideNavExpanded,
 .sideNavCollapsed {
-  height: 100%;
   overflow: hidden;
   flex-shrink: 0;
   transition: width 0.2s ease-in-out, max-width 0.2s ease-in-out;
@@ -47,7 +45,6 @@
 
 .innerContentWrapper {
   width: 320px; 
-  height: 100%;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -66,7 +63,6 @@
   display: flex;
   padding: 0.7rem;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--cds-border-subtle);
 }
 
 .headerTitle {
@@ -83,11 +79,6 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-}
-
-.notificationWrapper {
-  flex-shrink: 0;
-  padding: 0.5rem;
 }
 
 .notification {

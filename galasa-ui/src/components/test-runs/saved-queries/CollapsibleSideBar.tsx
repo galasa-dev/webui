@@ -34,7 +34,11 @@ import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 
-export default function CollapsibleSideBar() {
+interface CollapsibleSideBarProps {
+  handleEditQueryName: () => void;
+}
+
+export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleSideBarProps) {
   const translations = useTranslations('CollapsibleSidebar');
   const { queryName, searchParams, setQueryName } = useTestRunsQueryParams();
   const { savedQueries, setSavedQueries, saveQuery, isQuerySaved, defaultQuery } =
@@ -89,6 +93,9 @@ export default function CollapsibleSideBar() {
   );
 
   const handleAddCurrentQuery = () => {
+    setQueryName('');
+    handleEditQueryName();
+
     const nameToSave = queryName.trim();
     if (!nameToSave) return;
 
