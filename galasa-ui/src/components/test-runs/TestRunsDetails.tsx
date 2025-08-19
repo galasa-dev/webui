@@ -86,7 +86,7 @@ export default function TestRunsDetails({
         subtitle: translations('nameExistsError', { name: newName }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      return; 
+      return;
     }
 
     // Find the original query using the old name
@@ -156,7 +156,7 @@ export default function TestRunsDetails({
   };
 
   return (
-    <main id="content">
+    <main id="content" className={styles.testRunsPage}>
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile translationKey="TestRun.title" className={styles.toolbar}>
         <div className={styles.toolbarActions}>
@@ -225,12 +225,14 @@ export default function TestRunsDetails({
               {translations('saveQuery')}
             </Button>
           </div>
-          <Suspense fallback={<p>Loading...</p>}>
-            <TestRunsTabs
-              requestorNamesPromise={requestorNamesPromise}
-              resultsNamesPromise={resultsNamesPromise}
-            />
-          </Suspense>
+          <div className={styles.tabsContainer}>
+            <Suspense fallback={<p>Loading...</p>}>
+              <TestRunsTabs
+                requestorNamesPromise={requestorNamesPromise}
+                resultsNamesPromise={resultsNamesPromise}
+              />
+            </Suspense>
+          </div>
         </div>
       </div>
     </main>

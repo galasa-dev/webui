@@ -3,19 +3,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+ .testRunsPage {
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+ }
+
 .testRunsContentWrapper {
   display: flex;
   gap: 0.5rem;
-  flex-grow: 1;
+  height: 100%;
+  flex: 1;
 }
 
 .mainContent {
   width: 90%;
   margin: 2rem auto;
+  padding-right: 2rem;
+}
+
+.tabsContainer {
+  height: 100%;
 }
 
 .tabContent {
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -42,6 +53,7 @@
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: 0;
+  word-break: break-word;
   margin: 0;
   color: var(--cds-text-primary);
   width: 100%;

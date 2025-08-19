@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-.testRunsContentWrapper {
-  width: 90%;
-  height: 100%;
-  margin: 4rem auto;
+.graphContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .timeFrameText,

@@ -151,56 +151,73 @@ export default function CollapsibleSideBar() {
           isActive={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
         />
-        <div
-          className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
-          aria-label="Saved Queries Sidebar"
-        >
-          <p className={styles.headerTitle}>Saved Queries</p>
-          <div className={styles.toolbar}>
-            <Search
-              labelText="Search saved queries"
-              placeholder="Search saved queries"
-              size="md"
-              value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              onClear={() => setSearchTerm('')}
-            />
-            <Button
-              kind="ghost"
-              hasIconOnly
-              renderIcon={Add}
-              iconDescription="Add current query"
-              onClick={handleAddCurrentQuery}
-              tooltipPosition="top"
-            />
-          </div>
-          <SideNavItems>
-            {defaultQuery && !searchTerm && (
-              <QueryItem query={defaultQuery} key={defaultQuery.createdAt} disabled />
-            )}
-            <SortableContext
-              items={filteredSortableQueries.map((query) => query.createdAt)}
-              strategy={verticalListSortingStrategy}
-            >
-              {filteredSortableQueries.map((query) => (
-                <QueryItem query={query} key={query.createdAt} />
-              ))}
-            </SortableContext>
-          </SideNavItems>
-          <div className={styles.notificationWrapper}>
-            {notification && (
-              <InlineNotification
-                kind={notification.kind}
-                title={notification.title}
-                subtitle={notification.subtitle}
-                onClose={() => setNotification(null)}
-                hideCloseButton={false}
-              />
-            )}
+
+        <div className={styles.sidebarWrapper}>
+          <div
+            className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
+            aria-label="Saved Queries Sidebar"
+          >
+            <div className={styles.innerContentWrapper}>
+              <p className={styles.headerTitle}>Saved Queries</p>
+              <div className={styles.toolbar}>
+                <Search
+                  labelText="Search saved queries"
+                  placeholder="Search saved queries"
+                  size="lg"
+                  value={searchTerm}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchTerm(e.target.value)
+                  }
+                  onClear={() => setSearchTerm('')}
+                />
+                <Button
+                  kind="ghost"
+                  hasIconOnly
+                  renderIcon={Add}
+                  iconDescription="Add current query"
+                  onClick={handleAddCurrentQuery}
+                  tooltipPosition="top"
+                />
+              </div>
+
+              <div className={styles.sideNavContent}>
+                <SideNavItems>
+                  {defaultQuery && !searchTerm && (
+                    <QueryItem
+                      query={defaultQuery}
+                      key={defaultQuery.createdAt}
+                      disabled
+                      isCollapsed={!isExpanded}
+                    />
+                  )}
+                  <SortableContext
+                    items={filteredSortableQueries.map((query) => query.createdAt)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {filteredSortableQueries.map((query) => (
+                      <QueryItem query={query} key={query.createdAt} isCollapsed={!isExpanded} />
+                    ))}
+                  </SortableContext>
+                </SideNavItems>
+              </div>
+            </div>
           </div>
         </div>
-        <DragOverlay>{activeQuery ? <QueryItem query={activeQuery} /> : null}</DragOverlay>
+        <DragOverlay>
+          {activeQuery ? <QueryItem query={activeQuery} isCollapsed={!isExpanded} /> : null}
+        </DragOverlay>
       </DndContext>
+
+      {notification && (
+        <InlineNotification
+          kind={notification.kind}
+          title={notification.title}
+          subtitle={notification.subtitle}
+          onClose={() => setNotification(null)}
+          hideCloseButton={false}
+          className={styles.notification}
+        />
+      )}
     </div>
   );
 }
