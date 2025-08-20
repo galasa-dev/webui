@@ -35,7 +35,7 @@ import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 
 interface CollapsibleSideBarProps {
-  handleEditQueryName: () => void;
+  handleEditQueryName: (queryName: string) => void;
 }
 
 export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleSideBarProps) {
@@ -56,6 +56,14 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     [savedQueries, defaultQuery]
   );
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     // Find the full query object that is being dragged and store it in state
@@ -71,10 +79,8 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const getSortableQueryPosition = (createdAt: string) =>
-        sortableQueries.findIndex((query) => query.createdAt === createdAt);
-      const originalPosition = getSortableQueryPosition(String(active.id));
-      const newPosition = getSortableQueryPosition(String(over.id));
+      const originalPosition = sortableQueries.findIndex((q) => q.createdAt === active.id);
+      const newPosition = sortableQueries.findIndex((q) => q.createdAt === over.id);
 
       // Ensure we're only reordering valid sortable items
       if (originalPosition === -1 || newPosition === -1) return;
@@ -84,26 +90,14 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     }
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(TouchSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  console.log('Query name from Collapsible sidebar: ', queryName);
-
   const handleAddCurrentQuery = () => {
-    // setQueryName('');
-    // handleEditQueryName();
-
     const nameToSave = queryName.trim();
     if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams);
     let finalQueryTitle = nameToSave;
 
+    // Ensure unique query name
     if (isQuerySaved(finalQueryTitle)) {
       const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
       let counter = 1;
@@ -114,6 +108,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
       }
     }
 
+    // Update the URL parameters
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, finalQueryTitle);
     const newQuery = {
       title: finalQueryTitle,
@@ -121,8 +116,13 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
       createdAt: new Date().toISOString(),
     };
 
+    // Save the new query to the localStorage
     saveQuery(newQuery);
 
+    // Focus to the edit input
+    handleEditQueryName(finalQueryTitle);
+
+    // Update the query name if it has changed
     if (finalQueryTitle !== queryName) {
       setQueryName(finalQueryTitle);
     }

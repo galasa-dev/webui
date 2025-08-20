@@ -85,4 +85,5 @@
   position: fixed;
   bottom: 5.5rem;
   right: 1rem;
+  z-index: 9999;
 }

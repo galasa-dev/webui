@@ -67,7 +67,7 @@ export default function TestRunsDetails({
     }
   };
 
-  const handleStartEditingName = () => {
+  const handleStartEditingName = (queryName: string) => {
     setEditedName(queryName);
     setIsEditingName(true);
   };
@@ -112,8 +112,6 @@ export default function TestRunsDetails({
     setQueryName(newName);
   };
 
-  console.log('Query name from TestRunsDetails: ', queryName);
-
   // Save new query or update an existing one
   const handleSaveQuery = () => {
     const nameToSave = queryName.trim();
@@ -123,6 +121,7 @@ export default function TestRunsDetails({
     const currentUrlParams = new URLSearchParams(searchParams).toString();
     const existingQuery = getQuery(nameToSave);
 
+    // If the query already exists, update it
     if (existingQuery) {
       updateQuery(existingQuery.createdAt, {
         ...existingQuery,
@@ -137,6 +136,7 @@ export default function TestRunsDetails({
       return;
     }
 
+    // If the query doesn't exist, create a new one with a unique name
     const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
     let finalQueryTitle = nameToSave;
     let counter = 1;
@@ -151,6 +151,8 @@ export default function TestRunsDetails({
       url: currentUrlParams,
       createdAt: new Date().toISOString(),
     };
+
+    // Save the new query to the localStorage
     saveQuery(newQuery);
 
     setNotification({
@@ -214,10 +216,7 @@ export default function TestRunsDetails({
                 hasIconOnly
                 renderIcon={Edit}
                 iconDescription={translations('editQueryName')}
-                onClick={() => {
-                  setEditedName(queryName);
-                  setIsEditingName(true);
-                }}
+                onClick={handleStartEditingName.bind(null, queryName)}
                 size="md"
               />
             </div>
