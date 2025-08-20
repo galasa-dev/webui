@@ -74,8 +74,6 @@ export default function TableOfScreenshots({
     // },
   ];
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<CellFor3270[]>(
     []
   );
@@ -84,27 +82,9 @@ export default function TableOfScreenshots({
 
   let screenshotsCollected: boolean = false;
 
-  function updateViewportHeight(newHeight: string) {
-    const element = document.querySelector('.tab3270_tab3270Container__scykF') as HTMLElement;
-    element.style.setProperty('--viewport-height', newHeight);
-  }
-
   const handleRowClick = (runId: string, screenshotId: string) => {
     // Navigate to the test run details page
     // router.push(`/test-runs/${runId}/${screenshotId}`);
-  };
-
-  const handlePaginationChange = ({ page, pageSize }: { page: number; pageSize: number }) => {
-    setCurrentPage(page);
-    setPageSize(pageSize);
-
-    // Manually update height due to flexbox interfering with position: sticky.
-    if (pageSize > 16) {
-      const amountToIncreaseBy = 48 * (pageSize - 16);
-      updateViewportHeight(`calc(100vh + ` + amountToIncreaseBy + `px)`);
-    } else {
-      updateViewportHeight(`100vh`);
-    }
   };
 
   const terminalnames = useMemo(() => {
@@ -115,7 +95,6 @@ export default function TableOfScreenshots({
     ];
   }, [flattenedZos3270TerminalData]);
 
-  // 1. Filter all rows based on the search term and temrinal selection
   const filteredRows = useMemo(() => {
     let result: CellFor3270[] = flattenedZos3270TerminalData;
 
@@ -135,14 +114,8 @@ export default function TableOfScreenshots({
     return result;
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
 
-  // 2. Paginate filtered rows
-  const paginatedRows = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredRows.slice(startIndex, endIndex);
-  }, [currentPage, pageSize, filteredRows]);
-
   useEffect(() => {
+    // Ensure screenshots are only collected once.
     if (!screenshotsCollected) {
       screenshotsCollected = true;
 
@@ -162,9 +135,6 @@ export default function TableOfScreenshots({
       };
 
       fetchData();
-
-      // Initial setting to 100vh for terminal image.
-      updateViewportHeight(`100vh`);
     }
   }, []);
 
@@ -174,7 +144,7 @@ export default function TableOfScreenshots({
         <DataTableSkeleton
           data-testid="loading-table-skeleton"
           columnCount={headers.length}
-          rowCount={pageSize}
+          rowCount={15}
         />
       </>
     );
@@ -182,7 +152,7 @@ export default function TableOfScreenshots({
 
   return (
     <>
-      <DataTable isSortable rows={paginatedRows} headers={headers}>
+      <DataTable isSortable rows={filteredRows} headers={headers}>
         {({
           rows,
           headers,
@@ -203,7 +173,6 @@ export default function TableOfScreenshots({
                 persistent
                 onChange={(e: any) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1);
                 }}
               />
               <Dropdown
@@ -213,7 +182,6 @@ export default function TableOfScreenshots({
                 itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
                 onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
                   setSelectedTerminal(selectedItem);
-                  setCurrentPage(1);
                 }}
                 selectedItem={selectedTerminal}
               />
@@ -228,7 +196,7 @@ export default function TableOfScreenshots({
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody>
+              <TableBody className={styles.tableBodyComponent}>
                 {rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -246,23 +214,6 @@ export default function TableOfScreenshots({
           </TableContainer>
         )}
       </DataTable>
-      <Pagination
-        backwardText={translations('pagination.backwardText')}
-        forwardText={translations('pagination.forwardText')}
-        itemsPerPageText={translations('pagination.itemsPerPageText')}
-        itemRangeText={(min: number, max: number, total: number) =>
-          `${total} ${translations('pagination.items')}`
-        }
-        pageRangeText={(current: number, total: number) =>
-          `${translations('pagination.of')} ${total} ${translations('pagination.pages')}`
-        }
-        pageNumberText={translations('pagination.pageNumberText')}
-        page={currentPage}
-        pageSize={pageSize}
-        pageSizes={[10, 20, 30, 40, 50]}
-        totalItems={filteredRows.length}
-        onChange={handlePaginationChange}
-      />
     </>
   );
 }

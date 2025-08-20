@@ -5,7 +5,7 @@
  */
 
 .tab3270Container {
-  height: 100vh;
+  height: calc(100vh - 400px);
 }
 
 .clickableRow {
@@ -14,15 +14,25 @@
 
 .tableOfScreenshotsContainer {
   width: 43%;
+  max-height: 100%;
   overflow-x: hidden;
   padding-right: 1px;
-  padding-bottom: 60px;
+  float: left;
+  color-scheme: dark;
+}
+
+/* .tableOfScreenshotsContainer {
+  max-height: 100%;
+  width: 43%;
+  padding-right: 1px;
   float: left;
 }
 
-.tableOfScreenshotsContainer:hover {
-  overflow-x: visible;
-}
+.tableBodyComponent{
+  max-height: 100%;
+  overflow: hidden;
+  color-scheme: dark;
+} */
 
 .terminalDropdownMenu {
   padding-left: 8px;
@@ -31,17 +41,16 @@
   max-width: 400px;
 }
 
-.screenshotContainer {
-  display: flex;
-  flex-direction: column;
-  min-width: 400px;
-  padding-top: 50px;
-  padding-left: 50px;
-  height: var(--viewport-height, '100vh');
+.stickToTop {
+  position: sticky;
+  top: 0;
 }
 
 .screenshot {
-  position: sticky;
+  width: 54%;
+  min-width: 400px;
   top: 90px;
+  float: right;
   align-self: stretch;
+  vertical-align: middle;
 }

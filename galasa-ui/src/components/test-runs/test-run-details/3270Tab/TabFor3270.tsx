@@ -42,9 +42,7 @@ export default function TabFor3270({
         />
       </div>
 
-      <div className={styles.screenshotContainer}>
-        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
-      </div>
+      <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
     </div>
   );
 }
