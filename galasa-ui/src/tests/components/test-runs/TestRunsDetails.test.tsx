@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
 import { DateTimeFormatProvider } from '@/contexts/DateTimeFormatContext';
 import * as Nav from 'next/navigation';
+import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
 
 let mockSearchParams = new URLSearchParams();
 const mockRouter = {
@@ -102,7 +103,9 @@ const renderWithProviders = (ui: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
       <DateTimeFormatProvider>
-        <SavedQueriesProvider>{ui}</SavedQueriesProvider>
+        <SavedQueriesProvider>
+          <TestRunsQueryParamsProvider>{ui}</TestRunsQueryParamsProvider>
+        </SavedQueriesProvider>
       </DateTimeFormatProvider>
     </QueryClientProvider>
   );
