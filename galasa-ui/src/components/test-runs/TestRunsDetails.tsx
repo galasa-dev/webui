@@ -17,7 +17,7 @@ import { InlineNotification } from '@carbon/react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import useTestRunsQueryParams from '@/hooks/useTestRunsQueryParams';
+import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 
 interface TestRunsDetailsProps {
@@ -111,6 +111,8 @@ export default function TestRunsDetails({
     // Update the local state to reflect the new name and save it to the URL
     setQueryName(newName);
   };
+
+  console.log('Query name from TestRunsDetails: ', queryName);
 
   // Save new query or update an existing one
   const handleSaveQuery = () => {

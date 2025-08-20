@@ -19,7 +19,7 @@ import { Run } from '@/generated/galasaapi';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import TestRunGraph from './graph/TestRunsGraph';
-import useTestRunsQueryParams from '@/hooks/useTestRunsQueryParams';
+import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { runStructure } from '@/utils/interfaces';
 
 interface TabConfig {

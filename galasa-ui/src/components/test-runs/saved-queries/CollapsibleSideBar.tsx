@@ -29,7 +29,7 @@ import {
 } from '@dnd-kit/core';
 import QueryItem from './QueryItem';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import useTestRunsQueryParams from '@/hooks/useTestRunsQueryParams';
+import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
@@ -92,9 +92,11 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     })
   );
 
+  console.log('Query name from Collapsible sidebar: ', queryName);
+
   const handleAddCurrentQuery = () => {
-    setQueryName('');
-    handleEditQueryName();
+    // setQueryName('');
+    // handleEditQueryName();
 
     const nameToSave = queryName.trim();
     if (!nameToSave) return;

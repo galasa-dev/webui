@@ -17,6 +17,7 @@ import ReactQueryProvider from '@/contexts/ReactQueryProvider';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { DateTimeFormatProvider } from '@/contexts/DateTimeFormatContext';
 import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
+import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,12 +39,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ThemeProvider>
               <DateTimeFormatProvider>
                 <SavedQueriesProvider>
-                  <PageHeader galasaServiceName={galasaServiceName} />
-                  <ReactQueryProvider>{children}</ReactQueryProvider>
-                  <Footer
-                    serviceHealthyPromise={getServiceHealthStatus()}
-                    clientVersionPromise={getClientApiVersion()}
-                  />
+                  <TestRunsQueryParamsProvider>
+                    <PageHeader galasaServiceName={galasaServiceName} />
+                    <ReactQueryProvider>{children}</ReactQueryProvider>
+                    <Footer
+                      serviceHealthyPromise={getServiceHealthStatus()}
+                      clientVersionPromise={getClientApiVersion()}
+                    />
+                  </TestRunsQueryParamsProvider>
                 </SavedQueriesProvider>
               </DateTimeFormatProvider>
             </ThemeProvider>
