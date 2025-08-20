@@ -13,7 +13,7 @@
     "logout": "Log out"
   },
   "LanguageSelector": {
-    "label": "Language"
+    "label": "Language:"
   },
   "ThemeSelector": {
     "label": "Theme"
@@ -238,6 +238,23 @@
     "noTags": "No tags were associated with this test run.",
     "recentRunsLink": "View recent runs of the same test...",
     "runRetriesLink": "View all attempts of this test run..."
+  },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "ScreenNumber": "Screen Number",
+    "Time": "Time",
+    "Method": "Method",
+    "searchPlaceholder": "Search",
+    "ariaLabel": "ariaLabel",
+    "pagination": {
+      "backwardText": "Previous page",
+      "forwardText": "Next page",
+      "itemsPerPageText": "Items per page:",
+      "pageNumberText": "Page Number",
+      "of": "of",
+      "items": "items",
+      "pages": "pages"
+    }
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
