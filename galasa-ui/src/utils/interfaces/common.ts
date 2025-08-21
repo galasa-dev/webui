@@ -87,3 +87,16 @@ export interface CellFor3270 {
   Time: string;
   Method: string;
 }
+
+export interface TerminalImageField {
+  row: number;
+  column: number;
+  text: string;
+  ForegroundColor: string;
+	BackgroundColor: string;
+}
+
+export interface TerminalImage {
+  id: string;
+  imageFields: TerminalImageField[];
+}

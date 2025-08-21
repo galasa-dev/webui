@@ -18,21 +18,15 @@
   overflow-x: hidden;
   padding-right: 1px;
   float: left;
-  color-scheme: dark;
 }
 
-/* .tableOfScreenshotsContainer {
-  max-height: 100%;
-  width: 43%;
-  padding-right: 1px;
-  float: left;
+.lightTheme {
+  color-scheme: light;
 }
 
-.tableBodyComponent{
-  max-height: 100%;
-  overflow: hidden;
+.darkTheme {
   color-scheme: dark;
-} */
+}
 
 .terminalDropdownMenu {
   padding-left: 8px;

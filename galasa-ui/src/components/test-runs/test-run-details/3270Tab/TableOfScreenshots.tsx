@@ -14,7 +14,6 @@ import {
   TableCell,
   TableHeader,
   DataTable,
-  Pagination,
   DataTableSkeleton,
   Dropdown,
   TableToolbarSearch,
@@ -30,7 +29,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { CellFor3270 } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
 
 interface DropdownOption {
   id: string;
@@ -50,7 +49,7 @@ export default function TableOfScreenshots({
   isLoading: boolean;
   setIsError: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setImageData: React.Dispatch<React.SetStateAction<boolean>>;
+  setImageData: React.Dispatch<React.SetStateAction<TerminalImage | undefined>>;
 }) {
   const translations = useTranslations('3270Tab');
   const router = useRouter();
@@ -77,6 +76,7 @@ export default function TableOfScreenshots({
   const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<CellFor3270[]>(
     []
   );
+  const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
 
@@ -85,6 +85,10 @@ export default function TableOfScreenshots({
   const handleRowClick = (runId: string, screenshotId: string) => {
     // Navigate to the test run details page
     // router.push(`/test-runs/${runId}/${screenshotId}`);
+
+    const newImageData: TerminalImage = allImageData.find(image => image.id === screenshotId) as TerminalImage;
+    console.log("Hello " + JSON.stringify(newImageData));
+    setImageData(newImageData);
   };
 
   const terminalnames = useMemo(() => {
@@ -123,9 +127,13 @@ export default function TableOfScreenshots({
       const fetchData = async () => {
         try {
           setFlattenedZos3270TerminalData([]);
-          setFlattenedZos3270TerminalData(
-            await get3270Screenshots(zos3270TerminalData, runId, setIsError)
+          const {newFlattenedZos3270TerminalData, newAllImageData} = await get3270Screenshots(
+            zos3270TerminalData,
+            runId,
+            setIsError
           );
+          setFlattenedZos3270TerminalData(newFlattenedZos3270TerminalData);
+          setAllImageData(newAllImageData);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching data:', error);

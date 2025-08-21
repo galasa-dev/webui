@@ -4,12 +4,17 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+// http://localhost:3000/test-runs/cdb-63d5eed2-c41a-4afb-ba9d-b70076a4f543-1755693852378-C25604?tab=overview
+// Zos3270IVT, C25604
+// Screen 1
+
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
-import { CellFor3270 } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/common';
 import pako from 'pako';
 
-const rawData: CellFor3270[] = [];
+const flattenedZos3270TerminalData: CellFor3270[] = [];
+const allImageData: TerminalImage[] = [];
 
 function splitScreenAndTerminal(input: string) {
   const parts = input.split('-');
@@ -55,18 +60,32 @@ export const get3270Screenshots = async (
           const images = resultString.images;
 
           images.forEach((image: any) => {
-            // Example image id: "term1-33"
+            // Populate terminal data for screenshot table.
             const id = image.id;
             const result = splitScreenAndTerminal(id);
             const method = 'Method A'; // TODO 3270:          Placeholder - needed from backend.
             const time = '2023-01-01 12:00:00'; // TODO 3270: Placeholder - needed from backend.
 
-            rawData.push({
+            flattenedZos3270TerminalData.push({
               id: image.id,
               Terminal: result.terminalName,
               ScreenNumber: result.screenNumber,
               Time: time,
               Method: method,
+            });
+
+            // Populate all image data for screenshot rendering.
+            const imageFields: TerminalImageField[] = image.fields.map((imageField: any) => ({
+              row: imageField.row,
+              column: imageField.column,
+              text: imageField.contents[0]?.text,
+              ForegroundColor: imageField?.foregroundColor,
+              BackgroundColor: imageField?.backgroundColor,
+            }))
+
+            allImageData.push({
+              id: image.id,
+              imageFields: imageFields,
             });
           });
         })
@@ -78,12 +97,15 @@ export const get3270Screenshots = async (
   }
 
   // Sort according to terminal, then screen number.
-  rawData.sort(function (a, b) {
+  flattenedZos3270TerminalData.sort(function (a, b) {
     if (a.Terminal === b.Terminal) {
       return a.ScreenNumber - b.ScreenNumber;
     }
     return a.Terminal > b.Terminal ? 1 : -1;
   });
 
-  return rawData;
+  const newFlattenedZos3270TerminalData = flattenedZos3270TerminalData;
+  const newAllImageData = allImageData;
+
+  return {newFlattenedZos3270TerminalData, newAllImageData};
 };
