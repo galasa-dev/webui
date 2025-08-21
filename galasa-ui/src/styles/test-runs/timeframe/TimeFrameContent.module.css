@@ -64,6 +64,10 @@
   gap: 1rem;
 }
 
+.durationInput {
+  max-width: 150px;
+}
+
 .notification {
   position: fixed;
   bottom: 5.5rem;

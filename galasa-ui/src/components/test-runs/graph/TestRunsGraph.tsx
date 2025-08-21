@@ -231,24 +231,8 @@ export default function TestRunGraph({
 
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
-    return getTimeframeText(
-      runsList,
-      isRelativeToNow,
-      durationDays,
-      durationHours,
-      durationMinutes,
-      translations,
-      formatDate
-    );
-  }, [
-    runsList,
-    translations,
-    formatDate,
-    isRelativeToNow,
-    durationDays,
-    durationHours,
-    durationMinutes,
-  ]);
+    return getTimeframeText(runsList, translations, formatDate);
+  }, [runsList, translations, formatDate]);
 
   if (isError) {
     return <p>{translations('errorLoadingGraph')}</p>;

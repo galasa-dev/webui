@@ -6,7 +6,7 @@
 
 import { ColumnDefinition } from '../interfaces';
 
-const CLIENT_API_VERSION = '0.43.0';
+const CLIENT_API_VERSION = '0.44.0';
 
 const COLORS = {
   RED: '#da1e28',
@@ -164,6 +164,9 @@ const DEFAULT_QUERY = {
   createdAt: new Date().toISOString(),
 };
 
+const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
+
+
 export {
   CLIENT_API_VERSION,
   COLORS,
@@ -188,4 +191,5 @@ export {
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
   DEFAULT_QUERY,
+  RESULTS_TABLE_PAGE_SIZES,
 };

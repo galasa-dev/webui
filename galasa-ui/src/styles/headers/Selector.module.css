@@ -54,3 +54,26 @@
 .active {
   color: var(--cds-icon-on-color);
 }
+
+.overflowMenu {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: #262626 !important;
+  color: white !important;
+  border-bottom: #525252 1px solid !important;
+}
+.overflowMenu:hover {
+  background-color: #474747 !important;
+}
+
+.overflowMenuItem {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.overflowMenuItemText {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}

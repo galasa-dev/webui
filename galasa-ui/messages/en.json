@@ -13,7 +13,7 @@
     "logout": "Log out"
   },
   "LanguageSelector": {
-    "label": "Language"
+    "tooltip": "Selected language"
   },
   "ThemeSelector": {
     "label": "Theme"
@@ -65,6 +65,11 @@
     "descriptionline2": "A token has the same access rights as the user who allocated it.",
     "deleteButtontext": "Delete {count} selected access token",
     "error": "Failed to fetch tokens from the Galasa API server"
+  },
+  "ResultsTablePageSizingSetting": {
+    "title": "Test Run Query Results",
+    "description": "Modifying this setting changes the default number of test run results which are shown on the test run table for all your queries.",
+    "defaultTestRunsLabel": "Default test run records per page of results"
   },
   "userRole": {
     "heading": "User Role",
@@ -296,8 +301,7 @@
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
-      "range": "Showing test runs submitted between {from} and {to}",
-      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
+      "range": "Showing test runs submitted between {from} and {to}"
     },
     "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible. Please adjust the table design to show the columns that you would like to see.",
     "pagination": {
@@ -334,8 +338,7 @@
       "subtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results."
     },
     "timeFrameText": {
-      "range": "Showing test runs submitted between {from} and {to}",
-      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
+      "range": "Showing test runs submitted between {from} and {to}"
     }
   },
   "TestRunsTabs": {
@@ -361,7 +364,7 @@
     "envelopeDescription": "Test runs submitted within this period will be shown in the results, subject to other filters being applied.",
     "invalidTimeFrame": "Invalid Time Frame",
     "autoCorrection": "Auto-Correction",
-    "toBeforeFromAutoAdjust": "You selected a 'From' time which is more recent than the 'To' time. This is not a valid time period. The 'To' time has been changed to be slightly more recent than your selected 'From' time.",
+    "toBeforeFromErrorMessage": "The 'From' time must be earlier than the 'To' time. Select a valid time range.",
     "toBeforeFromWarningOnly": "'From' time is set to the future. Current query will return no results.",
     "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
     "dateRangeCapped": "Date range was capped at the current time.",
