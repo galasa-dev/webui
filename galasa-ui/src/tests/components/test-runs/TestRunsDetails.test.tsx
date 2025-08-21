@@ -5,14 +5,26 @@
  */
 
 import TestRunsDetails from '@/components/test-runs/TestRunsDetails';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
+import { SavedQueriesProvider, useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { DateTimeFormatProvider } from '@/contexts/DateTimeFormatContext';
 import * as Nav from 'next/navigation';
-import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
+import {
+  TestRunsQueryParamsProvider,
+  useTestRunsQueryParams,
+} from '@/contexts/TestRunsQueryParamsContext';
+import userEvent from '@testing-library/user-event';
 
+const mockUpdateQuery = jest.fn();
+const mockGetQuery = jest.fn();
+const mockIsQuerySaved = jest.fn();
+const mockSaveQuery = jest.fn();
+const mockSetQueryName = jest.fn();
+
+let mockQueryName = 'Initial Query';
 let mockSearchParams = new URLSearchParams();
+
 const mockRouter = {
   push: jest.fn(),
   replace: jest.fn((newUrl) => {
@@ -38,11 +50,31 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => mockRouter),
 }));
 
+// Mock contexts
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   DateTimeFormatProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useDateTimeFormat: () => ({
     getResolvedTimeZone: mockGetResolvedTimeZone,
   }),
+}));
+
+jest.mock('@/contexts/SavedQueriesContext', () => ({
+  SavedQueriesProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useSavedQueries: jest.fn(() => ({
+    saveQuery: mockSaveQuery,
+    isQuerySaved: mockIsQuerySaved,
+    getQuery: mockGetQuery,
+    updateQuery: mockUpdateQuery,
+  })),
+}));
+
+jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
+  TestRunsQueryParamsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useTestRunsQueryParams: jest.fn(() => ({
+    queryName: mockQueryName,
+    setQueryName: mockSetQueryName,
+    searchParams: mockSearchParams,
+  })),
 }));
 
 // Mock other components
@@ -72,19 +104,31 @@ jest.mock('@/components/test-runs/saved-queries/CollapsibleSideBar', () => {
 
 // Mock translations
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) =>
+  useTranslations: () => (key: string, vars?: { name: string }) =>
     ({
       'TestRun.title': 'Test Run Details',
       copiedTitle: 'Copied!',
       copiedMessage: 'URL copied to clipboard.',
       errorTitle: 'Error',
       copyFailedMessage: 'Failed to copy URL.',
+      editQueryName: 'Edit query name',
+      renameFailedTitle: 'Rename Failed',
+      nameExistsError: `Query with name "${vars?.name}" already exists.`,
+      querySavedTitle: 'Query Saved',
+      querySavedMessage: `Query "${vars?.name}" has been saved.`,
+      queryUpdatedTitle: 'Query Updated',
+      queryUpdatedMessage: `Query "${vars?.name}" has been updated.`,
+      saveQuery: 'Save Query',
     })[key] || key,
 }));
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => ({
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Button: ({ children, iconDescription, ...props }: any) => (
+    <button {...props} aria-label={iconDescription}>
+      {children}
+    </button>
+  ),
   Tile: ({ children, ...props }: any) => (
     <div {...props} data-testid="tile">
       {children}
@@ -129,6 +173,19 @@ beforeAll(() => {
 beforeEach(() => {
   jest.clearAllMocks();
   mockSearchParams = new URLSearchParams();
+  mockQueryName = 'Initial Query';
+
+  (useTestRunsQueryParams as jest.Mock).mockImplementation(() => ({
+    queryName: mockQueryName,
+    setQueryName: mockSetQueryName,
+    searchParams: mockSearchParams,
+  }));
+  (useSavedQueries as jest.Mock).mockImplementation(() => ({
+    saveQuery: mockSaveQuery,
+    isQuerySaved: mockIsQuerySaved,
+    getQuery: mockGetQuery,
+    updateQuery: mockUpdateQuery,
+  }));
   (Nav.useSearchParams as jest.Mock).mockImplementation(() => mockSearchParams);
 });
 
@@ -204,6 +261,226 @@ describe('TestRunsDetails', () => {
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-error');
       expect(notification).toHaveTextContent('Error');
+    });
+  });
+
+  describe('Edit Query Name', () => {
+    test('shows the default query name when no name is provided in the URL', () => {
+      mockQueryName = 'Default Query';
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+      expect(screen.getByTestId('query-name')).toHaveTextContent('Default Query');
+    });
+
+    test('successfully enters edit mode, renames, and saves a query', async () => {
+      // Arrange
+      const user = userEvent.setup();
+      const initialQuery = { title: 'Initial Query', createdAt: '2023-01-01', url: '' };
+      // Set the old name to exist
+      mockGetQuery.mockReturnValue(initialQuery);
+      // Set the new name to be available
+      mockIsQuerySaved.mockReturnValue(false);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Act
+      // 1. Click edit button
+      const editButton = screen.getByRole('button', { name: /Edit query name/i });
+      await user.click(editButton);
+
+      // 2. Type the new name
+      const input = screen.getByTestId('query-name-input');
+      expect(input).toHaveValue('Initial Query');
+      await user.clear(input);
+      await user.type(input, 'My Renamed Query');
+
+      // 3. Save by blurring the input
+      await user.tab();
+
+      // Assert
+      expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
+      expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
+        ...initialQuery,
+        title: 'My Renamed Query',
+        url: 'queryName=My+Renamed+Query', // URL is updated with new name
+      });
+
+      expect(mockSetQueryName).toHaveBeenCalledTimes(1);
+      expect(mockSetQueryName).toHaveBeenCalledWith('My Renamed Query');
+
+      // The input should disappear
+      expect(screen.queryByTestId('query-name-input')).not.toBeInTheDocument();
+    });
+
+    test('renames an unsaved query without calling updateQuery', async () => {
+      // Arrange
+      const user = userEvent.setup();
+      mockGetQuery.mockReturnValue(null);
+      mockIsQuerySaved.mockReturnValue(false);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Act
+      await user.click(screen.getByRole('button', { name: /Edit query name/i }));
+      const input = await screen.findByTestId('query-name-input');
+      await user.clear(input);
+      await user.type(input, 'A Brand New Name');
+      await user.tab();
+
+      // Should only update local/URL state, not persistent storage
+      expect(mockUpdateQuery).not.toHaveBeenCalled();
+      expect(mockSetQueryName).toHaveBeenCalledWith('A Brand New Name');
+    });
+
+    test('revert to previous query name when the input is empty', async () => {
+      // Arrange
+      const user = userEvent.setup();
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Act
+      await user.click(screen.getByRole('button', { name: /Edit query name/i }));
+      const input = await screen.findByTestId('query-name-input');
+      await user.clear(input);
+      await user.tab();
+
+      // Assert
+      expect(screen.queryByTestId('query-name-input')).not.toBeInTheDocument();
+      expect(mockUpdateQuery).not.toHaveBeenCalled();
+      expect(mockSetQueryName).not.toHaveBeenCalled();
+      expect(screen.getByTestId('query-name')).toHaveTextContent('Initial Query');
+    });
+
+    test('shows an error notification if the new name already exists', async () => {
+      const user = userEvent.setup();
+      mockGetQuery.mockReturnValue({ title: 'Initial Query' });
+      mockIsQuerySaved.mockReturnValue(true);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /edit query name/i }));
+      const input = await screen.findByTestId('query-name-input');
+      await user.clear(input);
+      await user.type(input, 'Existing Name');
+      await user.tab();
+
+      const notification = await screen.findByTestId('notification');
+      expect(notification).toHaveClass('notification-error');
+      expect(screen.getByText('Rename Failed')).toBeInTheDocument();
+      expect(
+        screen.getByText(/Query with name "Existing Name" already exists/)
+      ).toBeInTheDocument();
+      expect(mockUpdateQuery).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Save Query', () => {
+    test('saves a new query and shows a successful notification', async () => {
+      const user = userEvent.setup();
+      mockQueryName = 'New Test Query';
+      mockSearchParams.set('queryName', 'New Test Query');
+      // It doesn't exist yet
+      mockIsQuerySaved.mockReturnValue(false);
+      mockGetQuery.mockReturnValue(null);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Act
+      await user.click(screen.getByRole('button', { name: /Save Query/i }));
+
+      // Assert
+      await waitFor(() => {
+        expect(mockSaveQuery).toHaveBeenCalledTimes(1);
+        expect(mockSaveQuery).toHaveBeenCalledWith({
+          title: 'New Test Query',
+          url: 'queryName=New+Test+Query',
+          createdAt: expect.any(String),
+        });
+      });
+
+      const notification = await screen.findByTestId('notification');
+      expect(notification).toHaveClass('notification-success');
+      expect(mockUpdateQuery).not.toHaveBeenCalled();
+    });
+
+    test('update an existing query', async () => {
+      const user = userEvent.setup();
+      mockQueryName = 'Existing Query';
+      const existingQuery = { title: 'Existing Query', createdAt: '2023-01-01', url: 'old=params' };
+      // Simulate that the query already exists
+      mockGetQuery.mockReturnValue(existingQuery);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      // Act
+      await user.click(screen.getByRole('button', { name: /Save Query/i }));
+
+      // Assert: should call update, not save
+      expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
+      expect(mockSaveQuery).not.toHaveBeenCalled();
+
+      const notification = await screen.findByTestId('notification');
+      expect(notification).toHaveClass('notification-success');
+      expect(screen.getByText('Query Updated')).toBeInTheDocument();
+    });
+
+    test('saves a new query with an incremented name if a conflict exists', async () => {
+      const user = userEvent.setup();
+      mockQueryName = 'Conflict Query';
+      mockGetQuery.mockReturnValue(null);
+      // isQuerySaved should be true for the original name, but false for the new one
+      mockIsQuerySaved.mockImplementation((name) => name === 'Conflict Query');
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /Save Query/i }));
+
+      expect(mockSaveQuery).toHaveBeenCalledTimes(1);
+      expect(mockSaveQuery).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Conflict Query (1)' })
+      );
+
+      // const notification = await screen.findByTestId('notification');
+      expect(screen.getByText('Query Saved')).toBeInTheDocument();
+      expect(screen.getByText(/Query "Conflict Query \(1\)" has been saved/)).toBeInTheDocument();
     });
   });
 });
