@@ -110,14 +110,12 @@ jest.mock('next-intl', () => ({
       copiedTitle: 'Copied!',
       copiedMessage: 'URL copied to clipboard.',
       errorTitle: 'Error',
+      successTitle: 'Success',
       copyFailedMessage: 'Failed to copy URL.',
       editQueryName: 'Edit query name',
-      renameFailedTitle: 'Rename Failed',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
-      querySavedTitle: 'Query Saved',
       querySavedMessage: `Query "${vars?.name}" has been saved.`,
-      queryUpdatedTitle: 'Query Updated',
-      queryUpdatedMessage: `Query "${vars?.name}" has been updated.`,
+      queryUpdatedMessage: 'The query has been updated successfully.',
       saveQuery: 'Save Query',
     })[key] || key,
 }));
@@ -389,7 +387,7 @@ describe('TestRunsDetails', () => {
 
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-error');
-      expect(screen.getByText('Rename Failed')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
       expect(
         screen.getByText(/Query with name "Existing Name" already exists/)
       ).toBeInTheDocument();
@@ -454,7 +452,7 @@ describe('TestRunsDetails', () => {
 
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-success');
-      expect(screen.getByText('Query Updated')).toBeInTheDocument();
+      expect(screen.getByText('The query has been updated successfully.')).toBeInTheDocument();
     });
 
     test('saves a new query with an incremented name if a conflict exists', async () => {
@@ -478,8 +476,6 @@ describe('TestRunsDetails', () => {
         expect.objectContaining({ title: 'Conflict Query (1)' })
       );
 
-      // const notification = await screen.findByTestId('notification');
-      expect(screen.getByText('Query Saved')).toBeInTheDocument();
       expect(screen.getByText(/Query "Conflict Query \(1\)" has been saved/)).toBeInTheDocument();
     });
   });
