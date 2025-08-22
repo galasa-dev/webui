@@ -43,6 +43,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   const { queryName, searchParams, setQueryName } = useTestRunsQueryParams();
   const { savedQueries, setSavedQueries, saveQuery, isQuerySaved, defaultQuery } =
     useSavedQueries();
+
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -146,7 +147,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   }, [searchTerm, sortableQueries]);
 
   return (
-    <div className={styles.container} aria-label="Saved Queries Header">
+    <div className={styles.container} aria-label={translations('savedQueriesHeaderLabel')}>
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -155,7 +156,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
       >
         <HeaderMenuButton
           className={styles.headerMenuButton}
-          aria-label="Open menu"
+          aria-label={translations('savedQueries')}
           isCollapsible
           isActive={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
@@ -164,14 +165,14 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
         <div className={styles.sidebarWrapper}>
           <div
             className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
-            aria-label="Saved Queries Sidebar"
+            aria-label={translations('savedQueriesSidebarLabel')}
           >
             <div className={styles.innerContentWrapper}>
-              <p className={styles.headerTitle}>Saved Queries</p>
+              <p className={styles.headerTitle}>{translations('savedQueries')}</p>
               <div className={styles.toolbar}>
                 <Search
-                  labelText="Search saved queries"
-                  placeholder="Search saved queries"
+                  labelText={translations('searchSavedQueries')}
+                  placeholder={translations('searchSavedQueries')}
                   size="lg"
                   value={searchTerm}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -183,7 +184,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                   kind="ghost"
                   hasIconOnly
                   renderIcon={Add}
-                  iconDescription="Add current query"
+                  iconDescription={translations('addCurrentQuery')}
                   onClick={handleAddCurrentQuery}
                   tooltipPosition="top"
                 />

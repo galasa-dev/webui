@@ -509,5 +509,14 @@
     "none": "Keine",
     "asc": "Aufsteigend",
     "desc": "Absteigend"
+  },
+  "CollapsibleSidebar": {
+    "newQuerySavedTitle": "Neue Abfrage erstellt",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert.",
+    "savedQueries": "Gespeicherte Abfragen",
+    "savedQueriesHeaderLabel": "Kopfzeile Gespeicherte Abfragen",
+    "savedQueriesSidebarLabel": "Seitenleiste Gespeicherte Abfragen",
+    "searchSavedQueries": "Gespeicherte Abfragen durchsuchen",
+    "addCurrentQuery": "Aktuelle Abfrage hinzufügen"
   }
 }

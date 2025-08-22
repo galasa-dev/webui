@@ -8,11 +8,7 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/results/TestRunsTable';
-import {
-  MAX_DISPLAYABLE_TEST_RUNS,
-  RESULTS_TABLE_COLUMNS,
-  RESULTS_TABLE_PAGE_SIZES,
-} from '@/utils/constants/common';
+import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const mockRouterPush = jest.fn();

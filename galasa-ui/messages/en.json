@@ -489,5 +489,14 @@
     "none": "None",
     "asc": "Ascending",
     "desc": "Descending"
+  },
+  "CollapsibleSidebar": {
+    "newQuerySavedTitle": "New query created",
+    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved.",
+    "savedQueries": "Saved Queries",
+    "savedQueriesHeaderLabel": "Saved Queries Header",
+    "savedQueriesSidebarLabel": "Saved Queries Sidebar",
+    "searchSavedQueries": "Search saved queries",
+    "addCurrentQuery": "Add current query"
   }
 }
