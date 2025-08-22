@@ -288,7 +288,12 @@
     "copyMessage": "Seiten-URL kopieren",
     "copiedTitle": "URL erfolgreich kopiert: ",
     "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
-    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL"
+    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL",
+    "saveQuery": "Abfrage speichern",
+    "editQueryName": "Abfragenamen bearbeiten",
+    "nameExistsError": "Eine Abfrage mit diesem Namen existiert bereits.",
+    "queryUpdatedMessage": "Die Abfrage wurde erfolgreich aktualisiert.",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert."
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -509,5 +514,14 @@
     "none": "Keine",
     "asc": "Aufsteigend",
     "desc": "Absteigend"
+  },
+  "CollapsibleSidebar": {
+    "newQuerySavedTitle": "Neue Abfrage erstellt",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert.",
+    "savedQueries": "Gespeicherte Abfragen",
+    "savedQueriesHeaderLabel": "Kopfzeile Gespeicherte Abfragen",
+    "savedQueriesSidebarLabel": "Seitenleiste Gespeicherte Abfragen",
+    "searchSavedQueries": "Gespeicherte Abfragen durchsuchen",
+    "addCurrentQuery": "Aktuelle Abfrage hinzufügen"
   }
 }

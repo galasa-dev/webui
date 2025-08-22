@@ -90,6 +90,7 @@ const TEST_RUNS_QUERY_PARAMS = {
   COLUMNS_ORDER: 'columnsOrder',
   TAB: 'tab',
   SORT_ORDER: 'sortOrder',
+  QUERY_NAME: 'queryName',
 };
 
 const SINGLE_RUN_QUERY_PARAMS = {
@@ -97,7 +98,7 @@ const SINGLE_RUN_QUERY_PARAMS = {
   LOG_LINE: 'line',
 } as const;
 
-const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results'];
+const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results', 'graph'];
 
 // Keys that are managed by the SearchCriteriaContent component
 const SEARCH_CRITERIA_KEYS = [
@@ -156,6 +157,13 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
 
+const DEFAULT_QUERY = {
+  // The URL here is the filter state, not the browser URL
+  url: '',
+  title: 'Tests ran in the last 24 hours',
+  createdAt: new Date().toISOString(),
+};
+
 const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
 
 export {
@@ -181,5 +189,6 @@ export {
   TEST_RUN_PAGE_TABS,
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
+  DEFAULT_QUERY,
   RESULTS_TABLE_PAGE_SIZES,
 };

@@ -245,7 +245,7 @@ export default function TestRunGraph({
   }
 
   return (
-    <div className={styles.resultsPageContainer}>
+    <div className={styles.graphContainer}>
       {limitExceeded && isNotificationVisible && (
         <InlineNotification
           kind="warning"

@@ -74,7 +74,7 @@ const mockTableRows: ColumnDefinition[] = [
   { id: 'status', columnName: 'Status' },
 ];
 
-describe('TableDesignContent Component', () => {
+describe('TableDesignContent', () => {
   let mockSetSelectedRowIds: jest.Mock;
   let mockSetTableRows: jest.Mock;
   let mockSetVisibleColumns: jest.Mock;

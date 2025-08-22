@@ -10,6 +10,8 @@ import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
+import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
+import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => (
@@ -105,14 +107,16 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock the useDateTimeFormat context
+const mockGetResolvedTimeZone = jest.fn(() => 'UTC');
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
   useDateTimeFormat: () => ({
     formatDate: (date: Date) => date.toLocaleString(),
-    getResolvedTimeZone: () => 'UTC',
+    getResolvedTimeZone: mockGetResolvedTimeZone,
   }),
 }));
 
 jest.mock('@/utils/constants/common', () => ({
+  ...jest.requireActual('@/utils/constants/common'),
   RESULTS_TABLE_COLUMNS: [
     { id: 'submittedAt', columnName: 'Submitted' },
     { id: 'runName', columnName: 'Test Run Name' },
@@ -206,7 +210,11 @@ const queryClient = new QueryClient({
 });
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <SavedQueriesProvider>
+      <TestRunsQueryParamsProvider>{children}</TestRunsQueryParamsProvider>
+    </SavedQueriesProvider>
+  </QueryClientProvider>
 );
 
 describe('TestRunsTabs Component', () => {
