@@ -86,7 +86,7 @@ export default function TestRunsDetails({
     if (isQuerySaved(newName)) {
       setNotification({
         kind: 'error',
-        title: translations('renameFailedTitle'),
+        title: translations('errorTitle'),
         subtitle: translations('nameExistsError', { name: newName }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
@@ -129,7 +129,7 @@ export default function TestRunsDetails({
       });
       setNotification({
         kind: 'success',
-        title: translations('queryUpdatedTitle'),
+        title: translations('successTitle'),
         subtitle: translations('queryUpdatedMessage', { name: nameToSave }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
@@ -157,7 +157,7 @@ export default function TestRunsDetails({
 
     setNotification({
       kind: 'success',
-      title: translations('querySavedTitle'),
+      title: translations('success'),
       subtitle: translations('querySavedMessage', { name: finalQueryTitle }),
     });
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);

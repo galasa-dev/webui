@@ -288,7 +288,12 @@
     "copyMessage": "Seiten-URL kopieren",
     "copiedTitle": "URL erfolgreich kopiert: ",
     "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
-    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL"
+    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL",
+    "saveQuery": "Abfrage speichern",
+    "editQueryName": "Abfragenamen bearbeiten",
+    "nameExistsError": "Eine Abfrage mit diesem Namen existiert bereits.",
+    "queryUpdatedMessage": "Die Abfrage wurde erfolgreich aktualisiert.",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert."
   },
   "TestRunSkeleton": {
     "status": "Status",

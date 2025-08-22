@@ -269,7 +269,10 @@
     "copiedMessage": "The URL for this page has been copied to the clipboard.",
     "copyFailedMessage": "Failed to copy page URL",
     "saveQuery": "Save Query",
-    "editQueryName": "Edit Query Name"
+    "editQueryName": "Edit Query Name",
+    "nameExistsError": "A query with this name already exists.",
+    "queryUpdatedMessage": "The query has been updated successfully.",
+    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved."
   },
   "TestRunSkeleton": {
     "status": "Status",
