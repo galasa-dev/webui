@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
- .testRunsPage {
-   display: flex;
-   flex-direction: column;
-   height: 100%;
-   flex: 1;
- }
+.testRunsPage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+}
 
 .testRunsContentWrapper {
   display: flex;
@@ -19,7 +19,6 @@
 .mainContent {
   width: 100%;
   padding: 5rem 4rem;
-
 }
 
 .tabsContainer {

@@ -27,7 +27,9 @@
 .sideNavCollapsed {
   overflow: hidden;
   flex-shrink: 0;
-  transition: width 0.2s ease-in-out, max-width 0.2s ease-in-out;
+  transition:
+    width 0.2s ease-in-out,
+    max-width 0.2s ease-in-out;
 }
 
 .sideNavExpanded {
@@ -44,7 +46,7 @@
 }
 
 .innerContentWrapper {
-  width: 320px; 
+  width: 320px;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -55,9 +57,8 @@
 .sideNavExpanded .innerContentWrapper {
   opacity: 1;
   pointer-events: auto;
-  transition-delay: 0.1s; 
+  transition-delay: 0.1s;
 }
-
 
 .toolbar {
   display: flex;

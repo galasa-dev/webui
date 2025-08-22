@@ -166,7 +166,6 @@ const DEFAULT_QUERY = {
 
 const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
 
-
 export {
   CLIENT_API_VERSION,
   COLORS,
