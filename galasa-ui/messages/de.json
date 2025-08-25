@@ -31,7 +31,6 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
       "is3270ScreenEnabled": "Unterstützung für das Anzeigen und Herunterladen von 3270-Terminals",
       "graph": "Testlauf-Diagramm"
     }
