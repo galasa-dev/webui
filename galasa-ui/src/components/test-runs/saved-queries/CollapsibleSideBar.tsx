@@ -33,6 +33,7 @@ import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 interface CollapsibleSideBarProps {
   handleEditQueryName: (queryName: string) => void;
@@ -113,7 +114,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, finalQueryTitle);
     const newQuery = {
       title: finalQueryTitle,
-      url: currentUrlParams.toString(),
+      url: encodeStateToUrlParam(currentUrlParams.toString()),
       createdAt: new Date().toISOString(),
     };
 

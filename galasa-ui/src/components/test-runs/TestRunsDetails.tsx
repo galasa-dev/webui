@@ -19,6 +19,7 @@ import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -104,7 +105,13 @@ export default function TestRunsDetails({
       updateQuery(queryToRename.createdAt, {
         ...queryToRename,
         title: newName,
-        url: updatedUrlParams.toString(),
+        url: encodeStateToUrlParam(updatedUrlParams.toString()),
+      });
+
+      console.log('Updated query: ', {
+        ...queryToRename,
+        title: newName,
+        url: encodeStateToUrlParam(updatedUrlParams.toString()),
       });
     }
 
@@ -125,7 +132,11 @@ export default function TestRunsDetails({
     if (existingQuery) {
       updateQuery(existingQuery.createdAt, {
         ...existingQuery,
-        url: currentUrlParams,
+        url: encodeStateToUrlParam(currentUrlParams.toString()),
+      });
+      console.log('Updated query: ', {
+        ...existingQuery,
+        url: encodeStateToUrlParam(currentUrlParams.toString()),
       });
       setNotification({
         kind: 'success',
@@ -148,9 +159,11 @@ export default function TestRunsDetails({
 
     const newQuery = {
       title: finalQueryTitle,
-      url: currentUrlParams,
+      url: encodeStateToUrlParam(currentUrlParams.toString()),
       createdAt: new Date().toISOString(),
     };
+
+    console.log('New Query: ', newQuery);
 
     // Save the new query to the localStorage
     saveQuery(newQuery);
