@@ -501,5 +501,13 @@
     "savedQueriesSidebarLabel": "Saved Queries Sidebar",
     "searchSavedQueries": "Search saved queries",
     "addCurrentQuery": "Add current query"
+  },
+  "QueryItem": {
+    "dragHandle": "Drag to reorder",
+    "dropdownLabel": "Actions",
+    "rename": "Rename",
+    "delete": "Delete",
+    "copyToClipboard": "Copy to Clipboard",
+    "setAsDefault": "Set as Default"
   }
 }

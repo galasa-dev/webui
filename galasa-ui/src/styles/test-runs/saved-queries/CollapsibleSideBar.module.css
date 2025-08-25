@@ -33,7 +33,7 @@
 }
 
 .sideNavExpanded {
-  width: 360px;
+  width: 320px;
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
