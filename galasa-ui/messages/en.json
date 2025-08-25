@@ -504,7 +504,7 @@
   },
   "QueryItem": {
     "dragHandle": "Drag to reorder",
-    "dropdownLabel": "Actions",
+    "actions": "Actions",
     "rename": "Rename",
     "delete": "Delete",
     "copyToClipboard": "Copy to Clipboard",

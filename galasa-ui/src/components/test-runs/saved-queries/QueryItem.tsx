@@ -90,19 +90,23 @@ export default function QueryItem({
         {query.title}
       </Link>
 
-      <div className={styles.cellDropdown}>
-        <OverflowMenu aria-label={translations('dropdownLabel')} renderIcon={ChevronDown} flipped>
-          {actions.map((action, index) => (
-            <OverflowMenuItem
-              key={`${query.createdAt}-${action.title}`}
-              itemText={action.title}
-              onClick={action.onClick}
-              isDelete={action.isDelete}
-              disabled={action.disabled}
-            />
-          ))}
-        </OverflowMenu>
-      </div>
+      <OverflowMenu
+        aria-label={translations('actions')}
+        iconDescription={translations('actions')}
+        className={styles.overflowMenu}
+        renderIcon={ChevronDown}
+        flipped
+      >
+        {actions.map((action) => (
+          <OverflowMenuItem
+            key={`${query.createdAt}-${action.title}`}
+            itemText={action.title}
+            onClick={action.onClick}
+            isDelete={action.isDelete}
+            disabled={action.disabled}
+          />
+        ))}
+      </OverflowMenu>
     </div>
   );
 }

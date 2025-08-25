@@ -71,10 +71,6 @@
   cursor: default;
 }
 
-.cellDropdown {
-  /* flex: 0 0 120px;
-  width: 120px; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.overflowMenu:hover {
+  background-color: var(--cds-layer-selected);
 }
