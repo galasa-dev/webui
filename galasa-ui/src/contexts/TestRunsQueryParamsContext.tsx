@@ -17,7 +17,6 @@ import {
   useRef,
 } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-
 import {
   RESULTS_TABLE_COLUMNS,
   TEST_RUNS_QUERY_PARAMS,
@@ -62,7 +61,6 @@ interface TestRunsQueryParamsProviderProps {
   children: ReactNode;
 }
 
-// Create the provider component
 export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -87,13 +85,15 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const [selectedTabIndex, setSelectedTabIndex] = useState(TABS_IDS.indexOf('results'));
   const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>([]);
   const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>([]);
-  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>({} as TimeFrameValues); // Will be set by effect
+  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>({} as TimeFrameValues);
   const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>({});
   const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
   const [queryName, setQueryName] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Effect to synchronize state with URL parameters
   useEffect(() => {
+    // Mark the URL update as in progress
     isUrlUpdateInProgress.current = true;
 
     // Tab
@@ -179,6 +179,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
   }, [searchParams, getResolvedTimeZone, defaultQuery.title, isInitialized]);
 
+  // Effect to update the URL when query parameters change
   useEffect(() => {
     if (!isInitialized) return;
 

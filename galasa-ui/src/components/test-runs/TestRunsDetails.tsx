@@ -177,7 +177,7 @@ export default function TestRunsDetails({
   };
 
   return (
-    <div id="content" className={styles.testRunsPage}>
+    <div className={styles.testRunsPage}>
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile translationKey="TestRun.title" className={styles.toolbar}>
         <div className={styles.toolbarActions}>

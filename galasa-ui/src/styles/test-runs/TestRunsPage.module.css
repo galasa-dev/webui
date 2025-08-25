@@ -6,14 +6,13 @@
 .testRunsPage {
   display: flex;
   flex-direction: column;
-  height: 100%;
   flex: 1;
 }
 
 .testRunsContentWrapper {
   display: flex;
   gap: 0.5rem;
-  height: 100%;
+  flex: 1;
 }
 
 .mainContent {
@@ -23,11 +22,6 @@
 
 .tabsContainer {
   height: 100%;
-}
-
-.tabContent {
-  display: flex;
-  flex-direction: column;
 }
 
 .titleText {
