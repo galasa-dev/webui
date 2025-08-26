@@ -51,6 +51,7 @@ interface TestRunsQueryParamsContextType {
   queryName: string;
   setQueryName: Dispatch<SetStateAction<string>>;
   searchParams: URLSearchParams;
+  isInitialized: boolean;
 }
 
 const TestRunsQueryParamsContext = createContext<TestRunsQueryParamsContextType | undefined>(
