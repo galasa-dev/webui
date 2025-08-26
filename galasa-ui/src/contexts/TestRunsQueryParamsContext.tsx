@@ -194,12 +194,16 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
 
     const params = new URLSearchParams();
 
+    // Tab
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[selectedTabIndex]);
+
+    // Query Name
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
-    console.log('State to URL: ', selectedVisibleColumns.join(','));
+    // Visible Columns
     params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
 
+    // Sort Order
     if (sortOrder.length > 0) {
       params.set(
         TEST_RUNS_QUERY_PARAMS.SORT_ORDER,
@@ -207,8 +211,10 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       );
     }
 
+    // Columns Order
     params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
+    // Timeframe
     if (timeframeValues.isRelativeToNow) {
       params.set(
         TEST_RUNS_QUERY_PARAMS.DURATION,
@@ -219,6 +225,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
     }
 
+    // Search Criteria
     Object.entries(searchCriteria).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);

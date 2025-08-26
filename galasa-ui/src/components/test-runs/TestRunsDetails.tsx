@@ -11,15 +11,15 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
-import { Button } from '@carbon/react';
+import { Button, SkeletonText, InlineNotification } from '@carbon/react';
 import { Edit, Share } from '@carbon/icons-react';
-import { InlineNotification } from '@carbon/react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import QueryName from './QueryName';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -163,8 +163,6 @@ export default function TestRunsDetails({
       createdAt: new Date().toISOString(),
     };
 
-    console.log('New Query: ', newQuery);
-
     // Save the new query to the localStorage
     saveQuery(newQuery);
 
@@ -206,36 +204,15 @@ export default function TestRunsDetails({
 
         <div className={styles.mainContent}>
           <div className={styles.queryNameContainer}>
-            <div className={styles.queryNameBlock}>
-              {isEditingName ? (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  onBlur={handleFinishEditing}
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter') {
-                      handleFinishEditing();
-                    }
-                  }}
-                  className={styles.queryNameInput}
-                  data-testid="query-name-input"
-                />
-              ) : (
-                <h3 className={styles.queryNameHeading} data-testid="query-name">
-                  {queryName}
-                </h3>
-              )}
-              <Button
-                kind="ghost"
-                hasIconOnly
-                renderIcon={Edit}
-                iconDescription={translations('editQueryName')}
-                onClick={handleStartEditingName.bind(null, queryName)}
-                size="md"
-              />
-            </div>
+            <QueryName
+              inputRef={inputRef}
+              isEditingName={isEditingName}
+              editedName={editedName}
+              setEditedName={setEditedName}
+              handleFinishEditing={handleFinishEditing}
+              handleStartEditingName={handleStartEditingName}
+              translations={translations}
+            />
 
             <Button
               kind="primary"
