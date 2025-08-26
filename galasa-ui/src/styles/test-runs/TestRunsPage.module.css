@@ -16,7 +16,8 @@
 }
 
 .mainContent {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 5rem 4rem;
 }
 
