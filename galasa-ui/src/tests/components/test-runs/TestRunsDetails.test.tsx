@@ -15,6 +15,7 @@ import {
   useTestRunsQueryParams,
 } from '@/contexts/TestRunsQueryParamsContext';
 import userEvent from '@testing-library/user-event';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 const mockUpdateQuery = jest.fn();
 const mockGetQuery = jest.fn();
@@ -306,10 +307,12 @@ describe('TestRunsDetails', () => {
 
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
+      // encode url first
+      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query');
       expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
         ...initialQuery,
         title: 'My Renamed Query',
-        url: 'queryName=My+Renamed+Query', // URL is updated with new name
+        url: encodedURL, // URL is updated with new name
       });
 
       expect(mockSetQueryName).toHaveBeenCalledTimes(1);
@@ -416,10 +419,11 @@ describe('TestRunsDetails', () => {
 
       // Assert
       await waitFor(() => {
+        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query');
         expect(mockSaveQuery).toHaveBeenCalledTimes(1);
         expect(mockSaveQuery).toHaveBeenCalledWith({
           title: 'New Test Query',
-          url: 'queryName=New+Test+Query',
+          url: encodedURL,
           createdAt: expect.any(String),
         });
       });

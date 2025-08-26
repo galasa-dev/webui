@@ -54,8 +54,8 @@ export default function TestRunsTabs({
     setColumnsOrder,
     selectedVisibleColumns,
     setSelectedVisibleColumns,
-    isInitialized,
     searchParams,
+    isInitialized,
   } = useTestRunsQueryParams();
 
   // Define the tabs with their corresponding labels, memoized to avoid unnecessary re-renders
@@ -170,7 +170,7 @@ export default function TestRunsTabs({
       return response.json() as Promise<TestRunsData>;
     },
     // Only run the query when the results tab is selected
-    enabled: ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]) && isInitialized,
+    enabled: isInitialized && ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]),
     // Only refetch when the canonical query key changes
     staleTime: Infinity,
   });
@@ -179,7 +179,7 @@ export default function TestRunsTabs({
   const sortedRuns = useMemo(() => {
     const runsToSort = runsData?.runs ? transformRunsforTable(runsData.runs) : [];
 
-    if (sortOrder.length !== 0 && runsToSort.length !== 0) {
+    if (sortOrder.length > 0 && runsToSort.length > 0) {
       return [...runsToSort].sort((runA, runB) => {
         // Sort based on the order of columns in columnsOrder (Assumption: Leftmost has higher priority)
         for (const { id } of columnsOrder) {

@@ -50,7 +50,6 @@ interface TestRunsQueryParamsContextType {
   setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
   queryName: string;
   setQueryName: Dispatch<SetStateAction<string>>;
-  isInitialized: boolean;
   searchParams: URLSearchParams;
 }
 
@@ -70,6 +69,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const { defaultQuery } = useSavedQueries();
 
   const isUrlUpdateInProgress = useRef(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const searchParams = useMemo(() => {
     const encodedQueryString = rawSearchParams.get('q');
@@ -90,39 +90,45 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>({});
   const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
   const [queryName, setQueryName] = useState('');
-  const [isInitialized, setIsInitialized] = useState(false);
 
   // Effect to synchronize state with URL parameters
   useEffect(() => {
-    // Mark the URL update as in progress
     isUrlUpdateInProgress.current = true;
 
     // Tab
     const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    setSelectedTabIndex(initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results'));
+    const newTabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
+    if (newTabIndex !== selectedTabIndex) {
+      setSelectedTabIndex(newTabIndex);
+    }
 
     // Query Name
-    setQueryName(searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title);
+    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
+    if (newQueryName !== queryName) {
+      setQueryName(newQueryName);
+    }
 
     // Visible Columns - apply default visible columns only if visible columns array aren't empty.
-    if (searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']) {
-      setSelectedVisibleColumns(
-        searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
+    const newVisibleColumns =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']
+        ? searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
           DEFAULT_VISIBLE_COLUMNS
-      );
+        : [];
+    if (newVisibleColumns.join(',') !== selectedVisibleColumns.join(',')) {
+      setSelectedVisibleColumns(newVisibleColumns);
     }
 
     // Columns Order
     const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
-    if (orderParam) {
-      const correctOrder = orderParam
-        .split(',')
-        .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
-        .filter(Boolean) as ColumnDefinition[];
-      setColumnsOrder(correctOrder);
-    } else {
-      setColumnsOrder(RESULTS_TABLE_COLUMNS);
+    const newColumnsOrder = orderParam
+      ? (orderParam
+          .split(',')
+          .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
+          .filter(Boolean) as ColumnDefinition[])
+      : RESULTS_TABLE_COLUMNS;
+    if (newColumnsOrder.map((c) => c.id).join(',') !== columnsOrder.map((c) => c.id).join(',')) {
+      setColumnsOrder(newColumnsOrder);
     }
 
     // Timeframe
@@ -150,48 +156,53 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       isRelativeToNow = true;
     }
     const timezone = getResolvedTimeZone();
-    setTimeframeValues({
+    const newTimeframeValues = {
       ...calculateSynchronizedState(fromDate, toDate, timezone),
       isRelativeToNow,
-    });
+    };
+
+    if (
+      newTimeframeValues.fromDate?.toISOString() !== timeframeValues.fromDate?.toISOString() ||
+      newTimeframeValues.toDate?.toISOString() !== timeframeValues.toDate?.toISOString() ||
+      newTimeframeValues.isRelativeToNow !== timeframeValues.isRelativeToNow
+    ) {
+      setTimeframeValues(newTimeframeValues);
+    }
 
     // Search Criteria
-    const criteria: Record<string, string> = {};
+    const newCriteria: Record<string, string> = {};
     SEARCH_CRITERIA_KEYS.forEach((key) => {
       if (searchParams.has(key)) {
-        criteria[key] = searchParams.get(key) || '';
+        newCriteria[key] = searchParams.get(key) || '';
       }
     });
-    setSearchCriteria(criteria);
-
+    if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
+      setSearchCriteria(newCriteria);
+    }
     // Sort Order
     const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
-    if (sortOrderParam) {
-      const newSortOrder = sortOrderParam.split(',').map((item) => {
-        const [id, order] = item.split(':');
-        return { id, order: order as sortOrderType };
-      });
+    const newSortOrder = sortOrderParam
+      ? sortOrderParam.split(',').map((item) => {
+          const [id, order] = item.split(':');
+          return { id, order: order as sortOrderType };
+        })
+      : [];
+    if (JSON.stringify(newSortOrder) !== JSON.stringify(sortOrder)) {
       setSortOrder(newSortOrder);
-    } else {
-      setSortOrder([]);
     }
 
     // Mark as initialized after the first sync
     if (!isInitialized) {
       setIsInitialized(true);
     }
-  }, [searchParams, getResolvedTimeZone, defaultQuery.title, isInitialized]);
+    isUrlUpdateInProgress.current = false;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, getResolvedTimeZone, defaultQuery.title]);
 
   // Effect to update the URL when query parameters change
   useEffect(() => {
-    if (!isInitialized) return;
-
-    if (isUrlUpdateInProgress.current) {
-      // Unlock the URL for future updates
-      isUrlUpdateInProgress.current = false;
-      return;
-    }
-
+    if (!isInitialized || isUrlUpdateInProgress.current) return;
     const params = new URLSearchParams();
 
     // Tab
@@ -239,13 +250,13 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     selectedVisibleColumns,
     columnsOrder,
     sortOrder,
-    isInitialized,
     pathname,
     router,
     selectedTabIndex,
     timeframeValues,
     searchCriteria,
     queryName,
+    isInitialized,
   ]);
 
   const value = {
@@ -263,8 +274,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     setColumnsOrder,
     queryName,
     setQueryName,
-    isInitialized,
     searchParams,
+    isInitialized,
   };
 
   return (

@@ -107,12 +107,6 @@ export default function TestRunsDetails({
         title: newName,
         url: encodeStateToUrlParam(updatedUrlParams.toString()),
       });
-
-      console.log('Updated query: ', {
-        ...queryToRename,
-        title: newName,
-        url: encodeStateToUrlParam(updatedUrlParams.toString()),
-      });
     }
 
     // Update the local state to reflect the new name and save it to the URL
@@ -134,10 +128,7 @@ export default function TestRunsDetails({
         ...existingQuery,
         url: encodeStateToUrlParam(currentUrlParams.toString()),
       });
-      console.log('Updated query: ', {
-        ...existingQuery,
-        url: encodeStateToUrlParam(currentUrlParams.toString()),
-      });
+
       setNotification({
         kind: 'success',
         title: translations('successTitle'),

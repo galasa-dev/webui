@@ -31,17 +31,20 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-// Mock other contexts
+
+// Mock contexts
+const mockDateTimeFormat = {
+  getResolvedTimeZone: () => 'UTC',
+};
 jest.mock('@/contexts/DateTimeFormatContext', () => ({
-  useDateTimeFormat: () => ({
-    getResolvedTimeZone: () => 'UTC',
-  }),
+  useDateTimeFormat: () => mockDateTimeFormat,
 }));
 
+const mockSavedQueries = {
+  defaultQuery: { title: 'Default Query' },
+};
 jest.mock('@/contexts/SavedQueriesContext', () => ({
-  useSavedQueries: () => ({
-    defaultQuery: { title: 'Default Query' },
-  }),
+  useSavedQueries: () => mockSavedQueries,
 }));
 
 jest.mock('next-intl', () => ({
@@ -66,13 +69,11 @@ const TestComponent = () => {
     setColumnsOrder,
     queryName,
     setQueryName,
-    isInitialized,
   } = useTestRunsQueryParams();
 
   return (
     <div>
       <p>Timeframe Values: {JSON.stringify(timeframeValues)}</p>
-      <p>Initialized: {isInitialized.toString()}</p>
       <p>TabIndex: {selectedTabIndex}</p>
       <p>TimeframeIsRelative: {timeframeValues.isRelativeToNow?.toString()}</p>
       <p>SearchCriteria: {JSON.stringify(searchCriteria)}</p>
@@ -114,7 +115,6 @@ const TestComponent = () => {
 
 describe('TestRunsQueryParamsContext', () => {
   beforeEach(() => {
-    // Reset mocks and params before each test to ensure isolation
     mockReplace.mockClear();
     mockSearchParams = new URLSearchParams();
   });
@@ -235,12 +235,36 @@ describe('TestRunsQueryParamsContext', () => {
   });
 
   describe('State Update and URL Synchronization', () => {
+    let dateSpy: jest.SpyInstance;
+    const mockNow = new Date('2024-01-01T10:00:00.000Z');
+    const OriginalDate = global.Date;
+
+    beforeEach(() => {
+      dateSpy = jest.spyOn(global, 'Date').mockImplementation((...args) => {
+        if (args.length > 0) {
+          return new OriginalDate(...args);
+        }
+        return mockNow;
+      });
+    });
+
+    afterEach(() => {
+      dateSpy.mockRestore();
+    });
+
     const waitForInitialization = async () => {
       await waitFor(() => {
-        expect(screen.getByText('Initialized: true')).toBeInTheDocument();
+        // Wait for the first URL write, which signifies the component has initialized.
+        expect(mockReplace).toHaveBeenCalled();
       });
-      // After initialization, the URL is updated once. We clear the mock for the next update assertion.
+      // After initialization, clear the mock for the actual test assertion.
       mockReplace.mockClear();
+    };
+
+    const getDecodedParams = (url: string): URLSearchParams => {
+      const search = new URLSearchParams(url.split('?')[1]);
+      const decodedQueryString = decodeStateFromUrlParam(search.get('q') || '');
+      return new URLSearchParams(decodedQueryString || '');
     };
 
     test('updates the URL when selectedTabIndex changes', async () => {
@@ -258,8 +282,8 @@ describe('TestRunsQueryParamsContext', () => {
       });
 
       const url = mockReplace.mock.calls[0][0];
-      expect(url).toContain('?q=');
-      expect(url).not.toContain(`${TEST_RUNS_QUERY_PARAMS.TAB}=`); // should be inside the 'q' param
+      const decodedQuery = getDecodedParams(url);
+      expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TAB)).toBe(TABS_IDS[1]);
     });
 
     test('updates the URL when timeframeValues change to absolute', async () => {
@@ -277,9 +301,7 @@ describe('TestRunsQueryParamsContext', () => {
       });
 
       const url = mockReplace.mock.calls[0][0];
-      const search = new URLSearchParams(url.split('?')[1]);
-      const decodedQueryString = decodeStateFromUrlParam(search.get('q') || '');
-      const decodedQuery = new URLSearchParams(decodedQueryString || '');
+      const decodedQuery = getDecodedParams(url);
 
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.FROM)).toBe('2023-01-01T00:00:00.000Z');
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TO)).toBe('2023-01-02T00:00:00.000Z');
@@ -301,9 +323,7 @@ describe('TestRunsQueryParamsContext', () => {
       });
 
       const url = mockReplace.mock.calls[0][0];
-      const search = new URLSearchParams(url.split('?')[1]);
-      const decodedQueryString = decodeStateFromUrlParam(search.get('q') || '');
-      const decodedQuery = new URLSearchParams(decodedQueryString || '');
+      const decodedQuery = getDecodedParams(url);
 
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)).toBe('runId,runName');
     });
@@ -323,9 +343,7 @@ describe('TestRunsQueryParamsContext', () => {
       });
 
       const url = mockReplace.mock.calls[0][0];
-      const search = new URLSearchParams(url.split('?')[1]);
-      const decodedQueryString = decodeStateFromUrlParam(search.get('q') || '');
-      const decodedQuery = new URLSearchParams(decodedQueryString || '');
+      const decodedQuery = getDecodedParams(url);
 
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER)).toBe(
         `${RESULTS_TABLE_COLUMNS[1].id},${RESULTS_TABLE_COLUMNS[0].id}`
