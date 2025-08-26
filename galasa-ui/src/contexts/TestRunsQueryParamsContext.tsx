@@ -33,6 +33,7 @@ import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
+import { valueMap } from '@/utils/urlStateMappers';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;
@@ -104,11 +105,13 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     // Query Name
     setQueryName(searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title);
 
-    // Visible Columns
-    setSelectedVisibleColumns(
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
-        DEFAULT_VISIBLE_COLUMNS
-    );
+    // Visible Columns - apply default visible columns only if visible columns array aren't empty.
+    if (searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']) {
+      setSelectedVisibleColumns(
+        searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
+          DEFAULT_VISIBLE_COLUMNS
+      );
+    }
 
     // Columns Order
     const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
@@ -194,9 +197,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[selectedTabIndex]);
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
-    if (selectedVisibleColumns.length > 0) {
-      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
-    }
+    console.log('State to URL: ', selectedVisibleColumns.join(','));
+    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
 
     if (sortOrder.length > 0) {
       params.set(
