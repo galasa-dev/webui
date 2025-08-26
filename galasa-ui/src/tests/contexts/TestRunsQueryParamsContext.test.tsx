@@ -31,7 +31,6 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-
 // Mock contexts
 const mockDateTimeFormat = {
   getResolvedTimeZone: () => 'UTC',
