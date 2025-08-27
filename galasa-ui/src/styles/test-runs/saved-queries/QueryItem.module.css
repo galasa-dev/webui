@@ -50,7 +50,7 @@
 
 .sideNavLink {
   text-decoration: none;
-  color: var(--cds-text-primary) !important;
+  color: var(--cds-text-primary);
   font-size: 0.875rem;
   padding-right: 1rem;
   flex-grow: 1;
@@ -65,7 +65,7 @@
 .sideNavLink:focus,
 .sideNavLink:active {
   text-decoration: none;
-  color: var(--cds-text-primary) !important;
+  color: var(--cds-text-primary);
 }
 
 .disabled {
