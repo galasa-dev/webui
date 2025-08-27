@@ -158,7 +158,7 @@ export default function TestRunsDetails({
     setNotification({
       kind: 'success',
       title: translations('success'),
-      subtitle: translations('querySavedMessage', { name: finalQueryTitle }),
+      subtitle: translations('newQuerySavedMessage', { name: finalQueryTitle }),
     });
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
