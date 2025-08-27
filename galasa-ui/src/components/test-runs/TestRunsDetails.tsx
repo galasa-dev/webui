@@ -106,6 +106,13 @@ export default function TestRunsDetails({
         title: newName,
         url: updatedUrlParams.toString(),
       });
+
+      setNotification({
+        kind: 'success',
+        title: translations('successTitle'),
+        subtitle: translations('queryUpdatedMessage'),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
 
     // Update the local state to reflect the new name and save it to the URL
@@ -127,10 +134,11 @@ export default function TestRunsDetails({
         ...existingQuery,
         url: currentUrlParams,
       });
+
       setNotification({
         kind: 'success',
         title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage', { name: nameToSave }),
+        subtitle: translations('queryUpdatedMessage'),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
       return;

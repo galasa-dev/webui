@@ -114,7 +114,7 @@ jest.mock('next-intl', () => ({
       copyFailedMessage: 'Failed to copy URL.',
       editQueryName: 'Edit query name',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
-      querySavedMessage: `Query "${vars?.name}" has been saved.`,
+      newQuerySavedMessage: `Query "${vars?.name}" has been saved.`,
       queryUpdatedMessage: 'The query has been updated successfully.',
       saveQuery: 'Save Query',
     })[key] || key,
