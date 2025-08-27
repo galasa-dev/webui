@@ -62,6 +62,10 @@ interface TestRunsQueryParamsProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Context provider for test runs query parameters.
+ * Provides state and functions to manage query parameters for test runs.
+ */
 export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
