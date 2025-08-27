@@ -77,6 +77,8 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   const handleDragEnd = (event: DragEndEvent) => {
     // Clear the active query state to remove the overlay
     setActiveQuery(null);
+
+    // active: the dragged item, over: the item being hovered over
     const { active, over } = event;
 
     if (over && active.id !== over.id) {

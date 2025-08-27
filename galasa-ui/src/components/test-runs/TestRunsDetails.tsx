@@ -182,7 +182,6 @@ export default function TestRunsDetails({
             renderIcon={Share}
             iconDescription={translations('copyMessage')}
             onClick={handleShare}
-            data-testid="share-button"
           />
         </div>
       </PageTile>
@@ -215,12 +214,9 @@ export default function TestRunsDetails({
                     }
                   }}
                   className={styles.queryNameInput}
-                  data-testid="query-name-input"
                 />
               ) : (
-                <h3 className={styles.queryNameHeading} data-testid="query-name">
-                  {queryName}
-                </h3>
+                <h3 className={styles.queryNameHeading}>{queryName}</h3>
               )}
               <Button
                 kind="ghost"
@@ -232,12 +228,7 @@ export default function TestRunsDetails({
               />
             </div>
 
-            <Button
-              kind="primary"
-              type="button"
-              onClick={handleSaveQuery}
-              data-testid="save-query-button"
-            >
+            <Button kind="primary" type="button" onClick={handleSaveQuery}>
               {translations('saveQuery')}
             </Button>
           </div>
