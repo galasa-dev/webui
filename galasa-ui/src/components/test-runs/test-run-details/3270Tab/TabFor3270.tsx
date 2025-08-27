@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-// (TODO: Delete me) Test run with 3270 terminal example: CEMTManagerIVT http://localhost:3000/test-runs/cdb-20ca574c-40cb-435e-8741-deec9097e4e2-1754114441408-C25051?tab=overview
-
 'use client';
 import React, { useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
@@ -44,7 +42,9 @@ export default function TabFor3270({
   }
 
   return (
-    <div className={`${styles.tab3270Container} ${theme === "light" ? styles.lightTheme : styles.darkTheme}`}>
+    <div
+      className={`${styles.tab3270Container} ${theme === 'light' ? styles.lightTheme : styles.darkTheme}`}
+    >
       <div className={styles.tableOfScreenshotsContainer}>
         <TableOfScreenshots
           runId={runId}

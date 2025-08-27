@@ -48,3 +48,10 @@
   align-self: stretch;
   vertical-align: middle;
 }
+
+/* .dataTableContainer {
+  width: 43%;
+  max-height: 100%;
+  overflow-y: auto;
+  float: left;
+} */

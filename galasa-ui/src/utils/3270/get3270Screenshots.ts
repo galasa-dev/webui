@@ -13,11 +13,15 @@ import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
 import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/common';
 import pako from 'pako';
 
-const flattenedZos3270TerminalData: CellFor3270[] = [];
-const allImageData: TerminalImage[] = [];
+export const flattenedZos3270TerminalData: CellFor3270[] = [];
+export const allImageData: TerminalImage[] = [];
 
-function splitScreenAndTerminal(input: string) {
+export function splitScreenAndTerminal(input: string) {
   const parts = input.split('-');
+
+  if (parts.length < 2 || !Number.isInteger(parseInt(parts[parts.length - 1]))) {
+    throw new Error('Invalid terminal ID or screen number');
+  }
 
   const screenNumber = parseInt(parts[parts.length - 1], 10);
 
@@ -30,73 +34,79 @@ function splitScreenAndTerminal(input: string) {
   };
 }
 
-export const get3270Screenshots = async (
-  zos3270TerminalData: TreeNodeData[],
-  runId: string,
-  setIsError: React.Dispatch<React.SetStateAction<boolean>>
-) => {
+function unzipBase64(artifactData: {
+  contentType: string;
+  data: string;
+  size: number;
+  base64: string;
+}) {
+  // 1. Convert the base64 string to a Uint8Array.
+  const gzippedBinaryString = atob(artifactData.base64);
+
+  const gzippedUint8Array = new Uint8Array(gzippedBinaryString.length);
+
+  for (let i = 0; i < gzippedBinaryString.length; i++) {
+    gzippedUint8Array[i] = gzippedBinaryString.charCodeAt(i);
+  }
+
+  // 2. Decompress the Uint8Array using pako.
+  const decompressedUint8Array = pako.inflate(gzippedUint8Array);
+
+  // 3. Convert the decompressed Uint8Array back to a string.
+  return JSON.parse(new TextDecoder().decode(decompressedUint8Array));
+}
+
+export function populateFlattenedZos3270TerminalDataAndAllImageData(images: any[]): void {
+  images.forEach((image: any) => {
+    if (!image.id || !image.fields) {
+      throw new Error('Invalid image data');
+    }
+
+    // Populate terminal data for screenshot table.
+    const id = image.id;
+    const result = splitScreenAndTerminal(id);
+
+    flattenedZos3270TerminalData.push({
+      id: image.id,
+      Terminal: result.terminalName,
+      ScreenNumber: result.screenNumber,
+    });
+
+    // Populate all image data for screenshot rendering.
+    const imageFields: TerminalImageField[] = image.fields
+      // Filter out any image fields that are missing a row or column.
+      .filter((imageField: any) => imageField.row != null && imageField.column != null)
+      .map((imageField: any) => ({
+        row: imageField.row,
+        column: imageField.column,
+        text: imageField.contents[0]?.text ?? '',
+      }));
+
+    allImageData.push({
+      id: image.id,
+      imageFields: imageFields,
+    });
+  });
+}
+
+export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], runId: string) => {
   for (var terminal of zos3270TerminalData) {
     const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
       .filter((node) => (node as FileNode).isFile)
       .map((node) => node as FileNode);
 
     for (var file of zippedFilesContainingImageJSON) {
-      await downloadArtifactFromServer(runId, file.url)
-        .then((artifactData) => {
-          // Unzip the content
-          // 1. Convert the base64 string to a Uint8Array.
-          const gzippedBinaryString = atob(artifactData.base64);
-          const gzippedUint8Array = new Uint8Array(gzippedBinaryString.length);
-          for (let i = 0; i < gzippedBinaryString.length; i++) {
-            gzippedUint8Array[i] = gzippedBinaryString.charCodeAt(i);
-          }
+      await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
+        // Unzip the content
+        const images = unzipBase64(artifactData).images;
 
-          // 2. Decompress the Uint8Array using pako.
-          const decompressedUint8Array = pako.inflate(gzippedUint8Array);
-
-          // 3. Convert the decompressed Uint8Array back to a string.
-          const resultString: any = JSON.parse(new TextDecoder().decode(decompressedUint8Array));
-
-          const images = resultString.images;
-
-          images.forEach((image: any) => {
-            // Populate terminal data for screenshot table.
-            const id = image.id;
-            const result = splitScreenAndTerminal(id);
-            const method = 'Method A'; // TODO 3270:          Placeholder - needed from backend.
-            const time = '2023-01-01 12:00:00'; // TODO 3270: Placeholder - needed from backend.
-
-            flattenedZos3270TerminalData.push({
-              id: image.id,
-              Terminal: result.terminalName,
-              ScreenNumber: result.screenNumber,
-              Time: time,
-              Method: method,
-            });
-
-            // Populate all image data for screenshot rendering.
-            const imageFields: TerminalImageField[] = image.fields.map((imageField: any) => ({
-              row: imageField.row,
-              column: imageField.column,
-              text: imageField.contents[0]?.text,
-              ForegroundColor: imageField?.foregroundColor,
-              BackgroundColor: imageField?.backgroundColor,
-            }))
-
-            allImageData.push({
-              id: image.id,
-              imageFields: imageFields,
-            });
-          });
-        })
-        .catch((error) => {
-          console.error('Error downloading artifact: ', error);
-          setIsError(true); // Add this line to set the error state
-        });
+        // Populate termial table data as well as all image data.
+        populateFlattenedZos3270TerminalDataAndAllImageData(images);
+      });
     }
   }
 
-  // Sort according to terminal, then screen number.
+  // Sort terminal data according to terminal name, then screen number descending.
   flattenedZos3270TerminalData.sort(function (a, b) {
     if (a.Terminal === b.Terminal) {
       return a.ScreenNumber - b.ScreenNumber;
@@ -104,8 +114,9 @@ export const get3270Screenshots = async (
     return a.Terminal > b.Terminal ? 1 : -1;
   });
 
+  // Rename variables for returning to avoid confusion in TableOfScreenshots.tsx.
   const newFlattenedZos3270TerminalData = flattenedZos3270TerminalData;
   const newAllImageData = allImageData;
 
-  return {newFlattenedZos3270TerminalData, newAllImageData};
+  return { newFlattenedZos3270TerminalData, newAllImageData };
 };

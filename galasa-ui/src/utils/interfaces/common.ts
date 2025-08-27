@@ -84,16 +84,12 @@ export interface CellFor3270 {
   id: string;
   Terminal: string;
   ScreenNumber: number;
-  Time: string;
-  Method: string;
 }
 
 export interface TerminalImageField {
   row: number;
   column: number;
   text: string;
-  ForegroundColor: string;
-	BackgroundColor: string;
 }
 
 export interface TerminalImage {
