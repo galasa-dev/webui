@@ -13,7 +13,7 @@
 }
 
 .sideNavItem.collapsed {
-  display: none !important;
+  display: none;
 }
 
 .dragHandle,

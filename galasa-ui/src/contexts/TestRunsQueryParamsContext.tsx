@@ -17,6 +17,7 @@ import {
   useRef,
 } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+
 import {
   RESULTS_TABLE_COLUMNS,
   TEST_RUNS_QUERY_PARAMS,
@@ -50,8 +51,8 @@ interface TestRunsQueryParamsContextType {
   setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
   queryName: string;
   setQueryName: Dispatch<SetStateAction<string>>;
-  searchParams: URLSearchParams;
   isInitialized: boolean;
+  searchParams: URLSearchParams;
 }
 
 const TestRunsQueryParamsContext = createContext<TestRunsQueryParamsContextType | undefined>(
@@ -73,9 +74,11 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const { getResolvedTimeZone } = useDateTimeFormat();
   const { defaultQuery } = useSavedQueries();
 
+  // Track if a URL update is in progress
   const isUrlUpdateInProgress = useRef(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Decode the search params from the URL every time the searchParams change
   const searchParams = useMemo(() => {
     const encodedQueryString = rawSearchParams.get('q');
     if (encodedQueryString) {
@@ -144,7 +147,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     let toDate: Date,
       fromDate: Date,
       isRelativeToNow = false;
-
     if (durationParam) {
       const [days, hours, minutes] = durationParam.split(',').map(Number);
       toDate = new Date();
@@ -160,6 +162,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       fromDate = new Date(toDate.getTime() - DAY_MS);
       isRelativeToNow = true;
     }
+
     const timezone = getResolvedTimeZone();
     const newTimeframeValues = {
       ...calculateSynchronizedState(fromDate, toDate, timezone),
@@ -255,15 +258,16 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     selectedVisibleColumns,
     columnsOrder,
     sortOrder,
+    isInitialized,
     pathname,
     router,
     selectedTabIndex,
     timeframeValues,
     searchCriteria,
     queryName,
-    isInitialized,
   ]);
 
+  // The value to be passed to the context consumers
   const value = {
     selectedTabIndex,
     setSelectedTabIndex,

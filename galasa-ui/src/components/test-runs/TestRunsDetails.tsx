@@ -11,7 +11,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
-import { Button, SkeletonText, InlineNotification } from '@carbon/react';
+import { Button, InlineNotification } from '@carbon/react';
 import { Edit, Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
@@ -148,7 +148,7 @@ export default function TestRunsDetails({
     }
 
     // If the query doesn't exist, create a new one with a unique name
-    const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
+    const baseName = nameToSave.split('(')[0].trim();
     let finalQueryTitle = nameToSave;
     let counter = 1;
 
@@ -169,7 +169,7 @@ export default function TestRunsDetails({
     setNotification({
       kind: 'success',
       title: translations('success'),
-      subtitle: translations('querySavedMessage', { name: finalQueryTitle }),
+      subtitle: translations('newQuerySavedMessage', { name: finalQueryTitle }),
     });
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
@@ -190,7 +190,6 @@ export default function TestRunsDetails({
             renderIcon={Share}
             iconDescription={translations('copyMessage')}
             onClick={handleShare}
-            data-testid="share-button"
           />
         </div>
       </PageTile>
@@ -223,7 +222,6 @@ export default function TestRunsDetails({
               kind="primary"
               type="button"
               onClick={handleSaveQuery}
-              data-testid="save-query-button"
               disabled={isSaveQueryDisabled}
             >
               {translations('saveQuery')}

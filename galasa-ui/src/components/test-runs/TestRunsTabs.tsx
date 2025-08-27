@@ -54,8 +54,8 @@ export default function TestRunsTabs({
     setColumnsOrder,
     selectedVisibleColumns,
     setSelectedVisibleColumns,
-    searchParams,
     isInitialized,
+    searchParams,
   } = useTestRunsQueryParams();
 
   // Define the tabs with their corresponding labels, memoized to avoid unnecessary re-renders

@@ -301,7 +301,6 @@ describe('TestRunsQueryParamsContext', () => {
 
       const url = mockReplace.mock.calls[0][0];
       const decodedQuery = getDecodedParams(url);
-
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.FROM)).toBe('2023-01-01T00:00:00.000Z');
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TO)).toBe('2023-01-02T00:00:00.000Z');
       expect(decodedQuery.has(TEST_RUNS_QUERY_PARAMS.DURATION)).toBe(false);
@@ -323,7 +322,6 @@ describe('TestRunsQueryParamsContext', () => {
 
       const url = mockReplace.mock.calls[0][0];
       const decodedQuery = getDecodedParams(url);
-
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)).toBe('runId,runName');
     });
 
@@ -343,7 +341,6 @@ describe('TestRunsQueryParamsContext', () => {
 
       const url = mockReplace.mock.calls[0][0];
       const decodedQuery = getDecodedParams(url);
-
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER)).toBe(
         `${RESULTS_TABLE_COLUMNS[1].id},${RESULTS_TABLE_COLUMNS[0].id}`
       );
