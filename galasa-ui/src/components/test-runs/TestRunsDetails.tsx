@@ -42,6 +42,8 @@ export default function TestRunsDetails({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const activeQuery = getQuery(queryName);
+
   // Focus and select the input when editing
   useEffect(() => {
     if (isEditingName) {
@@ -169,6 +171,11 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
+  const isSaveQueryDisabled = activeQuery?.url === encodeStateToUrlParam(searchParams.toString());
+
+  console.log('Active query URL: ', activeQuery?.url);
+  console.log('Current url: ', encodeStateToUrlParam(searchParams.toString()));
+
   return (
     <div className={styles.testRunsPage}>
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
@@ -214,6 +221,7 @@ export default function TestRunsDetails({
               type="button"
               onClick={handleSaveQuery}
               data-testid="save-query-button"
+              disabled={isSaveQueryDisabled}
             >
               {translations('saveQuery')}
             </Button>
