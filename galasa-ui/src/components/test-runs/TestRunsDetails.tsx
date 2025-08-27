@@ -7,12 +7,12 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
 import { Button, InlineNotification } from '@carbon/react';
-import { Edit, Share } from '@carbon/icons-react';
+import { Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
@@ -174,10 +174,8 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
-  const isSaveQueryDisabled = useMemo(
-    () => activeQuery?.url === encodeStateToUrlParam(searchParams.toString()),
-    [searchParams, activeQuery]
-  );
+  const isSaveQueryDisabled =
+    activeQuery?.url === encodeStateToUrlParam(searchParams.toString()) || activeQuery?.url === '';
 
   return (
     <div className={styles.testRunsPage}>
