@@ -52,7 +52,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   // Find the default query based on metadata.
   const defaultQuery =
     savedQueries.find((query) => query.createdAt === metaData.defaultQueryId) || savedQueries[0];
-  console.log('default query: ', defaultQuery);
 
   /**
    * Save a new query to the list of saved queries.

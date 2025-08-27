@@ -110,12 +110,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
 
     // Query Name
     const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
-    console.log(
-      'new query name from the URL: ',
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME)
-    );
-    console.log('default query name: ', defaultQuery.title);
-    console.log('new query name: ', newQueryName);
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);
     }
@@ -220,7 +214,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[selectedTabIndex]);
 
     // Query Name
-    console.log('Query name to set to params: ', queryName);
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
     // Visible Columns
