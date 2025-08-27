@@ -137,7 +137,7 @@ export default function TestRunsDetails({
     }
 
     // If the query doesn't exist, create a new one with a unique name
-    const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
+    const baseName = nameToSave.split('(')[0].trim();
     let finalQueryTitle = nameToSave;
     let counter = 1;
 

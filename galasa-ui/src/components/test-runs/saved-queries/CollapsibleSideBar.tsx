@@ -100,7 +100,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
     // Ensure unique query name
     if (isQuerySaved(finalQueryTitle)) {
-      const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
+      const baseName = nameToSave.split('(')[0].trim();
       let counter = 1;
 
       while (isQuerySaved(finalQueryTitle)) {
