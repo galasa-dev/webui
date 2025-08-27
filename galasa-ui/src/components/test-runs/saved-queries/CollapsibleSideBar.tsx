@@ -66,7 +66,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   );
 
   const handleDragStart = (event: DragStartEvent) => {
+    // Get the dragged query item
     const { active } = event;
+
     // Find the full query object that is being dragged and store it in state
     const currentQuery = savedQueries.find((q) => q.createdAt === active.id);
     if (currentQuery) {

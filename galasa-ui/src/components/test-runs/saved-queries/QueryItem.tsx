@@ -18,6 +18,8 @@ interface QueryItemProps {
   isCollapsed?: boolean;
 }
 
+const ICON_SIZE = 18;
+
 export default function QueryItem({
   query,
   disabled = false,
@@ -44,9 +46,9 @@ export default function QueryItem({
       className={`${styles.sideNavItem} ${disabled ? styles.disabled : ''} ${isCollapsed ? styles.collapsed : ''}`}
     >
       {isDefault ? (
-        <StarFilled size={18} className={styles.starIcon} />
+        <StarFilled size={ICON_SIZE} className={styles.starIcon} />
       ) : (
-        <Draggable size={18} className={styles.dragHandle} {...attributes} {...listeners} />
+        <Draggable size={ICON_SIZE} className={styles.dragHandle} {...attributes} {...listeners} />
       )}
       <Link href={`?q=${query.url}`} className={styles.sideNavLink}>
         {query.title}
