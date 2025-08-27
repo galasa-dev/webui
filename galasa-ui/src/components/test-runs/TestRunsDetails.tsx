@@ -78,6 +78,9 @@ export default function TestRunsDetails({
     const newName = editedName.trim();
     const oldName = queryName;
 
+    console.log('new Name: ', newName);
+    console.log('old name: ', oldName);
+
     // Do nothing if the name is empty or unchanged.
     if (!newName || newName === oldName) {
       return;
@@ -102,6 +105,7 @@ export default function TestRunsDetails({
       const updatedUrlParams = new URLSearchParams(searchParams);
       updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, newName);
 
+      console.log('Updated URL Parmas for : ', queryToRename.createdAt, ' ', updatedUrlParams);
       updateQuery(queryToRename.createdAt, {
         ...queryToRename,
         title: newName,

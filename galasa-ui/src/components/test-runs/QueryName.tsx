@@ -33,6 +33,7 @@ export default function QueryName({
   translations,
 }: QueryNameProps) {
   const { queryName } = useTestRunsQueryParams();
+  console.log('Query Name: ', queryName);
   return (
     <div className={styles.queryNameBlock}>
       <div className={styles.queryNameBlock}>
