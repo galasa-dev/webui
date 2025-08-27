@@ -54,12 +54,9 @@ export default function QueryName({
                   }
                 }}
                 className={styles.queryNameInput}
-                data-testid="query-name-input"
               />
             ) : (
-              <h3 className={styles.queryNameHeading} data-testid="query-name">
-                {queryName}
-              </h3>
+              <h3 className={styles.queryNameHeading}>{queryName}</h3>
             )}
             <Button
               kind="ghost"
