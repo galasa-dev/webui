@@ -7,7 +7,7 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
@@ -109,6 +109,13 @@ export default function TestRunsDetails({
         title: newName,
         url: encodeStateToUrlParam(updatedUrlParams.toString()),
       });
+
+      setNotification({
+        kind: 'success',
+        title: translations('successTitle'),
+        subtitle: translations('queryUpdatedMessage'),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
 
     // Update the local state to reflect the new name and save it to the URL
@@ -134,7 +141,7 @@ export default function TestRunsDetails({
       setNotification({
         kind: 'success',
         title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage', { name: nameToSave }),
+        subtitle: translations('queryUpdatedMessage'),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
       return;
@@ -167,7 +174,10 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
-  const isSaveQueryDisabled = activeQuery?.url === encodeStateToUrlParam(searchParams.toString());
+  const isSaveQueryDisabled = useMemo(
+    () => activeQuery?.url === encodeStateToUrlParam(searchParams.toString()),
+    [searchParams, activeQuery]
+  );
 
   return (
     <div className={styles.testRunsPage}>
