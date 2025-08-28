@@ -41,6 +41,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.5rem;
+  height: 50%;
 }
 
 .nowDescription {
