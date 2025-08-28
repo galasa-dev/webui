@@ -1,0 +1,49 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+.tab3270Container {
+  height: calc(100vh - 400px);
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.tableOfScreenshotsContainer {
+  width: 43%;
+  overflow-x: hidden;
+  padding-right: 1px;
+  float: left;
+}
+
+.innerScreenshotTable {
+  max-height: calc(100vh - 450px);
+  overflow-y: auto;
+}
+
+.lightTheme {
+  color-scheme: light;
+}
+
+.darkTheme {
+  color-scheme: dark;
+}
+
+.terminalDropdownMenu {
+  padding-left: 8px;
+  width: max-content;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.screenshot {
+  width: 54%;
+  min-width: 400px;
+  top: 90px;
+  float: right;
+  align-self: stretch;
+  vertical-align: middle;
+}
