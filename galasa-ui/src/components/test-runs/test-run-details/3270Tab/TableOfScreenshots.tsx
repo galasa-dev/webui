@@ -72,7 +72,6 @@ export default function TableOfScreenshots({
   let screenshotsCollected: boolean = false;
 
   const handleRowClick = (runId: string, screenshotId: string) => {
-    console.log("HELLO4");
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === screenshotId
     ) as TerminalImage;
@@ -88,8 +87,6 @@ export default function TableOfScreenshots({
   }, [flattenedZos3270TerminalData]);
 
   const filteredRows = useMemo(() => {
-    console.log("HELLO" + JSON.stringify(flattenedZos3270TerminalData));
-
     let result: CellFor3270[] = flattenedZos3270TerminalData;
 
     if (searchTerm) {
@@ -122,7 +119,6 @@ export default function TableOfScreenshots({
             zos3270TerminalData,
             runId
           );
-          console.log("HELLO1" + JSON.stringify(newFlattenedZos3270TerminalData) + " " + JSON.stringify(newAllImageData));
           setFlattenedZos3270TerminalData(newFlattenedZos3270TerminalData);
           setAllImageData(newAllImageData);
           setIsLoading(false);

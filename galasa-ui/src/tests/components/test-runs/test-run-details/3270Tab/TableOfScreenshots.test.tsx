@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React  from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
+import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
 import {
@@ -15,25 +15,24 @@ import {
 } from '@/utils/3270/get3270Screenshots';
 import userEvent from '@testing-library/user-event';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
-import { TreeNodeData } from '@/utils/functions/artifacts';
 import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {
-        "Terminal": "Terminal",
-        "ScreenNumber": "Screen Number",
-        "Time": "Time",
-        "Method": "Method",
-        "searchPlaceholder": "Search",
-        "ariaLabel": "ariaLabel",
-        "pagination.backwardText": "Previous page",
-        "pagination.forwardText": "Next page",
-        "pagination.itemsPerPageText": "Items per page:",
-        "pagination.pageNumberText": "Page Number",
-        "pagination.of": "of",
-        "pagination.items": "items",
-        "pagination.pages": "pages"
+      Terminal: 'Terminal',
+      ScreenNumber: 'Screen Number',
+      Time: 'Time',
+      Method: 'Method',
+      searchPlaceholder: 'Search',
+      ariaLabel: 'ariaLabel',
+      'pagination.backwardText': 'Previous page',
+      'pagination.forwardText': 'Next page',
+      'pagination.itemsPerPageText': 'Items per page:',
+      'pagination.pageNumberText': 'Page Number',
+      'pagination.of': 'of',
+      'pagination.items': 'items',
+      'pagination.pages': 'pages',
     };
 
     let text = translations[key] || key;
@@ -487,6 +486,7 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
   });
 
   test('should handle images with an empty fields array', () => {
+    // Act
     const emptyFieldsImage = [
       {
         id: 'image-4',
@@ -495,6 +495,8 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
     ];
 
     populateFlattenedZos3270TerminalDataAndAllImageData(emptyFieldsImage);
+
+    // Assert
 
     // The function should still push a valid object with an empty imageFields array.
     expect(allImageData).toEqual([
@@ -515,6 +517,7 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
   });
 
   test('should filter out empty row and column fields within image fields', () => {
+    // Act
     const mockImagesWithoutRowAndColumn: any = [
       {
         sequence: 1,
@@ -545,7 +548,7 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
 
     populateFlattenedZos3270TerminalDataAndAllImageData(mockImagesWithoutRowAndColumn);
 
-    // The function should still push the valid imageFields.
+    // Assert
     expect(allImageData).toEqual([
       {
         id: 'Terminal_Test-1',
@@ -555,32 +558,17 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
   });
 
   test('correctly populates flattenedZos3270TerminalData and allImageData', () => {
+    // Act
     populateFlattenedZos3270TerminalDataAndAllImageData(mockImages);
 
+    // Assert
     expect(flattenedZos3270TerminalData).toEqual(mockCorrectFlattenedZos3270TerminalData);
     expect(allImageData).toEqual(mockCorrectAllImageData);
   });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const defaultProps = {
-  zos3270TerminalData: [], 
+  zos3270TerminalData: [],
   runId: 'testRunId',
   setIsError: jest.fn(),
 };
@@ -602,35 +590,45 @@ type MockData = {
 
 const emptyMockData: MockData = {
   newFlattenedZos3270TerminalData: [{ id: '', Terminal: '', ScreenNumber: 0 }],
-  newAllImageData: [{ id: '', imageFields: [] }]
+  newAllImageData: [{ id: '', imageFields: [] }],
 };
 
 const someMockData: MockData = {
-  newFlattenedZos3270TerminalData: [{ id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 }],
-  newAllImageData: [{ id: 'IYK2ZNB5_1-101', imageFields: [{row:0, column:0, text:'Test'}] }]
+  newFlattenedZos3270TerminalData: [
+    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 },
+  ],
+  newAllImageData: [{ id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] }],
 };
 
 const mockData: MockData = {
-  newFlattenedZos3270TerminalData: [{ id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 }, { id: 'IYK2ZNB5_2-101', Terminal: 'IYK2ZNB5_2', ScreenNumber: 1 }],
-  newAllImageData: [{ id: 'IYK2ZNB5_1-101', imageFields: [{row:0, column:0, text:'Test'}]}, { id: 'IYK2ZNB5_2-101', imageFields: [{row:0, column:0, text:'Test'}] }]
-
-  
+  newFlattenedZos3270TerminalData: [
+    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 },
+    { id: 'IYK2ZNB5_2-101', Terminal: 'IYK2ZNB5_2', ScreenNumber: 1 },
+  ],
+  newAllImageData: [
+    { id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] },
+    { id: 'IYK2ZNB5_2-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] },
+  ],
 };
 
 describe('TableOfScreenshots', () => {
-
   test('shows loading state when isLoading is true', () => {
     // Act
     mockGet3270Screenshots.mockResolvedValue(emptyMockData);
 
     render(
-      <TableOfScreenshots isLoading={true} setIsLoading={jest.fn()} setImageData={jest.fn()} {...defaultProps} />
+      <TableOfScreenshots
+        isLoading={true}
+        setIsLoading={jest.fn()}
+        setImageData={jest.fn()}
+        {...defaultProps}
+      />
     );
 
-    // Assert: Check if the loading state is displayed
+    // Assert
     expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
   });
-  
+
   test('fetches data then sets isLoading to false', async () => {
     // Act
     const setIsLoading = jest.fn();
@@ -639,7 +637,12 @@ describe('TableOfScreenshots', () => {
 
     await act(async () => {
       render(
-        <TableOfScreenshots isLoading={true} setIsLoading={setIsLoading} setImageData={jest.fn()} {...defaultProps} />
+        <TableOfScreenshots
+          isLoading={true}
+          setIsLoading={setIsLoading}
+          setImageData={jest.fn()}
+          {...defaultProps}
+        />
       );
     });
 
@@ -648,7 +651,8 @@ describe('TableOfScreenshots', () => {
     expect(setIsLoading).toHaveBeenCalledWith(false);
   });
 
-  test('rowClick updates imageData on click', async () => { 
+  test('rowClick updates imageData on click', async () => {
+    // Act
     const setImageData = jest.fn();
 
     mockGet3270Screenshots.mockResolvedValue(someMockData);
@@ -657,63 +661,69 @@ describe('TableOfScreenshots', () => {
 
     await act(async () => {
       render(
-        <TableOfScreenshots isLoading={false} setIsLoading={jest.fn()} setImageData={setImageData} {...defaultProps} />
+        <TableOfScreenshots
+          isLoading={false}
+          setIsLoading={jest.fn()}
+          setImageData={setImageData}
+          {...defaultProps}
+        />
       );
     });
 
-    const rowClickElement = await screen.findByTestId("table-row");
+    const rowClickElement = await screen.findByTestId('table-row');
 
     await user.click(rowClickElement);
 
-    expect(setImageData).toHaveBeenCalledWith({"id": "IYK2ZNB5_1-101", "imageFields": [{"column": 0, "row": 0, "text": "Test"}]});
+    // Assert
+    expect(setImageData).toHaveBeenCalledWith({
+      id: 'IYK2ZNB5_1-101',
+      imageFields: [{ column: 0, row: 0, text: 'Test' }],
+    });
   });
 
-
-  test('renders search input and updates filtered rows', async () => { 
-    // const user = userEvent.setup();
-
+  test('renders search input and updates filtered rows', async () => {
+    // Act
     mockGet3270Screenshots.mockResolvedValue(mockData);
 
     await act(async () => {
       render(
-        <TableOfScreenshots isLoading={false} setIsLoading={jest.fn()} setImageData={jest.fn()} {...defaultProps} />
+        <TableOfScreenshots
+          isLoading={false}
+          setIsLoading={jest.fn()}
+          setImageData={jest.fn()}
+          {...defaultProps}
+        />
       );
     });
 
-    // const searchInput = await screen.findByRole('searchbox');
-    const searchInputField = await screen.findByTestId('search-input');
+    await userEvent.type(screen.getByTestId('search-input'), 'IYK2ZNB5_1');
 
-    await userEvent.type(screen.getByTestId('search-input'), 'IYK2ZNB5_1')
-
-    screen.debug();
-    
-    expect(screen.getByTestId('search-input')).toHaveValue('IYK2ZNB5_1')
+    // Assert
+    expect(screen.getByTestId('search-input')).toHaveValue('IYK2ZNB5_1');
 
     expect(await screen.findByText('IYK2ZNB5_1')).toBeInTheDocument();
     expect(screen.queryByText('IYK2ZNB5_2')).not.toBeInTheDocument();
-
   });
 
+  test('renders dropdown for terminal selection', async () => {
+    // Act
+    mockGet3270Screenshots.mockResolvedValue(mockData);
 
+    await act(async () => {
+      render(
+        <TableOfScreenshots
+          isLoading={false}
+          setIsLoading={jest.fn()}
+          setImageData={jest.fn()}
+          {...defaultProps}
+        />
+      );
+    });
 
+    screen.debug();
 
-
-
-  // test('renders dropdown for terminal selection', async () => {
-  //   mockGet3270Screenshots.mockResolvedValue({
-  //     newFlattenedZos3270TerminalData: [],
-  //     newAllImageData: [],
-  //   });
-
-  //   // Act
-  //   mockGet3270Screenshots.mockResolvedValue(emptyMockData);
-
-  //   await act(async () => {
-  //     render(
-  //       <TableOfScreenshots isLoading={true} setIsLoading={jest.fn()} setImageData={jest.fn()} {...defaultProps} />
-  //     );
-  //   });
-
-  //   expect(await screen.findByTestId('terminal-input')).toBeInTheDocument();
-  // });
+    // Assert
+    const dropdown = screen.getByTestId('terminal-input') as HTMLSelectElement;
+    expect(dropdown).toBeInTheDocument();
+  });
 });
