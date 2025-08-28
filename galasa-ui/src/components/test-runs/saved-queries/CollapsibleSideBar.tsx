@@ -203,6 +203,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                       key={defaultQuery.createdAt}
                       disabled
                       isCollapsed={!isExpanded}
+                      handleEditQueryName={handleEditQueryName}
+                      notification={notification}
+                      setNotification={setNotification}
                     />
                   )}
                   <SortableContext
@@ -215,6 +218,8 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                         key={query.createdAt}
                         isCollapsed={!isExpanded}
                         handleEditQueryName={handleEditQueryName}
+                        notification={notification}
+                        setNotification={setNotification}
                       />
                     ))}
                   </SortableContext>
@@ -224,7 +229,15 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
           </div>
         </div>
         <DragOverlay>
-          {activeQuery ? <QueryItem query={activeQuery} isCollapsed={!isExpanded} /> : null}
+          {activeQuery ? (
+            <QueryItem
+              query={activeQuery}
+              isCollapsed={!isExpanded}
+              handleEditQueryName={handleEditQueryName}
+              notification={notification}
+              setNotification={setNotification}
+            />
+          ) : null}
         </DragOverlay>
       </DndContext>
 

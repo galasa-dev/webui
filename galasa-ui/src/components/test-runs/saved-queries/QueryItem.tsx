@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import { SavedQueryType } from '@/utils/types/common';
+import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable, ChevronDown } from '@carbon/icons-react';
@@ -13,15 +13,16 @@ import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction } from 'react';
 
 interface QueryItemProps {
   query: SavedQueryType;
   disabled?: boolean;
   isCollapsed?: boolean;
   handleEditQueryName?: (queryName: string) => void;
+  notification: NotificationType | null;
+  setNotification: Dispatch<SetStateAction<NotificationType | null>>;
   handleDeleteQuery?: (id: string) => void;
-  handleCopyQuery?: (id: string) => void;
-  // handleRenameQuery?: (id: string) => void;
   handleSetQueryAsDefault?: (id: string) => void;
 }
 
@@ -32,9 +33,9 @@ export default function QueryItem({
   disabled = false,
   isCollapsed = false,
   handleEditQueryName,
+  notification,
+  setNotification,
   handleDeleteQuery,
-  handleCopyQuery,
-  // handleRenameQuery,
   handleSetQueryAsDefault,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
@@ -51,8 +52,8 @@ export default function QueryItem({
 
   // Actions for the query item
   const actions = [
-    { title: translations('rename'), onClick: () => handleRenameQuery?.(query.title) },
-    { title: translations('copyToClipboard'), onClick: () => handleCopyQuery?.(query.title) },
+    { title: translations('rename'), onClick: () => handleRenameQuery(query.title) },
+    { title: translations('copyToClipboard'), onClick: () => handleShareQuery(query.title) },
     {
       title: translations('setAsDefault'),
       onClick: () => handleSetQueryAsDefault?.(query.title),
@@ -88,6 +89,31 @@ export default function QueryItem({
 
       // Handle renaming query
       handleEditQueryName?.(queryToRename.title);
+    }
+  };
+
+  const handleShareQuery = async (queryName: string) => {
+    const queryToShare = getQueryByName(queryName);
+
+    if (queryToShare) {
+      try {
+        await navigator.clipboard.writeText(
+          `${window.location.origin}/${pathname}?q=${queryToShare.url}`
+        );
+
+        setNotification({
+          kind: 'success',
+          title: translations('copiedTitle', { name: queryToShare.title }),
+          subtitle: translations('copiedMessage'),
+        });
+        setTimeout(() => setNotification(null), 6000);
+      } catch (err) {
+        setNotification({
+          kind: 'error',
+          title: translations('errorTitle'),
+          subtitle: translations('copyFailedMessage'),
+        });
+      }
     }
   };
 
