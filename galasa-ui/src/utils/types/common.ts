@@ -12,3 +12,14 @@ export type NotificationType = {
   title: string;
   subtitle: string;
 };
+
+export type SavedQueryType = {
+  title: string;
+  url: string;
+  createdAt: string;
+  isActive?: boolean;
+};
+
+export type SavedQueriesMetaData = {
+  defaultQueryId: string | null;
+};

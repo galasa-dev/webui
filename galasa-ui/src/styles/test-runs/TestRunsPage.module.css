@@ -3,19 +3,78 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-.testRunsContentWrapper {
-  width: 90%;
+.testRunsPage {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  margin: 4rem auto;
+  flex: 1;
+}
+
+.testRunsContentWrapper {
+  display: flex;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.mainContent {
+  width: 100%;
+  padding: 5rem 4rem;
+}
+
+.tabsContainer {
+  height: 100%;
 }
 
 .tabContent {
-  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .titleText {
   font-size: 1rem;
   margin: 0.5rem 0.5rem;
+}
+
+.queryNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.queryNameBlock {
+  display: flex;
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.queryNameHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  word-break: break-word;
+  margin: 0;
+  color: var(--cds-text-primary);
+  width: 100%;
+}
+
+.queryNameInput {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  padding: 0.5rem;
+  border: none;
+  border-bottom: 1px solid var(--cds-border-subtle-01);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  width: 100%;
+  color: var(--cds-text-primary);
+  background-color: var(--cds-background, #ffffff);
+}
+
+.queryNameInput:focus {
+  outline-color: var(--cds-focus);
 }
 
 .searchCriteriaContainer {

@@ -4,10 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-// http://localhost:3000/test-runs/cdb-63d5eed2-c41a-4afb-ba9d-b70076a4f543-1755693852378-C25604?tab=overview
-// Zos3270IVT, C25604
-// Screen 1
-
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
 import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/common';
@@ -25,7 +21,7 @@ export function splitScreenAndTerminal(input: string) {
 
   const screenNumber = parseInt(parts[parts.length - 1], 10);
 
-  // Rejoin all parts before the last one, just in case the terminal name had a '-' in it.
+  // Rejoin all parts up to the last one, in case the terminal name has a '-' in it.
   const terminalName = parts.slice(0, -1).join('-');
 
   return {
@@ -100,13 +96,12 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
         // Unzip the content
         const images = unzipBase64(artifactData).images;
 
-        // Populate termial table data as well as all image data.
         populateFlattenedZos3270TerminalDataAndAllImageData(images);
       });
     }
   }
 
-  // Sort terminal data according to terminal name, then screen number descending.
+  // Sort terminal data according to terminal name descending, then screen number descending.
   flattenedZos3270TerminalData.sort(function (a, b) {
     if (a.Terminal === b.Terminal) {
       return a.ScreenNumber - b.ScreenNumber;

@@ -31,7 +31,6 @@ jest.mock('@carbon/react', () => ({
 }));
 
 jest.mock('@/utils/timeOperations', () => ({
-  getOneMonthAgo: jest.fn(),
   getAWeekBeforeSubmittedTime: jest.fn(),
 }));
 
@@ -83,7 +82,6 @@ const completeMetadata: RunMetadata = {
   tags: ['smoke', 'regression'],
 };
 
-const mockGetOneMonthAgo = getOneMonthAgo as jest.MockedFunction<typeof getOneMonthAgo>;
 const mockGetAWeekBeforeSubmittedTime = getAWeekBeforeSubmittedTime as jest.MockedFunction<
   typeof getAWeekBeforeSubmittedTime
 >;
@@ -138,13 +136,10 @@ describe('OverviewTab', () => {
 
 describe('OverviewTab - Time and Link Logic', () => {
   beforeEach(() => {
-    mockGetOneMonthAgo.mockReset();
     mockGetAWeekBeforeSubmittedTime.mockReset();
   });
 
   it('renders recent runs link with correct href', async () => {
-    const mockMonthAgoDate = '2025-05-10T00:00:00Z';
-    mockGetOneMonthAgo.mockReturnValue(mockMonthAgoDate);
     mockGetAWeekBeforeSubmittedTime.mockReturnValue('2025-06-03T09:00:00Z');
 
     render(<OverviewTab metadata={completeMetadata} />);
@@ -154,7 +149,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     const links = screen.getAllByTestId('mock-link');
     const recentRunsLink = links.find((link) => link.getAttribute('href')?.includes('testName='));
 
-    const expectedHref = `/test-runs?testName=${completeMetadata.package}.${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&from=${mockMonthAgoDate.toString()}&tab=results`;
+    const expectedHref = `/test-runs?testName=${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&duration=60,0,0&tab=results`;
 
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
@@ -163,7 +158,6 @@ describe('OverviewTab - Time and Link Logic', () => {
     const mockMonthAgoDate = '2025-05-10T00:00:00Z';
     const mockWeekBefore = '2025-06-03T09:00:00Z';
 
-    mockGetOneMonthAgo.mockReturnValue(mockMonthAgoDate);
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(mockWeekBefore);
 
     render(<OverviewTab metadata={completeMetadata} />);
@@ -182,9 +176,6 @@ describe('OverviewTab - Time and Link Logic', () => {
   });
 
   it('renders only recent runs link when weekBefore is invalid', async () => {
-    const mockMonthAgoDate = '2025-05-10T00:00:00Z';
-
-    mockGetOneMonthAgo.mockReturnValue(mockMonthAgoDate);
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(null);
 
     render(<OverviewTab metadata={completeMetadata} />);
@@ -204,7 +195,6 @@ describe('OverviewTab - Time and Link Logic', () => {
       rawSubmittedAt: '2025-06-10T09:00:00Z',
     };
 
-    const mockMonthAgoDate = '2025-05-10T00:00:00Z';
     mockGetAWeekBeforeSubmittedTime.mockReturnValue('2025-06-03T09:00:00Z');
 
     render(<OverviewTab metadata={metadataWithRawSubmittedAt} />);
@@ -213,23 +203,12 @@ describe('OverviewTab - Time and Link Logic', () => {
     expect(mockGetAWeekBeforeSubmittedTime).toHaveBeenCalledTimes(1);
   });
 
-  it('calls getOneMonthAgo during component initialization', () => {
-    const mockMonthAgoDate = '2025-05-10T00:00:00Z';
-    mockGetAWeekBeforeSubmittedTime.mockReturnValue('2025-06-03T09:00:00Z');
-
-    render(<OverviewTab metadata={completeMetadata} />);
-
-    expect(mockGetOneMonthAgo).toHaveBeenCalled();
-    expect(mockGetOneMonthAgo).toHaveBeenCalledWith();
-  });
-
   it('handles missing rawSubmittedAt gracefully', () => {
     const metadataWithoutRawSubmittedAt: RunMetadata = {
       ...completeMetadata,
       rawSubmittedAt: undefined,
     };
 
-    mockGetOneMonthAgo.mockReturnValue('2025-05-10T00:00:00Z');
     mockGetAWeekBeforeSubmittedTime.mockReturnValue('Invalid date');
 
     render(<OverviewTab metadata={metadataWithoutRawSubmittedAt} />);
@@ -240,7 +219,6 @@ describe('OverviewTab - Time and Link Logic', () => {
   it('updates weekBefore state correctly when time is valid', async () => {
     const mockWeekBefore = '2025-06-03T09:00:00Z';
 
-    mockGetOneMonthAgo.mockReturnValue('2025-05-10T00:00:00Z');
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(mockWeekBefore);
 
     render(<OverviewTab metadata={completeMetadata} />);
@@ -254,7 +232,6 @@ describe('OverviewTab - Time and Link Logic', () => {
   });
 
   it('updates weekBefore state correctly when time is invalid', async () => {
-    mockGetOneMonthAgo.mockReturnValue('2025-05-10T00:00:00Z');
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(null);
 
     render(<OverviewTab metadata={completeMetadata} />);

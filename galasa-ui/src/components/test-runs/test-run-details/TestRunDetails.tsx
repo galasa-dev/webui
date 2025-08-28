@@ -71,7 +71,6 @@ const TestRunDetails = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const { formatDate } = useDateTimeFormat();
 

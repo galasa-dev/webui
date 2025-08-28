@@ -13,7 +13,7 @@
     "logout": "Abmelden"
   },
   "LanguageSelector": {
-    "label": "Sprache:"
+    "tooltip": "Sprache auswählen"
   },
   "ThemeSelector": {
     "label": "Thema"
@@ -306,7 +306,12 @@
     "copyMessage": "Seiten-URL kopieren",
     "copiedTitle": "URL erfolgreich kopiert: ",
     "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
-    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL"
+    "copyFailedMessage": "Fehler beim Kopieren der Seiten-URL",
+    "saveQuery": "Abfrage speichern",
+    "editQueryName": "Abfragenamen bearbeiten",
+    "nameExistsError": "Eine Abfrage mit diesem Namen existiert bereits.",
+    "queryUpdatedMessage": "Die Abfrage wurde erfolgreich aktualisiert.",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert."
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -338,8 +343,7 @@
     "limitExceededSubtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten.",
     "timeFrameText": {
       "default": "Zeige Testläufe der letzten 24 Stunden",
-      "range": "Zeige Testläufe von {from} bis {to}",
-      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "range": "Zeige Testläufe von {from} bis {to}"
     },
     "noColumnsSelected": "Alle Spalten wurden im Tabellen-Design-Tab ausgeblendet, sodass keine Ergebniseinzelheiten sichtbar sein werden. Bitte passen Sie das Tabellen-Design an, um die gewünschten Spalten anzuzeigen.",
     "pagination": {
@@ -377,8 +381,7 @@
     },
 
     "timeFrameText": {
-      "range": "Zeige Testläufe von {from} bis {to}",
-      "isRelativeToNow": "Zeige die neuesten Testläufe von vor {days} Tagen, {hours} Stunden und {minutes} Minuten"
+      "range": "Zeige Testläufe von {from} bis {to}"
     }
   },
   "TestRunsTabs": {
@@ -387,7 +390,7 @@
       "tableDesign": "Tabellendesign",
       "searchCriteria": "Suchkriterien",
       "results": "Ergebnisse",
-      "graphs": "Diagramme"
+      "graph": "Diagramme"
     },
     "content": {
       "timeframe": "Diese Seite befindet sich im Aufbau. Derzeit werden alle Ergebnisse der letzten 24 Stunden angezeigt.",
@@ -404,7 +407,7 @@
     "envelopeDescription": "Testläufe, die innerhalb dieses Zeitraums eingereicht wurden, werden in den Ergebnissen angezeigt, sofern andere Filter angewendet werden.",
     "invalidTimeFrame": "Ungültiger Zeitraum",
     "autoCorrection": "Automatische Korrektur",
-    "toBeforeFromAutoAdjust": "Sie haben eine 'Von'-Zeit ausgewählt, die neuer ist als die 'Bis'-Zeit. Dies ist kein gültiger Zeitraum. Die 'Bis'-Zeit wurde so angepasst, dass sie etwas neuer ist als die von Ihnen gewählte 'Von'-Zeit.",
+    "toBeforeFromErrorMessage": "Die 'Von'-Zeit muss vor der 'Bis'-Zeit liegen. Wählen Sie einen gültigen Zeitraum aus.",
     "toBeforeFromWarningOnly": "'Von'-Zeitpunkt ist in der Zukunft. Die aktuelle Abfrage liefert keine Ergebnisse.",
     "dateRangeExceeded": "Der Datumsbereich darf {maxMonths} Monate nicht überschreiten; das 'Bis'-Datum wurde angepasst.",
     "dateRangeCapped": "Der Datumsbereich wurde auf die aktuelle Zeit begrenzt.",
@@ -529,5 +532,14 @@
     "none": "Keine",
     "asc": "Aufsteigend",
     "desc": "Absteigend"
+  },
+  "CollapsibleSidebar": {
+    "newQuerySavedTitle": "Neue Abfrage erstellt",
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert.",
+    "savedQueries": "Gespeicherte Abfragen",
+    "savedQueriesHeaderLabel": "Kopfzeile Gespeicherte Abfragen",
+    "savedQueriesSidebarLabel": "Seitenleiste Gespeicherte Abfragen",
+    "searchSavedQueries": "Gespeicherte Abfragen durchsuchen",
+    "addCurrentQuery": "Aktuelle Abfrage hinzufügen"
   }
 }

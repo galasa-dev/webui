@@ -9,9 +9,9 @@ import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback, useEffect } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
-import { addMonths, dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
+import { dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
 import { InlineNotification } from '@carbon/react';
-import { MAX_RANGE_MONTHS, DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
+import { DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import DurationFilter from './DurationFilter';
@@ -70,9 +70,9 @@ export const calculateSynchronizedState = (
 };
 
 /**
- * A hybrid function that both validates and corrects a date range.
- * It auto-corrects non-critical issues (like exceeding 'now') and returns a warning.
- * It returns a hard error for critical issues (like an inverted range).
+ * Applies time frame rules to the given dates. The one rule not is that the 'from' date must be before the 'to' date.
+ * We show a warning if the 'to' date is before the 'from' date and the query is relative to now.
+ * If the  exact times are used, we set an error without adjusting the 'to' time.
  * @returns An object with the corrected dates and an optional notification object.
  */
 export function applyTimeFrameRules(
@@ -93,27 +93,18 @@ export function applyTimeFrameRules(
    If the 'from' date is after the 'to' date:
    - If the query is relative to now, show a warning without adjusting the 'to' time,
        since the user may want to save a query for the future.
-   - Otherwise, set the 'to' time to one minute after the 'from' time.
+   - Otherwise, set an error without adjusting the 'to' time, so the user can change it himself.
   */
   if (correctedFrom > correctedTo) {
     return {
       correctedFrom: fromDate,
-      correctedTo: isRelativeToNow ? toDate : new Date(fromDate.getTime() + MINUTE_MS),
+      correctedTo: toDate,
       notification: {
         text: isRelativeToNow
           ? translations('toBeforeFromWarningOnly')
-          : translations('toBeforeFromAutoAdjust'),
-        kind: 'warning',
+          : translations('toBeforeFromErrorMessage'),
+        kind: isRelativeToNow ? 'warning' : 'error',
       },
-    };
-  }
-
-  const maxToDate = addMonths(correctedFrom, MAX_RANGE_MONTHS);
-  if (correctedTo > maxToDate) {
-    correctedTo = maxToDate;
-    notification = {
-      text: translations('dateRangeExceeded', { maxMonths: MAX_RANGE_MONTHS }),
-      kind: 'warning',
     };
   }
 
@@ -191,7 +182,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
       // Set the notification if there is one
       setNotification(validationNotification);
 
-      // Update the state with the corrected values
+      // Update the state with the corrected values only if the notification is not an error
       if (validationNotification?.kind !== 'error') {
         const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
         setValues((prevValues) => ({ ...prevValues, ...finalState }));
@@ -216,24 +207,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
       <FormGroup className={styles.formGroup} legendText="" role="radiogroup">
         <div className={styles.fromContainer}>
           <h3 className={styles.heading}>{translations('from')}</h3>
-          <div className={styles.optionRow}>
-            <RadioButton
-              labelText={translations('specificTimeTitle')}
-              value={FromSelectionOptions.specificFromTime}
-              id="from-specific-time"
-              name="from-timeframe-options"
-              checked={selectedFromOption === FromSelectionOptions.specificFromTime}
-              onChange={() => setSelectedFromOption(FromSelectionOptions.specificFromTime)}
-            />
-            <div className={styles.filterWrapper}>
-              <TimeFrameFilter
-                values={values}
-                handleValueChange={handleValueChange}
-                fromToSelection={fromToSelectionEnum.FromSelectionOptions}
-                disabled={selectedFromOption !== FromSelectionOptions.specificFromTime}
-              />
-            </div>
-          </div>
+
           <div className={styles.optionRow}>
             <RadioButton
               labelText={
@@ -260,12 +234,44 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
               />
             </div>
           </div>
+          <div className={styles.optionRow}>
+            <RadioButton
+              labelText={translations('specificTimeTitle')}
+              value={FromSelectionOptions.specificFromTime}
+              id="from-specific-time"
+              name="from-timeframe-options"
+              checked={selectedFromOption === FromSelectionOptions.specificFromTime}
+              onChange={() => setSelectedFromOption(FromSelectionOptions.specificFromTime)}
+            />
+            <div className={styles.filterWrapper}>
+              <TimeFrameFilter
+                values={values}
+                handleValueChange={handleValueChange}
+                fromToSelection={fromToSelectionEnum.FromSelectionOptions}
+                disabled={selectedFromOption !== FromSelectionOptions.specificFromTime}
+              />
+            </div>
+          </div>
         </div>
 
         <div className={styles.divider}></div>
 
         <div className={styles.toContainer}>
           <h3 className={styles.heading}>{translations('to')}</h3>
+          <div className={styles.optionRow}>
+            <RadioButton
+              labelText={translations('nowTitle')}
+              value={ToSelectionOptions.now}
+              id="to-now"
+              name="to-timeframe-options"
+              checked={selectedToOption === ToSelectionOptions.now}
+              onChange={() => {
+                setSelectedToOption(ToSelectionOptions.now);
+                handleValueChange('isRelativeToNow', true);
+              }}
+            />
+            <p className={styles.nowDescription}>{translations('nowDescription')}</p>
+          </div>
           <div className={styles.optionRow}>
             <RadioButton
               labelText={translations('specificTimeTitle')}
@@ -286,20 +292,6 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
                 disabled={selectedToOption !== ToSelectionOptions.specificToTime}
               />
             </div>
-          </div>
-          <div className={styles.optionRow}>
-            <RadioButton
-              labelText={translations('nowTitle')}
-              value={ToSelectionOptions.now}
-              id="to-now"
-              name="to-timeframe-options"
-              checked={selectedToOption === ToSelectionOptions.now}
-              onChange={() => {
-                setSelectedToOption(ToSelectionOptions.now);
-                handleValueChange('isRelativeToNow', true);
-              }}
-            />
-            <p className={styles.nowDescription}>{translations('nowDescription')}</p>
           </div>
         </div>
       </FormGroup>

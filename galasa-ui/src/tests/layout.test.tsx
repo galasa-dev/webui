@@ -5,7 +5,7 @@
  */
 import RootLayout from '@/app/layout';
 import { act, render } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const mockRouter = {
   refresh: jest.fn(() => useRouter().refresh),
@@ -61,7 +61,13 @@ jest.mock('next-intl', () => ({
 }));
 
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => mockRouter),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('@/generated/galasaapi', () => ({

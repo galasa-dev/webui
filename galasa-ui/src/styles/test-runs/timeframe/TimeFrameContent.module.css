@@ -7,7 +7,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  width: 100%;
 }
 
 .formGroup {
@@ -62,6 +61,10 @@
 .durationInputsContainer {
   display: flex;
   gap: 1rem;
+}
+
+.durationInput {
+  max-width: 150px;
 }
 
 .notification {

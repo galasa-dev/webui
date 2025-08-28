@@ -23,10 +23,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
-  const MONTH_AGO = getOneMonthAgo();
-
-  const fullTestName = metadata?.package + '.' + metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.FROM}=${MONTH_AGO}&${TEST_RUNS_QUERY_PARAMS.TAB}=results`;
+  const fullTestName = metadata?.testName;
+  const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.DURATION}=60,0,0&${TEST_RUNS_QUERY_PARAMS.TAB}=results`;
   const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${TEST_RUNS_QUERY_PARAMS.FROM}=${weekBefore}&${TEST_RUNS_QUERY_PARAMS.TAB}=results`;
   useEffect(() => {
     const validateTime = () => {

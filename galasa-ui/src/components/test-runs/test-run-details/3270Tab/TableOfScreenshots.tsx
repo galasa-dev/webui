@@ -75,6 +75,7 @@ export default function TableOfScreenshots({
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === screenshotId
     ) as TerminalImage;
+    console.log("Table row clicked! Image data:\n" + JSON.stringify(newImageData));
     setImageData(newImageData);
   };
 

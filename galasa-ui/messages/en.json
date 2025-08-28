@@ -13,7 +13,7 @@
     "logout": "Log out"
   },
   "LanguageSelector": {
-    "label": "Language:"
+    "tooltip": "Selected language"
   },
   "ThemeSelector": {
     "label": "Theme"
@@ -284,7 +284,12 @@
     "copyMessage": "Copy page URL",
     "copiedTitle": "URL copy successful: ",
     "copiedMessage": "The URL for this page has been copied to the clipboard.",
-    "copyFailedMessage": "Failed to copy page URL"
+    "copyFailedMessage": "Failed to copy page URL",
+    "saveQuery": "Save Query",
+    "editQueryName": "Edit Query Name",
+    "nameExistsError": "A query with this name already exists.",
+    "queryUpdatedMessage": "The query has been updated successfully.",
+    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved."
   },
   "TestRunSkeleton": {
     "status": "Status",
@@ -316,8 +321,7 @@
     "limitExceededSubtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.",
     "timeFrameText": {
       "default": "Showing test runs submitted in the last 24 hours",
-      "range": "Showing test runs submitted between {from} and {to}",
-      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
+      "range": "Showing test runs submitted between {from} and {to}"
     },
     "noColumnsSelected": "All of the columns have been hidden in the table design tab, so no result details will be visible. Please adjust the table design to show the columns that you would like to see.",
     "pagination": {
@@ -354,8 +358,7 @@
       "subtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results."
     },
     "timeFrameText": {
-      "range": "Showing test runs submitted between {from} and {to}",
-      "isRelativeToNow": "Showing the most recent test runs from {days} days, {hours} hours and {minutes} minutes ago"
+      "range": "Showing test runs submitted between {from} and {to}"
     }
   },
   "TestRunsTabs": {
@@ -381,7 +384,7 @@
     "envelopeDescription": "Test runs submitted within this period will be shown in the results, subject to other filters being applied.",
     "invalidTimeFrame": "Invalid Time Frame",
     "autoCorrection": "Auto-Correction",
-    "toBeforeFromAutoAdjust": "You selected a 'From' time which is more recent than the 'To' time. This is not a valid time period. The 'To' time has been changed to be slightly more recent than your selected 'From' time.",
+    "toBeforeFromErrorMessage": "The 'From' time must be earlier than the 'To' time. Select a valid time range.",
     "toBeforeFromWarningOnly": "'From' time is set to the future. Current query will return no results.",
     "dateRangeExceeded": "Date range cannot exceed {maxMonths} months; 'To' date has been adjusted.",
     "dateRangeCapped": "Date range was capped at the current time.",
@@ -506,5 +509,14 @@
     "none": "None",
     "asc": "Ascending",
     "desc": "Descending"
+  },
+  "CollapsibleSidebar": {
+    "newQuerySavedTitle": "New query created",
+    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved.",
+    "savedQueries": "Saved Queries",
+    "savedQueriesHeaderLabel": "Saved Queries Header",
+    "savedQueriesSidebarLabel": "Saved Queries Sidebar",
+    "searchSavedQueries": "Search saved queries",
+    "addCurrentQuery": "Add current query"
   }
 }
