@@ -27,7 +27,7 @@ const keyMap: Record<string, string> = {
   [TEST_RUNS_QUERY_PARAMS.QUERY_NAME]: 'qn',
 };
 
-const valueMap: Record<string, string> = {
+export const valueMap: Record<string, string> = {
   // Tabs
   timeframe: 'tf',
   'table-design': 'td',

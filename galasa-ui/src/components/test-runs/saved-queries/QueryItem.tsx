@@ -9,8 +9,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
-import { Link } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface QueryItemProps {
   query: SavedQueryType;
@@ -25,6 +25,10 @@ export default function QueryItem({
   disabled = false,
   isCollapsed = false,
 }: QueryItemProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { defaultQuery } = useSavedQueries();
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
     disabled,
@@ -36,8 +40,14 @@ export default function QueryItem({
     opacity: isDragging ? 0 : 1,
   };
 
-  const { defaultQuery } = useSavedQueries();
   const isDefault = defaultQuery.createdAt === query.createdAt;
+
+  const handleClick = () => {
+    const newUrl = `${pathname}?q=${query.url}`;
+
+    // Navigate to the correct URL.
+    router.replace(newUrl, { scroll: false });
+  };
 
   return (
     <div
@@ -50,9 +60,9 @@ export default function QueryItem({
       ) : (
         <Draggable size={ICON_SIZE} className={styles.dragHandle} {...attributes} {...listeners} />
       )}
-      <Link href={`?q=${query.url}`} className={styles.sideNavLink}>
+      <div onClick={handleClick} className={styles.sideNavLink} role="button">
         {query.title}
-      </Link>
+      </div>
     </div>
   );
 }
