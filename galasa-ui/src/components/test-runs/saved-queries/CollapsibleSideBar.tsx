@@ -204,7 +204,6 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                       disabled
                       isCollapsed={!isExpanded}
                       handleEditQueryName={handleEditQueryName}
-                      notification={notification}
                       setNotification={setNotification}
                     />
                   )}
@@ -218,7 +217,6 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                         key={query.createdAt}
                         isCollapsed={!isExpanded}
                         handleEditQueryName={handleEditQueryName}
-                        notification={notification}
                         setNotification={setNotification}
                       />
                     ))}
@@ -234,7 +232,6 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
               query={activeQuery}
               isCollapsed={!isExpanded}
               handleEditQueryName={handleEditQueryName}
-              notification={notification}
               setNotification={setNotification}
             />
           ) : null}

@@ -20,9 +20,7 @@ interface QueryItemProps {
   disabled?: boolean;
   isCollapsed?: boolean;
   handleEditQueryName?: (queryName: string) => void;
-  notification: NotificationType | null;
   setNotification: Dispatch<SetStateAction<NotificationType | null>>;
-  handleDeleteQuery?: (id: string) => void;
 }
 
 const ICON_SIZE = 18;
@@ -32,14 +30,12 @@ export default function QueryItem({
   disabled = false,
   isCollapsed = false,
   handleEditQueryName,
-  notification,
   setNotification,
-  handleDeleteQuery,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
   const router = useRouter();
   const pathname = usePathname();
-  const { defaultQuery, setDefaultQuery, getQueryByName } = useSavedQueries();
+  const { defaultQuery, setDefaultQuery, getQueryByName, deleteQuery } = useSavedQueries();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
@@ -125,6 +121,21 @@ export default function QueryItem({
         kind: 'success',
         title: translations('setAsDefaultTitle', { name: queryToSetAsDefault.title }),
         subtitle: translations('setAsDefaultMessage'),
+      });
+      setTimeout(() => setNotification(null), 6000);
+    }
+  };
+
+  const handleDeleteQuery = (queryName: string) => {
+    const queryToDelete = getQueryByName(queryName);
+
+    if (queryToDelete) {
+      deleteQuery(queryToDelete.createdAt);
+
+      setNotification({
+        kind: 'success',
+        title: translations('deleteTitle', { name: queryToDelete.title }),
+        subtitle: translations('deleteMessage'),
       });
       setTimeout(() => setNotification(null), 6000);
     }

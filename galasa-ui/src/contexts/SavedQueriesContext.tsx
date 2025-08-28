@@ -32,7 +32,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
       const storedQueries = localStorage.getItem(SAVED_QUERIES_STORAGE_KEY);
-      if (storedQueries) {
+      if (storedQueries && storedQueries.length > 0) {
         return JSON.parse(storedQueries);
       }
     }
@@ -77,12 +77,37 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
 
   /**
    * Delete a saved query.
+   * If the deleted query is the default query:
+   *   - If there are other queries, the top query in the list becomes the new default.
+   *   - If it's the last query, a new default query is created and set as default.
+   *
    * @param createdAt The createdAt of the query to delete.
    */
   const deleteQuery = (createdAt: string) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = prevQueries.filter((query) => query.createdAt !== createdAt);
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
+
+      // Handle default query logic
+      if (metaData.defaultQueryId === createdAt) {
+        let newDefaultQueryId = DEFAULT_QUERY.createdAt;
+
+        if (updatedQueries.length > 0) {
+          // If there are other queries, set the first one as default
+          newDefaultQueryId = updatedQueries[0].createdAt;
+        } else {
+          // If it's the last query, create a new default query and add it
+          const newDefaultQuery = { ...DEFAULT_QUERY, createdAt: new Date().toISOString() };
+          updatedQueries.push(newDefaultQuery);
+          newDefaultQueryId = newDefaultQuery.createdAt;
+        }
+
+        setMetaData((prevMetaData) => ({
+          ...prevMetaData,
+          defaultQueryId: newDefaultQueryId,
+        }));
+      }
+
+      setSavedQueries(updatedQueries);
       return updatedQueries;
     });
   };
