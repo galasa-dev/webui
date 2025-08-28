@@ -75,7 +75,7 @@ export default function TableOfScreenshots({
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === screenshotId
     ) as TerminalImage;
-    console.log("Table row clicked! Image data:\n" + JSON.stringify(newImageData));
+    console.log('Table row clicked! Image data:\n' + JSON.stringify(newImageData));
     setImageData(newImageData);
   };
 
@@ -102,6 +102,7 @@ export default function TableOfScreenshots({
     if (selectedTerminal && selectedTerminal.id !== 'all') {
       result = result.filter((row) => row.Terminal === selectedTerminal.id);
     }
+    // console.log("Hello\n" + JSON.stringify(result));
 
     return result;
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
@@ -145,7 +146,7 @@ export default function TableOfScreenshots({
   }
 
   return (
-    <DataTable isSortable rows={filteredRows} headers={headers}>
+    <DataTable isSortable rows={filteredRows} headers={headers} stickyHeader>
       {({
         rows,
         headers,
@@ -181,7 +182,7 @@ export default function TableOfScreenshots({
               data-testid="terminal-input"
             />
           </TableToolbarContent>
-          <Table {...getTableProps()}>
+          <Table stickyHeader {...getTableProps()} className={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
@@ -191,7 +192,7 @@ export default function TableOfScreenshots({
                 ))}
               </TableRow>
             </TableHead>
-            <TableBody className={styles.tableBodyComponent}>
+            <TableBody>
               {rows.map((row) => (
                 <TableRow
                   key={row.id}

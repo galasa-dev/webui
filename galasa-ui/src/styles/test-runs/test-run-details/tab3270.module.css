@@ -14,10 +14,14 @@
 
 .tableOfScreenshotsContainer {
   width: 43%;
-  max-height: 100%;
   overflow-x: hidden;
   padding-right: 1px;
   float: left;
+}
+
+.innerScreenshotTable {
+  max-height: calc(100vh - 450px);
+  overflow-y: auto;
 }
 
 .lightTheme {
@@ -33,11 +37,6 @@
   width: max-content;
   min-width: 200px;
   max-width: 400px;
-}
-
-.stickToTop {
-  position: sticky;
-  top: 0;
 }
 
 .screenshot {

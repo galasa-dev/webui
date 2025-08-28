@@ -21,7 +21,6 @@ export default function DisplayTerminalScreenshot({
     //   src={`/static/example-terminal-screenshot.png`}
     //   alt="Placeholder image"
     // />
-    <>
-    </>
+    <></>
   );
 }
