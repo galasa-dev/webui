@@ -23,7 +23,6 @@ interface QueryItemProps {
   notification: NotificationType | null;
   setNotification: Dispatch<SetStateAction<NotificationType | null>>;
   handleDeleteQuery?: (id: string) => void;
-  handleSetQueryAsDefault?: (id: string) => void;
 }
 
 const ICON_SIZE = 18;
@@ -36,12 +35,11 @@ export default function QueryItem({
   notification,
   setNotification,
   handleDeleteQuery,
-  handleSetQueryAsDefault,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
   const router = useRouter();
   const pathname = usePathname();
-  const { defaultQuery, getQueryByName } = useSavedQueries();
+  const { defaultQuery, setDefaultQuery, getQueryByName } = useSavedQueries();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
@@ -56,7 +54,7 @@ export default function QueryItem({
     { title: translations('copyToClipboard'), onClick: () => handleShareQuery(query.title) },
     {
       title: translations('setAsDefault'),
-      onClick: () => handleSetQueryAsDefault?.(query.title),
+      onClick: () => handleSetQueryAsDefault(query.title),
       disabled: isDefault,
     },
     {
@@ -114,6 +112,21 @@ export default function QueryItem({
           subtitle: translations('copyFailedMessage'),
         });
       }
+    }
+  };
+
+  const handleSetQueryAsDefault = (queryName: string) => {
+    const queryToSetAsDefault = getQueryByName(queryName);
+
+    if (queryToSetAsDefault) {
+      setDefaultQuery(queryToSetAsDefault.createdAt);
+
+      setNotification({
+        kind: 'success',
+        title: translations('setAsDefaultTitle', { name: queryToSetAsDefault.title }),
+        subtitle: translations('setAsDefaultMessage'),
+      });
+      setTimeout(() => setNotification(null), 6000);
     }
   };
 
