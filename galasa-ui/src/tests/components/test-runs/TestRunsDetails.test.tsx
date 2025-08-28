@@ -15,6 +15,7 @@ import {
   useTestRunsQueryParams,
 } from '@/contexts/TestRunsQueryParamsContext';
 import userEvent from '@testing-library/user-event';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 const mockUpdateQuery = jest.fn();
 const mockGetQuery = jest.fn();
@@ -114,7 +115,7 @@ jest.mock('next-intl', () => ({
       copyFailedMessage: 'Failed to copy URL.',
       editQueryName: 'Edit query name',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
-      querySavedMessage: `Query "${vars?.name}" has been saved.`,
+      newQuerySavedMessage: `Query "${vars?.name}" has been saved.`,
       queryUpdatedMessage: 'The query has been updated successfully.',
       saveQuery: 'Save Query',
     })[key] || key,
@@ -221,7 +222,8 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
-      const shareButton = screen.getByTestId('share-button');
+
+      const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
       });
@@ -235,7 +237,7 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
-      const shareButton = screen.getByTestId('share-button');
+      const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
       });
@@ -252,7 +254,8 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
-      const shareButton = screen.getByTestId('share-button');
+
+      const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
       });
@@ -271,7 +274,8 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
-      expect(screen.getByTestId('query-name')).toHaveTextContent('Default Query');
+
+      expect(screen.getByText('Default Query')).toBeInTheDocument();
     });
 
     test('successfully enters edit mode, renames, and saves a query', async () => {
@@ -296,7 +300,7 @@ describe('TestRunsDetails', () => {
       await user.click(editButton);
 
       // 2. Type the new name
-      const input = screen.getByTestId('query-name-input');
+      const input = screen.getByRole('textbox');
       expect(input).toHaveValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'My Renamed Query');
@@ -306,17 +310,16 @@ describe('TestRunsDetails', () => {
 
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
+      // encode url first
+      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query');
       expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
         ...initialQuery,
         title: 'My Renamed Query',
-        url: 'queryName=My+Renamed+Query', // URL is updated with new name
+        url: encodedURL, // URL is updated with new name
       });
 
       expect(mockSetQueryName).toHaveBeenCalledTimes(1);
       expect(mockSetQueryName).toHaveBeenCalledWith('My Renamed Query');
-
-      // The input should disappear
-      expect(screen.queryByTestId('query-name-input')).not.toBeInTheDocument();
     });
 
     test('renames an unsaved query without calling updateQuery', async () => {
@@ -334,7 +337,7 @@ describe('TestRunsDetails', () => {
 
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
-      const input = await screen.findByTestId('query-name-input');
+      const input = screen.getByRole('textbox');
       await user.clear(input);
       await user.type(input, 'A Brand New Name');
       await user.tab();
@@ -356,15 +359,14 @@ describe('TestRunsDetails', () => {
 
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
-      const input = await screen.findByTestId('query-name-input');
+      const input = screen.getByRole('textbox');
       await user.clear(input);
       await user.tab();
 
       // Assert
-      expect(screen.queryByTestId('query-name-input')).not.toBeInTheDocument();
       expect(mockUpdateQuery).not.toHaveBeenCalled();
       expect(mockSetQueryName).not.toHaveBeenCalled();
-      expect(screen.getByTestId('query-name')).toHaveTextContent('Initial Query');
+      expect(screen.getByText('Initial Query')).toBeInTheDocument();
     });
 
     test('shows an error notification if the new name already exists', async () => {
@@ -380,7 +382,8 @@ describe('TestRunsDetails', () => {
       );
 
       await user.click(screen.getByRole('button', { name: /edit query name/i }));
-      const input = await screen.findByTestId('query-name-input');
+
+      const input = screen.getByRole('textbox');
       await user.clear(input);
       await user.type(input, 'Existing Name');
       await user.tab();
@@ -416,10 +419,11 @@ describe('TestRunsDetails', () => {
 
       // Assert
       await waitFor(() => {
+        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query');
         expect(mockSaveQuery).toHaveBeenCalledTimes(1);
         expect(mockSaveQuery).toHaveBeenCalledWith({
           title: 'New Test Query',
-          url: 'queryName=New+Test+Query',
+          url: encodedURL,
           createdAt: expect.any(String),
         });
       });

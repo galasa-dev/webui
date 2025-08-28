@@ -6,28 +6,23 @@
 .testRunsPage {
   display: flex;
   flex-direction: column;
-  height: 100%;
   flex: 1;
 }
 
 .testRunsContentWrapper {
   display: flex;
   gap: 0.5rem;
-  height: 100%;
+  flex: 1;
 }
 
 .mainContent {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 5rem 4rem;
 }
 
 .tabsContainer {
   height: 100%;
-}
-
-.tabContent {
-  display: flex;
-  flex-direction: column;
 }
 
 .titleText {

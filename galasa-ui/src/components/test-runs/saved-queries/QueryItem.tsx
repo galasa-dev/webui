@@ -9,10 +9,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { StarFilled, Draggable, ChevronDown } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
-import { Link, OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface QueryItemProps {
   query: SavedQueryType;
@@ -24,6 +24,8 @@ interface QueryItemProps {
   handleSetQueryAsDefault?: (id: string) => void;
 }
 
+const ICON_SIZE = 18;
+
 export default function QueryItem({
   query,
   disabled = false,
@@ -34,21 +36,14 @@ export default function QueryItem({
   handleSetQueryAsDefault,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
+  const router = useRouter();
+  const pathname = usePathname();
+  const { defaultQuery } = useSavedQueries();
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
     disabled,
   });
-
-  const { defaultQuery } = useSavedQueries();
-
-  const style = useMemo(
-    () => ({
-      transform: CSS.Transform.toString(transform),
-      transition,
-      opacity: isDragging ? 0 : 1,
-    }),
-    [transform, transition, isDragging]
-  );
 
   const isDefault = defaultQuery.createdAt === query.createdAt;
 
@@ -68,6 +63,19 @@ export default function QueryItem({
     },
   ];
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0 : 1,
+  };
+
+  const handleClick = () => {
+    const newUrl = `${pathname}?q=${query.url}`;
+
+    // Navigate to the correct URL.
+    router.replace(newUrl, { scroll: false });
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -75,20 +83,20 @@ export default function QueryItem({
       className={`${styles.sideNavItem} ${disabled ? styles.disabled : ''} ${isCollapsed ? styles.collapsed : ''}`}
     >
       {isDefault ? (
-        <StarFilled size={18} className={styles.starIcon} />
+        <StarFilled size={ICON_SIZE} className={styles.starIcon} />
       ) : (
         <Draggable
           aria-label={translations('dragHandle')}
-          size={18}
+          size={ICON_SIZE}
           className={styles.dragHandle}
           {...attributes}
           {...listeners}
         />
       )}
 
-      <Link href={`?q=${query.url}`} className={styles.sideNavLink}>
+      <div onClick={handleClick} className={styles.sideNavLink} role="button">
         {query.title}
-      </Link>
+      </div>
 
       <OverflowMenu
         aria-label={translations('actions')}

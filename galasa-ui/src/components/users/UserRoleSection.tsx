@@ -85,7 +85,6 @@ export default function UserRoleSection({
           setUserRoles(flattenedRoles);
         }
       } catch (err) {
-        console.log(err);
         setIsError(true);
       } finally {
         setIsLoading(false);

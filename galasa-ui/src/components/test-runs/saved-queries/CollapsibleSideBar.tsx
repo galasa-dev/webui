@@ -33,6 +33,7 @@ import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 interface CollapsibleSideBarProps {
   handleEditQueryName: (queryName: string) => void;
@@ -66,7 +67,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   );
 
   const handleDragStart = (event: DragStartEvent) => {
+    // Get the dragged query item
     const { active } = event;
+
     // Find the full query object that is being dragged and store it in state
     const currentQuery = savedQueries.find((q) => q.createdAt === active.id);
     if (currentQuery) {
@@ -77,6 +80,8 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   const handleDragEnd = (event: DragEndEvent) => {
     // Clear the active query state to remove the overlay
     setActiveQuery(null);
+
+    // active: the dragged item, over: the item being hovered over
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -100,7 +105,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
     // Ensure unique query name
     if (isQuerySaved(finalQueryTitle)) {
-      const baseName = nameToSave.replace(/\s*\(\d+\)$/, '').trim();
+      const baseName = nameToSave.split('(')[0].trim();
       let counter = 1;
 
       while (isQuerySaved(finalQueryTitle)) {
@@ -113,7 +118,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, finalQueryTitle);
     const newQuery = {
       title: finalQueryTitle,
-      url: currentUrlParams.toString(),
+      url: encodeStateToUrlParam(currentUrlParams.toString()),
       createdAt: new Date().toISOString(),
     };
 
