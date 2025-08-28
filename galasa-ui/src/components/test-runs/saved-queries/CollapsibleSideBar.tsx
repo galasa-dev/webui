@@ -210,7 +210,12 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                     strategy={verticalListSortingStrategy}
                   >
                     {filteredSortableQueries.map((query) => (
-                      <QueryItem query={query} key={query.createdAt} isCollapsed={!isExpanded} />
+                      <QueryItem
+                        query={query}
+                        key={query.createdAt}
+                        isCollapsed={!isExpanded}
+                        handleEditQueryName={handleEditQueryName}
+                      />
                     ))}
                   </SortableContext>
                 </SideNavItems>

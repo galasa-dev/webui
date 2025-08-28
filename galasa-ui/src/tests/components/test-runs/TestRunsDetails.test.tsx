@@ -64,7 +64,7 @@ jest.mock('@/contexts/SavedQueriesContext', () => ({
   useSavedQueries: jest.fn(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   })),
 }));
@@ -182,7 +182,7 @@ beforeEach(() => {
   (useSavedQueries as jest.Mock).mockImplementation(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   }));
   (Nav.useSearchParams as jest.Mock).mockImplementation(() => mockSearchParams);

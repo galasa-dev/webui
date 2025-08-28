@@ -28,8 +28,8 @@
   overflow: hidden;
   flex-shrink: 0;
   transition:
-    width 0.2s ease-in-out,
-    max-width 0.2s ease-in-out;
+  width 0.2s ease-in-out,
+  max-width 0.2s ease-in-out;
 }
 
 .sideNavExpanded {

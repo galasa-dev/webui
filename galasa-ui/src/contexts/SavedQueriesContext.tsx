@@ -21,7 +21,7 @@ type SavedQueriesContextType = {
   updateQuery: (createdAt: string, updatedQuery: SavedQueryType) => void;
   deleteQuery: (createdAt: string) => void;
   isQuerySaved: (queryName: string) => boolean;
-  getQuery: (queryName: string) => SavedQueryType | null;
+  getQueryByName: (queryName: string) => SavedQueryType | null;
   defaultQuery: SavedQueryType;
   setDefaultQuery: (createdAt: string) => void;
 };
@@ -101,7 +101,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
    * @param queryName The name of the query to retrieve.
    * @returns The saved query if found, null otherwise.
    */
-  const getQuery = (queryName: string) => {
+  const getQueryByName = (queryName: string) => {
     return savedQueries.find((query) => query.title === queryName) || null;
   };
 
@@ -131,7 +131,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     deleteQuery,
     updateQuery,
     isQuerySaved,
-    getQuery,
+    getQueryByName,
     defaultQuery,
     setDefaultQuery,
   };

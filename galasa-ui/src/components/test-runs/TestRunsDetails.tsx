@@ -33,7 +33,7 @@ export default function TestRunsDetails({
   const { breadCrumbItems } = useHistoryBreadCrumbs();
   const translations = useTranslations('TestRunsDetails');
 
-  const { saveQuery, isQuerySaved, getQuery, updateQuery } = useSavedQueries();
+  const { saveQuery, isQuerySaved, getQueryByName, updateQuery } = useSavedQueries();
   const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -42,7 +42,7 @@ export default function TestRunsDetails({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const activeQuery = getQuery(queryName);
+  const activeQuery = getQueryByName(queryName);
 
   // Focus and select the input when editing
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function TestRunsDetails({
     }
 
     // Find the original query using the old name
-    const queryToRename = getQuery(oldName);
+    const queryToRename = getQueryByName(oldName);
 
     // If it was a saved query, perform the rename in storage
     if (queryToRename) {
@@ -129,7 +129,7 @@ export default function TestRunsDetails({
     if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams).toString();
-    const existingQuery = getQuery(nameToSave);
+    const existingQuery = getQueryByName(nameToSave);
 
     // If the query already exists, update it
     if (existingQuery) {

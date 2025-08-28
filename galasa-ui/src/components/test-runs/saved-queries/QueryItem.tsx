@@ -18,9 +18,10 @@ interface QueryItemProps {
   query: SavedQueryType;
   disabled?: boolean;
   isCollapsed?: boolean;
+  handleEditQueryName?: (queryName: string) => void;
   handleDeleteQuery?: (id: string) => void;
   handleCopyQuery?: (id: string) => void;
-  handleRenameQuery?: (id: string) => void;
+  // handleRenameQuery?: (id: string) => void;
   handleSetQueryAsDefault?: (id: string) => void;
 }
 
@@ -30,15 +31,16 @@ export default function QueryItem({
   query,
   disabled = false,
   isCollapsed = false,
+  handleEditQueryName,
   handleDeleteQuery,
   handleCopyQuery,
-  handleRenameQuery,
+  // handleRenameQuery,
   handleSetQueryAsDefault,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
   const router = useRouter();
   const pathname = usePathname();
-  const { defaultQuery } = useSavedQueries();
+  const { defaultQuery, getQueryByName } = useSavedQueries();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
@@ -49,17 +51,17 @@ export default function QueryItem({
 
   // Actions for the query item
   const actions = [
-    { title: translations('rename'), onClick: () => handleRenameQuery?.(query.createdAt) },
-    {
-      title: translations('delete'),
-      onClick: () => handleDeleteQuery?.(query.createdAt),
-      isDelete: true,
-    },
-    { title: translations('copyToClipboard'), onClick: () => handleCopyQuery?.(query.createdAt) },
+    { title: translations('rename'), onClick: () => handleRenameQuery?.(query.title) },
+    { title: translations('copyToClipboard'), onClick: () => handleCopyQuery?.(query.title) },
     {
       title: translations('setAsDefault'),
-      onClick: () => handleSetQueryAsDefault?.(query.createdAt),
+      onClick: () => handleSetQueryAsDefault?.(query.title),
       disabled: isDefault,
+    },
+    {
+      title: translations('delete'),
+      onClick: () => handleDeleteQuery?.(query.title),
+      isDelete: true,
     },
   ];
 
@@ -74,6 +76,19 @@ export default function QueryItem({
 
     // Navigate to the correct URL.
     router.replace(newUrl, { scroll: false });
+  };
+
+  const handleRenameQuery = (queryName: string) => {
+    const queryToRename = getQueryByName(queryName);
+
+    if (queryToRename) {
+      // Navigate to the query URL
+      const newUrl = `${pathname}?q=${queryToRename.url}`;
+      router.replace(newUrl, { scroll: false });
+
+      // Handle renaming query
+      handleEditQueryName?.(queryToRename.title);
+    }
   };
 
   return (
