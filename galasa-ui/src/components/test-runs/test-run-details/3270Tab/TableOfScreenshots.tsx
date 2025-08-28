@@ -75,7 +75,6 @@ export default function TableOfScreenshots({
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === screenshotId
     ) as TerminalImage;
-    console.log('Table row clicked! Image data:\n' + JSON.stringify(newImageData));
     setImageData(newImageData);
   };
 
@@ -102,7 +101,6 @@ export default function TableOfScreenshots({
     if (selectedTerminal && selectedTerminal.id !== 'all') {
       result = result.filter((row) => row.Terminal === selectedTerminal.id);
     }
-    // console.log("Hello\n" + JSON.stringify(result));
 
     return result;
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
@@ -165,22 +163,23 @@ export default function TableOfScreenshots({
             <TableToolbarSearch
               placeholder={translations('searchPlaceholder')}
               persistent
-              onChange={(e: any) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearchTerm(e.target.value);
               }}
-              data-testid="search-input"
             />
-            <Dropdown
-              className={styles.terminalDropdownMenu}
-              label="Select a terminal"
-              items={terminalnames}
-              itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
-              onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
-                setSelectedTerminal(selectedItem);
-              }}
-              selectedItem={selectedTerminal}
-              data-testid="terminal-input"
-            />
+            {/* Length must be greater than 2 due to one of the terminal names being "any". */}
+            {terminalnames.length > 2 && (
+              <Dropdown
+                className={styles.terminalDropdownMenu}
+                label="Select a terminal"
+                items={terminalnames}
+                itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
+                onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
+                  setSelectedTerminal(selectedItem);
+                }}
+                selectedItem={selectedTerminal}
+              />
+            )}
           </TableToolbarContent>
           <Table stickyHeader {...getTableProps()} className={styles.innerScreenshotTable}>
             <TableHead>

@@ -12,9 +12,11 @@ import pako from 'pako';
 export const flattenedZos3270TerminalData: CellFor3270[] = [];
 export const allImageData: TerminalImage[] = [];
 
-export function splitScreenAndTerminal(input: string) {
-  const parts = input.split('-');
+// Expected input: "Terminal1-1" which would mean the terminal name is "Terminal1" and we're looking at screen number 1.
+export function splitScreenAndTerminal(terminalNameAndScreenNumberSeparatedByDash: string) {
+  const parts = terminalNameAndScreenNumberSeparatedByDash.split('-');
 
+  // Ensure there is a dash, and that the last element is an integer.
   if (parts.length < 2 || !Number.isInteger(parseInt(parts[parts.length - 1]))) {
     throw new Error('Invalid terminal ID or screen number');
   }

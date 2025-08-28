@@ -245,7 +245,6 @@
     "Time": "Time",
     "Method": "Method",
     "searchPlaceholder": "Search",
-    "ariaLabel": "ariaLabel",
     "pagination": {
       "backwardText": "Previous page",
       "forwardText": "Next page",
