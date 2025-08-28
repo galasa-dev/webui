@@ -21,10 +21,6 @@ export default function ExperimentalFeaturesSection() {
       label: translations(`features.testRunSearch`),
     },
     {
-      key: FEATURE_FLAGS.INTERNATIONALIZATION,
-      label: translations('features.internationalization'),
-    },
-    {
       key: FEATURE_FLAGS.IS_3270_SCREEN_ENABLED,
       label: translations('features.is3270ScreenEnabled'),
     },

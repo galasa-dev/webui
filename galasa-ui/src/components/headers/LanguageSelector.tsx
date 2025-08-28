@@ -66,7 +66,7 @@ export default function LanguageSelector() {
           focusTrap={true}
           align="bottom"
           flipped
-          renderIcon={() => <Wikis style={{ fill: 'white' }} />}
+          renderIcon={() => <Wikis style={{ fill: 'white', width: '18px', height: '18px' }} />}
           size="lg"
           iconDescription={`${translations('tooltip')} : ${selectedLanguage.text}`}
           aria-label="Filter menu"
