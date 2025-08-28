@@ -251,9 +251,11 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       }
     });
 
-    const encodedQuery = encodeStateToUrlParam(params.toString());
-    const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
-    router.replace(newUrl, { scroll: false });
+    if (pathname === '/test-runs') {
+      const encodedQuery = encodeStateToUrlParam(params.toString());
+      const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    }
   }, [
     selectedVisibleColumns,
     columnsOrder,
