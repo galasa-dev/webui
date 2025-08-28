@@ -20,6 +20,7 @@ import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
+import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -148,14 +149,7 @@ export default function TestRunsDetails({
     }
 
     // If the query doesn't exist, create a new one with a unique name
-    const baseName = nameToSave.split('(')[0].trim();
-    let finalQueryTitle = nameToSave;
-    let counter = 1;
-
-    while (isQuerySaved(finalQueryTitle)) {
-      finalQueryTitle = `${baseName} (${counter})`;
-      counter++;
-    }
+    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
 
     const newQuery = {
       title: finalQueryTitle,

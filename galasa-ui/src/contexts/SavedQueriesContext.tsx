@@ -60,7 +60,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const saveQuery = (query: SavedQueryType) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = [...prevQueries, query];
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -70,7 +69,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       const updatedQueries = prevQueries.map((query) =>
         query.createdAt === createdAt ? updatedQuery : query
       );
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -100,6 +98,11 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
           updatedQueries.push(newDefaultQuery);
           newDefaultQueryId = newDefaultQuery.createdAt;
         }
+
+        console.log(
+          'New Default Query: ',
+          savedQueries.filter((query) => query.createdAt === newDefaultQueryId)
+        );
 
         setMetaData((prevMetaData) => ({
           ...prevMetaData,
@@ -139,6 +142,19 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       ...prevMetaData,
       defaultQueryId: createdAt,
     }));
+
+    // Update saved queries arrangement
+    setSavedQueries((prevQueries) => {
+      const updatedQueries = [...prevQueries];
+      const movedQuery = updatedQueries.find((query) => query.createdAt === createdAt);
+      if (movedQuery) {
+        updatedQueries.splice(updatedQueries.indexOf(movedQuery), 1);
+        updatedQueries.unshift(movedQuery);
+      }
+
+      console.log('Saved Queries: ', updatedQueries);
+      return updatedQueries;
+    });
   };
 
   useEffect(() => {

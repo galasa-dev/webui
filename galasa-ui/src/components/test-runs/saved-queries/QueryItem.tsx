@@ -14,6 +14,9 @@ import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
+import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 
 interface QueryItemProps {
   query: SavedQueryType;
@@ -35,7 +38,8 @@ export default function QueryItem({
   const translations = useTranslations('QueryItem');
   const router = useRouter();
   const pathname = usePathname();
-  const { defaultQuery, setDefaultQuery, getQueryByName, deleteQuery } = useSavedQueries();
+  const { defaultQuery, setDefaultQuery, getQueryByName, deleteQuery, saveQuery, isQuerySaved } =
+    useSavedQueries();
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: query.createdAt,
@@ -52,6 +56,10 @@ export default function QueryItem({
       title: translations('setAsDefault'),
       onClick: () => handleSetQueryAsDefault(query.title),
       disabled: isDefault,
+    },
+    {
+      title: translations('duplicate'),
+      onClick: () => handleDuplicateQuery(query.title),
     },
     {
       title: translations('delete'),
@@ -97,15 +105,15 @@ export default function QueryItem({
 
         setNotification({
           kind: 'success',
-          title: translations('copiedTitle', { name: queryToShare.title }),
-          subtitle: translations('copiedMessage'),
+          title: translations('copiedTitle'),
+          subtitle: translations('copiedMessage', { name: queryToShare.title }),
         });
-        setTimeout(() => setNotification(null), 6000);
+        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
       } catch (err) {
         setNotification({
           kind: 'error',
           title: translations('errorTitle'),
-          subtitle: translations('copyFailedMessage'),
+          subtitle: translations('copyFailedMessage', { name: queryToShare.title }),
         });
       }
     }
@@ -119,10 +127,10 @@ export default function QueryItem({
 
       setNotification({
         kind: 'success',
-        title: translations('setAsDefaultTitle', { name: queryToSetAsDefault.title }),
-        subtitle: translations('setAsDefaultMessage'),
+        title: translations('successTitle'),
+        subtitle: translations('setAsDefaultMessage', { name: queryToSetAsDefault.title }),
       });
-      setTimeout(() => setNotification(null), 6000);
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
   };
 
@@ -134,10 +142,41 @@ export default function QueryItem({
 
       setNotification({
         kind: 'success',
-        title: translations('deleteTitle', { name: queryToDelete.title }),
-        subtitle: translations('deleteMessage'),
+        title: translations('deleteTitle'),
+        subtitle: translations('deleteMessage', { name: queryToDelete.title }),
       });
-      setTimeout(() => setNotification(null), 6000);
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+    }
+  };
+
+  const handleDuplicateQuery = (queryName: string) => {
+    const queryToDuplicate = getQueryByName(queryName);
+
+    if (queryToDuplicate) {
+      const newTitle = generateUniqueQueryName(queryName, isQuerySaved);
+
+      // Create a temporary URLSearchParams object from the existing query's URL
+      const decodedOriginalParams = decodeStateFromUrlParam(queryToDuplicate.url);
+      const tempParams = new URLSearchParams(decodedOriginalParams || {});
+
+      // Update the query name in the temporary params
+      tempParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, newTitle);
+
+      const newQuery = {
+        createdAt: new Date().toISOString(),
+        title: newTitle,
+        // Regenerate URL with new title
+        url: encodeStateToUrlParam(tempParams.toString()),
+      };
+
+      saveQuery(newQuery);
+
+      setNotification({
+        kind: 'success',
+        title: translations('successTitle'),
+        subtitle: translations('duplicateMessage', { name: queryToDuplicate.title }),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
   };
 
