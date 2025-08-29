@@ -99,11 +99,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
           newDefaultQueryId = newDefaultQuery.createdAt;
         }
 
-        console.log(
-          'New Default Query: ',
-          savedQueries.filter((query) => query.createdAt === newDefaultQueryId)
-        );
-
         setMetaData((prevMetaData) => ({
           ...prevMetaData,
           defaultQueryId: newDefaultQueryId,
@@ -152,7 +147,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
         updatedQueries.unshift(movedQuery);
       }
 
-      console.log('Saved Queries: ', updatedQueries);
       return updatedQueries;
     });
   };
