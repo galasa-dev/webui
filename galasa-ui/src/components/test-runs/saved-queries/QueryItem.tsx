@@ -100,7 +100,7 @@ export default function QueryItem({
     if (queryToShare) {
       try {
         await navigator.clipboard.writeText(
-          `${window.location.origin}/${pathname}?q=${queryToShare.url}`
+          `${window.location.origin}${pathname}?q=${queryToShare.url}`
         );
 
         setNotification?.({
