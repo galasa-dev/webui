@@ -23,7 +23,7 @@ interface QueryItemProps {
   disabled?: boolean;
   isCollapsed?: boolean;
   handleEditQueryName?: (queryName: string) => void;
-  setNotification: Dispatch<SetStateAction<NotificationType | null>>;
+  setNotification?: Dispatch<SetStateAction<NotificationType | null>>;
 }
 
 const ICON_SIZE = 18;
@@ -103,14 +103,14 @@ export default function QueryItem({
           `${window.location.origin}/${pathname}?q=${queryToShare.url}`
         );
 
-        setNotification({
+        setNotification?.({
           kind: 'success',
           title: translations('copiedTitle'),
           subtitle: translations('copiedMessage', { name: queryToShare.title }),
         });
-        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+        setTimeout(() => setNotification?.(null), NOTIFICATION_VISIBLE_MILLISECS);
       } catch (err) {
-        setNotification({
+        setNotification?.({
           kind: 'error',
           title: translations('errorTitle'),
           subtitle: translations('copyFailedMessage', { name: queryToShare.title }),
@@ -125,12 +125,12 @@ export default function QueryItem({
     if (queryToSetAsDefault) {
       setDefaultQuery(queryToSetAsDefault.createdAt);
 
-      setNotification({
+      setNotification?.({
         kind: 'success',
         title: translations('successTitle'),
         subtitle: translations('setAsDefaultMessage', { name: queryToSetAsDefault.title }),
       });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      setTimeout(() => setNotification?.(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
   };
 
@@ -140,12 +140,12 @@ export default function QueryItem({
     if (queryToDelete) {
       deleteQuery(queryToDelete.createdAt);
 
-      setNotification({
+      setNotification?.({
         kind: 'success',
         title: translations('deleteTitle'),
         subtitle: translations('deleteMessage', { name: queryToDelete.title }),
       });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      setTimeout(() => setNotification?.(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
   };
 
@@ -171,12 +171,12 @@ export default function QueryItem({
 
       saveQuery(newQuery);
 
-      setNotification({
+      setNotification?.({
         kind: 'success',
         title: translations('successTitle'),
         subtitle: translations('duplicateMessage', { name: queryToDuplicate.title }),
       });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      setTimeout(() => setNotification?.(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
   };
 

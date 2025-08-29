@@ -22,7 +22,31 @@ jest.mock('next/navigation', () => ({
     };
   },
   usePathname() {
-    return '/';
+    return '/test-runs';
+  },
+}));
+
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      dragHandle: 'Drag to reorder',
+      actions: 'Actions',
+      rename: 'Rename',
+      delete: 'Delete',
+      copyToClipboard: 'Copy to Clipboard',
+      setAsDefault: 'Set as Default',
+      duplicate: 'Duplicate',
+      copiedTitle: 'URL copy successful: ',
+      copiedMessage: 'The URL for query "{name}" has been copied to your clipboard.',
+      errorTitle: 'Error',
+      successTitle: 'Success',
+      copyFailedMessage: 'Failed to copy query "{name}" URL',
+      setAsDefaultMessage: 'Query "{name}" is now your default query.',
+      deleteTitle: 'Query Deleted ',
+      deleteMessage: 'The query "{name}" was deleted successfully.',
+      duplicateMessage: 'The query "{name}" was duplicated successfully.',
+    };
+    return translations[key] || key;
   },
 }));
 
@@ -33,6 +57,11 @@ const mockUseSavedQueries = useSavedQueries as jest.Mock;
 jest.mock('@carbon/icons-react', () => ({
   StarFilled: () => <div data-testid="star-icon" />,
   Draggable: (props: any) => <div data-testid="draggable-icon" {...props} />,
+}));
+
+jest.mock('@carbon/react', () => ({
+  OverflowMenu: (props: any) => <div data-testid="overflow-menu" {...props} />,
+  OverflowMenuItem: (props: any) => <div data-testid="overflow-menu-item" {...props} />,
 }));
 
 // Mock test data
