@@ -15,6 +15,7 @@ import {
   useTestRunsQueryParams,
 } from '@/contexts/TestRunsQueryParamsContext';
 import userEvent from '@testing-library/user-event';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 
 const mockUpdateQuery = jest.fn();
 const mockGetQuery = jest.fn();
@@ -63,7 +64,7 @@ jest.mock('@/contexts/SavedQueriesContext', () => ({
   useSavedQueries: jest.fn(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   })),
 }));
@@ -181,7 +182,7 @@ beforeEach(() => {
   (useSavedQueries as jest.Mock).mockImplementation(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   }));
   (Nav.useSearchParams as jest.Mock).mockImplementation(() => mockSearchParams);
@@ -221,6 +222,7 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
+
       const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
@@ -235,7 +237,6 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
-
       const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
@@ -253,6 +254,7 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
+
       const shareButton = screen.getByRole('button', { name: 'copyMessage' });
       await act(async () => {
         shareButton.click();
@@ -308,10 +310,12 @@ describe('TestRunsDetails', () => {
 
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
+      // encode url first
+      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query');
       expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
         ...initialQuery,
         title: 'My Renamed Query',
-        url: 'queryName=My+Renamed+Query', // URL is updated with new name
+        url: encodedURL, // URL is updated with new name
       });
 
       expect(mockSetQueryName).toHaveBeenCalledTimes(1);
@@ -378,6 +382,7 @@ describe('TestRunsDetails', () => {
       );
 
       await user.click(screen.getByRole('button', { name: /edit query name/i }));
+
       const input = screen.getByRole('textbox');
       await user.clear(input);
       await user.type(input, 'Existing Name');
@@ -414,10 +419,11 @@ describe('TestRunsDetails', () => {
 
       // Assert
       await waitFor(() => {
+        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query');
         expect(mockSaveQuery).toHaveBeenCalledTimes(1);
         expect(mockSaveQuery).toHaveBeenCalledWith({
           title: 'New Test Query',
-          url: 'queryName=New+Test+Query',
+          url: encodedURL,
           createdAt: expect.any(String),
         });
       });

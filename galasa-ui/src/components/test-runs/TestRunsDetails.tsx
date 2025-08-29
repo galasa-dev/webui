@@ -11,14 +11,16 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
-import { Button } from '@carbon/react';
-import { Edit, Share } from '@carbon/icons-react';
-import { InlineNotification } from '@carbon/react';
+import { Button, InlineNotification } from '@carbon/react';
+import { Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import QueryName from './QueryName';
+import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -32,7 +34,7 @@ export default function TestRunsDetails({
   const { breadCrumbItems } = useHistoryBreadCrumbs();
   const translations = useTranslations('TestRunsDetails');
 
-  const { saveQuery, isQuerySaved, getQuery, updateQuery } = useSavedQueries();
+  const { saveQuery, isQuerySaved, getQueryByName, updateQuery } = useSavedQueries();
   const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -40,6 +42,8 @@ export default function TestRunsDetails({
   const [editedName, setEditedName] = useState<string>('');
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const activeQuery = getQueryByName(queryName);
 
   // Focus and select the input when editing
   useEffect(() => {
@@ -94,7 +98,7 @@ export default function TestRunsDetails({
     }
 
     // Find the original query using the old name
-    const queryToRename = getQuery(oldName);
+    const queryToRename = getQueryByName(oldName);
 
     // If it was a saved query, perform the rename in storage
     if (queryToRename) {
@@ -104,7 +108,7 @@ export default function TestRunsDetails({
       updateQuery(queryToRename.createdAt, {
         ...queryToRename,
         title: newName,
-        url: updatedUrlParams.toString(),
+        url: encodeStateToUrlParam(updatedUrlParams.toString()),
       });
 
       setNotification({
@@ -126,13 +130,13 @@ export default function TestRunsDetails({
     if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams).toString();
-    const existingQuery = getQuery(nameToSave);
+    const existingQuery = getQueryByName(nameToSave);
 
     // If the query already exists, update it
     if (existingQuery) {
       updateQuery(existingQuery.createdAt, {
         ...existingQuery,
-        url: currentUrlParams,
+        url: encodeStateToUrlParam(currentUrlParams.toString()),
       });
 
       setNotification({
@@ -145,18 +149,11 @@ export default function TestRunsDetails({
     }
 
     // If the query doesn't exist, create a new one with a unique name
-    const baseName = nameToSave.split('(')[0].trim();
-    let finalQueryTitle = nameToSave;
-    let counter = 1;
-
-    while (isQuerySaved(finalQueryTitle)) {
-      finalQueryTitle = `${baseName} (${counter})`;
-      counter++;
-    }
+    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
 
     const newQuery = {
       title: finalQueryTitle,
-      url: currentUrlParams,
+      url: encodeStateToUrlParam(currentUrlParams.toString()),
       createdAt: new Date().toISOString(),
     };
 
@@ -171,8 +168,11 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
+  const isSaveQueryDisabled =
+    activeQuery?.url === encodeStateToUrlParam(searchParams.toString()) || activeQuery?.url === '';
+
   return (
-    <div id="content" className={styles.testRunsPage}>
+    <div className={styles.testRunsPage}>
       <BreadCrumb breadCrumbItems={breadCrumbItems} />
       <PageTile translationKey="TestRun.title" className={styles.toolbar}>
         <div className={styles.toolbarActions}>
@@ -200,35 +200,22 @@ export default function TestRunsDetails({
 
         <div className={styles.mainContent}>
           <div className={styles.queryNameContainer}>
-            <div className={styles.queryNameBlock}>
-              {isEditingName ? (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  onBlur={handleFinishEditing}
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter') {
-                      handleFinishEditing();
-                    }
-                  }}
-                  className={styles.queryNameInput}
-                />
-              ) : (
-                <h3 className={styles.queryNameHeading}>{queryName}</h3>
-              )}
-              <Button
-                kind="ghost"
-                hasIconOnly
-                renderIcon={Edit}
-                iconDescription={translations('editQueryName')}
-                onClick={handleStartEditingName.bind(null, queryName)}
-                size="md"
-              />
-            </div>
+            <QueryName
+              inputRef={inputRef}
+              isEditingName={isEditingName}
+              editedName={editedName}
+              setEditedName={setEditedName}
+              handleFinishEditing={handleFinishEditing}
+              handleStartEditingName={handleStartEditingName}
+              translations={translations}
+            />
 
-            <Button kind="primary" type="button" onClick={handleSaveQuery}>
+            <Button
+              kind="primary"
+              type="button"
+              onClick={handleSaveQuery}
+              disabled={isSaveQueryDisabled}
+            >
               {translations('saveQuery')}
             </Button>
           </div>

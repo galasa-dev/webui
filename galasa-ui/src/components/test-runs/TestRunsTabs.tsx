@@ -170,7 +170,7 @@ export default function TestRunsTabs({
       return response.json() as Promise<TestRunsData>;
     },
     // Only run the query when the results tab is selected
-    enabled: ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]) && isInitialized,
+    enabled: isInitialized && ['results', 'graphs'].includes(TABS_IDS[selectedTabIndex]),
     // Only refetch when the canonical query key changes
     staleTime: Infinity,
   });
@@ -179,7 +179,7 @@ export default function TestRunsTabs({
   const sortedRuns = useMemo(() => {
     const runsToSort = runsData?.runs ? transformRunsforTable(runsData.runs) : [];
 
-    if (sortOrder.length !== 0 && runsToSort.length !== 0) {
+    if (sortOrder.length > 0 && runsToSort.length > 0) {
       return [...runsToSort].sort((runA, runB) => {
         // Sort based on the order of columns in columnsOrder (Assumption: Leftmost has higher priority)
         for (const { id } of columnsOrder) {
@@ -227,58 +227,50 @@ export default function TestRunsTabs({
           </div>
         </TabPanel>
         <TabPanel>
-          <div className={styles.tabContent}>
-            <TableDesignContent
-              selectedRowIds={selectedVisibleColumns}
-              setSelectedRowIds={setSelectedVisibleColumns}
-              tableRows={columnsOrder}
-              visibleColumns={selectedVisibleColumns}
-              columnsOrder={columnsOrder}
-              setTableRows={setColumnsOrder}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-              setVisibleColumns={setSelectedVisibleColumns}
-              setColumnsOrder={setColumnsOrder}
-            />
-          </div>
+          <TableDesignContent
+            selectedRowIds={selectedVisibleColumns}
+            setSelectedRowIds={setSelectedVisibleColumns}
+            tableRows={columnsOrder}
+            visibleColumns={selectedVisibleColumns}
+            columnsOrder={columnsOrder}
+            setTableRows={setColumnsOrder}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            setVisibleColumns={setSelectedVisibleColumns}
+            setColumnsOrder={setColumnsOrder}
+          />
         </TabPanel>
         <TabPanel>
-          <div className={styles.tabContent}>
-            <SearchCriteriaContent
-              requestorNamesPromise={requestorNamesPromise}
-              resultsNamesPromise={resultsNamesPromise}
-              searchCriteria={searchCriteria}
-              setSearchCriteria={setSearchCriteria}
-            />
-          </div>
+          <SearchCriteriaContent
+            requestorNamesPromise={requestorNamesPromise}
+            resultsNamesPromise={resultsNamesPromise}
+            searchCriteria={searchCriteria}
+            setSearchCriteria={setSearchCriteria}
+          />
         </TabPanel>
         <TabPanel>
-          <div className={styles.tabContent}>
-            <TestRunsTable
-              runsList={sortedRuns ?? []}
-              limitExceeded={runsData?.limitExceeded ?? false}
-              visibleColumns={selectedVisibleColumns}
-              orderedHeaders={columnsOrder}
-              isLoading={isLoading}
-              isError={isError}
-              isRelativeToNow={timeframeValues.isRelativeToNow}
-              durationDays={timeframeValues.durationDays}
-              durationHours={timeframeValues.durationHours}
-              durationMinutes={timeframeValues.durationMinutes}
-            />
-          </div>
+          <TestRunsTable
+            runsList={sortedRuns ?? []}
+            limitExceeded={runsData?.limitExceeded ?? false}
+            visibleColumns={selectedVisibleColumns}
+            orderedHeaders={columnsOrder}
+            isLoading={isLoading}
+            isError={isError}
+            isRelativeToNow={timeframeValues.isRelativeToNow}
+            durationDays={timeframeValues.durationDays}
+            durationHours={timeframeValues.durationHours}
+            durationMinutes={timeframeValues.durationMinutes}
+          />
         </TabPanel>
         {isGraphEnabled && (
           <TabPanel>
-            <div className={styles.tabContent}>
-              <TestRunGraph
-                runsList={sortedRuns ?? []}
-                limitExceeded={runsData?.limitExceeded ?? false}
-                visibleColumns={selectedVisibleColumns}
-                isLoading={isLoading}
-                isError={isError}
-              />
-            </div>
+            <TestRunGraph
+              runsList={sortedRuns ?? []}
+              limitExceeded={runsData?.limitExceeded ?? false}
+              visibleColumns={selectedVisibleColumns}
+              isLoading={isLoading}
+              isError={isError}
+            />
           </TabPanel>
         )}
       </TabPanels>
