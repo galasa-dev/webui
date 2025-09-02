@@ -241,19 +241,11 @@
   },
   "3270Tab": {
     "Terminal": "Terminal",
-    "ScreenNumber": "Screen Number",
-    "Time": "Time",
-    "Method": "Method",
+    "screenNumber": "Screen Number",
     "searchPlaceholder": "Search",
-    "pagination": {
-      "backwardText": "Previous page",
-      "forwardText": "Next page",
-      "itemsPerPageText": "Items per page:",
-      "pageNumberText": "Page Number",
-      "of": "of",
-      "items": "items",
-      "pages": "pages"
-    }
+    "nextImage": "Next image",
+    "previousImage": "Previous image",
+    "downloadImage": "Download terminal"
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",

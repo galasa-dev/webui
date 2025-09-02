@@ -380,7 +380,7 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
   ];
 
   const mockCorrectFlattenedZos3270TerminalData: any = [
-    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 101 },
+    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 101 },
   ];
 
   const mockCorrectAllImageData: any = [
@@ -475,7 +475,7 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
       {
         id: 'image-4',
         Terminal: 'image',
-        ScreenNumber: 4,
+        screenNumber: 4,
       },
     ]);
   });

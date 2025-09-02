@@ -83,7 +83,7 @@ export interface ColumnDefinition {
 export interface CellFor3270 {
   id: string;
   Terminal: string;
-  ScreenNumber: number;
+  screenNumber: number;
 }
 
 export interface TerminalImageField {

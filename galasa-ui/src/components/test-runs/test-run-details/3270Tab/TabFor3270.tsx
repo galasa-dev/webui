@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
 import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
+import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
@@ -24,6 +25,9 @@ export default function TabFor3270({
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageData, setImageData] = useState<TerminalImage | undefined>(undefined);
+  const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
+  const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
+  const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
 
   const current = useTheme().theme;
   let theme: 'light' | 'dark';
@@ -53,10 +57,21 @@ export default function TabFor3270({
           setIsError={setIsError}
           setIsLoading={setIsLoading}
           setImageData={setImageData}
+          moveImageSelection={moveImageSelection}
+          setMoveImageSelection={setMoveImageSelection}
+          setCannotSwitchToPreviousImage={setCannotSwitchToPreviousImage}
+          setCannotSwitchToNextImage={setCannotSwitchToNextImage}
         />
       </div>
 
-      <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
+      {/* <div className={styles.screenshotContainer}>
+        <ScreenshotToolbar setMoveImageSelection={setMoveImageSelection} cannotSwitchToPreviousImage={cannotSwitchToPreviousImage} cannotSwitchToNextImage={cannotSwitchToNextImage} isLoading={isLoading}/>
+        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
+      </div> */}
+
+      <div className={styles.screenshotContainer}>
+        <p>Image rendering coming soon!</p>
+      </div>
     </div>
   );
 }

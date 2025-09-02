@@ -18,7 +18,6 @@ import {
   Dropdown,
   TableToolbarSearch,
   TableToolbarContent,
-  TableContainer,
 } from '@carbon/react';
 import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
@@ -42,6 +41,10 @@ export default function TableOfScreenshots({
   setIsError,
   setIsLoading,
   setImageData,
+  moveImageSelection,
+  setMoveImageSelection,
+  setCannotSwitchToPreviousImage,
+  setCannotSwitchToNextImage,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
@@ -49,6 +52,10 @@ export default function TableOfScreenshots({
   setIsError: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setImageData: React.Dispatch<React.SetStateAction<TerminalImage | undefined>>;
+  moveImageSelection: number;
+  setMoveImageSelection: React.Dispatch<React.SetStateAction<number>>;
+  setCannotSwitchToPreviousImage: React.Dispatch<React.SetStateAction<boolean>>;
+  setCannotSwitchToNextImage: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const translations = useTranslations('3270Tab');
   const headers = [
@@ -57,25 +64,24 @@ export default function TableOfScreenshots({
       header: translations('Terminal'),
     },
     {
-      key: 'ScreenNumber',
-      header: translations('ScreenNumber'),
+      key: 'screenNumber',
+      header: translations('screenNumber'),
     },
   ];
 
   const [flattenedZos3270TerminalData, setFlattenedZos3270TerminalData] = useState<CellFor3270[]>(
     []
   );
-  const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
+  const [highlightedRowId, setHighlightedRowId] = useState<string>('');
+  const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
 
   let screenshotsCollected: boolean = false;
+  let initialHighlightedRowSet: boolean = false;
 
-  const handleRowClick = (runId: string, screenshotId: string) => {
-    const newImageData: TerminalImage = allImageData.find(
-      (image) => image.id === screenshotId
-    ) as TerminalImage;
-    setImageData(newImageData);
+  const handleRowClick = (rowId: string) => {
+    setHighlightedRowId(rowId);
   };
 
   const terminalnames = useMemo(() => {
@@ -106,6 +112,14 @@ export default function TableOfScreenshots({
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
 
   useEffect(() => {
+    // Highlight and display first element when the page loads.
+    if (!initialHighlightedRowSet && filteredRows[0]) {
+      initialHighlightedRowSet = true;
+      setHighlightedRowId(filteredRows[0].id);
+    }
+  }, [filteredRows]);
+
+  useEffect(() => {
     // Ensure screenshots are only collected once.
     if (!screenshotsCollected) {
       screenshotsCollected = true;
@@ -133,54 +147,118 @@ export default function TableOfScreenshots({
     }
   }, []);
 
+  // When highlighted image changes, update image data.
+  useEffect(() => {
+    const newImageData: TerminalImage = allImageData.find(
+      (image) => image.id === highlightedRowId
+    ) as TerminalImage;
+
+    setImageData(newImageData);
+  }, [highlightedRowId, allImageData]);
+
+  useEffect(() => {
+    if (highlightedRowId != '') {
+      // Get new image index
+      const currentImgIndex = filteredRows.findIndex((row) => row.id === highlightedRowId);
+      // MoveImageSelection will be -1 if moving to the previous image, or 1 if moving to the next.
+      const newIndex = currentImgIndex + moveImageSelection;
+
+      const filteredRowsLength = filteredRows.length;
+      if (newIndex >= 0 && newIndex < filteredRowsLength) {
+        setHighlightedRowId(filteredRows[newIndex].id);
+      }
+
+      // Scroll to new image selection, particulary helpful when changing terminals.
+      if (filteredRows[newIndex]) {
+        const selectedTableRow = document.getElementById(filteredRows[newIndex].id);
+        if (selectedTableRow) {
+          selectedTableRow.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+          });
+        }
+      }
+
+      // Check for boundary items in screenshot table.
+      if (newIndex === 0) {
+        setCannotSwitchToPreviousImage(true);
+      } else {
+        setCannotSwitchToPreviousImage(false);
+      }
+
+      if (newIndex === filteredRowsLength - 1) {
+        setCannotSwitchToNextImage(true);
+      } else {
+        setCannotSwitchToNextImage(false);
+      }
+
+      setMoveImageSelection(0);
+    }
+  }, [moveImageSelection, filteredRows, highlightedRowId]);
+
   if (isLoading) {
     return (
-      <DataTableSkeleton
-        data-testid="loading-table-skeleton"
-        columnCount={headers.length}
-        rowCount={15}
-      />
+      <div className={styles.loadingTable}>
+        <div className={styles.tableToolSearchBar}>
+          <TableToolbarSearch
+            placeholder={translations('searchPlaceholder')}
+            persistent
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchTerm(e.target.value);
+            }}
+          />
+        </div>
+
+        <DataTableSkeleton
+          role="loading-table-skeleton"
+          columnCount={headers.length}
+          rowCount={8}
+        />
+      </div>
     );
   }
-
   return (
-    <DataTable isSortable rows={filteredRows} headers={headers} stickyHeader>
-      {({
-        rows,
-        headers,
-        getTableProps,
-        getHeaderProps,
-        getRowProps,
-      }: {
-        rows: DataTableRow[];
-        headers: DataTableHeader[];
-        getHeaderProps: (options: any) => TableHeadProps;
-        getRowProps: (options: any) => TableRowProps;
-        getTableProps: () => TableBodyProps;
-      }) => (
-        <TableContainer>
-          <TableToolbarContent>
-            <TableToolbarSearch
-              placeholder={translations('searchPlaceholder')}
-              persistent
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setSearchTerm(e.target.value);
+    <>
+      {/* TableToolbarContent cannot go inside DataTable due to conflicting stickyHeader prop causing dropdown to underlap the table */}
+      <div className={styles.tableToolSearchBar}>
+        <TableToolbarContent>
+          <TableToolbarSearch
+            placeholder={translations('searchPlaceholder')}
+            persistent
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchTerm(e.target.value);
+            }}
+          />
+          {/* Length must be greater than 2 due to one of the terminal names being "any". */}
+          {terminalnames.length > 2 && (
+            <Dropdown
+              className={styles.terminalDropdownMenu}
+              label="Select a terminal"
+              items={terminalnames}
+              itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
+              onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
+                setSelectedTerminal(selectedItem);
               }}
+              selectedItem={selectedTerminal}
             />
-            {/* Length must be greater than 2 due to one of the terminal names being "any". */}
-            {terminalnames.length > 2 && (
-              <Dropdown
-                className={styles.terminalDropdownMenu}
-                label="Select a terminal"
-                items={terminalnames}
-                itemToString={(item: DropdownOption | null) => (item ? item.label : '')}
-                onChange={({ selectedItem }: { selectedItem: DropdownOption | null }) => {
-                  setSelectedTerminal(selectedItem);
-                }}
-                selectedItem={selectedTerminal}
-              />
-            )}
-          </TableToolbarContent>
+          )}
+        </TableToolbarContent>
+      </div>
+
+      <DataTable isSortable rows={filteredRows} headers={headers} stickyHeader>
+        {({
+          rows,
+          headers,
+          getTableProps,
+          getHeaderProps,
+          getRowProps,
+        }: {
+          rows: DataTableRow[];
+          headers: DataTableHeader[];
+          getHeaderProps: (options: any) => TableHeadProps;
+          getRowProps: (options: any) => TableRowProps;
+          getTableProps: () => TableBodyProps;
+        }) => (
           <Table stickyHeader {...getTableProps()} className={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
@@ -195,20 +273,31 @@ export default function TableOfScreenshots({
               {rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  id={row.id}
                   {...getRowProps({ row })}
-                  onClick={() => handleRowClick(runId, row.id)}
+                  onClick={() => handleRowClick(row.id)}
                   className={styles.clickableRow}
-                  data-testid="table-row"
+                  role="table-row"
                 >
                   {row.cells.map((cell) => (
-                    <TableCell key={cell.id}>{cell.value}</TableCell>
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        backgroundColor:
+                          highlightedRowId === row.id
+                            ? 'rgba(124, 124, 124, 0.468)'
+                            : 'transparent',
+                      }}
+                    >
+                      {cell.value}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
-      )}
-    </DataTable>
+        )}
+      </DataTable>
+    </>
   );
 }

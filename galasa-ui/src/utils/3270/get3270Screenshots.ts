@@ -67,7 +67,7 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: any[
     flattenedZos3270TerminalData.push({
       id: image.id,
       Terminal: result.terminalName,
-      ScreenNumber: result.screenNumber,
+      screenNumber: result.screenNumber,
     });
 
     // Populate all image data for screenshot rendering.
@@ -106,7 +106,7 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
   // Sort terminal data according to terminal name descending, then screen number descending.
   flattenedZos3270TerminalData.sort(function (a, b) {
     if (a.Terminal === b.Terminal) {
-      return a.ScreenNumber - b.ScreenNumber;
+      return a.screenNumber - b.screenNumber;
     }
     return a.Terminal > b.Terminal ? 1 : -1;
   });

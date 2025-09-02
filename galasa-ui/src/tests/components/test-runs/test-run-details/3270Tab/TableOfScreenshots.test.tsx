@@ -21,9 +21,7 @@ jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
     const translations: Record<string, string> = {
       Terminal: 'Terminal',
-      ScreenNumber: 'Screen Number',
-      Time: 'Time',
-      Method: 'Method',
+      screenNumber: 'Screen Number',
       searchPlaceholder: 'Search',
       ariaLabel: 'ariaLabel',
       'pagination.backwardText': 'Previous page',
@@ -51,6 +49,10 @@ const defaultProps = {
   zos3270TerminalData: [],
   runId: 'testRunId',
   setIsError: jest.fn(),
+  moveImageSelection: 0,
+  setMoveImageSelection: jest.fn(),
+  setCannotSwitchToPreviousImage: jest.fn(),
+  setCannotSwitchToNextImage: jest.fn(),
 };
 
 jest.mock('@/utils/3270/get3270Screenshots', () => {
@@ -63,27 +65,31 @@ jest.mock('@/utils/3270/get3270Screenshots', () => {
 });
 const mockGet3270Screenshots = get3270Screenshots as jest.Mock;
 
+beforeAll(() => {
+  Element.prototype.scrollIntoView = jest.fn();
+});
+
 type MockData = {
   newFlattenedZos3270TerminalData: CellFor3270[];
   newAllImageData: TerminalImage[];
 };
 
 const emptyMockData: MockData = {
-  newFlattenedZos3270TerminalData: [{ id: '', Terminal: '', ScreenNumber: 0 }],
+  newFlattenedZos3270TerminalData: [{ id: '', Terminal: '', screenNumber: 0 }],
   newAllImageData: [{ id: '', imageFields: [] }],
 };
 
 const someMockData: MockData = {
   newFlattenedZos3270TerminalData: [
-    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 },
+    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
   ],
   newAllImageData: [{ id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] }],
 };
 
 const mockData: MockData = {
   newFlattenedZos3270TerminalData: [
-    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', ScreenNumber: 1 },
-    { id: 'IYK2ZNB5_2-101', Terminal: 'IYK2ZNB5_2', ScreenNumber: 1 },
+    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
+    { id: 'IYK2ZNB5_2-101', Terminal: 'IYK2ZNB5_2', screenNumber: 1 },
   ],
   newAllImageData: [
     { id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] },
@@ -106,7 +112,7 @@ describe('TableOfScreenshots', () => {
     );
 
     // Assert
-    expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
+    expect(screen.getByRole('loading-table-skeleton')).toBeInTheDocument();
   });
 
   test('fetches data then sets isLoading to false', async () => {
@@ -150,7 +156,7 @@ describe('TableOfScreenshots', () => {
       );
     });
 
-    const rowClickElement = await screen.findByTestId('table-row');
+    const rowClickElement = await screen.findByRole('table-row');
 
     await user.click(rowClickElement);
 

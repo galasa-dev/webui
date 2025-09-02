@@ -16,11 +16,10 @@ export default function DisplayTerminalScreenshot({
   isLoading: boolean;
 }) {
   return (
-    // <img
-    //   className={styles.screenshot}
-    //   src={`/static/example-terminal-screenshot.png`}
-    //   alt="Placeholder image"
-    // />
-    <></>
+    <img
+      className={styles.screenshot}
+      src={`/static/example-terminal-screenshot.png`}
+      alt="Placeholder image"
+    />
   );
 }
