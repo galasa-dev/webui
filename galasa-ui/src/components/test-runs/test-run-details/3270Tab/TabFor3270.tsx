@@ -28,6 +28,7 @@ export default function TabFor3270({
   const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
   const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
   const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
+  const [highlightedRowInDisplayedData, setHighlightedRowInDisplayedData] = useState<boolean>(true);
 
   const current = useTheme().theme;
   let theme: 'light' | 'dark';
@@ -61,16 +62,21 @@ export default function TabFor3270({
           setMoveImageSelection={setMoveImageSelection}
           setCannotSwitchToPreviousImage={setCannotSwitchToPreviousImage}
           setCannotSwitchToNextImage={setCannotSwitchToNextImage}
+          highlightedRowInDisplayedData={highlightedRowInDisplayedData}
+          setHighlightedRowInDisplayedData={setHighlightedRowInDisplayedData}
         />
       </div>
 
-      {/* <div className={styles.screenshotContainer}>
-        <ScreenshotToolbar setMoveImageSelection={setMoveImageSelection} cannotSwitchToPreviousImage={cannotSwitchToPreviousImage} cannotSwitchToNextImage={cannotSwitchToNextImage} isLoading={isLoading}/>
-        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
-      </div> */}
-
       <div className={styles.screenshotContainer}>
+        <ScreenshotToolbar
+          setMoveImageSelection={setMoveImageSelection}
+          cannotSwitchToPreviousImage={cannotSwitchToPreviousImage}
+          cannotSwitchToNextImage={cannotSwitchToNextImage}
+          highlightedRowInDisplayedData={highlightedRowInDisplayedData}
+          isLoading={isLoading}
+        />
         <p>Image rendering coming soon!</p>
+        {/* <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} /> */}
       </div>
     </div>
   );

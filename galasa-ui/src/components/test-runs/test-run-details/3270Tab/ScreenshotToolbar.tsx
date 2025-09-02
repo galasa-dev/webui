@@ -16,11 +16,13 @@ export default function ScreenshotToolbar({
   setMoveImageSelection,
   cannotSwitchToPreviousImage,
   cannotSwitchToNextImage,
+  highlightedRowInDisplayedData,
   isLoading,
 }: {
   setMoveImageSelection: React.Dispatch<React.SetStateAction<number>>;
   cannotSwitchToPreviousImage: boolean;
   cannotSwitchToNextImage: boolean;
+  highlightedRowInDisplayedData: boolean;
   isLoading: boolean;
 }) {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
@@ -42,7 +44,7 @@ export default function ScreenshotToolbar({
         kind="ghost"
         hasIconOnly
         renderIcon={ChevronLeft}
-        disabled={cannotSwitchToPreviousImage || isLoading}
+        disabled={cannotSwitchToPreviousImage || !highlightedRowInDisplayedData || isLoading}
         iconDescription={translations('previousImage')}
       />
 
@@ -52,7 +54,7 @@ export default function ScreenshotToolbar({
         kind="ghost"
         hasIconOnly
         renderIcon={ChevronRight}
-        disabled={cannotSwitchToNextImage || isLoading}
+        disabled={cannotSwitchToNextImage || !highlightedRowInDisplayedData || isLoading}
         iconDescription={translations('nextImage')}
       />
 

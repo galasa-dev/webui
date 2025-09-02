@@ -45,6 +45,8 @@ export default function TableOfScreenshots({
   setMoveImageSelection,
   setCannotSwitchToPreviousImage,
   setCannotSwitchToNextImage,
+  highlightedRowInDisplayedData,
+  setHighlightedRowInDisplayedData,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
@@ -56,6 +58,8 @@ export default function TableOfScreenshots({
   setMoveImageSelection: React.Dispatch<React.SetStateAction<number>>;
   setCannotSwitchToPreviousImage: React.Dispatch<React.SetStateAction<boolean>>;
   setCannotSwitchToNextImage: React.Dispatch<React.SetStateAction<boolean>>;
+  highlightedRowInDisplayedData: boolean;
+  setHighlightedRowInDisplayedData: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const translations = useTranslations('3270Tab');
   const headers = [
@@ -76,9 +80,9 @@ export default function TableOfScreenshots({
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
   const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
+  const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
   let screenshotsCollected: boolean = false;
-  let initialHighlightedRowSet: boolean = false;
 
   const handleRowClick = (rowId: string) => {
     setHighlightedRowId(rowId);
@@ -113,11 +117,25 @@ export default function TableOfScreenshots({
 
   useEffect(() => {
     // Highlight and display first element when the page loads.
-    if (!initialHighlightedRowSet && filteredRows[0]) {
-      initialHighlightedRowSet = true;
-      setHighlightedRowId(filteredRows[0].id);
-    }
-  }, [filteredRows]);
+    const highlightFirstRowOnPageLoad = () => {
+      if (!initialHighlightedRowSet && filteredRows[0]) {
+        setInitialHighlightedRowSet(true);
+        setHighlightedRowId(filteredRows[0].id);
+      }
+    };
+
+    // When the filtered rows change, ensure the buttons to move to the next/ previous images are disabled.
+    const checkHighlightedRowInFilteredRows = () => {
+      if (filteredRows.findIndex((row) => row.id === highlightedRowId) >= 0) {
+        setHighlightedRowInDisplayedData(true);
+      } else {
+        setHighlightedRowInDisplayedData(false);
+      }
+    };
+
+    highlightFirstRowOnPageLoad();
+    checkHighlightedRowInFilteredRows();
+  }, [filteredRows, highlightedRowId]);
 
   useEffect(() => {
     // Ensure screenshots are only collected once.
@@ -156,45 +174,33 @@ export default function TableOfScreenshots({
     setImageData(newImageData);
   }, [highlightedRowId, allImageData]);
 
+  // Handle previous/ next image buttons.
   useEffect(() => {
-    if (highlightedRowId != '') {
-      // Get new image index
+    if (highlightedRowId != '' && highlightedRowInDisplayedData) {
       const currentImgIndex = filteredRows.findIndex((row) => row.id === highlightedRowId);
       // MoveImageSelection will be -1 if moving to the previous image, or 1 if moving to the next.
       const newIndex = currentImgIndex + moveImageSelection;
-
       const filteredRowsLength = filteredRows.length;
+
       if (newIndex >= 0 && newIndex < filteredRowsLength) {
         setHighlightedRowId(filteredRows[newIndex].id);
-      }
-
-      // Scroll to new image selection, particulary helpful when changing terminals.
-      if (filteredRows[newIndex]) {
-        const selectedTableRow = document.getElementById(filteredRows[newIndex].id);
-        if (selectedTableRow) {
-          selectedTableRow.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-          });
+        if (filteredRows[newIndex]) {
+          const selectedTableRow = document.getElementById(filteredRows[newIndex].id);
+          if (selectedTableRow) {
+            selectedTableRow.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+            });
+          }
         }
       }
-
       // Check for boundary items in screenshot table.
-      if (newIndex === 0) {
-        setCannotSwitchToPreviousImage(true);
-      } else {
-        setCannotSwitchToPreviousImage(false);
-      }
-
-      if (newIndex === filteredRowsLength - 1) {
-        setCannotSwitchToNextImage(true);
-      } else {
-        setCannotSwitchToNextImage(false);
-      }
+      setCannotSwitchToPreviousImage(newIndex === 0);
+      setCannotSwitchToNextImage(newIndex === filteredRowsLength - 1);
 
       setMoveImageSelection(0);
     }
-  }, [moveImageSelection, filteredRows, highlightedRowId]);
+  }, [moveImageSelection, filteredRows, highlightedRowInDisplayedData]);
 
   if (isLoading) {
     return (
@@ -245,7 +251,7 @@ export default function TableOfScreenshots({
         </TableToolbarContent>
       </div>
 
-      <DataTable isSortable rows={filteredRows} headers={headers} stickyHeader>
+      <DataTable rows={filteredRows} headers={headers} stickyHeader>
         {({
           rows,
           headers,

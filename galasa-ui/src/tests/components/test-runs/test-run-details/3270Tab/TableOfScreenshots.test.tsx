@@ -53,6 +53,8 @@ const defaultProps = {
   setMoveImageSelection: jest.fn(),
   setCannotSwitchToPreviousImage: jest.fn(),
   setCannotSwitchToNextImage: jest.fn(),
+  highlightedRowInDisplayedData: true,
+  setHighlightedRowInDisplayedData: jest.fn(),
 };
 
 jest.mock('@/utils/3270/get3270Screenshots', () => {
