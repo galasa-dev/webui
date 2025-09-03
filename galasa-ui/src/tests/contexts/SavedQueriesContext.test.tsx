@@ -47,7 +47,6 @@ const TestComponent = () => {
     setSavedQueries,
     saveQuery,
     updateQuery,
-    renameQuery,
     deleteQuery,
     isQuerySaved,
     getQuery,
@@ -79,9 +78,6 @@ const TestComponent = () => {
         }
       >
         Update Existing Query
-      </button>
-      <button onClick={() => renameQuery('existing-id', 'Renamed Query')}>
-        Rename Existing Query
       </button>
       <button onClick={() => deleteQuery('existing-id')}>Delete Existing Query</button>
       <button onClick={() => setDefaultQuery('another-id')}>Set New Default</button>
@@ -187,29 +183,6 @@ describe('SavedQueriesContext', () => {
         expect(localStorageSetItemSpy).toHaveBeenCalledWith(
           'savedQueries',
           expect.stringContaining('"url":"updated-url"')
-        );
-      });
-    });
-
-    test('should rename an existing query and localStorage', async () => {
-      localStorage.setItem('savedQueries', JSON.stringify(initialQueries));
-      render(
-        <SavedQueriesProvider>
-          <TestComponent />
-        </SavedQueriesProvider>
-      );
-
-      fireEvent.click(screen.getByRole('button', { name: 'Rename Existing Query' }));
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            'Saved Queries: ["Tests ran in the last 24 hours","Renamed Query","Another Query"]'
-          )
-        ).toBeInTheDocument();
-        expect(localStorageSetItemSpy).toHaveBeenCalledWith(
-          'savedQueries',
-          expect.stringContaining('"title":"Renamed Query"')
         );
       });
     });

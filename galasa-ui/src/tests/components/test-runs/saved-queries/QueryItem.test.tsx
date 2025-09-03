@@ -13,6 +13,19 @@ import { SavedQueryType } from '@/utils/types/common';
 import QueryItem from '@/components/test-runs/saved-queries/QueryItem';
 import * as dndKitSortable from '@dnd-kit/sortable';
 
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      push: jest.fn(),
+      replace: jest.fn(),
+    };
+  },
+  usePathname() {
+    return '/';
+  },
+}));
+
 // Mock the context hook
 jest.mock('@/contexts/SavedQueriesContext');
 const mockUseSavedQueries = useSavedQueries as jest.Mock;
@@ -58,9 +71,8 @@ describe('QueryItem', () => {
   test('should render the query title and correct link', () => {
     render(<QueryItem query={standardQuery} />);
 
-    const linkElement = screen.getByRole('link', { name: 'Standard Query' });
+    const linkElement = screen.getByRole('button', { name: 'Standard Query' });
     expect(linkElement).toBeInTheDocument();
-    expect(linkElement).toHaveAttribute('href', '?q=standard-url');
   });
 
   test('should display a drag handle icon and not the star icon', () => {
