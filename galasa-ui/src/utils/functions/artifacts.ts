@@ -18,6 +18,8 @@ export interface FolderNode {
   children: { [key: string]: TreeNodeData };
 }
 
+export type TreeNodeData = FileNode | FolderNode;
+
 export interface ArtifactDetails {
   artifactFile: string;
   fileSize: string;
@@ -25,7 +27,5 @@ export interface ArtifactDetails {
   base64Data: string;
   contentType: string;
 }
-
-export type TreeNodeData = FileNode | FolderNode;
 
 export type DownloadResult = { contentType: string; data: string; size: number; base64: string };

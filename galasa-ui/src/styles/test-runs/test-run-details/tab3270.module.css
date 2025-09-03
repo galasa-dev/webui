@@ -1,0 +1,75 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+.tab3270Container {
+  height: calc(100vh - 400px);
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.tableOfScreenshotsContainer {
+  width: 43%;
+  min-width: 400px;
+  overflow-x: hidden;
+  padding-right: 1px;
+  float: left;
+}
+
+.innerScreenshotTable {
+  max-height: calc(100vh - 450px);
+  overflow-y: auto;
+  /* Stops sticky header overlapping table elements when scrollToTop() is called. */
+  scroll-padding-top: 48px;
+}
+
+.loadingTable {
+  max-height: calc(100vh - 402px);
+  overflow-y: auto;
+}
+
+.lightTheme {
+  color-scheme: light;
+}
+
+.darkTheme {
+  color-scheme: dark;
+}
+
+.terminalDropdownMenu {
+  padding-left: 8px;
+  width: max-content;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.tableToolSearchBar {
+  z-index: 1;
+  position: relative;
+}
+
+.screenshotContainer {
+  width: 56%;
+  height: 100%;
+  min-width: 400px;
+  max-width: 850px;
+  top: 90px;
+  padding-left: 30px;
+  float: left;
+  flex-direction: column;
+}
+
+.screenshotToolbar {
+  max-width: 100%;
+  height: 48px;
+  display: flex;
+}
+
+.screenshot {
+  max-height: calc(100% - 48px);
+  max-width: 100%;
+}
