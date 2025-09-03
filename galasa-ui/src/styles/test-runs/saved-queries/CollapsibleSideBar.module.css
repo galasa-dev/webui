@@ -28,12 +28,12 @@
   overflow: hidden;
   flex-shrink: 0;
   transition:
-    width 0.2s ease-in-out,
-    max-width 0.2s ease-in-out;
+  width 0.2s ease-in-out,
+  max-width 0.2s ease-in-out;
 }
 
 .sideNavExpanded {
-  width: 360px;
+  width: 320px;
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
