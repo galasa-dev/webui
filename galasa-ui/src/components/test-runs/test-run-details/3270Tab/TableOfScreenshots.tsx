@@ -27,10 +27,10 @@ import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 interface DropdownOption {
-  id: string;
+  id: string; 
   label: string;
 }
 
@@ -172,6 +172,7 @@ export default function TableOfScreenshots({
     ) as TerminalImage;
 
     setImageData(newImageData);
+    console.log("HELLO " + JSON.stringify(newImageData));
   }, [highlightedRowId, allImageData]);
 
   // Handle previous/ next image buttons.

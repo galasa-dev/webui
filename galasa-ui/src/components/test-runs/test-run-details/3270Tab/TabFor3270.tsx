@@ -7,12 +7,12 @@
 'use client';
 import React, { useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
-import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
+// import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
-import { TerminalImage } from '@/utils/interfaces/common';
+import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabFor3270({
@@ -75,7 +75,6 @@ export default function TabFor3270({
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
         />
-        <p>Image rendering coming soon!</p>
         {/* <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} /> */}
       </div>
     </div>

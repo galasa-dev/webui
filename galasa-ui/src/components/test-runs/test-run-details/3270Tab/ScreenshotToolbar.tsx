@@ -7,7 +7,7 @@
 'use client';
 import React, { useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { TerminalImage } from '@/utils/interfaces/common';
+import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { ChevronRight, ChevronLeft, CloudDownload } from '@carbon/icons-react';
 import { Button, Loading } from '@carbon/react';
 import { useTranslations } from 'next-intl';

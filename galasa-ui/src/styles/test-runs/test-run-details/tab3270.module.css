@@ -73,3 +73,8 @@
   max-height: calc(100% - 48px);
   max-width: 100%;
 }
+
+.skeletonScreenshot{
+  height: calc(100% - 48px);
+  width: 100%;
+}

@@ -10,6 +10,7 @@ import {
   flattenedZos3270TerminalData,
   allImageData,
 } from '@/utils/3270/get3270Screenshots';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 describe('splitScreenAndTerminal', () => {
   beforeEach(() => {
@@ -62,7 +63,7 @@ describe('splitScreenAndTerminal', () => {
 
 describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageData', () => {
   // Example given is only a single image.
-  const mockImages: any = [
+  const mockImages: TerminalImage[] = [
     {
       sequence: 101,
       id: 'IYK2ZNB5_1-101',
@@ -221,225 +222,171 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
           fieldSelectorPen: true,
           contents: [{ text: '1 ERROR                            ' }],
         },
-        {
-          row: 22,
-          column: 48,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: 'TIME: 07.01.16  DATE: 08/05/25 ' }],
-        },
-        {
-          row: 23,
-          column: 0,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'PF' }],
-        },
-        {
-          row: 23,
-          column: 3,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '1' }],
-        },
-        {
-          row: 23,
-          column: 5,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'HELP' }],
-        },
-        {
-          row: 23,
-          column: 10,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '     ' }],
-        },
-        {
-          row: 23,
-          column: 16,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '3' }],
-        },
-        {
-          row: 23,
-          column: 18,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'END' }],
-        },
-        {
-          row: 23,
-          column: 22,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '     ' }],
-        },
-        {
-          row: 23,
-          column: 28,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '5' }],
-        },
-        {
-          row: 23,
-          column: 30,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'VAR' }],
-        },
-        {
-          row: 23,
-          column: 34,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '      ' }],
-        },
-        {
-          row: 23,
-          column: 41,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '7' }],
-        },
-        {
-          row: 23,
-          column: 43,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'SBH' }],
-        },
-        {
-          row: 23,
-          column: 47,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '8' }],
-        },
-        {
-          row: 23,
-          column: 49,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'SFH' }],
-        },
-        {
-          row: 23,
-          column: 53,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '9' }],
-        },
-        {
-          row: 23,
-          column: 55,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'MSG' }],
-        },
-        {
-          row: 23,
-          column: 59,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '10' }],
-        },
-        {
-          row: 23,
-          column: 62,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'SB' }],
-        },
-        {
-          row: 23,
-          column: 65,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '11' }],
-        },
-        {
-          row: 23,
-          column: 68,
-          fieldIntenseDisplay: true,
-          fieldSelectorPen: true,
-          contents: [{ text: 'SF' }],
-        },
-        {
-          row: 23,
-          column: 71,
-          fieldProtected: true,
-          fieldDisplay: true,
-          contents: [{ text: '        ' }],
-        },
       ],
     },
   ];
 
-  const mockCorrectFlattenedZos3270TerminalData: any = [
+  const mockCorrectFlattenedZos3270TerminalData: CellFor3270[] = [
     { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 101 },
   ];
 
-  const mockCorrectAllImageData: any = [
+  const mockCorrectAllImageData: TerminalImage[] = [
     {
       id: 'IYK2ZNB5_1-101',
-      imageFields: [
+      sequence: 101,
+      imageSize: { columns: 80, rows: 24 },
+      cursorRow: 1,
+      cursorColumn: 25,
+      aid: 'PF9',
+      fields: [
         {
           row: 0,
           column: 0,
-          text: ' INQUIRE PROGRAM(NONEX)                                                       ',
+          contents: [
+            {
+              text: ' INQUIRE PROGRAM(NONEX)                                                       ',
+            },
+          ],
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
         },
-        { row: 0, column: 79, text: ' ' },
-        { row: 1, column: 1, text: 'STATUS: ' },
+        {
+          row: 0,
+          column: 79,
+          contents: [{ text: ' ' }],
+          fieldProtected: true,
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
+        },
+        {
+          row: 1,
+          column: 1,
+          contents: [{ text: 'STATUS: ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
         {
           row: 1,
           column: 10,
-          text: 'RESULTS - OVERTYPE TO MODIFY                                         ',
+          contents: [
+            { text: 'RESULTS - OVERTYPE TO MODIFY                                         ' },
+          ],
+          fieldProtected: true,
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
         },
-        { row: 2, column: 0, text: ' ' },
-        { row: 2, column: 2, text: 'Prog(NONEX   )' },
-        { row: 2, column: 17, text: '                ' },
-        { row: 2, column: 34, text: '   ' },
-        { row: 2, column: 38, text: '   ' },
-        { row: 2, column: 42, text: '   ' },
-        { row: 2, column: 46, text: '   ' },
-        { row: 2, column: 50, text: '   ' },
-        { row: 2, column: 54, text: '   ' },
-        { row: 2, column: 58, text: '   ' },
+        {
+          row: 2,
+          column: 0,
+          contents: [{ text: ' ' }],
+          fieldProtected: true,
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
+        },
+        {
+          row: 2,
+          column: 2,
+          contents: [{ text: 'Prog(NONEX   )' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 17,
+          contents: [{ text: '                ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 34,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 38,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 42,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 46,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 50,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 54,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 2,
+          column: 58,
+          contents: [{ text: '   ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
         {
           row: 2,
           column: 62,
-          text: 'NOT FOUND                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ',
+          contents: [
+            {
+              text: 'NOT FOUND                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ',
+            },
+          ],
+          fieldProtected: true,
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
         },
-        { row: 21, column: 53, text: 'SYSID=CICS' },
-        { row: 21, column: 64, text: 'APPLID=IYK2ZNB5  ' },
-        { row: 22, column: 2, text: 'RESPONSE:' },
-        { row: 22, column: 12, text: '1 ERROR                            ' },
-        { row: 22, column: 48, text: 'TIME: 07.01.16  DATE: 08/05/25 ' },
-        { row: 23, column: 0, text: 'PF' },
-        { row: 23, column: 3, text: '1' },
-        { row: 23, column: 5, text: 'HELP' },
-        { row: 23, column: 10, text: '     ' },
-        { row: 23, column: 16, text: '3' },
-        { row: 23, column: 18, text: 'END' },
-        { row: 23, column: 22, text: '     ' },
-        { row: 23, column: 28, text: '5' },
-        { row: 23, column: 30, text: 'VAR' },
-        { row: 23, column: 34, text: '      ' },
-        { row: 23, column: 41, text: '7' },
-        { row: 23, column: 43, text: 'SBH' },
-        { row: 23, column: 47, text: '8' },
-        { row: 23, column: 49, text: 'SFH' },
-        { row: 23, column: 53, text: '9' },
-        { row: 23, column: 55, text: 'MSG' },
-        { row: 23, column: 59, text: '10' },
-        { row: 23, column: 62, text: 'SB' },
-        { row: 23, column: 65, text: '11' },
-        { row: 23, column: 68, text: 'SF' },
-        { row: 23, column: 71, text: '        ' },
+        {
+          row: 21,
+          column: 53,
+          contents: [{ text: 'SYSID=CICS' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 21,
+          column: 64,
+          contents: [{ text: 'APPLID=IYK2ZNB5  ' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 22,
+          column: 2,
+          contents: [{ text: 'RESPONSE:' }],
+          fieldProtected: true,
+          fieldDisplay: true,
+        },
+        {
+          row: 22,
+          column: 12,
+          contents: [{ text: '1 ERROR                            ' }],
+          fieldProtected: true,
+          fieldIntenseDisplay: true,
+          fieldSelectorPen: true,
+        },
       ],
     },
   ];
@@ -449,12 +396,13 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
     allImageData.length = 0;
   });
 
-  test('should handle images with an empty fields array', () => {
+  test('should error when tackling images with an empty fields array', () => {
     // Act
-    const emptyFieldsImage = [
+    const emptyFieldsImage: any = [
       {
         id: 'image-4',
         fields: [],
+        imageSize: { columns: 80, rows: 24 },
       },
     ];
 
@@ -466,9 +414,10 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
     expect(allImageData).toEqual([
       {
         id: 'image-4',
-        imageFields: [],
+        imageSize: { columns: 80, rows: 24 },
+        fields: [],
       },
-    ]);
+    ] as TerminalImage[]);
 
     // The terminal data should also be populated correctly.
     expect(flattenedZos3270TerminalData).toEqual([
@@ -477,12 +426,12 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
         Terminal: 'image',
         screenNumber: 4,
       },
-    ]);
+    ] as CellFor3270[]);
   });
 
-  test('should filter out empty row and column fields within image fields', () => {
+  test('should filter out empty/ null row and column fields within image fields', () => {
     // Act
-    const mockImagesWithoutRowAndColumn: any = [
+    const mockImagesWithoutRowAndColumn: any[] = [  // Cannot be strongly typed as row and column fields are not allowed to be null/ not there.
       {
         sequence: 1,
         id: 'Terminal_Test-1',
@@ -493,7 +442,6 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
         fields: [
           {
             row: null,
-            column: null,
             fieldIntenseDisplay: true,
             fieldSelectorPen: true,
             contents: [{ text: 'TEST TEXT 1' }],
@@ -516,9 +464,23 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
     expect(allImageData).toEqual([
       {
         id: 'Terminal_Test-1',
-        imageFields: [{ row: 0, column: 79, text: 'TEST TEXT 2' }],
+        sequence: 1,
+        imageSize: { columns: 80, rows: 24 },
+        cursorRow: 1,
+        cursorColumn: 25,
+        aid: 'PF9',
+        fields: [
+          {
+            row: 0,
+            column: 79,
+            contents: [{ text: 'TEST TEXT 2' }],
+            fieldProtected: true,
+            fieldIntenseDisplay: true,
+            fieldSelectorPen: true,
+          },
+        ],
       },
-    ]);
+    ] as TerminalImage[]);
   });
 
   test('correctly populates flattenedZos3270TerminalData and allImageData', () => {
