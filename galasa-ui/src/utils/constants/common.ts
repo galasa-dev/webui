@@ -155,7 +155,7 @@ const PREFERENCE_KEYS = {
   TIME_ZONE: 'timeZone' as const,
 } as const;
 
-const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts'];
+const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
