@@ -46,7 +46,8 @@ code {
 }
 
 #content {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   position: relative;
   margin-top: 3rem;
 

@@ -19,7 +19,6 @@ type SavedQueriesContextType = {
   setSavedQueries: (queries: SavedQueryType[]) => void;
   saveQuery: (query: SavedQueryType) => void;
   updateQuery: (createdAt: string, updatedQuery: SavedQueryType) => void;
-  renameQuery: (createdAt: string, newTitle: string) => void;
   deleteQuery: (createdAt: string) => void;
   isQuerySaved: (queryName: string) => boolean;
   getQuery: (queryName: string) => SavedQueryType | null;
@@ -70,21 +69,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     setSavedQueries((prevQueries) => {
       const updatedQueries = prevQueries.map((query) =>
         query.createdAt === createdAt ? updatedQuery : query
-      );
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
-      return updatedQueries;
-    });
-  };
-
-  /**
-   * Rename an existing saved query.
-   * @param currentTitle The current title of the query to rename.
-   * @param newTitle The new title for the query.
-   */
-  const renameQuery = (createdAt: string, newTitle: string) => {
-    setSavedQueries((prevQueries) => {
-      const updatedQueries = prevQueries.map((query) =>
-        query.createdAt === createdAt ? { ...query, title: newTitle } : query
       );
       localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
@@ -144,7 +128,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     savedQueries,
     setSavedQueries,
     saveQuery,
-    renameQuery,
     deleteQuery,
     updateQuery,
     isQuerySaved,
