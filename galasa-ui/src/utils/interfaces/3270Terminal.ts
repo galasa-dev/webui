@@ -24,9 +24,7 @@ export interface TerminalImage {
   fields: TerminalImageField[];
 }
 
-export interface TerminalImageField {
-  row: number;
-  column: number;
+interface TerminalImageFieldDetails{
   unformatted?: boolean;
   fieldProtected?: boolean;
   fieldNumeric?: boolean;
@@ -37,7 +35,16 @@ export interface TerminalImageField {
   foregroundColor?: string;
   backgroundColor?: string;
   highlight?: string;
+}
+
+export interface TerminalImageField extends TerminalImageFieldDetails {
+  row: number;
+  column: number;
   contents: FieldContents[];
+}
+
+export interface TerminalImageCharacter extends TerminalImageFieldDetails {
+  character: string;
 }
 
 export interface FieldContents {

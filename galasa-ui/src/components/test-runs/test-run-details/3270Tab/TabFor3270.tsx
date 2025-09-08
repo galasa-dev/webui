@@ -7,7 +7,7 @@
 'use client';
 import React, { useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
-// import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
+import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
@@ -24,7 +24,7 @@ export default function TabFor3270({
 }) {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageData, setImageData] = useState<TerminalImage | undefined>(undefined);
+  const [imageData, setImageData] = useState<TerminalImage>();
   const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
   const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
   const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
@@ -75,7 +75,7 @@ export default function TabFor3270({
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
         />
-        {/* <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} /> */}
+        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
       </div>
     </div>
   );

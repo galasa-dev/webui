@@ -172,7 +172,6 @@ export default function TableOfScreenshots({
     ) as TerminalImage;
 
     setImageData(newImageData);
-    console.log("HELLO " + JSON.stringify(newImageData));
   }, [highlightedRowId, allImageData]);
 
   // Handle previous/ next image buttons.
