@@ -77,3 +77,9 @@
   align-items: center;
   width: 100%;
 }
+
+.renderIcon {
+  fill:white;
+  width: 18px;
+  height: 18px;
+}
