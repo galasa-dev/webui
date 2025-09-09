@@ -5,11 +5,12 @@
  */
 
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { SkeletonPlaceholder } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { TerminalImage } from '@/utils/interfaces/3270Terminal';
+import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
+import { generateImage } from '@/utils/3270/screenshotRenderer';
 
 export default function DisplayTerminalScreenshot({
   imageData,
@@ -18,50 +19,48 @@ export default function DisplayTerminalScreenshot({
   imageData: TerminalImage | undefined;
   isLoading: boolean;
 }) {
-  // Check output of getArrayOfIMageCharacters()
-  // useEffect(() => {
-  //   if (imageData){
-  //     console.log("HELLO " + JSON.stringify(getArrayOfImageCharacters(imageData)));
-  //     console.log("HELLO2 " + JSON.stringify(imageData));
-  //   }
-  // }, [imageData]);
+
+  const [arrayOfImageCharacters, setArrayOfImageCharacters] = useState<(TerminalImageCharacter | null)[][]>();
+
+  useEffect(() => {
+    if (imageData){
+      setArrayOfImageCharacters(getArrayOfImageCharacters(imageData));
+    }
+  }, [imageData]);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  // Draw the grid whenever the gridData changes
+  useEffect(() => {
+    if (arrayOfImageCharacters){
+      const canvas = canvasRef.current;
+      if (canvas) {
+        generateImage(canvas, arrayOfImageCharacters);
+      }
+    }
+  }, [arrayOfImageCharacters]);
+
+  const handleDownloadImage = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Create a temporary link and trigger a download
+    const image = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = '3270-screenshot.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (isLoading) {
+    return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
+  }
 
   return (
-    <img
-      className={styles.screenshot}
-      src={`/static/example-terminal-screenshot.png`}
-      alt="Placeholder image"
-    />
+    <div>
+      <canvas ref={canvasRef} className={styles.screenshot}></canvas>
+    </div>
   );
 }
-
-// Possible use of ImageRenderer ---------------------------------------------------------------
-// import { ImageRenderer } from '/Users/james/GitHub/Galasa/webui/galasa-ui/src/utils/3270/screenshotRenderer';
-
-// const [imageBuffer, setImageBuffer] = useState<Buffer | null>(null);
-
-// useEffect(() => {
-//   const renderer = new ImageRenderer();
-//   (async () => {
-//     await renderer.initRendererFonts();
-//     const imgBuffer = await renderer.renderTerminalImage(imageData);
-//     setImageBuffer(imgBuffer);
-//   })();
-// }, [imageData]);
-
-// if (isLoading) {
-//   return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
-// }
-
-// if (!imageBuffer) {
-//   return <div>Loading image...</div>;
-// }
-
-// return (
-// <img
-//   className={styles.screenshot}
-//   src={imageBuffer.toString()}
-//   alt="Terminal Screenshot"
-// />
-// )
-// ----------------------------------------------------------------------------------------------
