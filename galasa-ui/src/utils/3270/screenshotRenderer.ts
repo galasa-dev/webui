@@ -3,102 +3,168 @@
 //  *
 //  * SPDX-License-Identifier: EPL-2.0
 //  */
+// // Assisted by watsonx Code Assistant
 
-// import sharp from 'sharp';
-// import fs from 'fs';
-// import { loadFont, FontFace } from 'fontfaceobserver'; // Hypothetical font loading utility
+// import { TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 
-// // Define colors and font-related constants
-// const DEFAULT_COLOR = { r: 0, g: 255, b: 0, a: 255 }; // Example color representation
-// const NEUTRAL = { r: 255, g: 255, b: 255, a: 255 };
-// const RED = { r: 255, g: 0, b: 0, a: 255 };
-// const GREEN = { r: 0, g: 255, b: 0, a: 255 };
-// const BLUE = { r: 0, g: 0, b: 255, a: 255 };
-// const PINK = { r: 255, g: 0, b: 204, a: 255 };
-// const TURQUOISE = { r: 64, g: 224, b: 208, a: 255 };
-// const YELLOW = { r: 255, g: 255, b: 0, a: 255 };
+// export default function TerminalImageRenderer(characterArray: (TerminalImageCharacter | null)[][]) : Promise<Blob> {
+//   const renderCharacter = async (char: TerminalImageCharacter | null, row: number, col: number) => {
+//     if (char && char.character) {
+//       const canvas = document.createElement('canvas');
+//       const ctx = canvas.getContext('2d');
+//       if (ctx) {
+//         const fontSize = 12;
+//         const charWidth = ctx.measureText(char.character).width;
+//         const charHeight = fontSize;
 
-// // Hypothetical image drawing utility
-// export class ImageRenderer {
-//   private drawer: any; // Placeholder for actual drawing utility
-//   private fonts: Map<string, FontFace>;
+//         canvas.width = charWidth;
+//         canvas.height = charHeight;
+//         ctx.fillStyle = 'green';
+//         ctx.font = `monospace ${fontSize}px`;
+//         ctx.fillText(char.character, 0, 0);
 
-//   constructor() {
-//     this.fonts = new Map();
-//     // Initialize fonts here, similar to Go's loadPrimaryFont and loadFallbackFonts
-//   }
-
-//   async initRendererFonts() {
-//     // Load fonts asynchronously
-//     const primaryFont = await loadFont('path/to/primary-font.ttf');
-//     this.fonts.set('primary', primaryFont);
-//     // Load fallback fonts similarly
-//   }
-
-//   async renderTerminalImage(terminalImage: TerminalImage): Promise<Buffer> {
-//     const { Columns, Rows, Fields, Id } = terminalImage;
-//     const imagePixelWidth = Columns * charWidth; // Assuming charWidth is defined
-//     const imagePixelHeight = (Rows + 3) * charHeight; // Assuming charHeight is defined
-
-//     const img = createImageBase(imagePixelWidth, imagePixelHeight); // Hypothetical image creation
-
-//     for (const field of Fields) {
-//       for (const contents of field.Contents) {
-//         for (const char of getCharacters(contents)) {
-//           // Draw character on img using drawer
-//           this.drawString(img, char, DEFAULT_COLOR);
-//         }
+//         const imageBitmap = await createImageBitmap(canvas);
+//         return imageBitmap;
+//       } else {
+//         return null;
 //       }
 //     }
+//     return null;
+//   };
 
-//     const statusText = this.getStatusText(terminalImage);
-//     this.drawString(img, statusText, DEFAULT_COLOR); // Assuming drawString supports drawing text
+//   const imageBitmapList: ImageBitmap[] = [];
 
-//     return img; // Return the image buffer
+//   async function renderImage() {
+//     characterArray.forEach(async (row, rowIndex) => {
+//       row.forEach(async (cell, colIndex) => {
+//         const imageBitmap = await renderCharacter(cell, rowIndex, colIndex);
+//         if (imageBitmap) {
+//           imageBitmapList.push(imageBitmap);
+//         }
+//       });
+//     });
+
+//     const combinedImageBitmap = createCombinedImageBitmap(imageBitmapList);
 //   }
 
-//   // Placeholder for drawing string on image
-//   drawString(img: Buffer, text: string, color: { r: number; g: number; b: number; a: number }): void {
-//     // Implement using actual drawing library
-//     // Example: Using a hypothetical draw method
-//     // this.drawer.drawText(img, text, color);
-//   }
-
-//   // Placeholder for getting characters from field contents
-//   getCharacters(fieldContents: FieldContents): string[] {
-//     if (fieldContents.Characters) {
-//       return fieldContents.Characters.flatMap(charStr => charStr.split(''));
-//     }
-//     return fieldContents.Text.split('');
-//   }
-
-//   // Placeholder for generating status text
-//   getStatusText(terminalImage: TerminalImage): string {
-//     const { Columns, Rows, Inbound, Aid } = terminalImage;
-//     let status = terminalImage.Id;
-//     status += ` - ${Columns}x${Rows}`;
-//     if (Inbound) {
-//       status += ' Inbound';
-//     } else {
-//       status += ` Outbound - ${Aid}`;
-//     }
-//     return status;
-//   }
+//   // const handleDownload = () => {
+//   //   const blob = await combinedImageBitmap.toBlob();
+//   //   const url = URL.createObjectURL(blob);
+//   //   const a = document.createElement('a');
+//   //   a.style.display = 'none';
+//   //   a.href = url;
+//   //   a.download = 'terminal_image.jpeg';
+//   //   a.click();
+//   //   window.URL.revokeObjectURL(url);
+//   // };
 // }
 
-// // Hypothetical utility to create a blank image
-// function createImageBase(width: number, height: number): Buffer {
-//   // Implement using actual image library
-//   return sharp({ width, height, channels: 4, background: { r: 0, g: 0, b: 0, a: 255 } })
-//     .toBuffer();
-// }
+// const createCombinedImageBitmap = (imageBitmaps: ImageBitmap[]): ImageBitmap => {
+//   const canvas = document.createElement('canvas');
+//   const ctx = canvas.getContext('2d');
+//   const totalWidth = imageBitmaps.reduce((acc, curr) => acc + curr.width, 0);
+//   const totalHeight = imageBitmaps.length;
 
-// // Example usage
-// (async () => {
-//   const renderer = new ImageRenderer();
-//   await renderer.initRendererFonts();
-//   const terminalImage = { /* ... JSON data */ };
-//   const imageBuffer = await renderer.renderTerminalImage(terminalImage);
+//   canvas.width = totalWidth;
+//   canvas.height = totalHeight;
 
-//   // Save or use imageBuffer as needed
-// })();
+//   imageBitmaps.forEach((bitmap, index) => {
+//     const x = index * bitmap.width;
+//     if (ctx) {
+//       ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, x, 0, bitmap.width, bitmap.height);
+//     }
+//   });
+
+//   return createImageBitmap(canvas);
+// };
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+import React from 'react';
+import { TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
+
+export default function TerminalImageRenderer(
+  characterArray: (TerminalImageCharacter | null)[][]
+): Promise<Blob> {
+  const renderCharacter = async (
+    char: TerminalImageCharacter | null,
+    row: number,
+    col: number
+  ): Promise<ImageBitmap | null> => {
+    if (char && char.character) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const fontSize = 12;
+        const charWidth = ctx.measureText(char.character).width;
+        const charHeight = fontSize;
+
+        canvas.width = charWidth;
+        canvas.height = charHeight;
+        ctx.fillStyle = 'green';
+        ctx.font = `monospace ${fontSize}px`;
+        ctx.fillText(char.character, 0, 0);
+
+        const imageBitmap = await createImageBitmap(canvas);
+        return imageBitmap;
+      } else {
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const imageBitmapList: Promise<ImageBitmap>[] = [];
+
+  async function renderImage() {
+    characterArray.forEach(async (row, rowIndex) => {
+      row.forEach(async (cell, colIndex) => {
+        const imageBitmap = await renderCharacter(cell, rowIndex, colIndex);
+        if (imageBitmap) {
+          imageBitmapList.push(imageBitmap);
+        }
+      });
+    });
+
+    const combinedImageBitmap = await createCombinedImageBitmap(imageBitmapList);
+    return combinedImageBitmap.toBlob();
+  }
+
+  return renderImage();
+}
+
+const createCombinedImageBitmap = async (
+  imageBitmaps: Promise<ImageBitmap>[]
+): Promise<ImageBitmap> => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const totalWidth = await imageBitmaps.reduce((acc, curr) => acc + (await curr).width, 0);
+  const totalHeight = imageBitmaps.length;
+
+  canvas.width = totalWidth;
+  canvas.height = totalHeight;
+
+  let bitmapIndex = 0;
+  for (const bitmapPromise of imageBitmaps) {
+    const bitmap = await bitmapPromise;
+    if (ctx) {
+      ctx.drawImage(
+        bitmap,
+        0,
+        0,
+        bitmap.width,
+        bitmap.height,
+        bitmapIndex * bitmap.width,
+        0,
+        bitmap.width,
+        bitmap.height
+      );
+      bitmapIndex++;
+    }
+  }
+
+  return createImageBitmap(canvas);
+};
