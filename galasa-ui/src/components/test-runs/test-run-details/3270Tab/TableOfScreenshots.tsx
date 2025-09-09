@@ -30,7 +30,7 @@ import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 interface DropdownOption {
-  id: string; 
+  id: string;
   label: string;
 }
 

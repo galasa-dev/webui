@@ -24,7 +24,7 @@ export interface TerminalImage {
   fields: TerminalImageField[];
 }
 
-interface TerminalImageFieldDetails{
+interface TerminalImageFieldDetails {
   unformatted?: boolean;
   fieldProtected?: boolean;
   fieldNumeric?: boolean;

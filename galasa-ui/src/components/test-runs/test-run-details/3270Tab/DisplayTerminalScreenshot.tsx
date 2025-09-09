@@ -11,7 +11,6 @@ import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
 
-
 export default function DisplayTerminalScreenshot({
   imageData,
   isLoading,
@@ -27,7 +26,7 @@ export default function DisplayTerminalScreenshot({
   //   }
   // }, [imageData]);
 
-  return(
+  return (
     <img
       className={styles.screenshot}
       src={`/static/example-terminal-screenshot.png`}
@@ -36,35 +35,33 @@ export default function DisplayTerminalScreenshot({
   );
 }
 
+// Possible use of ImageRenderer ---------------------------------------------------------------
+// import { ImageRenderer } from '/Users/james/GitHub/Galasa/webui/galasa-ui/src/utils/3270/screenshotRenderer';
 
-  // Possible use of ImageRenderer ---------------------------------------------------------------
-  // import { ImageRenderer } from '/Users/james/GitHub/Galasa/webui/galasa-ui/src/utils/3270/screenshotRenderer';
+// const [imageBuffer, setImageBuffer] = useState<Buffer | null>(null);
 
-  // const [imageBuffer, setImageBuffer] = useState<Buffer | null>(null);
+// useEffect(() => {
+//   const renderer = new ImageRenderer();
+//   (async () => {
+//     await renderer.initRendererFonts();
+//     const imgBuffer = await renderer.renderTerminalImage(imageData);
+//     setImageBuffer(imgBuffer);
+//   })();
+// }, [imageData]);
 
-  // useEffect(() => {
-  //   const renderer = new ImageRenderer();
-  //   (async () => {
-  //     await renderer.initRendererFonts();
-  //     const imgBuffer = await renderer.renderTerminalImage(imageData);
-  //     setImageBuffer(imgBuffer);
-  //   })();
-  // }, [imageData]);
+// if (isLoading) {
+//   return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
+// }
 
-  // if (isLoading) {
-  //   return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
-  // }
+// if (!imageBuffer) {
+//   return <div>Loading image...</div>;
+// }
 
-  // if (!imageBuffer) {
-  //   return <div>Loading image...</div>;
-  // }
-  
-
-  // return (
-    // <img
-    //   className={styles.screenshot}
-    //   src={imageBuffer.toString()}
-    //   alt="Terminal Screenshot"
-    // />
-  // )
-  // ----------------------------------------------------------------------------------------------
+// return (
+// <img
+//   className={styles.screenshot}
+//   src={imageBuffer.toString()}
+//   alt="Terminal Screenshot"
+// />
+// )
+// ----------------------------------------------------------------------------------------------

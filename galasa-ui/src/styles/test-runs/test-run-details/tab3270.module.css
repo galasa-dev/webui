@@ -74,7 +74,7 @@
   max-width: 100%;
 }
 
-.skeletonScreenshot{
+.skeletonScreenshot {
   height: calc(100% - 48px);
   width: 100%;
 }

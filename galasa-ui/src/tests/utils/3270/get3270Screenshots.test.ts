@@ -431,7 +431,8 @@ describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageD
 
   test('should filter out empty/ null row and column fields within image fields', () => {
     // Act
-    const mockImagesWithoutRowAndColumn: any[] = [  // Cannot be strongly typed as row and column fields are not allowed to be null/ not there.
+    const mockImagesWithoutRowAndColumn: any[] = [
+      // Cannot be strongly typed as row and column fields are not allowed to be null/ not there.
       {
         sequence: 1,
         id: 'Terminal_Test-1',

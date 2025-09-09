@@ -5,10 +5,7 @@
  */
 import '@testing-library/jest-dom';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
-import {
-  TerminalImage,
-  TerminalImageCharacter,
-} from '@/utils/interfaces/3270Terminal';
+import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 
 // jest.mock('@/utils/3270/getArrayOfImageCharacters');
 
@@ -34,12 +31,12 @@ describe('getArrayOfImageCharacters', () => {
         row: 1,
         column: 0,
         contents: [{ characters: ['C', 'D'] }],
-      },
+      }
     );
 
     const expectedOutput: (TerminalImageCharacter | null)[][] = [
-      [{character: 'A'}, {character: 'B'}, null, null, null],
-      [{character: 'C'}, {character: 'D'}, null, null, null],
+      [{ character: 'A' }, { character: 'B' }, null, null, null],
+      [{ character: 'C' }, { character: 'D' }, null, null, null],
       [null, null, null, null, null],
     ];
 
@@ -71,8 +68,8 @@ describe('getArrayOfImageCharacters', () => {
 
     const expectedOutput: (TerminalImageCharacter | null)[][] = [
       [null, null, null, null, null],
-      [null, null, null, null, {character: 'X'}],
-      [{character: 'X'}, null, null, null, null],
+      [null, null, null, null, { character: 'X' }],
+      [{ character: 'X' }, null, null, null, null],
     ];
 
     expect(getArrayOfImageCharacters(testData)).toEqual(expectedOutput);
@@ -89,7 +86,9 @@ describe('getArrayOfImageCharacters', () => {
       column: 4,
       contents: [{ text: 'X' }],
     });
-    expect(() => getArrayOfImageCharacters(testData)).toThrow('Invalid image data - image data overlapping');
+    expect(() => getArrayOfImageCharacters(testData)).toThrow(
+      'Invalid image data - image data overlapping'
+    );
   });
 
   test('should throw an error for out-of-bounds placement', () => {
@@ -98,8 +97,8 @@ describe('getArrayOfImageCharacters', () => {
       column: 4,
       contents: [{ text: 'XX' }],
     });
-    expect(() => getArrayOfImageCharacters(testData)).toThrow('Invalid image data - image data out of bounds');
+    expect(() => getArrayOfImageCharacters(testData)).toThrow(
+      'Invalid image data - image data out of bounds'
+    );
   });
 });
-
-
