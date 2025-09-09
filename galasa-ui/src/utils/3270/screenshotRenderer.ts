@@ -17,8 +17,8 @@ export const generateImage = (
   const columns = gridData[0].length;
 
   // To alter font size, change the cell height.
-  const cellHeight = 14;
-  const verticalCharacterPadding = 2;
+  const cellHeight = 20;
+  const verticalCharacterPadding = 4;
   const horizontalCharacterPadding = 2;
   const imagePadding = 10;
  
@@ -49,7 +49,6 @@ export const generateImage = (
         ctx.fillText(characterCell.character, x, y);
 
         // TODO: Extra image fields to be handled here
-
       }
       x += characterWidth + horizontalCharacterPadding;
     });

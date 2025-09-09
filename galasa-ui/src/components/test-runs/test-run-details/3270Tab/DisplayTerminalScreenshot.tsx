@@ -59,8 +59,8 @@ export default function DisplayTerminalScreenshot({
   }
 
   return (
-    <div>
-      <canvas ref={canvasRef} className={styles.screenshot}></canvas>
-    </div>
+    
+      <canvas className={styles.screenshot} ref={canvasRef}/>
+    
   );
 }
