@@ -47,6 +47,8 @@ export default function TableOfScreenshots({
   setCannotSwitchToNextImage,
   highlightedRowInDisplayedData,
   setHighlightedRowInDisplayedData,
+  highlightedRowId,
+  setHighlightedRowId,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
@@ -60,6 +62,8 @@ export default function TableOfScreenshots({
   setCannotSwitchToNextImage: React.Dispatch<React.SetStateAction<boolean>>;
   highlightedRowInDisplayedData: boolean;
   setHighlightedRowInDisplayedData: React.Dispatch<React.SetStateAction<boolean>>;
+  highlightedRowId: string;
+  setHighlightedRowId: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const translations = useTranslations('3270Tab');
   const headers = [
@@ -78,7 +82,6 @@ export default function TableOfScreenshots({
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
-  const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 

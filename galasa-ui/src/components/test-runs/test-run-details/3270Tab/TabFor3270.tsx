@@ -28,6 +28,7 @@ export default function TabFor3270({
   const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
   const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
   const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
+  const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [highlightedRowInDisplayedData, setHighlightedRowInDisplayedData] = useState<boolean>(true);
 
   const current = useTheme().theme;
@@ -64,6 +65,8 @@ export default function TabFor3270({
           setCannotSwitchToNextImage={setCannotSwitchToNextImage}
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           setHighlightedRowInDisplayedData={setHighlightedRowInDisplayedData}
+          highlightedRowId={highlightedRowId}
+          setHighlightedRowId={setHighlightedRowId}
         />
       </div>
 
@@ -74,6 +77,7 @@ export default function TabFor3270({
           cannotSwitchToNextImage={cannotSwitchToNextImage}
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
+          highlightedRowId={highlightedRowId}
         />
         <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
       </div>

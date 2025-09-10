@@ -30,7 +30,7 @@ export default function DisplayTerminalScreenshot({
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // Draw the grid whenever the gridData changes
+  // Create image.
   useEffect(() => {
     if (arrayOfImageCharacters){
       const canvas = canvasRef.current;
@@ -40,27 +40,11 @@ export default function DisplayTerminalScreenshot({
     }
   }, [arrayOfImageCharacters]);
 
-  const handleDownloadImage = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Create a temporary link and trigger a download
-    const image = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = '3270-screenshot.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   if (isLoading) {
     return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
   }
 
   return (
-    
-      <canvas className={styles.screenshot} ref={canvasRef}/>
-    
+    <canvas className={styles.screenshot} id="canvas" ref={canvasRef}/>
   );
 }

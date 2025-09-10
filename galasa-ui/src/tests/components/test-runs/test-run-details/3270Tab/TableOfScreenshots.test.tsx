@@ -15,7 +15,7 @@ import {
 } from '@/utils/3270/get3270Screenshots';
 import userEvent from '@testing-library/user-event';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
@@ -55,6 +55,8 @@ const defaultProps = {
   setCannotSwitchToNextImage: jest.fn(),
   highlightedRowInDisplayedData: true,
   setHighlightedRowInDisplayedData: jest.fn(),
+  highlightedRowId: '',
+  setHighlightedRowId: jest.fn(),
 };
 
 jest.mock('@/utils/3270/get3270Screenshots', () => {
