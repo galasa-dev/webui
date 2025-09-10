@@ -200,7 +200,7 @@ export default function TableOfScreenshots({
 
       setMoveImageSelection(0);
     }
-  }, [moveImageSelection, filteredRows, highlightedRowInDisplayedData]);
+  }, [moveImageSelection, filteredRows, highlightedRowInDisplayedData, highlightedRowId, searchTerm]);
 
   if (isLoading) {
     return (
