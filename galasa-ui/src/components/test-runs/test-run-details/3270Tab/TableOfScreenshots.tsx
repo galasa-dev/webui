@@ -170,9 +170,14 @@ export default function TableOfScreenshots({
 
   // When highlighted image changes, update image data.
   useEffect(() => {
+    console.log("HELLO " + JSON.stringify(allImageData));
+
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === highlightedRowId
     ) as TerminalImage;
+
+    console.log("HELLO " + JSON.stringify(newImageData));
+
 
     setImageData(newImageData);
   }, [highlightedRowId, allImageData]);
