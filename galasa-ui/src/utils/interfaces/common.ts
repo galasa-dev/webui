@@ -79,3 +79,20 @@ export interface ColumnDefinition {
   id: keyof runStructure;
   columnName: string;
 }
+
+export interface CellFor3270 {
+  id: string;
+  Terminal: string;
+  screenNumber: number;
+}
+
+export interface TerminalImageField {
+  row: number;
+  column: number;
+  text: string;
+}
+
+export interface TerminalImage {
+  id: string;
+  imageFields: TerminalImageField[];
+}

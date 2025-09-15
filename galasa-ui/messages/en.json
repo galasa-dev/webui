@@ -238,6 +238,14 @@
     "recentRunsLink": "View recent runs of the same test...",
     "runRetriesLink": "View all attempts of this test run..."
   },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "screenNumber": "Screen Number",
+    "searchPlaceholder": "Search",
+    "nextImage": "Next image",
+    "previousImage": "Previous image",
+    "downloadImage": "Download terminal"
+  },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
     "errorTitle": "Error",

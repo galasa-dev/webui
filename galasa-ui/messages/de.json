@@ -259,6 +259,14 @@
     "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
     "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
   },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "screenNumber": "Bildschirmnummer",
+    "searchPlaceholder": "Suchen",
+    "nextImage": "Nächstes Bild",
+    "previousImage": "Vorheriges Bild",
+    "downloadImage": "Herunterladen Terminal"
+  },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
     "status": "Status",

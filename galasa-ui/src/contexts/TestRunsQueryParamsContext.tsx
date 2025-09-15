@@ -14,6 +14,7 @@ import {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useRef,
 } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 
@@ -33,6 +34,7 @@ import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
+import { valueMap } from '@/utils/urlStateMappers';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;
@@ -61,13 +63,20 @@ interface TestRunsQueryParamsProviderProps {
   children: ReactNode;
 }
 
-// Create the provider component
+/**
+ * Context provider for test runs query parameters.
+ * Provides state and functions to manage query parameters for test runs.
+ */
 export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
   const { defaultQuery } = useSavedQueries();
+
+  // Track if a URL update is in progress
+  const isUrlUpdateInProgress = useRef(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Decode the search params from the URL every time the searchParams change
   const searchParams = useMemo(() => {
@@ -81,36 +90,56 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     return rawSearchParams;
   }, [rawSearchParams]);
 
-  // Initialize selectedTabIndex based on URL parameters or default to first tab
-  const [selectedTabIndex, setSelectedTabIndex] = useState(() => {
+  // Initial states
+  const [selectedTabIndex, setSelectedTabIndex] = useState(TABS_IDS.indexOf('results'));
+  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>([]);
+  const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>([]);
+  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>({} as TimeFrameValues);
+  const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>({});
+  const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
+  const [queryName, setQueryName] = useState('');
+
+  // Effect to synchronize state with URL parameters
+  useEffect(() => {
+    isUrlUpdateInProgress.current = true;
+
+    // Tab
     const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    return initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
-  });
-
-  // Initialize selectedVisibleColumns based on URL parameters or default values
-  const [selectedVisibleColumns, setSelectedVisibleColumns] = useState<string[]>(
-    () =>
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
-      DEFAULT_VISIBLE_COLUMNS
-  );
-
-  // Initialize columnsOrder based on URL parameters or default to RESULTS_TABLE_COLUMNS
-  const [columnsOrder, setColumnsOrder] = useState<ColumnDefinition[]>(() => {
-    const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
-    let correctOrder: ColumnDefinition[] = RESULTS_TABLE_COLUMNS;
-
-    if (orderParam) {
-      correctOrder = orderParam
-        .split(',')
-        .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
-        .filter(Boolean) as ColumnDefinition[];
+    const newTabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
+    if (newTabIndex !== selectedTabIndex) {
+      setSelectedTabIndex(newTabIndex);
     }
-    return correctOrder;
-  });
 
-  // Initialize timeframe values based on URL parameters or default to last 24 hours
-  const [timeframeValues, setTimeframeValues] = useState<TimeFrameValues>(() => {
+    // Query Name
+    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
+    if (newQueryName !== queryName) {
+      setQueryName(newQueryName);
+    }
+
+    // Visible Columns - apply default visible columns only if visible columns array aren't empty.
+    const newVisibleColumns =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']
+        ? searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
+          DEFAULT_VISIBLE_COLUMNS
+        : [];
+    if (newVisibleColumns.join(',') !== selectedVisibleColumns.join(',')) {
+      setSelectedVisibleColumns(newVisibleColumns);
+    }
+
+    // Columns Order
+    const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
+    const newColumnsOrder = orderParam
+      ? (orderParam
+          .split(',')
+          .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
+          .filter(Boolean) as ColumnDefinition[])
+      : RESULTS_TABLE_COLUMNS;
+    if (newColumnsOrder.map((c) => c.id).join(',') !== columnsOrder.map((c) => c.id).join(',')) {
+      setColumnsOrder(newColumnsOrder);
+    }
+
+    // Timeframe
     const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
     const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);
     const durationParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
@@ -135,54 +164,65 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     const timezone = getResolvedTimeZone();
-    return { ...calculateSynchronizedState(fromDate, toDate, timezone), isRelativeToNow };
-  });
+    const newTimeframeValues = {
+      ...calculateSynchronizedState(fromDate, toDate, timezone),
+      isRelativeToNow,
+    };
 
-  // Initialize search criteria based on URL parameters
-  const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>(() => {
-    const criteria: Record<string, string> = {};
+    if (
+      newTimeframeValues.fromDate?.toISOString() !== timeframeValues.fromDate?.toISOString() ||
+      newTimeframeValues.toDate?.toISOString() !== timeframeValues.toDate?.toISOString() ||
+      newTimeframeValues.isRelativeToNow !== timeframeValues.isRelativeToNow
+    ) {
+      setTimeframeValues(newTimeframeValues);
+    }
+
+    // Search Criteria
+    const newCriteria: Record<string, string> = {};
     SEARCH_CRITERIA_KEYS.forEach((key) => {
       if (searchParams.has(key)) {
-        criteria[key] = searchParams.get(key) || '';
+        newCriteria[key] = searchParams.get(key) || '';
       }
     });
-    return criteria;
-  });
-
-  // Initialize sortOrder based on URL parameters or default to an empty array
-  const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>(() => {
-    const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
-    if (sortOrderParam) {
-      return sortOrderParam.split(',').map((item) => {
-        const [id, order] = item.split(':');
-        return { id, order: order as sortOrderType };
-      });
+    if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
+      setSearchCriteria(newCriteria);
     }
-    return [];
-  });
+    // Sort Order
+    const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
+    const newSortOrder = sortOrderParam
+      ? sortOrderParam.split(',').map((item) => {
+          const [id, order] = item.split(':');
+          return { id, order: order as sortOrderType };
+        })
+      : [];
+    if (JSON.stringify(newSortOrder) !== JSON.stringify(sortOrder)) {
+      setSortOrder(newSortOrder);
+    }
 
-  const [queryName, setQueryName] = useState(() => {
-    return searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
-  });
+    // Mark as initialized after the first sync
+    if (!isInitialized) {
+      setIsInitialized(true);
+    }
+    isUrlUpdateInProgress.current = false;
 
-  // State to track if the component has been initialized
-  const [isInitialized, setIsInitialized] = useState(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, getResolvedTimeZone]);
+
+  // Effect to update the URL when query parameters change
   useEffect(() => {
-    setIsInitialized(true);
-  }, []);
-
-  // Effect to save and encode current state to the URL. This is the single source of truth for URL updates.
-  useEffect(() => {
-    if (!isInitialized) return;
-
+    if (!isInitialized || isUrlUpdateInProgress.current) return;
     const params = new URLSearchParams();
+
+    // Tab
     params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[selectedTabIndex]);
+
+    // Query Name
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
-    if (selectedVisibleColumns.length > 0) {
-      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
-    }
+    // Visible Columns
+    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
 
+    // Sort Order
     if (sortOrder.length > 0) {
       params.set(
         TEST_RUNS_QUERY_PARAMS.SORT_ORDER,
@@ -190,18 +230,21 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       );
     }
 
+    // Columns Order
     params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
+    // Timeframe
     if (timeframeValues.isRelativeToNow) {
       params.set(
         TEST_RUNS_QUERY_PARAMS.DURATION,
         `${timeframeValues.durationDays},${timeframeValues.durationHours},${timeframeValues.durationMinutes}`
       );
-    } else {
+    } else if (timeframeValues.fromDate) {
       params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
       params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
     }
 
+    // Search Criteria
     Object.entries(searchCriteria).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);
@@ -240,8 +283,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     setColumnsOrder,
     queryName,
     setQueryName,
-    isInitialized,
     searchParams,
+    isInitialized,
   };
 
   return (

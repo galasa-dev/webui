@@ -13,7 +13,7 @@ export function getTooltipHTML(
   formatDate = (date: Date) => new Date(date).toLocaleString()
 ) {
   const run = points[0]?.custom || {};
-  console.log('points', points);
+
   return `
     <div class="${styles.tooltipContent}">
       ${headerDefinitions
