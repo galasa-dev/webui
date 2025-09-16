@@ -265,7 +265,12 @@
     "searchPlaceholder": "Suchen",
     "nextImage": "Nächstes Bild",
     "previousImage": "Vorheriges Bild",
-    "downloadImage": "Herunterladen Terminal"
+    "copyImage": "Bild in die Zwischenablage kopieren",
+    "downloadImage": "Bild herunterladen",
+    "copiedTitle": "Bild erfolgreich kopiert:",
+    "copiedMessage": "Das 3270-Screenshot-Bild wurde erfolgreich in Ihre Zwischenablage kopiert.",
+    "errorTitle": "Bild nicht erfolgreich kopiert:",
+    "copyFailedMessage": "Das 3270-Screenshot-Bild konnte nicht in Ihre Zwischenablage kopiert werden. Weitere Informationen finden Sie in Ihrer Browserkonsole."
   },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",

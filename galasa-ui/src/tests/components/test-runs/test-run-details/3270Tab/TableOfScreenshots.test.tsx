@@ -3,19 +3,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
-import {
-  populateFlattenedZos3270TerminalDataAndAllImageData,
-  splitScreenAndTerminal,
-  flattenedZos3270TerminalData,
-  allImageData,
-} from '@/utils/3270/get3270Screenshots';
 import userEvent from '@testing-library/user-event';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, vars?: Record<string, any>) => {
@@ -78,24 +72,38 @@ type MockData = {
 
 const emptyMockData: MockData = {
   newFlattenedZos3270TerminalData: [{ id: '', Terminal: '', screenNumber: 0 }],
-  newAllImageData: [{ id: '', imageFields: [] }],
+  newAllImageData: [{ id: '', imageSize: { rows: 0, columns: 0 }, fields: [] }],
 };
 
 const someMockData: MockData = {
   newFlattenedZos3270TerminalData: [
-    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
+    { id: 'IYK2ZNB5_1-1', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
   ],
-  newAllImageData: [{ id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] }],
+  newAllImageData: [
+    {
+      id: 'IYK2ZNB5_1-1',
+      imageSize: { rows: 1, columns: 4 },
+      fields: [{ row: 0, column: 0, contents: [{ text: 'Test' }] }],
+    },
+  ],
 };
 
 const mockData: MockData = {
   newFlattenedZos3270TerminalData: [
-    { id: 'IYK2ZNB5_1-101', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
-    { id: 'IYK2ZNB5_2-101', Terminal: 'IYK2ZNB5_2', screenNumber: 1 },
+    { id: 'IYK2ZNB5_1-1', Terminal: 'IYK2ZNB5_1', screenNumber: 1 },
+    { id: 'IYK2ZNB5_2-1', Terminal: 'IYK2ZNB5_2', screenNumber: 1 },
   ],
   newAllImageData: [
-    { id: 'IYK2ZNB5_1-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] },
-    { id: 'IYK2ZNB5_2-101', imageFields: [{ row: 0, column: 0, text: 'Test' }] },
+    {
+      id: 'IYK2ZNB5_1-1',
+      imageSize: { rows: 1, columns: 4 },
+      fields: [{ row: 0, column: 0, contents: [{ text: 'Test' }] }],
+    },
+    {
+      id: 'IYK2ZNB5_2-1',
+      imageSize: { rows: 1, columns: 4 },
+      fields: [{ row: 0, column: 0, contents: [{ text: 'Test' }] }],
+    },
   ],
 };
 
@@ -109,6 +117,8 @@ describe('TableOfScreenshots', () => {
         isLoading={true}
         setIsLoading={jest.fn()}
         setImageData={jest.fn()}
+        highlightedRowId={''}
+        setHighlightedRowId={jest.fn()}
         {...defaultProps}
       />
     );
@@ -129,6 +139,8 @@ describe('TableOfScreenshots', () => {
           isLoading={true}
           setIsLoading={setIsLoading}
           setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
           {...defaultProps}
         />
       );
@@ -142,6 +154,7 @@ describe('TableOfScreenshots', () => {
   test('rowClick updates imageData on click', async () => {
     // Act
     const setImageData = jest.fn();
+    const setHighlightedRowId = jest.fn();
 
     mockGet3270Screenshots.mockResolvedValue(someMockData);
 
@@ -153,6 +166,8 @@ describe('TableOfScreenshots', () => {
           isLoading={false}
           setIsLoading={jest.fn()}
           setImageData={setImageData}
+          highlightedRowId={'IYK2ZNB5_1-1'}
+          setHighlightedRowId={setHighlightedRowId}
           {...defaultProps}
         />
       );
@@ -163,9 +178,12 @@ describe('TableOfScreenshots', () => {
     await user.click(rowClickElement);
 
     // Assert
+    expect(setHighlightedRowId).toHaveBeenCalledWith('IYK2ZNB5_1-1');
+
     expect(setImageData).toHaveBeenCalledWith({
-      id: 'IYK2ZNB5_1-101',
-      imageFields: [{ column: 0, row: 0, text: 'Test' }],
+      id: 'IYK2ZNB5_1-1',
+      imageSize: { rows: 1, columns: 4 },
+      fields: [{ row: 0, column: 0, contents: [{ text: 'Test' }] }],
     });
   });
 
@@ -179,6 +197,8 @@ describe('TableOfScreenshots', () => {
           isLoading={false}
           setIsLoading={jest.fn()}
           setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
           {...defaultProps}
         />
       );
@@ -203,6 +223,8 @@ describe('TableOfScreenshots', () => {
           isLoading={false}
           setIsLoading={jest.fn()}
           setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
           {...defaultProps}
         />
       );

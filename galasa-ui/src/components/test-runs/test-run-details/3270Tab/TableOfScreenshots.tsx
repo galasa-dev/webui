@@ -27,7 +27,7 @@ import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
 interface DropdownOption {
   id: string;
@@ -47,6 +47,8 @@ export default function TableOfScreenshots({
   setCannotSwitchToNextImage,
   highlightedRowInDisplayedData,
   setHighlightedRowInDisplayedData,
+  highlightedRowId,
+  setHighlightedRowId,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
@@ -60,6 +62,8 @@ export default function TableOfScreenshots({
   setCannotSwitchToNextImage: React.Dispatch<React.SetStateAction<boolean>>;
   highlightedRowInDisplayedData: boolean;
   setHighlightedRowInDisplayedData: React.Dispatch<React.SetStateAction<boolean>>;
+  highlightedRowId: string;
+  setHighlightedRowId: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const translations = useTranslations('3270Tab');
   const headers = [
@@ -78,7 +82,6 @@ export default function TableOfScreenshots({
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
-  const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
@@ -200,7 +203,13 @@ export default function TableOfScreenshots({
 
       setMoveImageSelection(0);
     }
-  }, [moveImageSelection, filteredRows, highlightedRowInDisplayedData]);
+  }, [
+    moveImageSelection,
+    filteredRows,
+    highlightedRowInDisplayedData,
+    highlightedRowId,
+    searchTerm,
+  ]);
 
   if (isLoading) {
     return (

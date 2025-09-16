@@ -6,7 +6,7 @@
 
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
-import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/common';
+import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/3270Terminal';
 import pako from 'pako';
 
 export const flattenedZos3270TerminalData: CellFor3270[] = [];
@@ -54,9 +54,9 @@ function unzipBase64(artifactData: {
   return JSON.parse(new TextDecoder().decode(decompressedUint8Array));
 }
 
-export function populateFlattenedZos3270TerminalDataAndAllImageData(images: any[]): void {
-  images.forEach((image: any) => {
-    if (!image.id || !image.fields) {
+export function populateFlattenedZos3270TerminalDataAndAllImageData(images: TerminalImage[]): void {
+  images.forEach((image) => {
+    if (!image.id || !image.fields || !image.imageSize) {
       throw new Error('Invalid image data');
     }
 
@@ -65,7 +65,7 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: any[
     const result = splitScreenAndTerminal(id);
 
     flattenedZos3270TerminalData.push({
-      id: image.id,
+      id: id,
       Terminal: result.terminalName,
       screenNumber: result.screenNumber,
     });
@@ -73,16 +73,35 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: any[
     // Populate all image data for screenshot rendering.
     const imageFields: TerminalImageField[] = image.fields
       // Filter out any image fields that are missing a row or column.
-      .filter((imageField: any) => imageField.row != null && imageField.column != null)
-      .map((imageField: any) => ({
+      .filter(
+        (imageField: TerminalImageField) => imageField.row != null && imageField.column != null
+      )
+      .map((imageField: TerminalImageField) => ({
         row: imageField.row,
         column: imageField.column,
-        text: imageField.contents[0]?.text ?? '',
+        contents: imageField.contents,
+        unformatted: imageField.unformatted,
+        fieldProtected: imageField.fieldProtected,
+        fieldNumeric: imageField.fieldNumeric,
+        fieldDisplay: imageField.fieldDisplay,
+        fieldIntenseDisplay: imageField.fieldIntenseDisplay,
+        fieldSelectorPen: imageField.fieldSelectorPen,
+        fieldModified: imageField.fieldModified,
+        foregroundColor: imageField.foregroundColor,
+        backgroundColor: imageField.backgroundColor,
+        highlight: imageField.highlight,
       }));
 
     allImageData.push({
       id: image.id,
-      imageFields: imageFields,
+      sequence: image.sequence,
+      inbound: image.inbound,
+      type: image.type,
+      imageSize: image.imageSize,
+      cursorRow: image.cursorRow,
+      cursorColumn: image.cursorColumn,
+      aid: image.aid,
+      fields: imageFields,
     });
   });
 }
@@ -96,7 +115,7 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
     for (var file of zippedFilesContainingImageJSON) {
       await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
         // Unzip the content
-        const images = unzipBase64(artifactData).images;
+        const images: TerminalImage[] = unzipBase64(artifactData).images;
 
         populateFlattenedZos3270TerminalDataAndAllImageData(images);
       });

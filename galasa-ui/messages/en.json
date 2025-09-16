@@ -244,7 +244,12 @@
     "searchPlaceholder": "Search",
     "nextImage": "Next image",
     "previousImage": "Previous image",
-    "downloadImage": "Download terminal"
+    "copyImage": "Copy image to clipboard",
+    "downloadImage": "Download image",
+    "copiedTitle": "Image copy successful: ",
+    "copiedMessage": "The 3270 screenshot image has been successfully copied to your clipboard.",
+    "errorTitle": "Image copy unsuccessful: ",
+    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Check your browser console for more detail."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",

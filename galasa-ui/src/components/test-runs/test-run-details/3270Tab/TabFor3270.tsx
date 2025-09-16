@@ -12,7 +12,7 @@ import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/S
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
-import { TerminalImage } from '@/utils/interfaces/common';
+import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabFor3270({
@@ -24,10 +24,11 @@ export default function TabFor3270({
 }) {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageData, setImageData] = useState<TerminalImage | undefined>(undefined);
+  const [imageData, setImageData] = useState<TerminalImage>();
   const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
   const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
   const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
+  const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [highlightedRowInDisplayedData, setHighlightedRowInDisplayedData] = useState<boolean>(true);
 
   const current = useTheme().theme;
@@ -64,6 +65,8 @@ export default function TabFor3270({
           setCannotSwitchToNextImage={setCannotSwitchToNextImage}
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           setHighlightedRowInDisplayedData={setHighlightedRowInDisplayedData}
+          highlightedRowId={highlightedRowId}
+          setHighlightedRowId={setHighlightedRowId}
         />
       </div>
 
@@ -74,9 +77,9 @@ export default function TabFor3270({
           cannotSwitchToNextImage={cannotSwitchToNextImage}
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
+          highlightedRowId={highlightedRowId}
         />
-        <p>Image rendering coming soon!</p>
-        {/* <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} /> */}
+        <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
       </div>
     </div>
   );
