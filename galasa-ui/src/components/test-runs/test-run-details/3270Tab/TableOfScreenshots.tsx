@@ -170,14 +170,9 @@ export default function TableOfScreenshots({
 
   // When highlighted image changes, update image data.
   useEffect(() => {
-    console.log("HELLO " + JSON.stringify(allImageData));
-
     const newImageData: TerminalImage = allImageData.find(
       (image) => image.id === highlightedRowId
     ) as TerminalImage;
-
-    console.log("HELLO " + JSON.stringify(newImageData));
-
 
     setImageData(newImageData);
   }, [highlightedRowId, allImageData]);
@@ -208,7 +203,13 @@ export default function TableOfScreenshots({
 
       setMoveImageSelection(0);
     }
-  }, [moveImageSelection, filteredRows, highlightedRowInDisplayedData, highlightedRowId, searchTerm]);
+  }, [
+    moveImageSelection,
+    filteredRows,
+    highlightedRowInDisplayedData,
+    highlightedRowId,
+    searchTerm,
+  ]);
 
   if (isLoading) {
     return (

@@ -5,26 +5,30 @@
  */
 
 import { TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
+import {
+  cellHeight,
+  horizontalCharacterPadding,
+  imagePadding,
+  font,
+  backgroundColour,
+  characterColour,
+} from '@/utils/constants/screenshotRenderer';
 
-export const generateImage = (
+export const screenshotRenderer = (
   canvas: HTMLCanvasElement,
-  gridData: (TerminalImageCharacter | null)[][]
+  gridData: (TerminalImageCharacter | null)[][],
+  context: CanvasRenderingContext2D
 ): void => {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  let rows = 0;
+  let columns = 0;
 
-  const rows = gridData.length;
-  const columns = gridData[0].length;
+  if (gridData && gridData.length > 0) {
+    rows = gridData.length;
+    columns = gridData[0].length;
+  }
 
-  // To alter font size, change the cell height.
-  const cellHeight = 20;
-  const verticalCharacterPadding = 4;
-  const horizontalCharacterPadding = 2;
-  const imagePadding = 10;
- 
-  const font = (cellHeight-verticalCharacterPadding) + "px Inter, monospace";
-  ctx.font = font;
-  const characterWidth = ctx.measureText('W').width;
+  context.font = font;
+  const characterWidth = context.measureText('W').width;
 
   const rowWidth = (characterWidth + horizontalCharacterPadding) * columns;
 
@@ -32,23 +36,23 @@ export const generateImage = (
   canvas.height = rows * cellHeight + imagePadding;
 
   // Set image background colour to black.
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = backgroundColour;
+  context.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.font = font;
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#00FF00'; // Character colour
-  ctx.lineWidth = 1.5;
+  context.font = font;
+  context.textBaseline = 'middle';
+  context.fillStyle = characterColour; // Character colour
+  context.lineWidth = 1.5;
 
   // Draw the characters
-  let y = 5 + cellHeight / 2;
-  gridData.forEach(row => {
-    let x = 5;
-    row.forEach(characterCell => {
+  let y = imagePadding / 2 + cellHeight / 2;
+  gridData.forEach((row) => {
+    let x = imagePadding / 2;
+    row.forEach((characterCell) => {
       if (characterCell) {
-        ctx.fillText(characterCell.character, x, y);
+        context.fillText(characterCell.character, x, y);
 
-        // TODO: Extra image fields to be handled here
+        // TODO: Extra image fields to be handled here, such as background colour.
       }
       x += characterWidth + horizontalCharacterPadding;
     });

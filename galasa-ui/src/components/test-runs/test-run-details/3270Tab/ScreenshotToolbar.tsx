@@ -7,10 +7,11 @@
 'use client';
 import React, { useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { TerminalImage } from '@/utils/interfaces/3270Terminal';
-import { ChevronRight, ChevronLeft, CloudDownload } from '@carbon/icons-react';
-import { Button, Loading } from '@carbon/react';
+import { ChevronRight, ChevronLeft, Copy, CloudDownload } from '@carbon/icons-react';
+import { Button, Loading, InlineNotification } from '@carbon/react';
 import { useTranslations } from 'next-intl';
+import { NotificationType } from '@/utils/types/common';
+import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
 
 export default function ScreenshotToolbar({
   setMoveImageSelection,
@@ -28,6 +29,7 @@ export default function ScreenshotToolbar({
   highlightedRowId: string;
 }) {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [notification, setNotification] = useState<NotificationType | null>(null);
   const translations = useTranslations('3270Tab');
 
   const handlePreviousImageClick = () => {
@@ -40,8 +42,8 @@ export default function ScreenshotToolbar({
 
   // Terminal name could have a '-' in it, so need to account for an id like "third-terminal-4"
   // In that scenario, this function should return "third-terminal-00004".
-  function getFileNameFromId() : string {
-    const numberOfDigits = 5;   // Number of total digits after the '-'
+  function getFileNameFromId(): string {
+    const numberOfDigitsAfterDash = 5;
     const parts = highlightedRowId.split('-');
     const screenNumber = parts[parts.length - 1];
 
@@ -51,16 +53,46 @@ export default function ScreenshotToolbar({
     }
 
     let screenNumberWithPadding = parts[parts.length - 1];
-    if (screenNumber.length <= numberOfDigits){
-      screenNumberWithPadding = '0'.repeat(numberOfDigits - screenNumber.length) + screenNumberWithPadding;
-    }    
+    if (screenNumber.length <= numberOfDigitsAfterDash) {
+      screenNumberWithPadding =
+        '0'.repeat(numberOfDigitsAfterDash - screenNumber.length) + screenNumberWithPadding;
+    }
 
     // Rejoin all parts up to the last one, in case the terminal name has a '-' in it.
     const terminalName = parts.slice(0, -1).join('-');
     return terminalName + '-' + screenNumberWithPadding;
   }
 
-  const handleDownloadImage = () => { 
+  const handleCopyImage = async () => {
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) {
+        throw new Error('Failed to get blob from canvas.');
+      }
+
+      const item = new ClipboardItem({ 'image/png': blob });
+
+      await navigator.clipboard.write([item]);
+
+      setNotification({
+        kind: 'success',
+        title: translations('copiedTitle'),
+        subtitle: translations('copiedMessage'),
+      });
+    } catch (err) {
+      console.error('Failed to copy canvas image:', err);
+
+      setNotification({
+        kind: 'error',
+        title: translations('errorTitle'),
+        subtitle: translations('copyFailedMessage'),
+      });
+    }
+    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+  };
+
+  const handleDownloadImage = () => {
     var link = document.createElement('a');
     link.download = getFileNameFromId() + '.jpeg';
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -92,19 +124,37 @@ export default function ScreenshotToolbar({
         iconDescription={translations('nextImage')}
       />
 
-      <div className={styles.downloadButtonWrapper}>
-        <Button
-          id={styles.downloadImageButton}
-          onClick={handleDownloadImage}
-          renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
-          kind="ghost"
-          hasIconOnly
-          disabled={isLoading}
-          iconDescription={
-            isDownloading ? translations('downloading') : translations('downloadImage')
-          }
-        />
-      </div>
+      <Button
+        onClick={handleCopyImage}
+        renderIcon={Copy}
+        kind="ghost"
+        hasIconOnly
+        disabled={isLoading}
+        iconDescription={translations('copyImage')}
+      />
+
+      {notification && (
+        <div className={styles.notification}>
+          <InlineNotification
+            title={notification.title}
+            subtitle={notification.subtitle}
+            kind={notification.kind}
+            hideCloseButton={true}
+          />
+        </div>
+      )}
+
+      <Button
+        id={styles.downloadImageButton}
+        onClick={handleDownloadImage}
+        renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
+        kind="ghost"
+        hasIconOnly
+        disabled={isLoading}
+        iconDescription={
+          isDownloading ? translations('downloading') : translations('downloadImage')
+        }
+      />
     </div>
   );
 }

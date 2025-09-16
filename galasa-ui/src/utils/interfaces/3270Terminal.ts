@@ -45,6 +45,7 @@ export interface TerminalImageField extends TerminalImageFieldDetails {
 
 export interface TerminalImageCharacter extends TerminalImageFieldDetails {
   character: string;
+  cursor?: boolean;
 }
 
 export interface FieldContents {

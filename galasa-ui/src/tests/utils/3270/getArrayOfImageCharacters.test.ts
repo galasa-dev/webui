@@ -7,8 +7,6 @@ import '@testing-library/jest-dom';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
 import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 
-// jest.mock('@/utils/3270/getArrayOfImageCharacters');
-
 describe('getArrayOfImageCharacters', () => {
   let testData: TerminalImage;
 

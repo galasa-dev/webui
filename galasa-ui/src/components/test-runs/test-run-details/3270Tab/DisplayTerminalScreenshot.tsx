@@ -10,7 +10,7 @@ import { SkeletonPlaceholder } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
-import { generateImage } from '@/utils/3270/screenshotRenderer';
+import { screenshotRenderer } from '@/utils/3270/screenshotRenderer';
 
 export default function DisplayTerminalScreenshot({
   imageData,
@@ -19,24 +19,32 @@ export default function DisplayTerminalScreenshot({
   imageData: TerminalImage | undefined;
   isLoading: boolean;
 }) {
-
-  const [arrayOfImageCharacters, setArrayOfImageCharacters] = useState<(TerminalImageCharacter | null)[][]>();
+  const [arrayOfImageCharacters, setArrayOfImageCharacters] =
+    useState<(TerminalImageCharacter | null)[][]>();
 
   useEffect(() => {
-    if (imageData){
+    if (imageData) {
       setArrayOfImageCharacters(getArrayOfImageCharacters(imageData));
     }
   }, [imageData]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   // Create image.
   useEffect(() => {
-    if (arrayOfImageCharacters){
+    if (arrayOfImageCharacters) {
       const canvas = canvasRef.current;
-      if (canvas) {
-        generateImage(canvas, arrayOfImageCharacters);
+      if (!canvas) {
+        console.error('No canvas');
+        return;
       }
+
+      const context = canvas.getContext('2d');
+      if (!context) {
+        console.error('No context');
+        return;
+      }
+      screenshotRenderer(canvas, arrayOfImageCharacters, context);
     }
   }, [arrayOfImageCharacters]);
 
@@ -44,7 +52,5 @@ export default function DisplayTerminalScreenshot({
     return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
   }
 
-  return (
-    <canvas className={styles.screenshot} id="canvas" ref={canvasRef}/>
-  );
+  return <canvas className={styles.screenshot} id="canvas" ref={canvasRef} />;
 }

@@ -72,5 +72,21 @@ export default function getArrayOfImageCharacters(
     }
   });
 
+  // TODO: Append cursor - after the backend is fixed as currently the cursor row and column are the wrong way round.
+
+  // const cursorRow = imageData.cursorRow;
+  // const cursorColumn = imageData.cursorColumn;
+
+  // if (cursorRow && cursorColumn) {
+
+  //   if (cursorRow < rows && cursorColumn < columns) {
+  //     if (characterArray[cursorRow][cursorColumn]) {
+  //       characterArray[cursorRow][cursorColumn].cursor = true;
+  //     } else {
+  //       characterArray[cursorRow][cursorColumn] = { character: '', cursor: true };
+  //     }
+  //   }
+  // }
+
   return characterArray;
 }
