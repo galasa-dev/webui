@@ -61,7 +61,7 @@ describe('splitScreenAndTerminal', () => {
   });
 });
 
-describe('get3270Screenshots -> populateFlattenedZos3270TerminalDataAndAllImageData', () => {
+describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
   // Example given is only a single image.
   const mockImages: TerminalImage[] = [
     {

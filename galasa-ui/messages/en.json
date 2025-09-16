@@ -249,7 +249,7 @@
     "copiedTitle": "Image copy successful: ",
     "copiedMessage": "The 3270 screenshot image has been successfully copied to your clipboard.",
     "errorTitle": "Image copy unsuccessful: ",
-    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Check your browser console for more deatil."
+    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Check your browser console for more detail."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
