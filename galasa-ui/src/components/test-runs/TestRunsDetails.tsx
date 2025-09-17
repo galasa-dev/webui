@@ -22,7 +22,6 @@ import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
-
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
   resultsNamesPromise: Promise<string[]>;

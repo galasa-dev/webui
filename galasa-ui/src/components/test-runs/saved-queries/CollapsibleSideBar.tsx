@@ -36,7 +36,6 @@ import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
-
 interface CollapsibleSideBarProps {
   handleEditQueryName: (queryName: string) => void;
 }
