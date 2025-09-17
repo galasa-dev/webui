@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { ChevronRight, ChevronLeft, Copy, CloudDownload } from '@carbon/icons-react';
 import { Button, Loading, InlineNotification } from '@carbon/react';
@@ -101,6 +101,35 @@ export default function ScreenshotToolbar({
       link.click();
     }
   };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!e.repeat) {
+      switch (e.key) {
+        case "ArrowLeft":
+          if (highlightedRowInDisplayedData && !cannotSwitchToPreviousImage && !isLoading) {
+            handlePreviousImageClick();
+          }
+          break;
+
+        case "ArrowRight":
+          if (highlightedRowInDisplayedData && !cannotSwitchToNextImage && !isLoading) {
+            handleNextImageClick();
+          }
+          break;
+      }
+    }
+  };
+
+  const cleanup = () => {
+    document.removeEventListener('keydown', handleKeyDown);
+  };
+
+  // Mount event listener to let users flick between screenshots with left and right arrow keys.
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+
+    return cleanup;
+  }, [isLoading, highlightedRowInDisplayedData, cannotSwitchToPreviousImage, cannotSwitchToNextImage]);
 
   return (
     <div className={styles.screenshotToolbar}>
