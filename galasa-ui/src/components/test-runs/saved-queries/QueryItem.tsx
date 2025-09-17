@@ -205,7 +205,6 @@ export default function QueryItem({
       <OverflowMenu
         aria-label={translations('actions')}
         iconDescription={translations('actions')}
-        className={styles.overflowMenu}
         renderIcon={ChevronDown}
         flipped
       >
