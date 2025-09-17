@@ -71,6 +71,10 @@
   cursor: default;
 }
 
+.overflowMenu {
+  z-index: 10000;
+}
+
 .overflowMenu:hover {
   background-color: var(--cds-layer-selected);
 }
