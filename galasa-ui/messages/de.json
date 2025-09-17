@@ -31,7 +31,6 @@
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
       "testRunSearch": "Testlauf-Suche und Anzeige",
-      "internationalization": "Internationalisierung/Mehrsprachige Unterstützung",
       "is3270ScreenEnabled": "Unterstützung für das Anzeigen und Herunterladen von 3270-Terminals",
       "graph": "Testlauf-Diagramm"
     }
@@ -259,6 +258,19 @@
     "noTags": "Keine Tags vorhanden.",
     "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
     "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
+  },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "screenNumber": "Bildschirmnummer",
+    "searchPlaceholder": "Suchen",
+    "nextImage": "Nächstes Bild",
+    "previousImage": "Vorheriges Bild",
+    "copyImage": "Bild in die Zwischenablage kopieren",
+    "downloadImage": "Bild herunterladen",
+    "copiedTitle": "Bild erfolgreich kopiert:",
+    "copiedMessage": "Das 3270-Screenshot-Bild wurde erfolgreich in Ihre Zwischenablage kopiert.",
+    "errorTitle": "Bild nicht erfolgreich kopiert:",
+    "copyFailedMessage": "Das 3270-Screenshot-Bild konnte nicht in Ihre Zwischenablage kopiert werden. Weitere Informationen finden Sie in Ihrer Browserkonsole."
   },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",

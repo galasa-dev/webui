@@ -31,7 +31,6 @@
     "description": "Early access to new features. These are experimental and subject to change or removal.",
     "features": {
       "testRunSearch": "Test Run searching and viewing",
-      "internationalization": "Internationalization/Multiple language support",
       "is3270ScreenEnabled": "Support for viewing and downloading 3270 terminals",
       "graph": "Test Run Graphs"
     }
@@ -238,6 +237,19 @@
     "noTags": "No tags were associated with this test run.",
     "recentRunsLink": "View recent runs of the same test...",
     "runRetriesLink": "View all attempts of this test run..."
+  },
+  "3270Tab": {
+    "Terminal": "Terminal",
+    "screenNumber": "Screen Number",
+    "searchPlaceholder": "Search",
+    "nextImage": "Next image",
+    "previousImage": "Previous image",
+    "copyImage": "Copy image to clipboard",
+    "downloadImage": "Download image",
+    "copiedTitle": "Image copy successful: ",
+    "copiedMessage": "The 3270 screenshot image has been successfully copied to your clipboard.",
+    "errorTitle": "Image copy unsuccessful: ",
+    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Check your browser console for more detail."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",

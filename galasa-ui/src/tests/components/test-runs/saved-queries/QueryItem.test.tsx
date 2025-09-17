@@ -50,6 +50,19 @@ jest.mock('next-intl', () => ({
   },
 }));
 
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      push: jest.fn(),
+      replace: jest.fn(),
+    };
+  },
+  usePathname() {
+    return '/';
+  },
+}));
+
 // Mock the context hook
 jest.mock('@/contexts/SavedQueriesContext', () => ({
   useSavedQueries: jest.fn(),

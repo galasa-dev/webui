@@ -79,6 +79,10 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const isUrlUpdateInProgress = useRef(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Track if a URL update is in progress
+  const isUrlUpdateInProgress = useRef(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Decode the search params from the URL every time the searchParams change
   const searchParams = useMemo(() => {
     const encodedQueryString = rawSearchParams.get('q');
@@ -147,7 +151,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (newColumnsOrder.map((c) => c.id).join(',') !== columnsOrder.map((c) => c.id).join(',')) {
       setColumnsOrder(newColumnsOrder);
     }
-
+      
     // Timeframe
     const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
     const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);

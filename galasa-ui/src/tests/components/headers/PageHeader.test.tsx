@@ -33,6 +33,8 @@ jest.mock('next-intl', () => ({
     };
     return translations[key] || `Translated ${key}`;
   },
+  useLocale: () => 'en',
+  NextIntlClientProvider: ({ children }: any) => <>{children}</>,
 }));
 // Mock matchMedia
 beforeAll(() => {

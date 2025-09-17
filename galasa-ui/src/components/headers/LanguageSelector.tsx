@@ -62,13 +62,14 @@ export default function LanguageSelector() {
     <div data-floating-menu-container>
       <Theme theme={current}>
         <OverflowMenu
+          data-floating-menu-container
           className={styles.overflowMenu}
           focusTrap={true}
           align="bottom"
           flipped
-          renderIcon={() => <Wikis style={{ fill: 'white' }} />}
+          renderIcon={() => <Wikis className={styles.renderIcon} />}
           size="lg"
-          iconDescription={`${translations('tooltip')} : ${selectedLanguage.text}`}
+          iconDescription={`${translations('tooltip')}: ${selectedLanguage.text}`}
           aria-label="Filter menu"
           tooltipAlignment="center"
           tooltipPosition="bottom"
