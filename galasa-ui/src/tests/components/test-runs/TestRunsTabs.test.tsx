@@ -103,7 +103,7 @@ jest.mock('next/navigation', () => ({
     replace: mockReplace,
   }),
   useSearchParams: () => mockUseSearchParams(),
-  usePathname: () => '/',
+  usePathname: () => '/test-runs',
 }));
 
 // Mock the useDateTimeFormat context
