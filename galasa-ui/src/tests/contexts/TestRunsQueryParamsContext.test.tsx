@@ -28,7 +28,7 @@ jest.mock('next/navigation', () => ({
     replace: mockReplace,
   }),
   useSearchParams: () => mockSearchParams,
-  usePathname: () => '/',
+  usePathname: () => '/test-runs',
 }));
 
 // Mock contexts
