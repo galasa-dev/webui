@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
 import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
@@ -14,14 +14,19 @@ import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useRouter } from 'next/navigation';
+
 
 export default function TabFor3270({
   runId,
   zos3270TerminalData,
+  is3270CurrentlySelected,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
+  is3270CurrentlySelected: boolean;
 }) {
+  const router = useRouter();
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageData, setImageData] = useState<TerminalImage>();
@@ -46,6 +51,40 @@ export default function TabFor3270({
   if (isError) {
     return <ErrorPage />;
   }
+
+  // Change the URL whenever the highlighted (selected) image or filters change.
+  useEffect(() => {
+    const updatedUrl = new URL(window.location.href);
+
+    if (updatedUrl.searchParams.get('tab') === '3270') {
+      if (updatedUrl.searchParams.has('terminalScreen')) {
+        updatedUrl.searchParams.set('terminalScreen', highlightedRowId);
+      } else {
+        updatedUrl.searchParams.append('terminalScreen', highlightedRowId);
+      }
+    }
+
+    // Update the router state with the new URL
+    router.replace(updatedUrl.toString(), { scroll: false });
+  }, [highlightedRowId, is3270CurrentlySelected])
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const terminalScreenIdPresent = url.searchParams.has('terminalScreen');
+
+    if (is3270CurrentlySelected) {
+      if (highlightedRowId === '' && terminalScreenIdPresent) {
+        setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
+      }
+    } else {
+      // Cleanup 'terminalScreen' parameter if they switch off of the 3270 tab.
+
+      if (terminalScreenIdPresent) {
+        url.searchParams.delete('terminalScreen');
+        router.replace( url.toString(), { scroll: false });
+      }
+    }
+  }, [is3270CurrentlySelected])
 
   return (
     <div

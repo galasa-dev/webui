@@ -28,7 +28,7 @@ import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { CellFor3270, TerminalImage, DropdownOption } from '@/utils/interfaces/3270Terminal';
-import { handleURL } from '@/utils/3270/handleURL';
+import { useRouter } from 'next/navigation';
 
 export default function TableOfScreenshots({
   runId,
@@ -115,11 +115,13 @@ export default function TableOfScreenshots({
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
 
   useEffect(() => {
-    // Highlight and display first element when the page loads.
+    // Highlight and display first element when the page loads, unless already set.
     const highlightFirstRowOnPageLoad = () => {
       if (!initialHighlightedRowSet && filteredRows[0]) {
         setInitialHighlightedRowSet(true);
-        setHighlightedRowId(filteredRows[0].id);
+        if (highlightedRowId === '' || !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)) {
+          setHighlightedRowId(filteredRows[0].id);
+        }
       }
     };
 
@@ -206,11 +208,6 @@ export default function TableOfScreenshots({
     highlightedRowId,
     searchTerm,
   ]);
-
-  // // Change the URL whenever the highlighted (selected) image or filters change.
-  // useEffect(() => {
-  //   handleURL(highlightedRowId, searchTerm, selectedTerminal);
-  // }, [highlightedRowId, searchTerm, selectedTerminal])
 
   if (isLoading) {
     return (
