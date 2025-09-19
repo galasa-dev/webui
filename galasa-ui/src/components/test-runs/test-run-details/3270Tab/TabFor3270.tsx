@@ -16,7 +16,6 @@ import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useRouter } from 'next/navigation';
 
-
 export default function TabFor3270({
   runId,
   zos3270TerminalData,
@@ -66,7 +65,7 @@ export default function TabFor3270({
 
     // Update the router state with the new URL
     router.replace(updatedUrl.toString(), { scroll: false });
-  }, [highlightedRowId, is3270CurrentlySelected])
+  }, [highlightedRowId, is3270CurrentlySelected]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -81,10 +80,10 @@ export default function TabFor3270({
 
       if (terminalScreenIdPresent) {
         url.searchParams.delete('terminalScreen');
-        router.replace( url.toString(), { scroll: false });
+        router.replace(url.toString(), { scroll: false });
       }
     }
-  }, [is3270CurrentlySelected])
+  }, [is3270CurrentlySelected]);
 
   return (
     <div

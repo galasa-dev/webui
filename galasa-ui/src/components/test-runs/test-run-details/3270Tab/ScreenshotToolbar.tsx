@@ -105,13 +105,13 @@ export default function ScreenshotToolbar({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!e.repeat) {
       switch (e.key) {
-        case "ArrowLeft":
+        case 'ArrowLeft':
           if (highlightedRowInDisplayedData && !cannotSwitchToPreviousImage && !isLoading) {
             handlePreviousImageClick();
           }
           break;
 
-        case "ArrowRight":
+        case 'ArrowRight':
           if (highlightedRowInDisplayedData && !cannotSwitchToNextImage && !isLoading) {
             handleNextImageClick();
           }
@@ -129,7 +129,12 @@ export default function ScreenshotToolbar({
     document.addEventListener('keydown', handleKeyDown);
 
     return cleanup;
-  }, [isLoading, highlightedRowInDisplayedData, cannotSwitchToPreviousImage, cannotSwitchToNextImage]);
+  }, [
+    isLoading,
+    highlightedRowInDisplayedData,
+    cannotSwitchToPreviousImage,
+    cannotSwitchToNextImage,
+  ]);
 
   return (
     <div className={styles.screenshotToolbar}>

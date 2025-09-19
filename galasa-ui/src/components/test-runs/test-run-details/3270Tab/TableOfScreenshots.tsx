@@ -119,7 +119,10 @@ export default function TableOfScreenshots({
     const highlightFirstRowOnPageLoad = () => {
       if (!initialHighlightedRowSet && filteredRows[0]) {
         setInitialHighlightedRowSet(true);
-        if (highlightedRowId === '' || !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)) {
+        if (
+          highlightedRowId === '' ||
+          !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)
+        ) {
           setHighlightedRowId(filteredRows[0].id);
         }
       }

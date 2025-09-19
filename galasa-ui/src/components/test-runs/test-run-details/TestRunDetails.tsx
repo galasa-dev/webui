@@ -81,7 +81,7 @@ const TestRunDetails = ({
 
   // Get the selected tab index from the URL or default to the first tab
   const [selectedTabIndex, setSelectedTabIndex] = useState(() => {
-    if (searchParams.get('tab')){
+    if (searchParams.get('tab')) {
       const tabName = searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!;
 
       // Redirect 3270 tab to overview page until it has been verified that the test has a 3270 folder structure populated with images.
@@ -315,7 +315,7 @@ const TestRunDetails = ({
         />
       )}
       {isLoading ? (
-        <TestRunSkeleton selectedTabIndex={selectedTabIndex}/>
+        <TestRunSkeleton selectedTabIndex={selectedTabIndex} />
       ) : (
         <div className={styles.testRunContainer}>
           <div className={styles.summarySection}>
@@ -372,7 +372,11 @@ const TestRunDetails = ({
               </TabPanel>
               {zos3270TerminalFolderExists && (
                 <TabPanel>
-                  <TabFor3270 runId={runId} zos3270TerminalData={zos3270TerminalData} is3270CurrentlySelected={indexOf3270Tab===selectedTabIndex} />
+                  <TabFor3270
+                    runId={runId}
+                    zos3270TerminalData={zos3270TerminalData}
+                    is3270CurrentlySelected={indexOf3270Tab === selectedTabIndex}
+                  />
                 </TabPanel>
               )}
             </TabPanels>
