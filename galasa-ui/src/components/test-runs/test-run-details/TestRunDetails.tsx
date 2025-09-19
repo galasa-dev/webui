@@ -315,7 +315,7 @@ const TestRunDetails = ({
         />
       )}
       {isLoading ? (
-        <TestRunSkeleton />
+        <TestRunSkeleton selectedTabIndex={selectedTabIndex}/>
       ) : (
         <div className={styles.testRunContainer}>
           <div className={styles.summarySection}>
