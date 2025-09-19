@@ -36,6 +36,9 @@
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
+  height: 700px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sideNavCollapsed {
@@ -61,8 +64,11 @@
 
 .toolbar {
   display: flex;
-  padding: 0.7rem;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--cds-layer);
 }
 
 .headerTitle {
