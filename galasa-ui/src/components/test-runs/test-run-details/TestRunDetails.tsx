@@ -74,18 +74,33 @@ const TestRunDetails = ({
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const { formatDate } = useDateTimeFormat();
 
+  const [is3270TabSelected, setIs3270TabSelected] = useState<boolean>(false);
   const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
   const [zos3270TerminalData, setZos3270TerminalData] = useState<TreeNodeData[]>([]);
 
   // Get the selected tab index from the URL or default to the first tab
-  const [selectedTabIndex, setSelectedTabIndex] = useState(
-    searchParams.get('tab')
-      ? TEST_RUN_PAGE_TABS.indexOf(searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!)
-      : 0
-  );
+  const [selectedTabIndex, setSelectedTabIndex] = useState(() => {
+    if (searchParams.get('tab')){
+      const tabName = searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!;
+
+      // Redirect 3270 tab to overview page until it has been verified that the test has a 3270 folder structure populated with images.
+      if (tabName === '3270') {
+        setIs3270TabSelected(true);
+        return TEST_RUN_PAGE_TABS.indexOf('overview');
+      }
+      
+      return TEST_RUN_PAGE_TABS.indexOf(tabName);
+    }
+    return 0;
+  });
 
   const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
     setZos3270TerminalFolderExists(newZos3270TerminalFolderExists);
+
+    // If 3270 tab has been selected in the URL
+    if (is3270TabSelected && newZos3270TerminalFolderExists) {
+      setSelectedTabIndex(TEST_RUN_PAGE_TABS.indexOf('3270'));
+    }
   };
 
   const handleSetZos3270TerminalData = (newZos3270TerminalData: TreeNodeData[]) => {
