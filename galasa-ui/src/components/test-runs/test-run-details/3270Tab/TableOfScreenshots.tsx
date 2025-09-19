@@ -27,12 +27,8 @@ import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
-
-interface DropdownOption {
-  id: string;
-  label: string;
-}
+import { CellFor3270, TerminalImage, DropdownOption } from '@/utils/interfaces/3270Terminal';
+import { handleURL } from '@/utils/3270/handleURL';
 
 export default function TableOfScreenshots({
   runId,
@@ -210,6 +206,11 @@ export default function TableOfScreenshots({
     highlightedRowId,
     searchTerm,
   ]);
+
+  // // Change the URL whenever the highlighted (selected) image or filters change.
+  // useEffect(() => {
+  //   handleURL(highlightedRowId, searchTerm, selectedTerminal);
+  // }, [highlightedRowId, searchTerm, selectedTerminal])
 
   if (isLoading) {
     return (
