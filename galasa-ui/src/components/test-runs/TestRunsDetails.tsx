@@ -7,7 +7,7 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
@@ -17,7 +17,11 @@ import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
-import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import {
+  NOTIFICATION_VISIBLE_MILLISECS,
+  TABS_IDS,
+  TEST_RUNS_QUERY_PARAMS,
+} from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
@@ -61,7 +65,7 @@ export default function TestRunsDetails({
         title: translations('copiedTitle'),
         subtitle: translations('copiedMessage'),
       });
-      setTimeout(() => setNotification(null), 6000);
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
       setNotification({
         kind: 'error',
@@ -129,7 +133,11 @@ export default function TestRunsDetails({
 
     if (!nameToSave) return;
 
-    const currentUrlParams = new URLSearchParams(searchParams).toString();
+    const currentUrlParams = new URLSearchParams(searchParams);
+
+    // Change the tab to be the results tab when saving a query
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+
     const existingQuery = getQueryByName(nameToSave);
 
     // If the query already exists, update it
@@ -168,8 +176,22 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
-  const isSaveQueryDisabled =
-    activeQuery?.url === encodeStateToUrlParam(searchParams.toString()) || activeQuery?.url === '';
+  const isSaveQueryDisabled = useMemo(() => {
+    const currentUrlParams = new URLSearchParams(searchParams);
+
+    // Set the current tab to "results" for comparison purposes
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+
+    // Disable if the current URL params (excluding tab) match the active query's URL
+    if (activeQuery?.url === encodeStateToUrlParam(currentUrlParams.toString())) {
+      return true;
+    }
+
+    // Disable if there is no active query and the current URL params are the default
+    if (!activeQuery && currentUrlParams.toString() === '') {
+      return true;
+    }
+  }, [activeQuery, searchParams]);
 
   return (
     <div className={styles.testRunsPage}>

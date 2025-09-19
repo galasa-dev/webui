@@ -419,7 +419,7 @@ describe('TestRunsDetails', () => {
 
       // Assert
       await waitFor(() => {
-        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query');
+        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query&tab=results');
         expect(mockSaveQuery).toHaveBeenCalledTimes(1);
         expect(mockSaveQuery).toHaveBeenCalledWith({
           title: 'New Test Query',
