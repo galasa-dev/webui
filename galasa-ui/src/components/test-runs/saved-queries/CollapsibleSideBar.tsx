@@ -32,7 +32,11 @@ import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
-import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import {
+  NOTIFICATION_VISIBLE_MILLISECS,
+  TABS_IDS,
+  TEST_RUNS_QUERY_PARAMS,
+} from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
@@ -107,6 +111,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
 
     // Update the URL parameters
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, finalQueryTitle);
     const newQuery = {
       title: finalQueryTitle,
@@ -188,7 +193,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
               </div>
 
               <div className={styles.sideNavContent}>
-                <SideNavItems>
+                <div>
                   {defaultQuery && !searchTerm && (
                     <QueryItem
                       query={defaultQuery}
@@ -213,7 +218,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                       />
                     ))}
                   </SortableContext>
-                </SideNavItems>
+                </div>
               </div>
             </div>
           </div>

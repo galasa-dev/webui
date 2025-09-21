@@ -22,7 +22,7 @@ import {
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
-import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
@@ -179,18 +179,31 @@ export default function TestRunsDetails({
   const isSaveQueryDisabled = useMemo(() => {
     const currentUrlParams = new URLSearchParams(searchParams);
 
-    // Set the current tab to "results" for comparison purposes
-    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+    // Remove "tab" and "queryName" params from  URL
+    currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+    currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.QUERY_NAME);
 
+    let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
+    if (queryURL) {
+      const queryUrlParams = new URLSearchParams(queryURL);
+      // Remove "tab" and "queryName" params from query URL
+      queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+      queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.QUERY_NAME);
+      queryURL = queryUrlParams.toString();
+    }
+
+    let isDisabled = false;
+    console.log({ currentUrlParams: currentUrlParams.toString(), queryURL });
     // Disable if the current URL params (excluding tab) match the active query's URL
-    if (activeQuery?.url === encodeStateToUrlParam(currentUrlParams.toString())) {
-      return true;
+    if (
+      currentUrlParams.toString() === queryURL ||
+      queryURL === '' ||
+      currentUrlParams.toString() === ''
+    ) {
+      isDisabled = true;
     }
 
-    // Disable if there is no active query and the current URL params are the default
-    if (!activeQuery && currentUrlParams.toString() === '') {
-      return true;
-    }
+    return isDisabled;
   }, [activeQuery, searchParams]);
 
   return (
