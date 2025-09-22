@@ -130,9 +130,9 @@ export default function ScreenshotToolbar({
 
   // Mount event listener to let users flick between screenshots with left and right arrow keys.
   useEffect(() => {
-    if (is3270CurrentlySelected){
+    if (is3270CurrentlySelected) {
       document.addEventListener('keydown', handleKeyDown);
-      
+
       return cleanup;
     }
   }, [
