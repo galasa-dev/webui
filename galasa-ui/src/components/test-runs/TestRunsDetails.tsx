@@ -179,21 +179,24 @@ export default function TestRunsDetails({
   const isSaveQueryDisabled = useMemo(() => {
     const currentUrlParams = new URLSearchParams(searchParams);
 
-    // Remove "tab" and "queryName" params from  URL
+    // If the queryName in URL and activeQuery.title don't match → still loading → keep disabled
+    if (currentUrlParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) !== activeQuery?.title) {
+      return true;
+    }
+
+     // Delete "tab" param from the current URL
     currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
-    currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.QUERY_NAME);
 
     let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
     if (queryURL) {
       const queryUrlParams = new URLSearchParams(queryURL);
-      // Remove "tab" and "queryName" params from query URL
+
+      // Delete "tab" param from the query URL
       queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
-      queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.QUERY_NAME);
       queryURL = queryUrlParams.toString();
     }
 
     let isDisabled = false;
-    console.log({ currentUrlParams: currentUrlParams.toString(), queryURL });
     // Disable if the current URL params (excluding tab) match the active query's URL
     if (
       currentUrlParams.toString() === queryURL ||
