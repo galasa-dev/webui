@@ -84,7 +84,7 @@ const TestRunDetails = ({
     if (searchParams.get('tab')) {
       const tabName = searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!;
 
-      // Redirect 3270 tab to overview page until it has been verified that the test has a 3270 folder structure populated with images.
+      // Redirect 3270 tab to overview page until it has been verified that the test has a 3270 folder structure populated with images
       if (tabName === '3270') {
         setIs3270TabSelectedInURL(true);
         return TEST_RUN_PAGE_TABS.indexOf('overview');
@@ -97,7 +97,7 @@ const TestRunDetails = ({
   const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
     setZos3270TerminalFolderExists(newZos3270TerminalFolderExists);
 
-    // If 3270 tab has been selected in the URL
+    // If 3270 tab has been selected in the URL, move them to the 3270 pannel from the overview page redirection
     if (is3270TabSelectedInURL && newZos3270TerminalFolderExists) {
       setSelectedTabIndex(indexOf3270Tab);
     }
@@ -253,6 +253,10 @@ const TestRunDetails = ({
     if (TEST_RUN_PAGE_TABS[newIndex] !== 'runLog') {
       params.delete(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
     }
+    // When switching away from the 3270 tab, remove the terminalScreen parameter
+    if (TEST_RUN_PAGE_TABS[newIndex] !== '3270') {
+      params.delete(SINGLE_RUN_QUERY_PARAMS.TERMINAL_SCREEN);
+    }
 
     updateUrl(params);
   };
@@ -265,6 +269,16 @@ const TestRunDetails = ({
     const params = new URLSearchParams(searchParams.toString());
     params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[logTabIndex]);
     params.set(SINGLE_RUN_QUERY_PARAMS.LOG_LINE, method.runLogStartLine.toString());
+    updateUrl(params);
+  };
+
+  // Handle method click to navigate to the 3270 tab with the correct terminal screen
+  const handleNavigateTo3270 = (highlightedRowId: string) => {
+    setSelectedTabIndex(indexOf3270Tab);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[indexOf3270Tab]);
+    params.set(SINGLE_RUN_QUERY_PARAMS.TERMINAL_SCREEN, highlightedRowId);
     updateUrl(params);
   };
 
@@ -376,6 +390,7 @@ const TestRunDetails = ({
                     runId={runId}
                     zos3270TerminalData={zos3270TerminalData}
                     is3270CurrentlySelected={indexOf3270Tab === selectedTabIndex}
+                    handleNavigateTo3270={handleNavigateTo3270}
                   />
                 </TabPanel>
               )}

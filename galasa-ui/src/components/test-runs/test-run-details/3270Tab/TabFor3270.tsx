@@ -14,18 +14,18 @@ import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useRouter } from 'next/navigation';
 
 export default function TabFor3270({
   runId,
   zos3270TerminalData,
   is3270CurrentlySelected,
+  handleNavigateTo3270,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
   is3270CurrentlySelected: boolean;
+  handleNavigateTo3270: (highlightedRowId: string) => void;
 }) {
-  const router = useRouter();
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageData, setImageData] = useState<TerminalImage>();
@@ -51,39 +51,10 @@ export default function TabFor3270({
     return <ErrorPage />;
   }
 
-  // Change the URL whenever the highlighted (selected) image or filters change.
+  // Set the 'terminalScreen' parameter
   useEffect(() => {
-    const updatedUrl = new URL(window.location.href);
-
-    if (updatedUrl.searchParams.get('tab') === '3270') {
-      if (updatedUrl.searchParams.has('terminalScreen')) {
-        updatedUrl.searchParams.set('terminalScreen', highlightedRowId);
-      } else {
-        updatedUrl.searchParams.append('terminalScreen', highlightedRowId);
-      }
-    }
-
-    // Update the router state with the new URL
-    router.replace(updatedUrl.toString(), { scroll: false });
-  }, [highlightedRowId, is3270CurrentlySelected]);
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const terminalScreenIdPresent = url.searchParams.has('terminalScreen');
-
-    if (is3270CurrentlySelected) {
-      if (highlightedRowId === '' && terminalScreenIdPresent) {
-        setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
-      }
-    } else {
-      // Cleanup 'terminalScreen' parameter if they switch off of the 3270 tab.
-
-      if (terminalScreenIdPresent) {
-        url.searchParams.delete('terminalScreen');
-        router.replace(url.toString(), { scroll: false });
-      }
-    }
-  }, [is3270CurrentlySelected]);
+    handleNavigateTo3270(highlightedRowId);
+  }, [highlightedRowId]);
 
   return (
     <div
@@ -116,6 +87,7 @@ export default function TabFor3270({
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
           highlightedRowId={highlightedRowId}
+          is3270CurrentlySelected={is3270CurrentlySelected}
         />
         <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
       </div>

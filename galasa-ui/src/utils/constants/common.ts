@@ -96,6 +96,7 @@ const TEST_RUNS_QUERY_PARAMS = {
 const SINGLE_RUN_QUERY_PARAMS = {
   TAB: 'tab',
   LOG_LINE: 'line',
+  TERMINAL_SCREEN: 'terminalScreen',
 } as const;
 
 const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results', 'graph'];

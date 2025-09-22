@@ -20,6 +20,7 @@ export default function ScreenshotToolbar({
   highlightedRowInDisplayedData,
   isLoading,
   highlightedRowId,
+  is3270CurrentlySelected,
 }: {
   setMoveImageSelection: React.Dispatch<React.SetStateAction<number>>;
   cannotSwitchToPreviousImage: boolean;
@@ -27,6 +28,7 @@ export default function ScreenshotToolbar({
   highlightedRowInDisplayedData: boolean;
   isLoading: boolean;
   highlightedRowId: string;
+  is3270CurrentlySelected: boolean;
 }) {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -93,6 +95,7 @@ export default function ScreenshotToolbar({
   };
 
   const handleDownloadImage = () => {
+    setIsDownloading(true);
     var link = document.createElement('a');
     link.download = getFileNameFromId() + '.jpeg';
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -100,6 +103,7 @@ export default function ScreenshotToolbar({
       link.href = canvas.toDataURL();
       link.click();
     }
+    setIsDownloading(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,10 +130,13 @@ export default function ScreenshotToolbar({
 
   // Mount event listener to let users flick between screenshots with left and right arrow keys.
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-
-    return cleanup;
+    if (is3270CurrentlySelected){
+      document.addEventListener('keydown', handleKeyDown);
+      
+      return cleanup;
+    }
   }, [
+    is3270CurrentlySelected,
     isLoading,
     highlightedRowInDisplayedData,
     cannotSwitchToPreviousImage,
