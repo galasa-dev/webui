@@ -137,6 +137,7 @@ export default function TestRunsDetails({
 
     // Change the tab to be the results tab when saving a query
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
 
     const existingQuery = getQueryByName(nameToSave);
 
@@ -177,6 +178,12 @@ export default function TestRunsDetails({
   };
 
   const isSaveQueryDisabled = useMemo(() => {
+    // If query doesn't exist in storage → keep enabled (it's a new query)
+    console.log('activeQuery', activeQuery);
+    if (!activeQuery) {
+      return isQuerySaved(queryName.trim()) || false;
+    }
+
     const currentUrlParams = new URLSearchParams(searchParams);
 
     // If the queryName in URL and activeQuery.title don't match → still loading → keep disabled
@@ -184,7 +191,7 @@ export default function TestRunsDetails({
       return true;
     }
 
-     // Delete "tab" param from the current URL
+    // Delete "tab" param from the current URL
     currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
 
     let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
