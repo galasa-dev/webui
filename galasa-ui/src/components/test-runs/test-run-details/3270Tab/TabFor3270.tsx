@@ -53,7 +53,7 @@ export default function TabFor3270({
 
   // Set the 'terminalScreen' parameter
   useEffect(() => {
-    if (is3270CurrentlySelected){
+    if (is3270CurrentlySelected) {
       handleNavigateTo3270(highlightedRowId);
     }
   }, [highlightedRowId]);
@@ -64,7 +64,7 @@ export default function TabFor3270({
       const url = new URL(window.location.href);
       setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
     }
-  }, [is3270CurrentlySelected])
+  }, [is3270CurrentlySelected]);
 
   return (
     <div
