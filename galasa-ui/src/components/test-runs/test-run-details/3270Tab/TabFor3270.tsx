@@ -47,10 +47,6 @@ export default function TabFor3270({
     theme = current;
   }
 
-  if (isError) {
-    return <ErrorPage />;
-  }
-
   // Set the 'terminalScreen' parameter
   useEffect(() => {
     if (is3270CurrentlySelected) {
@@ -65,6 +61,10 @@ export default function TabFor3270({
       setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
     }
   }, [is3270CurrentlySelected]);
+
+  if (isError) {
+    return <ErrorPage />;
+  }
 
   return (
     <div
