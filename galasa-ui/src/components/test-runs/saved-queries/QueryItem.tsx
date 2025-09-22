@@ -53,18 +53,19 @@ export default function QueryItem({
     { title: translations('rename'), onClick: () => handleRenameQuery(query.title) },
     { title: translations('copyToClipboard'), onClick: () => handleShareQuery(query.title) },
     {
+      title: translations('duplicate'),
+      onClick: () => handleDuplicateQuery(query.title),
+    },
+    {
       title: translations('setAsDefault'),
       onClick: () => handleSetQueryAsDefault(query.title),
       disabled: isDefault,
     },
     {
-      title: translations('duplicate'),
-      onClick: () => handleDuplicateQuery(query.title),
-    },
-    {
       title: translations('delete'),
       onClick: () => handleDeleteQuery?.(query.title),
       isDelete: true,
+      disabled: isDefault,
     },
   ];
 
