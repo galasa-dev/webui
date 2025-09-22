@@ -179,7 +179,6 @@ export default function TestRunsDetails({
 
   const isSaveQueryDisabled = useMemo(() => {
     // If query doesn't exist in storage → keep enabled (it's a new query)
-    console.log('activeQuery', activeQuery);
     if (!activeQuery) {
       return isQuerySaved(queryName.trim()) || false;
     }

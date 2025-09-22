@@ -113,14 +113,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Query Name
-    let newQueryName: string;
-    // If URL is empty, set the title to the default-default query
-    if (searchParams.size <= 1 && !searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME)) {
-      newQueryName = DEFAULT_QUERY.title;
-    } else {
-      newQueryName =
-        searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
-    }
+    const newQueryName =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
 
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);

@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+import { encode } from 'punycode';
 import { ColumnDefinition } from '../interfaces';
+import { encodeStateToUrlParam } from '../urlEncoder';
 
 const CLIENT_API_VERSION = '0.44.0';
 
@@ -159,7 +161,8 @@ const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overv
 
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
-  url: '',
+  // Should set any filter to avoid empty state
+  url: 'tab=results',
   title: 'Tests ran in the last 24 hours',
   createdAt: new Date().toISOString(),
 };
