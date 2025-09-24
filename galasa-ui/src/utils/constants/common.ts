@@ -157,19 +157,21 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
+// Note: Translation keys should match those in the translation files
+const TRANSLATIONS_KEYS = {
+  RECENT_RUNS_OF_TEST: 'recentRunsOfTest',
+  DEFAULT_QUERY_NAME: 'defaultQueryName',
+  ALL_ATTEMPTS_OF_TEST_RUN: 'allAttemptsOfTestRun',
+};
+
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
-  url: '',
-  title: 'Tests ran in the last 24 hours',
+  url: `queryName=${TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME}`,
+  // title: '',
   createdAt: new Date().toISOString(),
 };
 
 const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
-
-const TRANSLATIONS_KEYS = {
-  RECENT_RUNS_OF_TEST: 'recentRunsOfTest',
-  DEFAULT_QUERY_NAME: 'defaultQueryName',
-};
 
 export {
   CLIENT_API_VERSION,

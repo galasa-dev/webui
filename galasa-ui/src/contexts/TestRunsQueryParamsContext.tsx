@@ -27,6 +27,7 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
+  TRANSLATIONS_KEYS,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
@@ -112,7 +113,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Query Name
-    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
+    const newQueryName =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME;
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);
     }
@@ -187,6 +189,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
       setSearchCriteria(newCriteria);
     }
+
     // Sort Order
     const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
     const newSortOrder = sortOrderParam
@@ -218,6 +221,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
 
     // Query Name
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
+    console.log('Setting Query Name to URL:', queryName);
 
     // Visible Columns
     params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));

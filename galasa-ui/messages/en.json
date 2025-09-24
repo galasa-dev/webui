@@ -516,6 +516,7 @@
   },
   "QueryName": {
     "defaultQueryName": "Tests ran in the last 24 hours",
-    "recentRunsOfTest": "Recent runs of test {name}"
+    "recentRunsOfTest": "Recent runs of test {name}",
+    "allAttemptsOfTestRun": "All attempts of test run {name}"
   }
 }
