@@ -84,6 +84,24 @@
   overflow-y: auto;
 }
 
+/* Scrollbar styling for light/dark theme compatibility */
+.runLog::-webkit-scrollbar {
+  width: 10px;
+}
+
+.runLog::-webkit-scrollbar-track {
+  background: var(--cds-background, #f1f1f1);
+}
+
+.runLog::-webkit-scrollbar-thumb {
+  background: var(--cds-border-subtle, #c6c6c6);
+  border-radius: 4px;
+}
+
+.runLog::-webkit-scrollbar-thumb:hover {
+  background: var(--cds-border-strong, #8d8d8d);
+}
+
 .runLogContent {
   width: 100%;
 }
