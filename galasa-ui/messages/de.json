@@ -535,5 +535,9 @@
     "savedQueriesSidebarLabel": "Seitenleiste Gespeicherte Abfragen",
     "searchSavedQueries": "Gespeicherte Abfragen durchsuchen",
     "addCurrentQuery": "Aktuelle Abfrage hinzufügen"
+  },
+  "QueryName": {
+    "defaultQueryName": "Tests, die in den letzten 24 Stunden ausgeführt wurden",
+    "recentRunsOfTest": "Letzte Ausführungen des Tests {name}"
   }
 }

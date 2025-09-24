@@ -12,9 +12,9 @@ import { RunMetadata } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
 import { Link } from '@carbon/react';
 import { Launch } from '@carbon/icons-react';
-import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
-import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import { TEST_RUNS_QUERY_PARAMS, TRANSLATIONS_KEYS } from '@/utils/constants/common';
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const tags = metadata?.tags || [];
@@ -24,8 +24,9 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const fullTestName = metadata?.testName;
-  const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.DURATION}=60,0,0&${TEST_RUNS_QUERY_PARAMS.TAB}=results`;
+  const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.DURATION}=60,0,0&${TEST_RUNS_QUERY_PARAMS.TAB}=results&${TEST_RUNS_QUERY_PARAMS.QUERY_NAME}=${TRANSLATIONS_KEYS.RECENT_RUNS_OF_TEST}`;
   const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${TEST_RUNS_QUERY_PARAMS.FROM}=${weekBefore}&${TEST_RUNS_QUERY_PARAMS.TAB}=results`;
+
   useEffect(() => {
     const validateTime = () => {
       const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt!);

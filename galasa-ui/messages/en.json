@@ -513,5 +513,9 @@
     "savedQueriesSidebarLabel": "Saved Queries Sidebar",
     "searchSavedQueries": "Search saved queries",
     "addCurrentQuery": "Add current query"
+  },
+  "QueryName": {
+    "defaultQueryName": "Tests ran in the last 24 hours",
+    "recentRunsOfTest": "Recent runs of test {name}"
   }
 }
