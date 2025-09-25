@@ -78,6 +78,14 @@ jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
   })),
 }));
 
+// Mock the useTranslateQueryName hook
+jest.mock('@/hooks/useTranslateQueryName', () => ({
+  __esModule: true,
+  default: () => ({
+    translatedQueryName: mockQueryName,
+  }),
+}));
+
 // Mock other components
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => (
@@ -123,8 +131,8 @@ jest.mock('next-intl', () => ({
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => ({
-  Button: ({ children, iconDescription, ...props }: any) => (
-    <button {...props} aria-label={iconDescription}>
+  Button: ({ children, iconDescription, disabled, ...props }: any) => (
+    <button {...props} aria-label={iconDescription} disabled={disabled}>
       {children}
     </button>
   ),
@@ -137,6 +145,11 @@ jest.mock('@carbon/react', () => ({
     <div data-testid="notification" className={`notification-${kind}`}>
       <strong>{title}</strong>
       <p>{subtitle}</p>
+    </div>
+  ),
+  SkeletonText: ({ heading }: any) => (
+    <div data-testid="skeleton-text" className={heading ? 'skeleton-heading' : 'skeleton-text'}>
+      Loading...
     </div>
   ),
 }));
@@ -294,6 +307,9 @@ describe('TestRunsDetails', () => {
         />
       );
 
+      // Clear mocks after initial render to ignore setup calls
+      jest.clearAllMocks();
+
       // Act
       // 1. Click edit button
       const editButton = screen.getByRole('button', { name: /Edit query name/i });
@@ -335,6 +351,9 @@ describe('TestRunsDetails', () => {
         />
       );
 
+      // Clear mocks after initial render to ignore setup calls
+      jest.clearAllMocks();
+
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
       const input = screen.getByRole('textbox');
@@ -356,6 +375,9 @@ describe('TestRunsDetails', () => {
           resultsNamesPromise={mockResultsNamesPromise}
         />
       );
+
+      // Clear mocks after initial render to ignore setup calls
+      jest.clearAllMocks();
 
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
