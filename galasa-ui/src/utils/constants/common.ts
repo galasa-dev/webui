@@ -96,6 +96,7 @@ const TEST_RUNS_QUERY_PARAMS = {
 const SINGLE_RUN_QUERY_PARAMS = {
   TAB: 'tab',
   LOG_LINE: 'line',
+  TERMINAL_SCREEN: 'terminalScreen',
 } as const;
 
 const TABS_IDS = ['timeframe', 'table-design', 'search-criteria', 'results', 'graph'];
@@ -155,7 +156,7 @@ const PREFERENCE_KEYS = {
   TIME_ZONE: 'timeZone' as const,
 } as const;
 
-const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
+const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', '3270'];
 
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL

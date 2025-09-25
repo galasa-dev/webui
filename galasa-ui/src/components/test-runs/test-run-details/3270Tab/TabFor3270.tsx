@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
 import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
@@ -18,9 +18,13 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function TabFor3270({
   runId,
   zos3270TerminalData,
+  is3270CurrentlySelected,
+  handleNavigateTo3270,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
+  is3270CurrentlySelected: boolean;
+  handleNavigateTo3270: (highlightedRowId: string) => void;
 }) {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +46,21 @@ export default function TabFor3270({
   } else {
     theme = current;
   }
+
+  // Set the 'terminalScreen' parameter
+  useEffect(() => {
+    if (is3270CurrentlySelected) {
+      handleNavigateTo3270(highlightedRowId);
+    }
+  }, [highlightedRowId]);
+
+  // Get the 'terminalScreen' parameter
+  useEffect(() => {
+    if (is3270CurrentlySelected && highlightedRowId === '') {
+      const url = new URL(window.location.href);
+      setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
+    }
+  }, [is3270CurrentlySelected]);
 
   if (isError) {
     return <ErrorPage />;
@@ -78,6 +97,7 @@ export default function TabFor3270({
           highlightedRowInDisplayedData={highlightedRowInDisplayedData}
           isLoading={isLoading}
           highlightedRowId={highlightedRowId}
+          is3270CurrentlySelected={is3270CurrentlySelected}
         />
         <DisplayTerminalScreenshot imageData={imageData} isLoading={isLoading} />
       </div>
