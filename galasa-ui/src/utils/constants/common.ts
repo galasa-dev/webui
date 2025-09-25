@@ -91,6 +91,7 @@ const TEST_RUNS_QUERY_PARAMS = {
   TAB: 'tab',
   SORT_ORDER: 'sortOrder',
   QUERY_NAME: 'queryName',
+  PREVIOUS_TEST_RUN_NAME: 'previousTestRunName',
 };
 
 const SINGLE_RUN_QUERY_PARAMS = {
@@ -164,10 +165,12 @@ const TRANSLATIONS_KEYS = {
   ALL_ATTEMPTS_OF_TEST_RUN: 'allAttemptsOfTestRun',
 };
 
+const QUERY_NAME_TRANSLATION_NAMESPACE = 'QueryName';
+
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
-  url: `queryName=${TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME}`,
-  // title: '',
+  url: '',
+  title: TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME,
   createdAt: new Date().toISOString(),
 };
 
@@ -199,4 +202,5 @@ export {
   DEFAULT_QUERY,
   RESULTS_TABLE_PAGE_SIZES,
   TRANSLATIONS_KEYS,
+  QUERY_NAME_TRANSLATION_NAMESPACE,
 };

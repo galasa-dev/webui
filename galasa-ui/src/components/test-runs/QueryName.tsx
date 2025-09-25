@@ -7,12 +7,7 @@
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { Button, SkeletonText } from '@carbon/react';
 import { Edit } from '@carbon/icons-react';
-import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
-import { useTranslations } from 'next-intl';
-import { getTranslation } from '@/utils/functions/translations';
-import { TRANSLATIONS_KEYS } from '@/utils/constants/common';
-import { useMemo } from 'react';
-import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
+import useTranslateQueryName from '@/hooks/useTranslateQueryName';
 
 interface QueryNameProps {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -37,53 +32,12 @@ export default function QueryName({
   handleStartEditingName,
   translations,
 }: QueryNameProps) {
-  const FILE_NAME = 'QueryName';
-  const { queryName, searchCriteria, setQueryName } = useTestRunsQueryParams();
-  const queryNameTranslations = useTranslations(FILE_NAME);
-  const { breadCrumbItems } = useHistoryBreadCrumbs();
-
-  // Translate the query name if it matches a key in the translations otherwise use the original query name
-  const translatedQueryName = useMemo(() => {
-    let translatedQueryName;
-    if (!queryName || queryName === TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME) {
-      translatedQueryName = getTranslation(
-        TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME,
-        FILE_NAME,
-        queryNameTranslations
-      );
-    }
-
-    // Handle dynamic translations with parameters
-    if (queryName === TRANSLATIONS_KEYS.RECENT_RUNS_OF_TEST) {
-      translatedQueryName = getTranslation(queryName, FILE_NAME, queryNameTranslations, {
-        name: searchCriteria?.testName ?? '',
-      });
-    } else if (queryName === TRANSLATIONS_KEYS.ALL_ATTEMPTS_OF_TEST_RUN) {
-      // Try to get the test run name from the last breadcrumb item, if not available use the runName from search criteria
-      translatedQueryName = getTranslation(queryName, FILE_NAME, queryNameTranslations, {
-        name: (breadCrumbItems[breadCrumbItems.length - 1]?.title || searchCriteria?.runName) ?? '',
-      });
-    }
-
-    // Update the query name to its translated version if it has changed
-    if (translatedQueryName !== queryName) {
-      setQueryName(translatedQueryName || queryName);
-    }
-
-    return translatedQueryName || queryName;
-  }, [
-    queryName,
-    searchCriteria,
-    translations,
-    queryNameTranslations,
-    setQueryName,
-    breadCrumbItems,
-  ]);
+  const { translatedQueryName } = useTranslateQueryName();
 
   return (
     <div className={styles.queryNameBlock}>
       <div className={styles.queryNameBlock}>
-        {!queryName ? (
+        {!translatedQueryName ? (
           <SkeletonText heading />
         ) : (
           <>

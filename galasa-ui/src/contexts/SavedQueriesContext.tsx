@@ -9,7 +9,12 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { SavedQueriesMetaData, SavedQueryType } from '@/utils/types/common';
 import { useState } from 'react';
-import { DEFAULT_QUERY } from '@/utils/constants/common';
+import {
+  DEFAULT_QUERY,
+  QUERY_NAME_TRANSLATION_NAMESPACE,
+  TRANSLATIONS_KEYS,
+} from '@/utils/constants/common';
+import { useTranslations } from 'next-intl';
 
 const SAVED_QUERIES_STORAGE_KEY = 'savedQueries';
 const QUERIES_METADATA_STORAGE_KEY = 'queriesMetaData';
@@ -29,6 +34,10 @@ type SavedQueriesContextType = {
 const SavedQueriesContext = createContext<SavedQueriesContextType | undefined>(undefined);
 
 export function SavedQueriesProvider({ children }: { children: ReactNode }) {
+  // Get the translated default query name
+  const translations = useTranslations(QUERY_NAME_TRANSLATION_NAMESPACE);
+  const defaultTranslatedQueryName = translations(TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME);
+
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
       const storedQueries = localStorage.getItem(SAVED_QUERIES_STORAGE_KEY);
@@ -36,7 +45,9 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
         return JSON.parse(storedQueries);
       }
     }
-    return [DEFAULT_QUERY];
+
+    // Initialize with default query if none are stored
+    return [{ ...DEFAULT_QUERY, title: defaultTranslatedQueryName }];
   });
 
   const [metaData, setMetaData] = useState<SavedQueriesMetaData>(() => {

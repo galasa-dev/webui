@@ -27,7 +27,6 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
-  TRANSLATIONS_KEYS,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
@@ -54,6 +53,8 @@ interface TestRunsQueryParamsContextType {
   setQueryName: Dispatch<SetStateAction<string>>;
   isInitialized: boolean;
   searchParams: URLSearchParams;
+  previousTestRunName?: string;
+  setPreviousTestRunName?: Dispatch<SetStateAction<string>>;
 }
 
 const TestRunsQueryParamsContext = createContext<TestRunsQueryParamsContextType | undefined>(
@@ -99,6 +100,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const [searchCriteria, setSearchCriteria] = useState<Record<string, string>>({});
   const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
   const [queryName, setQueryName] = useState('');
+  const [previousTestRunName, setPreviousTestRunName] = useState('');
 
   // Effect to synchronize state with URL parameters
   useEffect(() => {
@@ -113,8 +115,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Query Name
-    const newQueryName =
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME;
+    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);
     }
@@ -202,6 +203,12 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       setSortOrder(newSortOrder);
     }
 
+    // Previous test run name
+    const newPreviousTestRunName = searchParams.get(TEST_RUNS_QUERY_PARAMS.PREVIOUS_TEST_RUN_NAME);
+    if (newPreviousTestRunName !== previousTestRunName) {
+      setPreviousTestRunName(newPreviousTestRunName || '');
+    }
+
     // Mark as initialized after the first sync
     if (!isInitialized) {
       setIsInitialized(true);
@@ -255,6 +262,11 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       }
     });
 
+    // Previous test run name
+    if (previousTestRunName) {
+      params.set(TEST_RUNS_QUERY_PARAMS.PREVIOUS_TEST_RUN_NAME, previousTestRunName);
+    }
+
     if (pathname === '/test-runs') {
       const encodedQuery = encodeStateToUrlParam(params.toString());
       const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
@@ -271,6 +283,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     timeframeValues,
     searchCriteria,
     queryName,
+    previousTestRunName,
   ]);
 
   // The value to be passed to the context consumers
@@ -289,6 +302,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     setColumnsOrder,
     queryName,
     setQueryName,
+    previousTestRunName,
+    setPreviousTestRunName,
     searchParams,
     isInitialized,
   };
