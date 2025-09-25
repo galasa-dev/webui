@@ -32,8 +32,13 @@ import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import { useTranslations } from 'next-intl';
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
-import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
+import {
+  NOTIFICATION_VISIBLE_MILLISECS,
+  TABS_IDS,
+  TEST_RUNS_QUERY_PARAMS,
+} from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
 interface CollapsibleSideBarProps {
   handleEditQueryName: (queryName: string) => void;
@@ -101,20 +106,12 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     if (!nameToSave) return;
 
     const currentUrlParams = new URLSearchParams(searchParams);
-    let finalQueryTitle = nameToSave;
 
-    // Ensure unique query name
-    if (isQuerySaved(finalQueryTitle)) {
-      const baseName = nameToSave.split('(')[0].trim();
-      let counter = 1;
-
-      while (isQuerySaved(finalQueryTitle)) {
-        finalQueryTitle = `${baseName} (${counter})`;
-        counter++;
-      }
-    }
+    // Generate a unique query name
+    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
 
     // Update the URL parameters
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
     currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, finalQueryTitle);
     const newQuery = {
       title: finalQueryTitle,
@@ -196,13 +193,15 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
               </div>
 
               <div className={styles.sideNavContent}>
-                <SideNavItems>
+                <div>
                   {defaultQuery && !searchTerm && (
                     <QueryItem
                       query={defaultQuery}
                       key={defaultQuery.createdAt}
                       disabled
                       isCollapsed={!isExpanded}
+                      handleEditQueryName={handleEditQueryName}
+                      setNotification={setNotification}
                     />
                   )}
                   <SortableContext
@@ -210,16 +209,29 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                     strategy={verticalListSortingStrategy}
                   >
                     {filteredSortableQueries.map((query) => (
-                      <QueryItem query={query} key={query.createdAt} isCollapsed={!isExpanded} />
+                      <QueryItem
+                        query={query}
+                        key={query.createdAt}
+                        isCollapsed={!isExpanded}
+                        handleEditQueryName={handleEditQueryName}
+                        setNotification={setNotification}
+                      />
                     ))}
                   </SortableContext>
-                </SideNavItems>
+                </div>
               </div>
             </div>
           </div>
         </div>
         <DragOverlay>
-          {activeQuery ? <QueryItem query={activeQuery} isCollapsed={!isExpanded} /> : null}
+          {activeQuery ? (
+            <QueryItem
+              query={activeQuery}
+              isCollapsed={!isExpanded}
+              handleEditQueryName={handleEditQueryName}
+              setNotification={setNotification}
+            />
+          ) : null}
         </DragOverlay>
       </DndContext>
 

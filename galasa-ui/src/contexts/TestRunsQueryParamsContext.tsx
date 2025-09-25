@@ -27,6 +27,7 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
+  DEFAULT_QUERY,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
@@ -72,7 +73,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
-  const { defaultQuery } = useSavedQueries();
+  const { defaultQuery: currentDefaultQuery } = useSavedQueries();
 
   // Track if a URL update is in progress
   const isUrlUpdateInProgress = useRef(true);
@@ -112,7 +113,9 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Query Name
-    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
+    const newQueryName =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
+
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);
     }
