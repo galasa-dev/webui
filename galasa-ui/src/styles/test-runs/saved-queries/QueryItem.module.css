@@ -10,6 +10,7 @@
   justify-content: center;
   position: relative;
   transition: background-color 0.15s ease-in-out;
+  padding: 0.3rem 0;
 }
 
 .sideNavItem.collapsed {

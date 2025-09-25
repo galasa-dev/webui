@@ -107,7 +107,10 @@ export default function TestRunsDetails({
     // If it was a saved query, perform the rename in storage
     if (queryToRename) {
       const updatedUrlParams = new URLSearchParams(searchParams);
+
+      // Update the URL parameters with the new query name and switch to results tab
       updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, newName);
+      updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
 
       updateQuery(queryToRename.createdAt, {
         ...queryToRename,

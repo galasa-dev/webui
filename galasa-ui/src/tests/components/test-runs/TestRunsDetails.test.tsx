@@ -311,7 +311,7 @@ describe('TestRunsDetails', () => {
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
       // encode url first
-      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query');
+      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query&tab=results');
       expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
         ...initialQuery,
         title: 'My Renamed Query',
