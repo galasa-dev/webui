@@ -38,6 +38,19 @@ jest.mock('@/utils/constants/common', () => ({
     title: 'Tests ran in the last 24 hours',
     url: 'default-url',
   },
+  TRANSLATIONS_KEYS: {
+    DEFAULT_QUERY_NAME: 'defaultQueryName',
+  },
+}));
+
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => (key: string) => {
+    const translations: Record<string, string> = {
+      defaultQueryName: 'Tests ran in the last 24 hours',
+    };
+    return translations[key] || key;
+  },
 }));
 
 // Test Component to consume and interact with the context

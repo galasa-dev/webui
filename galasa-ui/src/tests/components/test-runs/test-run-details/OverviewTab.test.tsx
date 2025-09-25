@@ -8,7 +8,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import OverviewTab from '@/components/test-runs/test-run-details/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
-import { getOneMonthAgo, getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
 
 // Mock the Carbon Tag component to simplify assertions
 jest.mock('@carbon/react', () => ({
@@ -149,7 +149,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     const links = screen.getAllByTestId('mock-link');
     const recentRunsLink = links.find((link) => link.getAttribute('href')?.includes('testName='));
 
-    const expectedHref = `/test-runs?testName=${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&duration=60,0,0&tab=results`;
+    const expectedHref = `/test-runs?testName=${completeMetadata.testName}&bundle=${completeMetadata.bundle}&package=${completeMetadata.package}&duration=60,0,0&tab=results&queryName=recentRunsOfTest`;
 
     expect(recentRunsLink).toHaveAttribute('href', expectedHref);
   });
@@ -171,7 +171,7 @@ describe('OverviewTab - Time and Link Logic', () => {
     const retriesLink = links.find((link) => link.getAttribute('href')?.includes('submissionId'));
     expect(retriesLink).toHaveAttribute(
       'href',
-      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results`
+      `/test-runs?submissionId=${completeMetadata.submissionId}&from=${mockWeekBefore}&tab=results&queryName=allAttemptsOfTestRun&previousTestRunName=C123456`
     );
   });
 
