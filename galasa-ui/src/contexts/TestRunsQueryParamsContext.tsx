@@ -228,7 +228,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
 
     // Query Name
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
-    console.log('Setting Query Name to URL:', queryName);
 
     // Visible Columns
     params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
