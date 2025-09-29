@@ -13,7 +13,7 @@ import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
-import { useTheme } from '@/contexts/ThemeContext';
+import { getTheme } from '@/utils/getTheme';
 
 export default function TabFor3270({
   runId,
@@ -34,18 +34,6 @@ export default function TabFor3270({
   const [cannotSwitchToNextImage, setCannotSwitchToNextImage] = useState<boolean>(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string>('');
   const [highlightedRowInDisplayedData, setHighlightedRowInDisplayedData] = useState<boolean>(true);
-
-  const current = useTheme().theme;
-  let theme: 'light' | 'dark';
-  if (current === 'system') {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      theme = 'dark';
-    } else {
-      theme = 'light';
-    }
-  } else {
-    theme = current;
-  }
 
   // Set the 'terminalScreen' parameter
   useEffect(() => {
@@ -68,7 +56,7 @@ export default function TabFor3270({
 
   return (
     <div
-      className={`${styles.tab3270Container} ${theme === 'light' ? styles.lightTheme : styles.darkTheme}`}
+      className={`${styles.tab3270Container} ${getTheme() === 'light' ? styles.lightTheme : styles.darkTheme}`}
     >
       <div className={styles.tableOfScreenshotsContainer}>
         <TableOfScreenshots

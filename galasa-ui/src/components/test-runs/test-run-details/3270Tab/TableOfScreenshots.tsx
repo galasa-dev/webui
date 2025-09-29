@@ -28,7 +28,6 @@ import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { CellFor3270, TerminalImage, DropdownOption } from '@/utils/interfaces/3270Terminal';
-import { useRouter } from 'next/navigation';
 
 export default function TableOfScreenshots({
   runId,
@@ -80,8 +79,6 @@ export default function TableOfScreenshots({
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
-
-  let screenshotsCollected: boolean = false;
 
   const handleRowClick = (rowId: string) => {
     setHighlightedRowId(rowId);
@@ -141,11 +138,9 @@ export default function TableOfScreenshots({
     checkHighlightedRowInFilteredRows();
   }, [filteredRows, highlightedRowId]);
 
-  useEffect(() => {
+  useMemo(() => {
     // Ensure screenshots are only collected once.
-    if (!screenshotsCollected) {
-      screenshotsCollected = true;
-
+    if (flattenedZos3270TerminalData.length === 0) {
       setIsLoading(true);
       const fetchData = async () => {
         try {

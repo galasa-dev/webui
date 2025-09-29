@@ -7,6 +7,7 @@
 import * as AuthTokenRoute from '@/app/auth/tokens/route';
 import { AuthenticationAPIApi } from '@/generated/galasaapi';
 import { NextRequest } from 'next/server';
+import { getTheme } from '@/utils/getTheme';
 
 const mockAuthenticationApi = AuthenticationAPIApi as jest.Mock;
 

@@ -351,3 +351,11 @@
 .clickableRow {
   cursor: pointer;
 }
+
+.lightTheme {
+  color-scheme: light;
+}
+
+.darkTheme {
+  color-scheme: dark;
+}

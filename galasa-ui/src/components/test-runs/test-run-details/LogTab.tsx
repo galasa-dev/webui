@@ -20,6 +20,7 @@ import {
 } from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
+import { getTheme } from '@/utils/getTheme';
 
 interface LogLine {
   content: string;
@@ -566,7 +567,9 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     : translations('selectLinesToCreatePermalink');
 
   return (
-    <div className={styles.tabContent}>
+    <div
+      className={`${styles.tabContent} ${getTheme() === 'light' ? styles.lightTheme : styles.darkTheme}`}
+    >
       <h3>{translations('title')}</h3>
       <p>{translations('description')}</p>
       <div className={styles.logContainer}>
