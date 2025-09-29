@@ -7,7 +7,7 @@
 import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { StarFilled, Draggable, ChevronDown } from '@carbon/icons-react';
+import { StarFilled, Draggable } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/QueryItem.module.css';
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
@@ -206,8 +206,9 @@ export default function QueryItem({
       <OverflowMenu
         aria-label={translations('actions')}
         iconDescription={translations('actions')}
-        renderIcon={ChevronDown}
         flipped
+        className={styles.overflowMenu}
+        direction="top"
       >
         {actions.map((action) => (
           <OverflowMenuItem

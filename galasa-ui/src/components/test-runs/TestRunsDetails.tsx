@@ -18,6 +18,7 @@ import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import {
+  DEFAULT_QUERY,
   NOTIFICATION_VISIBLE_MILLISECS,
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
@@ -209,6 +210,7 @@ export default function TestRunsDetails({
     // Disable if the current URL params (excluding tab) match the active query's URL
     if (
       currentUrlParams.toString() === queryURL ||
+      activeQuery.url === DEFAULT_QUERY.url ||
       queryURL === '' ||
       currentUrlParams.toString() === ''
     ) {
@@ -216,7 +218,7 @@ export default function TestRunsDetails({
     }
 
     return isDisabled;
-  }, [activeQuery, searchParams]);
+  }, [activeQuery, searchParams, isQuerySaved, queryName]);
 
   return (
     <div className={styles.testRunsPage}>
