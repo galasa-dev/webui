@@ -80,6 +80,8 @@ export default function TableOfScreenshots({
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
+  let screenshotsCollected: boolean = false;
+
   const handleRowClick = (rowId: string) => {
     setHighlightedRowId(rowId);
   };
@@ -140,7 +142,8 @@ export default function TableOfScreenshots({
 
   useMemo(() => {
     // Ensure screenshots are only collected once.
-    if (flattenedZos3270TerminalData.length === 0) {
+    if (!screenshotsCollected && flattenedZos3270TerminalData.length === 0) {
+      screenshotsCollected = true;
       setIsLoading(true);
       const fetchData = async () => {
         try {
