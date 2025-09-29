@@ -68,9 +68,14 @@ export default function ScreenshotToolbar({
   const handleCopyImage = async () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     try {
+      if (!canvas) {
+        throw new Error('Canvas element not found');
+      }
+
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+
       if (!blob) {
-        throw new Error('Failed to get blob from canvas.');
+        throw new Error('Failed to get blob from canvas');
       }
 
       const item = new ClipboardItem({ 'image/png': blob });
@@ -82,16 +87,20 @@ export default function ScreenshotToolbar({
         title: translations('copiedTitle'),
         subtitle: translations('copiedMessage'),
       });
-    } catch (err) {
-      console.error('Failed to copy canvas image:', err);
-
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        const isErrorNoCanvas = err.message === 'Canvas element not found';
+        setNotification({
+          kind: 'error',
+          title: translations('errorCopiedTitle'),
+          subtitle:
+            translations('copyFailedMessage') +
+            (isErrorNoCanvas ? translations('copyNoCanvas') : translations('copyNoBlob')),
+        });
+      }
+    } finally {
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
-    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
   const handleDownloadImage = () => {
@@ -99,10 +108,18 @@ export default function ScreenshotToolbar({
     var link = document.createElement('a');
     link.download = getFileNameFromId() + '.jpeg';
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
     if (canvas) {
       link.href = canvas.toDataURL();
       link.click();
+    } else {
+      setNotification({
+        kind: 'error',
+        title: translations('errorTitle'),
+        subtitle: translations('downloadFailedMessage'),
+      });
     }
+
     setIsDownloading(false);
   };
 
