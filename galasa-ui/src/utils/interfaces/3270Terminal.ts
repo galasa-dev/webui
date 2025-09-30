@@ -62,3 +62,8 @@ export interface TerminalSize {
   rows: number;
   columns: number;
 }
+
+export interface DropdownOption {
+  id: string;
+  label: string;
+}

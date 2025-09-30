@@ -268,9 +268,13 @@
     "copyImage": "Bild in die Zwischenablage kopieren",
     "downloadImage": "Bild herunterladen",
     "copiedTitle": "Bild erfolgreich kopiert:",
-    "copiedMessage": "Das 3270-Screenshot-Bild wurde erfolgreich in Ihre Zwischenablage kopiert.",
-    "errorTitle": "Bild nicht erfolgreich kopiert:",
-    "copyFailedMessage": "Das 3270-Screenshot-Bild konnte nicht in Ihre Zwischenablage kopiert werden. Weitere Informationen finden Sie in Ihrer Browserkonsole."
+    "copiedMessage": "Das 3270-Screenshot-Bild wurde erfolgreich in die Zwischenablage kopiert.",
+    "errorCopyTitle": "Bild nicht erfolgreich kopiert:",
+    "copyFailedMessage": "Das 3270-Screenshot-Bild konnte nicht in die Zwischenablage kopiert werden. Fehler:",
+    "copyNoCanvas": "Canvas-Element nicht gefunden.",
+    "copyNoBlob": "Blob konnte nicht aus Canvas abgerufen werden.",
+    "downloadErrortitle": "Bilddownload fehlgeschlagen:",
+    "downloadFailedMessage": "Das Herunterladen des 3270-Screenshot-Bilds ist fehlgeschlagen. Es konnte kein Canvas-Element zum Herunterladen des Bilds gefunden werden."
   },
   "TestRunDetails": {
     "title": "Testlauf: {runName}",
