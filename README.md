@@ -50,7 +50,7 @@ In such cases, set an environment variable `export NODE_USE_SYSTEM_CA=1` which t
 This is OK for development purposes, but never use this technique on a production deployment of a UI.
 Then re-start the web UI.
 
-2. An alternative approach is to create a .pem file containing the intermediate and root ca certificates, set the env variable:
+1. An alternative approach is to create a `.pem` file containing the intermediate and root ca certificates used by the server. Set the env variable:
 `export NODE_EXTRA_CA_CERTS=/path/to/your/certs.pem`, then re-start the web UI.
 
 ## How to contribute
