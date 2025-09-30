@@ -39,7 +39,7 @@ export default function TabFor3270({
     if (is3270CurrentlySelected) {
       handleNavigateTo3270(highlightedRowId);
     }
-  }, [highlightedRowId]);
+  }, [highlightedRowId, is3270CurrentlySelected]);
 
   // Get the 'terminalScreen' parameter
   useEffect(() => {
