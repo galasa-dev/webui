@@ -43,5 +43,15 @@ If you would like to run the web UI locally and have it connect to an existing G
     - For example, if the Galasa service's webui URL was `https://my-galasa-service.dev`, then the API server URL would be `https://my-galasa-service.dev/api` (added `/api` to the end of the URL)
 5. Start the webui locally
 
+### Common problems
+
+1. If you are contacting a deployed Galasa service which uses a custom signing authority, then the https certificate used may not be recognised by the web UI code and you will get an `UNABLE_TO_VERIFY_LEAF_SIGNATURE` error.
+In such cases, set an environment variable `export NODE_USE_SYSTEM_CA=1` which tells the UI to ignore certificate errors and trust server certificates.
+This is OK for development purposes, but never use this technique on a production deployment of a UI.
+Then re-start the web UI.
+
+2. An alternative approach is to create a .pem file containing the intermediate and root ca certificates, set the env variable:
+`export NODE_EXTRA_CA_CERTS=/path/to/your/certs.pem`, then re-start the web UI.
+
 ## How to contribute
 See the [contributions.md](./CONTRIBUTIONS.md) file for terms and instructions.
