@@ -538,7 +538,6 @@
   },
   "QueryName": {
     "defaultQueryName": "Tests, die in den letzten 24 Stunden ausgeführt wurden",
-    "recentRunsOfTest": "Letzte Ausführungen des Tests {name}",
-    "allAttemptsOfTestRun": "Alle Versuche des Testlaufs {name}"
+    "recentRunsOfTest": "Letzte Ausführungen des Tests {name}"
   }
 }

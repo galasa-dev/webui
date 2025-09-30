@@ -7,7 +7,7 @@
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { Button, SkeletonText } from '@carbon/react';
 import { Edit } from '@carbon/icons-react';
-import useTranslateQueryName from '@/hooks/useTranslateQueryName';
+import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 
 interface QueryNameProps {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -32,12 +32,12 @@ export default function QueryName({
   handleStartEditingName,
   translations,
 }: QueryNameProps) {
-  const { translatedQueryName } = useTranslateQueryName();
+  const { queryName } = useTestRunsQueryParams();
 
   return (
     <div className={styles.queryNameBlock}>
       <div className={styles.queryNameBlock}>
-        {!translatedQueryName ? (
+        {!queryName ? (
           <SkeletonText heading />
         ) : (
           <>
@@ -56,14 +56,14 @@ export default function QueryName({
                 className={styles.queryNameInput}
               />
             ) : (
-              <h3 className={styles.queryNameHeading}>{translatedQueryName}</h3>
+              <h3 className={styles.queryNameHeading}>{queryName}</h3>
             )}
             <Button
               kind="ghost"
               hasIconOnly
               renderIcon={Edit}
               iconDescription={translations('editQueryName')}
-              onClick={handleStartEditingName.bind(null, translatedQueryName)}
+              onClick={handleStartEditingName.bind(null, queryName)}
               size="md"
             />
           </>

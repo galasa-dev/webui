@@ -91,7 +91,6 @@ const TEST_RUNS_QUERY_PARAMS = {
   TAB: 'tab',
   SORT_ORDER: 'sortOrder',
   QUERY_NAME: 'queryName',
-  PREVIOUS_TEST_RUN_NAME: 'previousTestRunName',
 };
 
 const SINGLE_RUN_QUERY_PARAMS = {
@@ -158,19 +157,10 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', 'overview'];
 
-// Note: Translation keys should match those in the translation files
-const TRANSLATIONS_KEYS = {
-  RECENT_RUNS_OF_TEST: 'recentRunsOfTest',
-  DEFAULT_QUERY_NAME: 'defaultQueryName',
-  ALL_ATTEMPTS_OF_TEST_RUN: 'allAttemptsOfTestRun',
-};
-
-const QUERY_NAME_TRANSLATION_NAMESPACE = 'QueryName';
-
 const DEFAULT_QUERY = {
   // The URL here is the filter state, not the browser URL
   url: '',
-  title: TRANSLATIONS_KEYS.DEFAULT_QUERY_NAME,
+  title: 'Tests ran in the last 24 hours',
   createdAt: new Date().toISOString(),
 };
 
@@ -201,6 +191,4 @@ export {
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
   DEFAULT_QUERY,
   RESULTS_TABLE_PAGE_SIZES,
-  TRANSLATIONS_KEYS,
-  QUERY_NAME_TRANSLATION_NAMESPACE,
 };

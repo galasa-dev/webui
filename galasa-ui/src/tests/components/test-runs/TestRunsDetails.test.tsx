@@ -78,14 +78,6 @@ jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
   })),
 }));
 
-// Mock the useTranslateQueryName hook
-jest.mock('@/hooks/useTranslateQueryName', () => ({
-  __esModule: true,
-  default: () => ({
-    translatedQueryName: mockQueryName,
-  }),
-}));
-
 // Mock other components
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => (
