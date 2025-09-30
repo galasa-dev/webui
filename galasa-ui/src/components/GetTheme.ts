@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function GetTheme() {

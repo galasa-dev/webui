@@ -81,17 +81,19 @@ const TestRunDetails = ({
 
   // Get the selected tab index from the URL or default to the first tab
   const [selectedTabIndex, setSelectedTabIndex] = useState(() => {
+    let tabIndex = 0;
     if (searchParams.get('tab')) {
       const tabName = searchParams.get(SINGLE_RUN_QUERY_PARAMS.TAB)!;
 
       // Redirect 3270 tab to overview page until it has been verified that the test has a 3270 folder structure populated with images
       if (tabName === '3270') {
         setIs3270TabSelectedInURL(true);
-        return TEST_RUN_PAGE_TABS.indexOf('overview');
+        tabIndex = TEST_RUN_PAGE_TABS.indexOf('overview');
+      } else {
+        tabIndex = TEST_RUN_PAGE_TABS.indexOf(tabName);
       }
-      return TEST_RUN_PAGE_TABS.indexOf(tabName);
     }
-    return 0;
+    return tabIndex;
   });
 
   const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
