@@ -54,9 +54,7 @@ export default function TabFor3270({
   }
 
   return (
-    <div
-      className={styles.tab3270Container}
-    >
+    <div className={styles.tab3270Container}>
       <div className={styles.tableOfScreenshotsContainer}>
         <TableOfScreenshots
           runId={runId}
