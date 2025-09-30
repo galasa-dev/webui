@@ -19,7 +19,7 @@ import { TEST_RUNS_QUERY_PARAMS, TEST_RUNS_STATUS } from '@/utils/constants/comm
 import CustomTagsComponent from './CustomTagsComponent';
 import { useTranslations } from 'next-intl';
 import { Button } from '@carbon/react';
-import { GetTheme } from '@/utils/GetTheme';
+import { GetTheme } from '@/components/GetTheme';
 
 interface FilterableField {
   id: string;

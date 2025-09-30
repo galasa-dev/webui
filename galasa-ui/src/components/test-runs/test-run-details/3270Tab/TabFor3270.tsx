@@ -13,7 +13,7 @@ import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
-import { GetTheme } from '@/utils/GetTheme';
+import { GetTheme } from '@/components/GetTheme';
 
 export default function TabFor3270({
   runId,

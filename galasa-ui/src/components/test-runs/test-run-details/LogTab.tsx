@@ -20,7 +20,7 @@ import {
 } from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
-import { GetTheme } from '@/utils/GetTheme';
+import { GetTheme } from '@/components/GetTheme';
 
 interface LogLine {
   content: string;

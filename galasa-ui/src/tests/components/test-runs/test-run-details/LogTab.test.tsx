@@ -110,7 +110,7 @@ jest.mock('@carbon/icons-react', () => ({
   CloudDownload: () => <div>CloudDownload</div>,
 }));
 
-jest.mock('@/utils/GetTheme', () => ({
+jest.mock('@/components/GetTheme', () => ({
   GetTheme: jest.fn(() => 'light'),
 }));
 

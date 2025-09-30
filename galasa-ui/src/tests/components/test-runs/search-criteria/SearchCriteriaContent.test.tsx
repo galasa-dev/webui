@@ -90,7 +90,7 @@ jest.mock('next-intl', () => ({
   },
 }));
 
-jest.mock('@/utils/GetTheme', () => ({
+jest.mock('@/components/GetTheme', () => ({
   GetTheme: jest.fn(() => 'light'),
 }));
 
