@@ -539,7 +539,7 @@
   "QueryItem": {
     "dragHandle": "Zum Neuordnen ziehen",
     "actions": "Aktionen",
-    "rename": "Umbenennen",
+    "rename": "Umbenennen...",
     "delete": "Löschen",
     "copyToClipboard": "In Zwischenablage kopieren",
     "setAsDefault": "Als Standard festlegen",

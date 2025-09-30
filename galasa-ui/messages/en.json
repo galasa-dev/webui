@@ -517,7 +517,7 @@
   "QueryItem": {
     "dragHandle": "Drag to reorder",
     "actions": "Actions",
-    "rename": "Rename",
+    "rename": "Rename...",
     "delete": "Delete",
     "copyToClipboard": "Copy to Clipboard",
     "setAsDefault": "Set as Default",
