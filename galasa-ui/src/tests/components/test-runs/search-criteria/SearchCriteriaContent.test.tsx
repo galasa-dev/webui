@@ -90,10 +90,6 @@ jest.mock('next-intl', () => ({
   },
 }));
 
-jest.mock('@/components/GetTheme', () => ({
-  GetTheme: jest.fn(() => 'light'),
-}));
-
 // Helper function to render a stateful wrapper.
 const SearchCriteriaTestWrapper = ({
   initialCriteria = {},

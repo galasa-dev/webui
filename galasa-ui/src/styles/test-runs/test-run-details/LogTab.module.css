@@ -106,11 +106,3 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-.lightTheme {
-  color-scheme: light;
-}
-
-.darkTheme {
-  color-scheme: dark;
-}

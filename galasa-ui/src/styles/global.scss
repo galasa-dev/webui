@@ -10,19 +10,23 @@
 
 :root {
   @include themes.theme($white); /*Set default to white theme*/
+  color-scheme: light;
 }
 @media (prefers-color-scheme: white) {
   :root {
     @include themes.theme($g100); /*Use dark theme for dark system preference*/
+    color-scheme: dark;
   }
 }
 
 [data-carbon-theme='light'] {
   @include themes.theme($white);
+  color-scheme: light;
 }
 
 [data-carbon-theme='dark'] {
   @include themes.theme($g100);
+  color-scheme: dark;
 }
 
 body {

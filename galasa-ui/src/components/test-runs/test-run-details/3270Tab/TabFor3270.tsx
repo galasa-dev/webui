@@ -13,7 +13,6 @@ import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
-import { GetTheme } from '@/components/GetTheme';
 
 export default function TabFor3270({
   runId,
@@ -56,7 +55,7 @@ export default function TabFor3270({
 
   return (
     <div
-      className={`${styles.tab3270Container} ${GetTheme() === 'light' ? styles.lightTheme : styles.darkTheme}`}
+      className={styles.tab3270Container}
     >
       <div className={styles.tableOfScreenshotsContainer}>
         <TableOfScreenshots
