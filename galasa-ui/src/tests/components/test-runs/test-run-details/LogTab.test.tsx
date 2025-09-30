@@ -110,8 +110,8 @@ jest.mock('@carbon/icons-react', () => ({
   CloudDownload: () => <div>CloudDownload</div>,
 }));
 
-jest.mock('@/utils/getTheme', () => ({
-  getTheme: jest.fn(() => 'light'),
+jest.mock('@/utils/GetTheme', () => ({
+  GetTheme: jest.fn(() => 'light'),
 }));
 
 // Mock window.getSelection API

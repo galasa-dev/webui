@@ -90,8 +90,8 @@ jest.mock('next-intl', () => ({
   },
 }));
 
-jest.mock('@/utils/getTheme', () => ({
-  getTheme: jest.fn(() => 'light'),
+jest.mock('@/utils/GetTheme', () => ({
+  GetTheme: jest.fn(() => 'light'),
 }));
 
 // Helper function to render a stateful wrapper.
