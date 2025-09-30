@@ -3,9 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import { TranslationValues } from 'next-intl';
-
 export type AmPm = 'AM' | 'PM';
 export type sortOrderType = 'asc' | 'desc' | 'none';
 
@@ -25,5 +22,3 @@ export type SavedQueryType = {
 export type SavedQueriesMetaData = {
   defaultQueryId: string | null;
 };
-
-export type TranslationFn = (key: string, values?: TranslationValues) => string;

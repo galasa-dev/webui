@@ -26,13 +26,6 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-// Mock next-intl
-jest.mock('next-intl', () => ({
-  useTranslations: (namespace: string) => (key: string) => {
-    return key;
-  },
-}));
-
 // Mock the context hook
 jest.mock('@/contexts/SavedQueriesContext');
 const mockUseSavedQueries = useSavedQueries as jest.Mock;
