@@ -10,7 +10,8 @@ import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Te
 describe('appendImageDataToCharacterArray', () => {
   let testData: TerminalImage;
   let characterArray: (TerminalImageCharacter | null)[][];
-  const rows = 3, columns = 5;
+  const rows = 3;
+  const columns = 5;
 
   beforeEach(() => {
     testData = {
@@ -19,9 +20,7 @@ describe('appendImageDataToCharacterArray', () => {
       fields: [],
     };
 
-    characterArray = Array.from({ length: rows }, () =>
-      Array(columns).fill(null)
-    );
+    characterArray = Array.from({ length: rows }, () => Array(columns).fill(null));
   });
 
   test('should return correct 2D array for valid input', () => {

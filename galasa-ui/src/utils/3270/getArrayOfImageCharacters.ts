@@ -3,13 +3,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import {
-  TerminalImage,
-  TerminalImageCharacter,
-} from '@/utils/interfaces/3270Terminal';
+import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 import { appendImageDataToCharacterArray } from '@/utils/3270/appendImageDataToCharacterArray';
 import { appendMetadataStatusLine } from '@/utils/3270/appendMetadataStatusLine';
-
 
 // Return a 2D array of characters, with each character representing all properties of its parent TerminalImageField.
 export default function getArrayOfImageCharacters(
@@ -23,11 +19,16 @@ export default function getArrayOfImageCharacters(
     Array(columns).fill(null)
   );
 
-  appendImageDataToCharacterArray(imageData, rows, columns, characterArray)
+  appendImageDataToCharacterArray(imageData, rows, columns, characterArray);
 
-  appendMetadataStatusLine(columns, rows, characterArray, imageData.id, imageData.inbound, imageData.aid);
-
-
+  appendMetadataStatusLine(
+    columns,
+    rows,
+    characterArray,
+    imageData.id,
+    imageData.inbound,
+    imageData.aid
+  );
 
   // TODO: Append cursor - after the backend is fixed as currently the cursor row and column are the wrong way round.
 
