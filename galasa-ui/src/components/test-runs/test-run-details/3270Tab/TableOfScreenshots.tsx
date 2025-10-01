@@ -27,12 +27,7 @@ import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
-import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
-
-interface DropdownOption {
-  id: string;
-  label: string;
-}
+import { CellFor3270, TerminalImage, DropdownOption } from '@/utils/interfaces/3270Terminal';
 
 export default function TableOfScreenshots({
   runId,
@@ -119,11 +114,16 @@ export default function TableOfScreenshots({
   }, [searchTerm, selectedTerminal, flattenedZos3270TerminalData]);
 
   useEffect(() => {
-    // Highlight and display first element when the page loads.
+    // Highlight and display first element when the page loads, unless already set.
     const highlightFirstRowOnPageLoad = () => {
       if (!initialHighlightedRowSet && filteredRows[0]) {
         setInitialHighlightedRowSet(true);
-        setHighlightedRowId(filteredRows[0].id);
+        if (
+          highlightedRowId === '' ||
+          !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)
+        ) {
+          setHighlightedRowId(filteredRows[0].id);
+        }
       }
     };
 
@@ -140,11 +140,10 @@ export default function TableOfScreenshots({
     checkHighlightedRowInFilteredRows();
   }, [filteredRows, highlightedRowId]);
 
-  useEffect(() => {
+  useMemo(() => {
     // Ensure screenshots are only collected once.
-    if (!screenshotsCollected) {
+    if (!screenshotsCollected && flattenedZos3270TerminalData.length === 0) {
       screenshotsCollected = true;
-
       setIsLoading(true);
       const fetchData = async () => {
         try {

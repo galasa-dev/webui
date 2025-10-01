@@ -18,7 +18,7 @@ import styles from '@/styles/test-runs/test-run-details/TestRun.module.css';
 import skeletonStyles from '@/styles/test-runs/test-run-details/TestRunSkeleton.module.css';
 import { useTranslations } from 'next-intl';
 
-const TestRunSkeleton = () => {
+const TestRunSkeleton = ({ selectedTabIndex }: { selectedTabIndex: number }) => {
   const translations = useTranslations('TestRunSkeleton');
 
   return (
@@ -38,7 +38,7 @@ const TestRunSkeleton = () => {
         </span>
       </div>
 
-      <Tabs>
+      <Tabs selectedIndex={selectedTabIndex}>
         <TabList iconSize="lg" className={styles.tabs}>
           <Tab renderIcon={Dashboard} href="#">
             {translations('tabs.overview')}
