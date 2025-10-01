@@ -9,9 +9,6 @@ import {
 
 
 export function appendMetadataStatusLine(columns: number, rows: number, characterArray: (TerminalImageCharacter | null)[][], imageId: string, inbound: boolean | undefined, aid: string | undefined) {
-  // Append 3 rows to the character array for the status line with padding.
-  const newRows: (TerminalImageCharacter | null)[][] = Array.from({ length: 3 }, () => Array(columns).fill(null));
-
   let inboundOrOutboundText = '', aidKeyText = '';
   
   inboundOrOutboundText = inbound ? ' - Inbound' : ' - Outbound';
@@ -22,12 +19,26 @@ export function appendMetadataStatusLine(columns: number, rows: number, characte
 
   const metadataStatusLine = imageId + ' - ' + columns + 'x' + rows + inboundOrOutboundText + aidKeyText;
 
+  // Determine number of extra rows with a line of padding and wraparound.
+  const numberOfNewRows = 2 + Math.floor(metadataStatusLine.length / columns); 
+  const newRows: (TerminalImageCharacter | null)[][] = Array.from({ length: numberOfNewRows }, () => Array(columns).fill(null));
+
+  let charRow = 1;
+  let charColumn = 0;
+
   for (let charIndex = 0; charIndex < metadataStatusLine.length; charIndex++) {
     const statusLineCharacter: TerminalImageCharacter = {
       character: metadataStatusLine.charAt(charIndex),
     };
 
-    newRows[1][charIndex] = statusLineCharacter;
+    newRows[charRow][charColumn] = statusLineCharacter;
+
+    // Increment column number, then check if the text needs to wrap around to the next row.
+    charColumn++;
+    if (charColumn >= columns) {
+      charColumn = 0;
+      charRow++;
+    }
   }
 
   characterArray.push(...newRows);
