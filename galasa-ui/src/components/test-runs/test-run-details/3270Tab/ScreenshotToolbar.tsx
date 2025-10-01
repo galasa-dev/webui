@@ -162,34 +162,49 @@ export default function ScreenshotToolbar({
 
   return (
     <div className={styles.screenshotToolbar}>
-      <Button
-        id={styles.previousImageButton}
-        onClick={handlePreviousImageClick}
-        kind="ghost"
-        hasIconOnly
-        renderIcon={ChevronLeft}
-        disabled={cannotSwitchToPreviousImage || !highlightedRowInDisplayedData || isLoading}
-        iconDescription={translations('previousImage')}
-      />
+      <div className={styles.spacer}></div>
 
-      <Button
-        id={styles.nextImageButton}
-        onClick={handleNextImageClick}
-        kind="ghost"
-        hasIconOnly
-        renderIcon={ChevronRight}
-        disabled={cannotSwitchToNextImage || !highlightedRowInDisplayedData || isLoading}
-        iconDescription={translations('nextImage')}
-      />
+      <div className={styles.middleAlignedButtons}>
+        <Button
+          onClick={handlePreviousImageClick}
+          kind="ghost"
+          hasIconOnly
+          renderIcon={ChevronLeft}
+          disabled={cannotSwitchToPreviousImage || !highlightedRowInDisplayedData || isLoading}
+          iconDescription={translations('previousImage')}
+        />
 
-      <Button
-        onClick={handleCopyImage}
-        renderIcon={Copy}
-        kind="ghost"
-        hasIconOnly
-        disabled={isLoading}
-        iconDescription={translations('copyImage')}
-      />
+        <Button
+          onClick={handleNextImageClick}
+          kind="ghost"
+          hasIconOnly
+          renderIcon={ChevronRight}
+          disabled={cannotSwitchToNextImage || !highlightedRowInDisplayedData || isLoading}
+          iconDescription={translations('nextImage')}
+        />
+      </div>
+
+      <div className={styles.rightAlignedButtons}>
+        <Button
+          onClick={handleCopyImage}
+          renderIcon={Copy}
+          kind="ghost"
+          hasIconOnly
+          disabled={isLoading}
+          iconDescription={translations('copyImage')}
+        />
+
+        <Button
+          onClick={handleDownloadImage}
+          renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
+          kind="ghost"
+          hasIconOnly
+          disabled={isLoading}
+          iconDescription={
+            isDownloading ? translations('downloading') : translations('downloadImage')
+          }
+        />
+      </div>
 
       {notification && (
         <div className={styles.notification}>
@@ -201,18 +216,6 @@ export default function ScreenshotToolbar({
           />
         </div>
       )}
-
-      <Button
-        id={styles.downloadImageButton}
-        onClick={handleDownloadImage}
-        renderIcon={isDownloading ? () => <Loading small withOverlay={false} /> : CloudDownload}
-        kind="ghost"
-        hasIconOnly
-        disabled={isLoading}
-        iconDescription={
-          isDownloading ? translations('downloading') : translations('downloadImage')
-        }
-      />
     </div>
   );
 }
