@@ -193,68 +193,73 @@ describe('appendMetadataStatusLine', () => {
     expect(exampleCharacterArray).toEqual(expectedOutput);
   });
 
-  // test('should ignore empty contents field', () => {
-  //   testData.fields.push({
-  //     row: 0,
-  //     column: 2,
-  //     contents: [],
-  //   });
+  test('status line inbound with aid', () => {
+    const exampleCharacterArray: (TerminalImageCharacter | null)[][] = [
+      [null, null, null, null, null, null, null, null, null, null, null, null, null],
+    ];
 
-  //   const expectedOutput: (TerminalImageCharacter | null)[][] = [
-  //     [null, null, null, null, null],
-  //     [null, null, null, null, null],
-  //     [null, null, null, null, null],
-  //   ];
+    const inbound = true;
+    const aid = 'AID Test';
 
-  //   appendImageDataToCharacterArray(testData, rows, columns, characterArray);
+    appendMetadataStatusLine(
+      exampleCharacterArray[0].length,
+      exampleCharacterArray.length,
+      exampleCharacterArray,
+      imageDataId,
+      inbound,
+      aid
+    );
 
-  //   expect(characterArray).toEqual(expectedOutput);
-  // });
+    const expectedOutput: (TerminalImageCharacter | null)[][] = [
+      [null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [
+        { character: 't' },
+        { character: 'e' },
+        { character: 's' },
+        { character: 't' },
+        { character: 'I' },
+        { character: 'd' },
+        { character: ' ' },
+        { character: '-' },
+        { character: ' ' },
+        { character: '1' },
+        { character: '3' },
+        { character: 'x' },
+        { character: '1' },
+      ],
+      [
+        { character: ' ' },
+        { character: '-' },
+        { character: ' ' },
+        { character: 'I' },
+        { character: 'n' },
+        { character: 'b' },
+        { character: 'o' },
+        { character: 'u' },
+        { character: 'n' },
+        { character: 'd' },
+        { character: ' ' },
+        { character: '-' },
+        { character: ' ' },
+      ],
+      [
+        { character: 'A' },
+        { character: 'I' },
+        { character: 'D' },
+        { character: ' ' },
+        { character: 'T' },
+        { character: 'e' },
+        { character: 's' },
+        { character: 't' },
+        null,
+        null,
+        null,
+        null,
+        null,
+      ],
+    ];
 
-  // test('should correctly manage wraparound when text is longer than number of columns left in row', () => {
-  //   testData.fields.push({
-  //     row: 1,
-  //     column: 4,
-  //     contents: [{ text: 'XX' }],
-  //   });
-
-  //   const expectedOutput: (TerminalImageCharacter | null)[][] = [
-  //     [null, null, null, null, null],
-  //     [null, null, null, null, { character: 'X' }],
-  //     [{ character: 'X' }, null, null, null, null],
-  //   ];
-
-  //   appendImageDataToCharacterArray(testData, rows, columns, characterArray);
-
-  //   expect(characterArray).toEqual(expectedOutput);
-  // });
-
-  // test('should throw an error for invalid image data overlap', () => {
-  //   testData.fields.push({
-  //     row: 1,
-  //     column: 4,
-  //     contents: [{ text: 'X' }],
-  //   });
-  //   testData.fields.push({
-  //     row: 1,
-  //     column: 4,
-  //     contents: [{ text: 'X' }],
-  //   });
-
-  //   expect(() => appendImageDataToCharacterArray(testData, rows, columns, characterArray)).toThrow(
-  //     'Invalid image data - image data overlapping'
-  //   );
-  // });
-
-  // test('should throw an error for out-of-bounds placement', () => {
-  //   testData.fields.push({
-  //     row: 2,
-  //     column: 4,
-  //     contents: [{ text: 'XX' }],
-  //   });
-
-  //   expect(() => appendImageDataToCharacterArray(testData, rows, columns, characterArray)).toThrow(
-  //     'Invalid image data - image data out of bounds'
-  //   );
-  // });
+    expect(exampleCharacterArray).toEqual(expectedOutput);
+  });
 });
