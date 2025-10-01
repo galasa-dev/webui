@@ -9,17 +9,7 @@ import {
   TerminalImageCharacter,
 } from '@/utils/interfaces/3270Terminal';
 
-// Return a 2D array of characters, with each character representing all properties of its parent TerminalImageField.
-export default function getArrayOfImageCharacters(
-  imageData: TerminalImage
-): (TerminalImageCharacter | null)[][] {
-  const rows = imageData.imageSize.rows;
-  const columns = imageData.imageSize.columns;
-  // Initialise array with nulls.
-  const characterArray: (TerminalImageCharacter | null)[][] = Array.from({ length: rows }, () =>
-    Array(columns).fill(null)
-  );
-
+function appendImageDataToCharacterArray(imageData: TerminalImage, rows: number, columns: number, characterArray: (TerminalImageCharacter | null)[][]) {
   imageData.fields.forEach(
     function extractCharactersFromImageFieldInto2dArrayWithDetailedImageFieldProperties(
       imageField: TerminalImageField
@@ -86,6 +76,50 @@ export default function getArrayOfImageCharacters(
       }
     }
   );
+}
+
+function appendMetadataStatusLine(columns: number, rows: number, characterArray: (TerminalImageCharacter | null)[][], imageId: string, inbound: boolean | undefined, aid: string | undefined) {
+  // Append 3 rows to the character array for the status line with padding.
+  const newRows: (TerminalImageCharacter | null)[][] = Array.from({ length: 3 }, () => Array(columns).fill(null));
+
+  let inboundOrOutboundText = '', aidKeyText = '';
+  
+  inboundOrOutboundText = inbound ? ' - Inbound' : ' - Outbound';
+
+  if (aid !== undefined) {
+    aidKeyText = ' - ' + aid;
+  }
+
+  const metadataStatusLine = imageId + ' - ' + columns + 'x' + rows + inboundOrOutboundText + aidKeyText;
+
+  for (let charIndex = 0; charIndex < metadataStatusLine.length; charIndex++) {
+    const statusLineCharacter: TerminalImageCharacter = {
+      character: metadataStatusLine.charAt(charIndex),
+    };
+
+    newRows[1][charIndex] = statusLineCharacter;
+  }
+
+  characterArray.push(...newRows);
+}
+
+// Return a 2D array of characters, with each character representing all properties of its parent TerminalImageField.
+export default function getArrayOfImageCharacters(
+  imageData: TerminalImage
+): (TerminalImageCharacter | null)[][] {
+  const rows = imageData.imageSize.rows;
+  const columns = imageData.imageSize.columns;
+
+  // Initialise array with nulls.
+  const characterArray: (TerminalImageCharacter | null)[][] = Array.from({ length: rows }, () =>
+    Array(columns).fill(null)
+  );
+
+  appendImageDataToCharacterArray(imageData, rows, columns, characterArray)
+
+  appendMetadataStatusLine(columns, rows, characterArray, imageData.id, imageData.inbound, imageData.aid);
+
+
 
   // TODO: Append cursor - after the backend is fixed as currently the cursor row and column are the wrong way round.
 
