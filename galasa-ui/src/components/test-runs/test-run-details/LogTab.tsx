@@ -566,7 +566,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     : translations('selectLinesToCreatePermalink');
 
   return (
-    <div className={styles.tabContent}>
+    <div>
       <h3>{translations('title')}</h3>
       <p>{translations('description')}</p>
       <div className={styles.logContainer}>

@@ -32,14 +32,6 @@
   overflow-y: auto;
 }
 
-.lightTheme {
-  color-scheme: light;
-}
-
-.darkTheme {
-  color-scheme: dark;
-}
-
 .terminalDropdownMenu {
   padding-left: 8px;
   width: max-content;

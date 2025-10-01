@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
 import { ChevronRight, ChevronLeft, Copy, CloudDownload } from '@carbon/icons-react';
 import { Button, Loading, InlineNotification } from '@carbon/react';
@@ -20,6 +20,7 @@ export default function ScreenshotToolbar({
   highlightedRowInDisplayedData,
   isLoading,
   highlightedRowId,
+  is3270CurrentlySelected,
 }: {
   setMoveImageSelection: React.Dispatch<React.SetStateAction<number>>;
   cannotSwitchToPreviousImage: boolean;
@@ -27,6 +28,7 @@ export default function ScreenshotToolbar({
   highlightedRowInDisplayedData: boolean;
   isLoading: boolean;
   highlightedRowId: string;
+  is3270CurrentlySelected: boolean;
 }) {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -66,9 +68,14 @@ export default function ScreenshotToolbar({
   const handleCopyImage = async () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     try {
+      if (!canvas) {
+        throw new Error('Canvas element not found');
+      }
+
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+
       if (!blob) {
-        throw new Error('Failed to get blob from canvas.');
+        throw new Error('Failed to get blob from canvas');
       }
 
       const item = new ClipboardItem({ 'image/png': blob });
@@ -80,27 +87,78 @@ export default function ScreenshotToolbar({
         title: translations('copiedTitle'),
         subtitle: translations('copiedMessage'),
       });
-    } catch (err) {
-      console.error('Failed to copy canvas image:', err);
-
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        const isErrorNoCanvas = err.message === 'Canvas element not found';
+        setNotification({
+          kind: 'error',
+          title: translations('errorCopiedTitle'),
+          subtitle:
+            translations('copyFailedMessage') +
+            (isErrorNoCanvas ? translations('copyNoCanvas') : translations('copyNoBlob')),
+        });
+      }
+    } finally {
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     }
-    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
   const handleDownloadImage = () => {
+    setIsDownloading(true);
     var link = document.createElement('a');
     link.download = getFileNameFromId() + '.jpeg';
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
     if (canvas) {
       link.href = canvas.toDataURL();
       link.click();
+    } else {
+      setNotification({
+        kind: 'error',
+        title: translations('errorTitle'),
+        subtitle: translations('downloadFailedMessage'),
+      });
+    }
+
+    setIsDownloading(false);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!e.repeat) {
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (highlightedRowInDisplayedData && !cannotSwitchToPreviousImage && !isLoading) {
+            handlePreviousImageClick();
+          }
+          break;
+
+        case 'ArrowRight':
+          if (highlightedRowInDisplayedData && !cannotSwitchToNextImage && !isLoading) {
+            handleNextImageClick();
+          }
+          break;
+      }
     }
   };
+
+  const cleanup = () => {
+    document.removeEventListener('keydown', handleKeyDown);
+  };
+
+  // Mount event listener to let users flick between screenshots with left and right arrow keys.
+  useEffect(() => {
+    if (is3270CurrentlySelected) {
+      document.addEventListener('keydown', handleKeyDown);
+
+      return cleanup;
+    }
+  }, [
+    is3270CurrentlySelected,
+    isLoading,
+    highlightedRowInDisplayedData,
+    cannotSwitchToPreviousImage,
+    cannotSwitchToNextImage,
+  ]);
 
   return (
     <div className={styles.screenshotToolbar}>
