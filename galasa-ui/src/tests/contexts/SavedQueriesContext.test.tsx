@@ -49,7 +49,7 @@ const TestComponent = () => {
     updateQuery,
     deleteQuery,
     isQuerySaved,
-    getQuery,
+    getQueryByName,
     defaultQuery,
     setDefaultQuery,
   } = useSavedQueries();
@@ -74,7 +74,7 @@ const TestComponent = () => {
       <button onClick={() => saveQuery(newQuery)}>Save New Query</button>
       <button
         onClick={() =>
-          updateQuery('existing-id', { ...getQuery('Existing Query')!, url: 'updated-url' })
+          updateQuery('existing-id', { ...getQueryByName('Existing Query')!, url: 'updated-url' })
         }
       >
         Update Existing Query

@@ -517,5 +517,23 @@
     "savedQueriesSidebarLabel": "Saved Queries Sidebar",
     "searchSavedQueries": "Search saved queries",
     "addCurrentQuery": "Add current query"
+  },
+  "QueryItem": {
+    "dragHandle": "Drag to reorder",
+    "actions": "Actions",
+    "rename": "Rename...",
+    "delete": "Delete",
+    "copyToClipboard": "Copy to Clipboard",
+    "setAsDefault": "Set as Default",
+    "duplicate": "Duplicate",
+    "copiedTitle": "URL copy successful: ",
+    "copiedMessage": "The URL for query \"{name}\" has been copied to your clipboard.",
+    "errorTitle": "Error",
+    "successTitle": "Success",
+    "copyFailedMessage": "Failed to copy query \"{name}\" URL",
+    "setAsDefaultMessage": "Query \"{name}\" is now your default query.",
+    "deleteTitle": "Query Deleted ",
+    "deleteMessage": "The query \"{name}\" was deleted successfully.",
+    "duplicateMessage": "The query \"{name}\" was duplicated successfully."
   }
 }
