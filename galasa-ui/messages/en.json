@@ -248,8 +248,12 @@
     "downloadImage": "Download image",
     "copiedTitle": "Image copy successful: ",
     "copiedMessage": "The 3270 screenshot image has been successfully copied to your clipboard.",
-    "errorTitle": "Image copy unsuccessful: ",
-    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Check your browser console for more detail."
+    "errorCopyTitle": "Image copy unsuccessful: ",
+    "copyFailedMessage": "The 3270 screenshot image has failed to copy to your clipboard. Error: ",
+    "copyNoCanvas": "canvas element not found.",
+    "copyNoBlob": "failed to get blob from canvas.",
+    "downloadErrortitle": "Image download unsuccessful: ",
+    "downloadFailedMessage": "The 3270 screenshot image has failed to be downloaded. Could not find canvas element to download image."
   },
   "TestRunDetails": {
     "title": "Test Run: {runName}",
