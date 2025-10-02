@@ -5,26 +5,26 @@
  */
 import { TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 
-export function appendMetadataStatusLine(
+function buildMetadataStatusLine(
+  imageId: string,
   columns: number,
   rows: number,
-  characterArray: (TerminalImageCharacter | null)[][],
-  imageId: string,
-  inbound: boolean | undefined,
+  isInbound: boolean | undefined,
   aid: string | undefined
 ) {
-  let inboundOrOutboundText = '',
-    aidKeyText = '';
+  let inboundOrOutboundText = '';
+  let aidKeyText = '';
 
-  inboundOrOutboundText = inbound ? ' - Inbound' : ' - Outbound';
+  inboundOrOutboundText = isInbound ? ' - Inbound' : ' - Outbound';
 
   if (aid !== undefined) {
     aidKeyText = ' - ' + aid;
   }
 
-  const metadataStatusLine =
-    imageId + ' - ' + columns + 'x' + rows + inboundOrOutboundText + aidKeyText;
+  return imageId + ' - ' + columns + 'x' + rows + inboundOrOutboundText + aidKeyText;
+}
 
+function createNewRows(metadataStatusLine: string, columns: number) {
   // Determine number of extra rows with a line of padding and wraparound.
   let numberOfNewRows = 2 + Math.floor(metadataStatusLine.length / columns);
 
@@ -32,11 +32,19 @@ export function appendMetadataStatusLine(
   if (metadataStatusLine.length % columns === 0) {
     numberOfNewRows--;
   }
-  console.log('numberOfNewRows ' + numberOfNewRows);
+
   const newRows: (TerminalImageCharacter | null)[][] = Array.from({ length: numberOfNewRows }, () =>
     Array(columns).fill(null)
   );
 
+  return newRows;
+}
+
+function populateNewRows(
+  metadataStatusLine: string,
+  newRows: (TerminalImageCharacter | null)[][],
+  columns: number
+) {
   let charRow = 1;
   let charColumn = 0;
 
@@ -54,6 +62,21 @@ export function appendMetadataStatusLine(
       charRow++;
     }
   }
+}
+
+export function appendMetadataStatusLine(
+  columns: number,
+  rows: number,
+  characterArray: (TerminalImageCharacter | null)[][],
+  imageId: string,
+  isInbound: boolean | undefined,
+  aid: string | undefined
+) {
+  const metadataStatusLine = buildMetadataStatusLine(imageId, columns, rows, isInbound, aid);
+
+  const newRows = createNewRows(metadataStatusLine, columns);
+
+  populateNewRows(metadataStatusLine, newRows, columns);
 
   characterArray.push(...newRows);
 }

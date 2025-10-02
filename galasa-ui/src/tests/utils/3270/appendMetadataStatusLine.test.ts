@@ -52,8 +52,6 @@ describe('appendMetadataStatusLine', () => {
       aid
     );
 
-    console.log(exampleCharacterArray);
-
     const expectedOutput: (TerminalImageCharacter | null)[][] = [
       [
         null,
