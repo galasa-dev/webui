@@ -64,7 +64,7 @@ jest.mock('@/contexts/SavedQueriesContext', () => ({
   useSavedQueries: jest.fn(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   })),
 }));
@@ -182,7 +182,7 @@ beforeEach(() => {
   (useSavedQueries as jest.Mock).mockImplementation(() => ({
     saveQuery: mockSaveQuery,
     isQuerySaved: mockIsQuerySaved,
-    getQuery: mockGetQuery,
+    getQueryByName: mockGetQuery,
     updateQuery: mockUpdateQuery,
   }));
   (Nav.useSearchParams as jest.Mock).mockImplementation(() => mockSearchParams);
@@ -311,7 +311,7 @@ describe('TestRunsDetails', () => {
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
       // encode url first
-      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query');
+      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query&tab=results');
       expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
         ...initialQuery,
         title: 'My Renamed Query',
@@ -402,7 +402,7 @@ describe('TestRunsDetails', () => {
     test('saves a new query and shows a successful notification', async () => {
       const user = userEvent.setup();
       mockQueryName = 'New Test Query';
-      mockSearchParams.set('queryName', 'New Test Query');
+
       // It doesn't exist yet
       mockIsQuerySaved.mockReturnValue(false);
       mockGetQuery.mockReturnValue(null);
@@ -414,12 +414,16 @@ describe('TestRunsDetails', () => {
         />
       );
 
+      // Verify button is not disabled
+      const saveButton = screen.getByRole('button', { name: /Save Query/i });
+      expect(saveButton).not.toBeDisabled();
+
       // Act
-      await user.click(screen.getByRole('button', { name: /Save Query/i }));
+      await user.click(saveButton);
 
       // Assert
       await waitFor(() => {
-        const encodedURL = encodeStateToUrlParam('queryName=New+Test+Query');
+        const encodedURL = encodeStateToUrlParam('tab=results&queryName=New+Test+Query');
         expect(mockSaveQuery).toHaveBeenCalledTimes(1);
         expect(mockSaveQuery).toHaveBeenCalledWith({
           title: 'New Test Query',
@@ -436,6 +440,9 @@ describe('TestRunsDetails', () => {
     test('update an existing query', async () => {
       const user = userEvent.setup();
       mockQueryName = 'Existing Query';
+      mockSearchParams.set('queryName', 'Existing Query');
+      mockSearchParams.set('requestor', 'test');
+
       const existingQuery = { title: 'Existing Query', createdAt: '2023-01-01', url: 'old=params' };
       // Simulate that the query already exists
       mockGetQuery.mockReturnValue(existingQuery);
@@ -459,7 +466,7 @@ describe('TestRunsDetails', () => {
       expect(screen.getByText('The query has been updated successfully.')).toBeInTheDocument();
     });
 
-    test('saves a new query with an incremented name if a conflict exists', async () => {
+    test('disable save button when query name is not unique', async () => {
       const user = userEvent.setup();
       mockQueryName = 'Conflict Query';
       mockGetQuery.mockReturnValue(null);
@@ -473,14 +480,9 @@ describe('TestRunsDetails', () => {
         />
       );
 
-      await user.click(screen.getByRole('button', { name: /Save Query/i }));
-
-      expect(mockSaveQuery).toHaveBeenCalledTimes(1);
-      expect(mockSaveQuery).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Conflict Query (1)' })
-      );
-
-      expect(screen.getByText(/Query "Conflict Query \(1\)" has been saved/)).toBeInTheDocument();
+      // Verify button is  disabled
+      const saveButton = screen.getByRole('button', { name: /Save Query/i });
+      expect(saveButton).toBeDisabled();
     });
   });
 });
