@@ -36,6 +36,8 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
         return JSON.parse(storedQueries);
       }
     }
+
+    // Initialize with default query if none are stored
     return [DEFAULT_QUERY];
   });
 
