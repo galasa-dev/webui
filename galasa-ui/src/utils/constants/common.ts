@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { encode } from 'punycode';
 import { ColumnDefinition } from '../interfaces';
-import { encodeStateToUrlParam } from '../urlEncoder';
 
 const CLIENT_API_VERSION = '0.44.0';
 
