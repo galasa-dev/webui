@@ -223,7 +223,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
     // Visible Columns
-    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
+    if (selectedVisibleColumns.length > 0 && selectedVisibleColumns !== DEFAULT_VISIBLE_COLUMNS)
+      params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
 
     // Sort Order
     if (sortOrder.length > 0) {
@@ -234,7 +235,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Columns Order
-    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
+    if (columnsOrder !== RESULTS_TABLE_COLUMNS)
+      params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
 
     // Timeframe
     if (timeframeValues.isRelativeToNow) {
