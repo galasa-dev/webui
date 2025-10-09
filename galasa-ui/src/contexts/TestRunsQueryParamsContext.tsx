@@ -104,6 +104,102 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   useEffect(() => {
     isUrlUpdateInProgress.current = true;
 
+    // Check if URL has any query parameters (excluding just 'tab')
+    const hasQueryParams = Array.from(searchParams.keys()).some(
+      (key) => key !== 'tab' && key !== TEST_RUNS_QUERY_PARAMS.TAB
+    );
+
+    // If no query params exist, use the default query
+    if (!hasQueryParams && currentDefaultQuery) {
+      // Apply default query values
+      const defaultParams = new URLSearchParams(
+        decodeStateFromUrlParam(currentDefaultQuery.url) || ''
+      );
+
+      // Query Name
+      setQueryName(currentDefaultQuery.title);
+
+      // Visible Columns
+      const defaultVisibleColumns =
+        defaultParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',').filter(Boolean) ||
+        DEFAULT_VISIBLE_COLUMNS;
+      setSelectedVisibleColumns(defaultVisibleColumns);
+
+      // Columns Order
+      const defaultOrderParam = defaultParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
+      const defaultColumnsOrder = defaultOrderParam
+        ? (defaultOrderParam
+            .split(',')
+            .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
+            .filter(Boolean) as ColumnDefinition[])
+        : RESULTS_TABLE_COLUMNS;
+      setColumnsOrder(defaultColumnsOrder);
+
+      // Timeframe
+      const defaultFromParam = defaultParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
+      const defaultToParam = defaultParams.get(TEST_RUNS_QUERY_PARAMS.TO);
+      const defaultDurationParam = defaultParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
+
+      let toDate: Date,
+        fromDate: Date,
+        isRelativeToNow = false;
+      if (defaultDurationParam) {
+        const [days, hours, minutes] = defaultDurationParam.split(',').map(Number);
+        toDate = new Date();
+        fromDate = new Date(
+          toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
+        );
+        isRelativeToNow = true;
+      } else if (defaultFromParam && defaultToParam) {
+        toDate = new Date(defaultToParam);
+        fromDate = new Date(defaultFromParam);
+      } else {
+        toDate = new Date();
+        fromDate = new Date(toDate.getTime() - DAY_MS);
+        isRelativeToNow = true;
+      }
+
+      const timezone = getResolvedTimeZone();
+      const defaultTimeframeValues = {
+        ...calculateSynchronizedState(fromDate, toDate, timezone),
+        isRelativeToNow,
+      };
+      setTimeframeValues(defaultTimeframeValues);
+
+      // Search Criteria
+      const defaultCriteria: Record<string, string> = {};
+      SEARCH_CRITERIA_KEYS.forEach((key) => {
+        if (defaultParams.has(key)) {
+          defaultCriteria[key] = defaultParams.get(key) || '';
+        }
+      });
+      setSearchCriteria(defaultCriteria);
+
+      // Sort Order
+      const defaultSortOrderParam = defaultParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
+      const defaultSortOrder = defaultSortOrderParam
+        ? defaultSortOrderParam.split(',').map((item) => {
+            const [id, order] = item.split(':');
+            return { id, order: order as sortOrderType };
+          })
+        : [];
+      setSortOrder(defaultSortOrder);
+
+      // Tab
+      const tabParam = searchParams.get('tab');
+      const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
+      const newTabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
+      setSelectedTabIndex(newTabIndex);
+
+      // Mark as initialized
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      isUrlUpdateInProgress.current = false;
+      return;
+    }
+
+    // Original logic for when URL params exist
     // Tab
     const tabParam = searchParams.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
@@ -120,7 +216,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       setQueryName(newQueryName);
     }
 
-    // Visible Columns - apply default visible columns only if visible columns array aren't empty.
+    // Visible Columns
     const newVisibleColumns =
       searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']
         ? searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
@@ -190,6 +286,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
       setSearchCriteria(newCriteria);
     }
+
     // Sort Order
     const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
     const newSortOrder = sortOrderParam
@@ -209,7 +306,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     isUrlUpdateInProgress.current = false;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, getResolvedTimeZone]);
+  }, [searchParams, getResolvedTimeZone, currentDefaultQuery]);
 
   // Effect to update the URL when query parameters change
   useEffect(() => {
