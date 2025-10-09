@@ -5,6 +5,7 @@
  */
 import { middleware } from '@/middleware';
 import { authApiClient } from '@/utils/auth';
+import { encodeToBase64Url } from '@/utils/encoding/base64Encoder';
 import { NextRequest, NextResponse } from 'next/server';
 
 const originalEnv = process.env;
@@ -71,9 +72,8 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(
-      `callback_url=http://mock-webui-host-url/runs/callback`
-    );
+    const expectedCallbackUrl = encodeToBase64Url('http://mock-webui-host-url/runs/callback');
+    expect(fetchedUrl.toString()).toContain(`base64_callback_url=${expectedCallbackUrl}`);
     fetchSpy.mockRestore();
   });
 
@@ -104,7 +104,8 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(`callback_url=http://mock-webui-host-url/callback`);
+    const expectedCallbackUrl = encodeToBase64Url('http://mock-webui-host-url/callback');
+    expect(fetchedUrl.toString()).toContain(`base64_callback_url=${expectedCallbackUrl}`);
     fetchSpy.mockRestore();
   });
 
@@ -136,9 +137,10 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(
-      `callback_url=http://mock-webui-host-url/my-page/callback?${queryParams}`
+    const expectedCallbackUrl = encodeToBase64Url(
+      `http://mock-webui-host-url/my-page/callback?${queryParams}`
     );
+    expect(fetchedUrl.toString()).toContain(`base64_callback_url=${expectedCallbackUrl}`);
     fetchSpy.mockRestore();
   });
 
@@ -148,8 +150,8 @@ describe('Middleware', () => {
     const query2Value = 'this has spaces';
 
     const queryParams = new URLSearchParams({
-      myquery: encodeURIComponent(query1Value),
-      mynextquery: encodeURIComponent(query2Value),
+      myquery: query1Value,
+      mynextquery: query2Value,
     });
 
     const rawQueryParams = `myquery=${query1Value}&mynextquery=${query2Value}`;
@@ -178,9 +180,10 @@ describe('Middleware', () => {
 
     // Fetch calls take the form 'fetch(<url>, <request-init>)', so get the URL that was passed in
     const fetchedUrl = fetchSpy.mock.calls[0][0];
-    expect(fetchedUrl.toString()).toContain(
-      `callback_url=http://mock-webui-host-url/my-page/callback?${queryParams.toString()}`
+    const expectedCallbackUrl = encodeToBase64Url(
+      `http://mock-webui-host-url/my-page/callback?${queryParams.toString()}`
     );
+    expect(fetchedUrl.toString()).toContain(`base64_callback_url=${expectedCallbackUrl}`);
     fetchSpy.mockRestore();
   });
 

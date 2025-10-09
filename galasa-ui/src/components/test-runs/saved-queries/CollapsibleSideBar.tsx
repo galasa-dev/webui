@@ -37,7 +37,7 @@ import {
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
-import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
 interface CollapsibleSideBarProps {

@@ -96,11 +96,7 @@ const getRequestCallbackUrl = (nextUrl: NextURL) => {
   }
 
   // Build up the URL-encoded query parameters
-  const queryParams = new URLSearchParams();
-  nextUrl.searchParams.forEach((value, key) => {
-    queryParams.append(key, encodeURIComponent(value));
-  });
-  const queryParamsString = queryParams.toString();
+  const queryParamsString = nextUrl.searchParams.toString();
   const callbackQuery = queryParamsString ? `?${queryParamsString}` : '';
 
   // The request path is expected to start with a '/' if a non-root path is requested

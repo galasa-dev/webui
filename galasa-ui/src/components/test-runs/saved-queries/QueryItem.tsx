@@ -15,7 +15,7 @@ import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
-import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 
 interface QueryItemProps {

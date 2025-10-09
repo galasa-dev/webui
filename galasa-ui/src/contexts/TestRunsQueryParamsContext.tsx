@@ -29,13 +29,13 @@ import {
   TABS_IDS,
   DEFAULT_QUERY,
 } from '@/utils/constants/common';
-import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import { valueMap } from '@/utils/urlStateMappers';
+import { valueMap } from '@/utils/encoding/urlStateMappers';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;

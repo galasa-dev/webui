@@ -15,7 +15,7 @@ import {
   useTestRunsQueryParams,
 } from '@/contexts/TestRunsQueryParamsContext';
 import userEvent from '@testing-library/user-event';
-import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 
 const mockUpdateQuery = jest.fn();
 const mockGetQuery = jest.fn();
