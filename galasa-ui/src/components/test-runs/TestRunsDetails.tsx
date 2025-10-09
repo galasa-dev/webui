@@ -18,11 +18,11 @@ import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import {
-  DEFAULT_QUERY,
   NOTIFICATION_VISIBLE_MILLISECS,
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
+import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
@@ -196,24 +196,31 @@ export default function TestRunsDetails({
 
     // Delete "tab" param from the current URL
     currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+    console.log('Current query params: ', currentUrlParams);
 
     let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
+
     if (queryURL) {
       const queryUrlParams = new URLSearchParams(queryURL);
 
       // Delete "tab" param from the query URL
       queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+      console.log('Query URL Params: ', queryUrlParams);
       queryURL = queryUrlParams.toString();
     }
+    console.log('Active Query URL: ', queryURL);
 
     let isDisabled = false;
     // Disable if the current URL params (excluding tab) match the active query's URL
     if (
       currentUrlParams.toString() === queryURL ||
-      activeQuery.url === DEFAULT_QUERY.url ||
       queryURL === '' ||
       currentUrlParams.toString() === ''
     ) {
+      console.log('Currrent URL PArams === queryURL: ', currentUrlParams.toString() === queryURL);
+      console.log('Active Query URL === default Query', activeQuery.url === DEFAULT_QUERY.url);
+      console.log('Query URL is empty: ', queryURL === '');
+      console.log('Current URL Params empty: ', currentUrlParams.toString() === '');
       isDisabled = true;
     }
 

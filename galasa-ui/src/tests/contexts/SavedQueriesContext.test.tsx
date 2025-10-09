@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { SavedQueriesProvider, useSavedQueries } from '@/contexts/SavedQueriesContext';
-import { DEFAULT_QUERY } from '@/utils/constants/common';
+import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 import { SavedQueryType } from '@/utils/types/common';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
