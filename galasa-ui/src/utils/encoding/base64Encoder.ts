@@ -22,5 +22,11 @@ export const encodeToBase64 = (stringToEncode: string) => {
  */
 export const encodeToBase64Url = (stringToEncode: string) => {
   let base64EncodedString = encodeToBase64(stringToEncode);
-  return base64EncodedString.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+
+  // Base64 URL encoding replaces '+' with '-', '=' with '', and '/' with '_'
+  base64EncodedString = base64EncodedString.replace(/\+/g, '-');
+  base64EncodedString = base64EncodedString.replace(/\//g, '_');
+  base64EncodedString = base64EncodedString.replace(/=+$/g, '');
+
+  return base64EncodedString;
 };
