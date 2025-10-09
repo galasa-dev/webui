@@ -9,29 +9,30 @@ import { encodeToBase64, encodeToBase64Url } from '@/utils/encoding/base64Encode
 describe('Base64 Encoder tests', () => {
   it('should correctly encode a string into Base64 format', () => {
     // Given...
-    const rawString = 'myRawString';
-    const expectedString = Buffer.from(rawString).toString('base64');
+    const rawString = 'my string';
+    const expectedString = 'bXkgc3RyaW5n';
 
     // When...
     const encodedString = encodeToBase64(rawString);
 
-    // The encoded string should not be the same as the original
+    // Then...
     expect(encodedString).toEqual(expectedString);
   });
 
   it('should correctly encode a string into Base64URL format', () => {
     // Given...
-    const rawString = 'myRawString-with+special/chars==';
-    const expectedString = Buffer.from(rawString)
-      .toString('base64')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/g, '');
+    const rawString = '<<my special string!>>';
+    const expectedBase64String = 'PDxteSBzcGVjaWFsIHN0cmluZyE+Pg==';
+
+    // Base64 URL encoding replaces '+' with '-', '=' with '', and '/' with '_'
+    const expectedUrlString = 'PDxteSBzcGVjaWFsIHN0cmluZyE-Pg';
 
     // When...
-    const encodedString = encodeToBase64Url(rawString);
+    const encodedString = encodeToBase64(rawString);
+    const encodedUrlString = encodeToBase64Url(rawString);
 
-    // The encoded string should not be the same as the original
-    expect(encodedString).toEqual(expectedString);
+    // Then...
+    expect(encodedString).toEqual(expectedBase64String);
+    expect(encodedUrlString).toEqual(expectedUrlString);
   });
 });

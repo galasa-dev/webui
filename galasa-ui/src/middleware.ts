@@ -113,13 +113,15 @@ const buildRedirectBackToWebUiUrl = (requestUrl: NextURL) => {
     responseUrl += '/mysettings';
   }
 
-  const queryParams = new URLSearchParams(requestUrl.searchParams);
-
   // The OAuth process returns a 'code' query parameter for clients to exchange this for a JWT
   // We don't need to keep this around after the OAuth process is complete, so we delete it here
+  const queryParams = new URLSearchParams(requestUrl.searchParams);
   queryParams.delete('code');
 
-  responseUrl += `?${queryParams.toString()}`;
+  const queryParamsString = queryParams.toString();
+  const urlQuery = queryParamsString ? `?${queryParamsString}` : '';
+
+  responseUrl += urlQuery;
   return responseUrl;
 };
 
