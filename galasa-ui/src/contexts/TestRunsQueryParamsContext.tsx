@@ -190,6 +190,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
       setSearchCriteria(newCriteria);
     }
+
     // Sort Order
     const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
     const newSortOrder = sortOrderParam
