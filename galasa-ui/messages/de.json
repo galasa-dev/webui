@@ -539,5 +539,23 @@
     "savedQueriesSidebarLabel": "Seitenleiste Gespeicherte Abfragen",
     "searchSavedQueries": "Gespeicherte Abfragen durchsuchen",
     "addCurrentQuery": "Aktuelle Abfrage hinzufügen"
+  },
+  "QueryItem": {
+    "dragHandle": "Zum Neuordnen ziehen",
+    "actions": "Aktionen",
+    "rename": "Umbenennen...",
+    "delete": "Löschen",
+    "copyToClipboard": "In Zwischenablage kopieren",
+    "setAsDefault": "Als Standard festlegen",
+    "duplicate": "Duplizieren",
+    "copiedTitle": "URL erfolgreich kopiert",
+    "copiedMessage": "Die URL der Abfrage \"{name}\" wurde in die Zwischenablage kopiert.",
+    "errorTitle": "Fehler",
+    "successTitle": "Erfolg",
+    "copyFailedMessage": "Die URL der Abfrage \"{name}\" konnte nicht kopiert werden.",
+    "setAsDefaultMessage": "Die Abfrage \"{name}\" ist nun Ihre Standardabfrage.",
+    "deleteTitle": "Abfrage gelöscht",
+    "deleteMessage": "Die Abfrage \"{name}\" wurde erfolgreich gelöscht.",
+    "duplicateMessage": "Die Abfrage \"{name}\" wurde erfolgreich dupliziert."
   }
 }

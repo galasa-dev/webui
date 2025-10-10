@@ -27,14 +27,15 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
+  DEFAULT_QUERY,
 } from '@/utils/constants/common';
-import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import { valueMap } from '@/utils/urlStateMappers';
+import { valueMap } from '@/utils/encoding/urlStateMappers';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;
@@ -72,7 +73,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
-  const { defaultQuery } = useSavedQueries();
+  const { defaultQuery: currentDefaultQuery } = useSavedQueries();
 
   // Track if a URL update is in progress
   const isUrlUpdateInProgress = useRef(true);
@@ -112,7 +113,9 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Query Name
-    const newQueryName = searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || defaultQuery.title;
+    const newQueryName =
+      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
+
     if (newQueryName !== queryName) {
       setQueryName(newQueryName);
     }

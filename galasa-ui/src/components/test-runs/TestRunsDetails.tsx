@@ -7,7 +7,7 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
@@ -17,9 +17,15 @@ import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
-import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
-import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import {
+  DEFAULT_QUERY,
+  NOTIFICATION_VISIBLE_MILLISECS,
+  TABS_IDS,
+  TEST_RUNS_QUERY_PARAMS,
+} from '@/utils/constants/common';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import QueryName from './QueryName';
+import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -33,7 +39,7 @@ export default function TestRunsDetails({
   const { breadCrumbItems } = useHistoryBreadCrumbs();
   const translations = useTranslations('TestRunsDetails');
 
-  const { saveQuery, isQuerySaved, getQuery, updateQuery } = useSavedQueries();
+  const { saveQuery, isQuerySaved, getQueryByName, updateQuery } = useSavedQueries();
   const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -42,7 +48,7 @@ export default function TestRunsDetails({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const activeQuery = getQuery(queryName);
+  const activeQuery = getQueryByName(queryName);
 
   // Focus and select the input when editing
   useEffect(() => {
@@ -60,7 +66,7 @@ export default function TestRunsDetails({
         title: translations('copiedTitle'),
         subtitle: translations('copiedMessage'),
       });
-      setTimeout(() => setNotification(null), 6000);
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
       setNotification({
         kind: 'error',
@@ -97,12 +103,15 @@ export default function TestRunsDetails({
     }
 
     // Find the original query using the old name
-    const queryToRename = getQuery(oldName);
+    const queryToRename = getQueryByName(oldName);
 
     // If it was a saved query, perform the rename in storage
     if (queryToRename) {
       const updatedUrlParams = new URLSearchParams(searchParams);
+
+      // Update the URL parameters with the new query name and switch to results tab
       updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, newName);
+      updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
 
       updateQuery(queryToRename.createdAt, {
         ...queryToRename,
@@ -128,8 +137,13 @@ export default function TestRunsDetails({
 
     if (!nameToSave) return;
 
-    const currentUrlParams = new URLSearchParams(searchParams).toString();
-    const existingQuery = getQuery(nameToSave);
+    const currentUrlParams = new URLSearchParams(searchParams);
+
+    // Change the tab to be the results tab when saving a query
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
+
+    const existingQuery = getQueryByName(nameToSave);
 
     // If the query already exists, update it
     if (existingQuery) {
@@ -148,14 +162,7 @@ export default function TestRunsDetails({
     }
 
     // If the query doesn't exist, create a new one with a unique name
-    const baseName = nameToSave.split('(')[0].trim();
-    let finalQueryTitle = nameToSave;
-    let counter = 1;
-
-    while (isQuerySaved(finalQueryTitle)) {
-      finalQueryTitle = `${baseName} (${counter})`;
-      counter++;
-    }
+    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
 
     const newQuery = {
       title: finalQueryTitle,
@@ -174,8 +181,44 @@ export default function TestRunsDetails({
     setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
-  const isSaveQueryDisabled =
-    activeQuery?.url === encodeStateToUrlParam(searchParams.toString()) || activeQuery?.url === '';
+  const isSaveQueryDisabled = useMemo(() => {
+    // If query doesn't exist in storage → keep enabled (it's a new query)
+    if (!activeQuery) {
+      return isQuerySaved(queryName.trim()) || false;
+    }
+
+    const currentUrlParams = new URLSearchParams(searchParams);
+
+    // If the queryName in URL and activeQuery.title don't match → still loading → keep disabled
+    if (currentUrlParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) !== activeQuery?.title) {
+      return true;
+    }
+
+    // Delete "tab" param from the current URL
+    currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+
+    let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
+    if (queryURL) {
+      const queryUrlParams = new URLSearchParams(queryURL);
+
+      // Delete "tab" param from the query URL
+      queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
+      queryURL = queryUrlParams.toString();
+    }
+
+    let isDisabled = false;
+    // Disable if the current URL params (excluding tab) match the active query's URL
+    if (
+      currentUrlParams.toString() === queryURL ||
+      activeQuery.url === DEFAULT_QUERY.url ||
+      queryURL === '' ||
+      currentUrlParams.toString() === ''
+    ) {
+      isDisabled = true;
+    }
+
+    return isDisabled;
+  }, [activeQuery, searchParams, isQuerySaved, queryName]);
 
   return (
     <div className={styles.testRunsPage}>

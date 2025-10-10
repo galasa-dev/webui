@@ -21,7 +21,7 @@ type SavedQueriesContextType = {
   updateQuery: (createdAt: string, updatedQuery: SavedQueryType) => void;
   deleteQuery: (createdAt: string) => void;
   isQuerySaved: (queryName: string) => boolean;
-  getQuery: (queryName: string) => SavedQueryType | null;
+  getQueryByName: (queryName: string) => SavedQueryType | null;
   defaultQuery: SavedQueryType;
   setDefaultQuery: (createdAt: string) => void;
 };
@@ -32,7 +32,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const [savedQueries, setSavedQueries] = useState<SavedQueryType[]>(() => {
     if (typeof window !== 'undefined') {
       const storedQueries = localStorage.getItem(SAVED_QUERIES_STORAGE_KEY);
-      if (storedQueries) {
+      if (storedQueries && storedQueries.length > 0) {
         return JSON.parse(storedQueries);
       }
     }
@@ -62,7 +62,6 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
   const saveQuery = (query: SavedQueryType) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = [...prevQueries, query];
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
@@ -72,19 +71,43 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       const updatedQueries = prevQueries.map((query) =>
         query.createdAt === createdAt ? updatedQuery : query
       );
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
       return updatedQueries;
     });
   };
 
   /**
    * Delete a saved query.
+   * If the deleted query is the default query:
+   *   - If there are other queries, the top query in the list becomes the new default.
+   *   - If it's the last query, a new default query is created and set as default.
+   *
    * @param createdAt The createdAt of the query to delete.
    */
   const deleteQuery = (createdAt: string) => {
     setSavedQueries((prevQueries) => {
       const updatedQueries = prevQueries.filter((query) => query.createdAt !== createdAt);
-      localStorage.setItem(SAVED_QUERIES_STORAGE_KEY, JSON.stringify(updatedQueries));
+
+      // Handle default query logic
+      if (metaData.defaultQueryId === createdAt) {
+        let newDefaultQueryId = DEFAULT_QUERY.createdAt;
+
+        if (updatedQueries.length > 0) {
+          // If there are other queries, set the first one as default
+          newDefaultQueryId = updatedQueries[0].createdAt;
+        } else {
+          // If it's the last query, create a new default query and add it
+          const newDefaultQuery = { ...DEFAULT_QUERY, createdAt: new Date().toISOString() };
+          updatedQueries.push(newDefaultQuery);
+          newDefaultQueryId = newDefaultQuery.createdAt;
+        }
+
+        setMetaData((prevMetaData) => ({
+          ...prevMetaData,
+          defaultQueryId: newDefaultQueryId,
+        }));
+      }
+
+      setSavedQueries(updatedQueries);
       return updatedQueries;
     });
   };
@@ -103,7 +126,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
    * @param queryName The name of the query to retrieve.
    * @returns The saved query if found, null otherwise.
    */
-  const getQuery = (queryName: string) => {
+  const getQueryByName = (queryName: string) => {
     return savedQueries.find((query) => query.title === queryName) || null;
   };
 
@@ -116,6 +139,18 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
       ...prevMetaData,
       defaultQueryId: createdAt,
     }));
+
+    // Update saved queries arrangement
+    setSavedQueries((prevQueries) => {
+      const updatedQueries = [...prevQueries];
+      const movedQuery = updatedQueries.find((query) => query.createdAt === createdAt);
+      if (movedQuery) {
+        updatedQueries.splice(updatedQueries.indexOf(movedQuery), 1);
+        updatedQueries.unshift(movedQuery);
+      }
+
+      return updatedQueries;
+    });
   };
 
   useEffect(() => {
@@ -133,7 +168,7 @@ export function SavedQueriesProvider({ children }: { children: ReactNode }) {
     deleteQuery,
     updateQuery,
     isQuerySaved,
-    getQuery,
+    getQueryByName,
     defaultQuery,
     setDefaultQuery,
   };

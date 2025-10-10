@@ -5,7 +5,7 @@
  */
 
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Table,
   TableHead,
@@ -80,7 +80,7 @@ export default function TableOfScreenshots({
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
   const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
-  let screenshotsCollected: boolean = false;
+  const screenshotsCollected = useRef<boolean | null>(false);
 
   const handleRowClick = (rowId: string) => {
     setHighlightedRowId(rowId);
@@ -142,8 +142,8 @@ export default function TableOfScreenshots({
 
   useMemo(() => {
     // Ensure screenshots are only collected once.
-    if (!screenshotsCollected && flattenedZos3270TerminalData.length === 0) {
-      screenshotsCollected = true;
+    if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
+      screenshotsCollected.current = true;
       setIsLoading(true);
       const fetchData = async () => {
         try {
