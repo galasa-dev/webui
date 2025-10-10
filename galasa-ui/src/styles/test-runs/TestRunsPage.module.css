@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow-x: auto;
 }
 
 .testRunsContentWrapper {
@@ -19,6 +20,18 @@
   flex: 1;
   min-width: 0;
   padding: 5rem 4rem;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 1rem 0.5rem;
+  }
 }
 
 .tabsContainer {
@@ -34,12 +47,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .queryNameBlock {
   display: flex;
   flex: 1;
   padding: 0 1rem;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .queryNameContainer {
+    flex-direction: column;
+  }
+
+  .queryNameBlock {
+    padding: 0 0.5rem;
+    min-width: 0;
+  }
 }
 
 .queryNameHeading {
@@ -77,6 +103,13 @@
   flex-direction: row;
   gap: 1.5rem;
   margin-top: 1rem;
+  overflow-x: auto;
+}
+
+@media (max-width: 992px) {
+  .searchCriteriaContainer {
+    flex-direction: column;
+  }
 }
 
 .structuredListContainer {
@@ -232,6 +265,13 @@
   min-width: 500px;
 }
 
+@media (max-width: 768px) {
+  .tableDesignContainer {
+    width: 100%;
+    min-width: 300px;
+  }
+}
+
 .tableDesignRow,
 .tableDesignHeaderRow {
   display: flex;
@@ -275,6 +315,13 @@
   font-size: 0.9rem;
 }
 
+@media (max-width: 768px) {
+  .cellValue {
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+  }
+}
+
 .cellDropdown {
   flex: 0 0 120px;
   width: 120px;
@@ -293,6 +340,7 @@
   font-size: 0.9rem;
   font-weight: bold;
   border-bottom: 1px solid #393939;
+  overflow: auto;
 }
 
 .tableDesignHeaderRow .cellValue {
