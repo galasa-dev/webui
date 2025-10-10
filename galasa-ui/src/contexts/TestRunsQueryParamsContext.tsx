@@ -106,6 +106,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     const tabParam = params.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
     const tabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
+    console.log('Current tab index: ', tabIndex);
 
     // Query Name
     const name = params.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;

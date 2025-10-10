@@ -196,7 +196,6 @@ export default function TestRunsDetails({
 
     // Delete "tab" param from the current URL
     currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
-    console.log('Current query params: ', currentUrlParams);
 
     let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
 
@@ -205,10 +204,8 @@ export default function TestRunsDetails({
 
       // Delete "tab" param from the query URL
       queryUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
-      console.log('Query URL Params: ', queryUrlParams);
       queryURL = queryUrlParams.toString();
     }
-    console.log('Active Query URL: ', queryURL);
 
     let isDisabled = false;
     // Disable if the current URL params (excluding tab) match the active query's URL
@@ -217,10 +214,6 @@ export default function TestRunsDetails({
       queryURL === '' ||
       currentUrlParams.toString() === ''
     ) {
-      console.log('Currrent URL PArams === queryURL: ', currentUrlParams.toString() === queryURL);
-      console.log('Active Query URL === default Query', activeQuery.url === DEFAULT_QUERY.url);
-      console.log('Query URL is empty: ', queryURL === '');
-      console.log('Current URL Params empty: ', currentUrlParams.toString() === '');
       isDisabled = true;
     }
 

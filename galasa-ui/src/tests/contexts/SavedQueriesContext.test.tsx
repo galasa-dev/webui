@@ -4,6 +4,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { SavedQueriesProvider, useSavedQueries } from '@/contexts/SavedQueriesContext';
+import {
+  DEFAULT_VISIBLE_COLUMNS,
+  RESULTS_TABLE_COLUMNS,
+  TEST_RUNS_QUERY_PARAMS,
+  TEST_RUNS_STATUS,
+} from '@/utils/constants/common';
 import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 import { SavedQueryType } from '@/utils/types/common';
 import '@testing-library/jest-dom';
@@ -38,6 +44,12 @@ jest.mock('@/utils/constants/common', () => ({
     title: 'Tests ran in the last 24 hours',
     url: 'default-url',
   },
+  TEST_RUNS_QUERY_PARAMS: {
+    TAB: 'tab',
+  },
+  TEST_RUNS_STATUS: {},
+  RESULTS_TABLE_COLUMNS: [],
+  DEFAULT_VISIBLE_COLUMNS: [],
 }));
 
 // Test Component to consume and interact with the context
