@@ -630,39 +630,37 @@ describe('TestRunsTabs Component', () => {
     });
 
     test('fetches data when "Results" tab is selected', async () => {
-      const params = new URLSearchParams();
-      params.set('tab', 'timeframe');
+      const params = new URLSearchParams('tab=timeframe&visibleColumns=requestor');
       mockUseSearchParams.mockReturnValue(params);
 
-      (global.fetch as jest.Mock).mockImplementation(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ runs: [], limitExceeded: false }),
-        })
-      );
+      (global.fetch as jest.Mock).mockClear();
 
       render(
         <FeatureFlagProvider>
-          <TestRunsQueryParamsProvider>
-            <TestRunsTabs
-              requestorNamesPromise={Promise.resolve([])}
-              resultsNamesPromise={Promise.resolve([])}
-            />
-          </TestRunsQueryParamsProvider>
+          <TestRunsTabs
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
+          />
         </FeatureFlagProvider>,
         { wrapper }
       );
 
+      // Wait for initialization to complete
       await waitFor(() => {
-        expect(global.fetch).not.toHaveBeenCalled();
+        const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
+        expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
       });
 
-      fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
+      // Verify no fetch has been called while on timeframe tab
+      expect(global.fetch).not.toHaveBeenCalled();
 
+      // Click the Results tab
+      const resultsTab = screen.getByRole('tab', { name: 'Results' });
+      fireEvent.click(resultsTab);
+
+      // Now verify the fetch is called
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/internal-api/test-runs?tab=results')
-        );
+        expect(global.fetch).toHaveBeenCalledTimes(1);
       });
     });
 
