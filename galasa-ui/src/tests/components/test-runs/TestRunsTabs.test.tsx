@@ -9,7 +9,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
-import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam } from '@/utils/encoding/urlEncoder';
 import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
 import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
 

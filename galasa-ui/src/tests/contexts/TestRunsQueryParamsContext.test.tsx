@@ -13,7 +13,7 @@ import {
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
-import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';

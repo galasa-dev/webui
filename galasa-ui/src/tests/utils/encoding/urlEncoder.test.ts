@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { encodeStateToUrlParam, decodeStateFromUrlParam } from '@/utils/urlEncoder';
+import { encodeStateToUrlParam, decodeStateFromUrlParam } from '@/utils/encoding/urlEncoder';
 
 describe('URL State Encoder/Decoder', () => {
   test('should correctly encode a query string and decode it back', () => {

@@ -10,7 +10,7 @@ import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import QueryItem from '@/components/test-runs/saved-queries/QueryItem';
 import * as dndKitSortable from '@dnd-kit/sortable';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
-import { encodeStateToUrlParam } from '@/utils/urlEncoder';
+import { encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 
 // Mock next/navigation
 const mockReplace = jest.fn();

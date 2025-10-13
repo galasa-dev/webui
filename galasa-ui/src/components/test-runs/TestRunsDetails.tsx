@@ -22,7 +22,6 @@ import {
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
-import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
