@@ -1,4 +1,4 @@
-import { encodeStateToUrlParam } from '../urlEncoder';
+import { encodeStateToUrlParam } from '../encoding/urlEncoder';
 import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS, TEST_RUNS_QUERY_PARAMS } from './common';
 
 export const DEFAULT_QUERY = {
