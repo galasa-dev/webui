@@ -191,6 +191,9 @@ export default function TestRunGraph({
       toolbar: { enabled: false },
       experimental: true,
     };
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [headerDefinitions, isLoading, isLightTheme, translations, xTickValues]);
 
   type DataBoundElement = HTMLElement & { __data__?: DataPoint };

@@ -181,6 +181,8 @@ describe('UserRoleSection', () => {
       setTimeout(() => resolve(dummyRoles), 1000);
     });
 
+    await rolesPromise;
+
     render(
       <UserRoleSection
         userProfilePromise={Promise.resolve(dummyProfile)}

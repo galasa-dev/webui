@@ -85,6 +85,9 @@ export default function AccessTokensSection({
     };
 
     loadAccessTokens();
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [accessTokensPromise]);
 
   const translations = useTranslations('AccessTokensSection');
