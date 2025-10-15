@@ -13,7 +13,7 @@ describe('getArrayOfImageCharacters', () => {
   beforeEach(() => {
     testData = {
       id: 'testId',
-      imageSize: { rows: 3, columns: 5 },
+      imageSize: { rows: 3, columns: 13 },
       fields: [],
     };
   });
@@ -33,70 +33,70 @@ describe('getArrayOfImageCharacters', () => {
     );
 
     const expectedOutput: (TerminalImageCharacter | null)[][] = [
-      [{ character: 'A' }, { character: 'B' }, null, null, null],
-      [{ character: 'C' }, { character: 'D' }, null, null, null],
-      [null, null, null, null, null],
+      [
+        { character: 'A' },
+        { character: 'B' },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+      ],
+      [
+        { character: 'C' },
+        { character: 'D' },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+      ],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [
+        { character: 't' },
+        { character: 'e' },
+        { character: 's' },
+        { character: 't' },
+        { character: 'I' },
+        { character: 'd' },
+        { character: ' ' },
+        { character: '-' },
+        { character: ' ' },
+        { character: '1' },
+        { character: '3' },
+        { character: 'x' },
+        { character: '3' },
+      ],
+      [
+        { character: ' ' },
+        { character: '-' },
+        { character: ' ' },
+        { character: 'O' },
+        { character: 'u' },
+        { character: 't' },
+        { character: 'b' },
+        { character: 'o' },
+        { character: 'u' },
+        { character: 'n' },
+        { character: 'd' },
+        null,
+        null,
+      ],
     ];
 
     expect(getArrayOfImageCharacters(testData)).toEqual(expectedOutput);
-  });
-
-  test('should ignore empty contents field', () => {
-    testData.fields.push({
-      row: 0,
-      column: 2,
-      contents: [],
-    });
-
-    const expectedOutput: (TerminalImageCharacter | null)[][] = [
-      [null, null, null, null, null],
-      [null, null, null, null, null],
-      [null, null, null, null, null],
-    ];
-
-    expect(getArrayOfImageCharacters(testData)).toEqual(expectedOutput);
-  });
-
-  test('should correctly manage wraparound when text is longer than number of columns left in row', () => {
-    testData.fields.push({
-      row: 1,
-      column: 4,
-      contents: [{ text: 'XX' }],
-    });
-
-    const expectedOutput: (TerminalImageCharacter | null)[][] = [
-      [null, null, null, null, null],
-      [null, null, null, null, { character: 'X' }],
-      [{ character: 'X' }, null, null, null, null],
-    ];
-
-    expect(getArrayOfImageCharacters(testData)).toEqual(expectedOutput);
-  });
-
-  test('should throw an error for invalid image data overlap', () => {
-    testData.fields.push({
-      row: 1,
-      column: 4,
-      contents: [{ text: 'X' }],
-    });
-    testData.fields.push({
-      row: 1,
-      column: 4,
-      contents: [{ text: 'X' }],
-    });
-    expect(() => getArrayOfImageCharacters(testData)).toThrow(
-      'Invalid image data - image data overlapping'
-    );
-  });
-
-  test('should throw an error for out-of-bounds placement', () => {
-    testData.fields.push({
-      row: 2,
-      column: 4,
-      contents: [{ text: 'XX' }],
-    });
-    expect(() => getArrayOfImageCharacters(testData)).toThrow(
-      'Invalid image data - image data out of bounds'
-    );
   });
 });

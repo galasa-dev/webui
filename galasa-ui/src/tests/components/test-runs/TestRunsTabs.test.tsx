@@ -9,7 +9,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
-import { decodeStateFromUrlParam } from '@/utils/urlEncoder';
+import { decodeStateFromUrlParam } from '@/utils/encoding/urlEncoder';
 import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
 import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
 
@@ -23,6 +23,7 @@ const TestRunsTableMock = jest.fn((props) => (
     })}
   </div>
 ));
+
 jest.mock('@/components/test-runs/results/TestRunsTable', () => ({
   __esModule: true,
   default: (props: any) => TestRunsTableMock(props),
@@ -58,6 +59,7 @@ jest.mock('@/components/test-runs/timeframe/TimeFrameContent', () => ({
     };
   }),
 }));
+
 jest.mock('@/components/test-runs/search-criteria/SearchCriteriaContent', () => ({
   __esModule: true,
   default: () => <div>Mocked Search Criteria Content</div>,
@@ -288,7 +290,7 @@ describe('TestRunsTabs Component', () => {
   });
 
   describe('URL State Management', () => {
-    test('loads state from URL parameters on initial render', async () => {
+    test('loads state from URL parameters on initial render with sorted values', async () => {
       // Arrange: Provide specific URL parameters for this test
       const params = new URLSearchParams();
       params.set('visibleColumns', 'status,result');
@@ -310,7 +312,7 @@ describe('TestRunsTabs Component', () => {
       await waitFor(() => {
         expect(TestRunsTableMock).toHaveBeenCalledWith(
           expect.objectContaining({
-            visibleColumns: ['status', 'result'],
+            visibleColumns: ['result', 'status'],
             orderedHeaders: [
               { id: 'result', columnName: 'Result' },
               { id: 'status', columnName: 'Status' },
@@ -345,8 +347,9 @@ describe('TestRunsTabs Component', () => {
       const decodedParams = new URLSearchParams(decoded!);
 
       expect(decodedParams.get('tab')).toBe('results');
+      // Visible Columns must be sorted
       expect(decodedParams.get('visibleColumns')).toBe(
-        'submittedAt,runName,requestor,testName,status,result'
+        'requestor,result,runName,status,submittedAt,testName'
       );
       expect(decodedParams.get('columnsOrder')).toBe(
         'submittedAt,runName,requestor,testName,status,result,tags'
@@ -389,7 +392,7 @@ describe('TestRunsTabs Component', () => {
       expect(decodedParams.get('tab')).toBe('table-design');
       // All other params should remain at their default values
       expect(decodedParams.get('visibleColumns')).toBe(
-        'submittedAt,runName,requestor,testName,status,result'
+        'requestor,result,runName,status,submittedAt,testName'
       );
       expect(decodedParams.get('columnsOrder')).toBe(
         'submittedAt,runName,requestor,testName,status,result,tags'
@@ -432,9 +435,9 @@ describe('TestRunsTabs Component', () => {
       const decodedParams = new URLSearchParams(decoded!);
 
       expect(decodedParams.get('columnsOrder')).toBe('result,status');
-      // The visible columns should remain unchanged at their default
+      // Visible columns should be sorted with the same previous values
       expect(decodedParams.get('visibleColumns')).toBe(
-        'submittedAt,runName,requestor,testName,status,result'
+        'requestor,result,runName,status,submittedAt,testName'
       );
     });
 
@@ -627,23 +630,38 @@ describe('TestRunsTabs Component', () => {
     });
 
     test('fetches data when "Results" tab is selected', async () => {
-      // Mock default tab
-      mockUseSearchParams.mockReturnValue(new URLSearchParams('tab=timeframe'));
+      const params = new URLSearchParams('tab=timeframe&visibleColumns=requestor');
+      mockUseSearchParams.mockReturnValue(params);
+
+      (global.fetch as jest.Mock).mockClear();
+
       render(
         <FeatureFlagProvider>
           <TestRunsTabs
-            requestorNamesPromise={mockRequestorNamesPromise}
-            resultsNamesPromise={mockResultsNamesPromise}
+            requestorNamesPromise={Promise.resolve([])}
+            resultsNamesPromise={Promise.resolve([])}
           />
         </FeatureFlagProvider>,
         { wrapper }
       );
 
+      // Wait for initialization to complete
+      await waitFor(() => {
+        const timeframeTab = screen.getByRole('tab', { name: 'Timeframe' });
+        expect(timeframeTab).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Verify no fetch has been called while on timeframe tab
       expect(global.fetch).not.toHaveBeenCalled();
 
-      // Navigate to results tab
-      fireEvent.click(screen.getByRole('tab', { name: 'Results' }));
-      await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+      // Click the Results tab
+      const resultsTab = screen.getByRole('tab', { name: 'Results' });
+      fireEvent.click(resultsTab);
+
+      // Now verify the fetch is called
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+      });
     });
 
     test('serves data from cache and does not refetch when switching tabs with same query', async () => {

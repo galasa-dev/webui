@@ -25,7 +25,6 @@
 
 .sideNavExpanded,
 .sideNavCollapsed {
-  overflow: hidden;
   flex-shrink: 0;
   transition:
     width 0.2s ease-in-out,
@@ -33,10 +32,13 @@
 }
 
 .sideNavExpanded {
-  width: 360px;
+  width: 320px;
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
+  height: 800px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sideNavCollapsed {
@@ -62,8 +64,11 @@
 
 .toolbar {
   display: flex;
-  padding: 0.7rem;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--cds-layer);
 }
 
 .headerTitle {
@@ -77,6 +82,7 @@
 .sideNavContent {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
