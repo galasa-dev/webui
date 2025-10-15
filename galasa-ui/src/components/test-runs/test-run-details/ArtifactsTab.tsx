@@ -203,6 +203,9 @@ export function ArtifactsTab({
         setZos3270TerminalData
       );
     }
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [artifacts, checkForZosTerminalFolderStructure, is3270ScreenEnabled]);
 
   const createFolderSegments = (

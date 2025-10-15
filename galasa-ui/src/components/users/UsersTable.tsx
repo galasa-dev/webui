@@ -161,6 +161,9 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
 
     loadUsers();
     checkForEditUsersPermission();
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [currentUserPromise, usersListPromise]);
 
   if (isError) {

@@ -138,6 +138,9 @@ export default function TableOfScreenshots({
 
     highlightFirstRowOnPageLoad();
     checkHighlightedRowInFilteredRows();
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [filteredRows, highlightedRowId]);
 
   useMemo(() => {
@@ -165,6 +168,9 @@ export default function TableOfScreenshots({
 
       fetchData();
     }
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, []);
 
   // When highlighted image changes, update image data.
@@ -174,6 +180,9 @@ export default function TableOfScreenshots({
     ) as TerminalImage;
 
     setImageData(newImageData);
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [highlightedRowId, allImageData]);
 
   // Handle previous/ next image buttons.
@@ -202,6 +211,9 @@ export default function TableOfScreenshots({
 
       setMoveImageSelection(0);
     }
+
+    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
+    // eslint-disable-next-line
   }, [
     moveImageSelection,
     filteredRows,
