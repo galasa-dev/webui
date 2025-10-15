@@ -27,7 +27,6 @@ import {
   MINUTE_MS,
   HOUR_MS,
   TABS_IDS,
-  DEFAULT_QUERY,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
@@ -88,6 +87,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
         return new URLSearchParams(decodedQueryString);
       }
     }
+
     return rawSearchParams;
   }, [rawSearchParams]);
 
@@ -100,52 +100,35 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
   const [sortOrder, setSortOrder] = useState<{ id: string; order: sortOrderType }[]>([]);
   const [queryName, setQueryName] = useState('');
 
-  // Effect to synchronize state with URL parameters
-  useEffect(() => {
-    isUrlUpdateInProgress.current = true;
-
+  // Helper function to parse query parameters into state values
+  const parseQueryParams = (params: URLSearchParams) => {
     // Tab
-    const tabParam = searchParams.get('tab');
+    const tabParam = params.get('tab');
     const initialIndex = tabParam ? TABS_IDS.indexOf(tabParam) : -1;
-    const newTabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
-    if (newTabIndex !== selectedTabIndex) {
-      setSelectedTabIndex(newTabIndex);
-    }
+    const tabIndex = initialIndex !== -1 ? initialIndex : TABS_IDS.indexOf('results');
 
     // Query Name
-    const newQueryName =
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
+    const name = params.get(TEST_RUNS_QUERY_PARAMS.QUERY_NAME) || currentDefaultQuery.title;
 
-    if (newQueryName !== queryName) {
-      setQueryName(newQueryName);
-    }
-
-    // Visible Columns - apply default visible columns only if visible columns array aren't empty.
-    const newVisibleColumns =
-      searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']
-        ? searchParams.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') ||
-          DEFAULT_VISIBLE_COLUMNS
+    // Visible Columns
+    const visibleColumns =
+      params.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS) !== valueMap['']
+        ? params.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)?.split(',') || DEFAULT_VISIBLE_COLUMNS
         : [];
-    if (newVisibleColumns.join(',') !== selectedVisibleColumns.join(',')) {
-      setSelectedVisibleColumns(newVisibleColumns);
-    }
 
     // Columns Order
-    const orderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
-    const newColumnsOrder = orderParam
+    const orderParam = params.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER);
+    const colOrder = orderParam
       ? (orderParam
           .split(',')
           .map((id) => RESULTS_TABLE_COLUMNS.find((col) => col.id === id))
           .filter(Boolean) as ColumnDefinition[])
       : RESULTS_TABLE_COLUMNS;
-    if (newColumnsOrder.map((c) => c.id).join(',') !== columnsOrder.map((c) => c.id).join(',')) {
-      setColumnsOrder(newColumnsOrder);
-    }
 
     // Timeframe
-    const fromParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.FROM);
-    const toParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.TO);
-    const durationParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.DURATION);
+    const fromParam = params.get(TEST_RUNS_QUERY_PARAMS.FROM);
+    const toParam = params.get(TEST_RUNS_QUERY_PARAMS.TO);
+    const durationParam = params.get(TEST_RUNS_QUERY_PARAMS.DURATION);
 
     let toDate: Date,
       fromDate: Date,
@@ -166,51 +149,101 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       isRelativeToNow = true;
     }
 
+    // Timezone
     const timezone = getResolvedTimeZone();
-    const newTimeframeValues = {
+    const timeframe = {
       ...calculateSynchronizedState(fromDate, toDate, timezone),
       isRelativeToNow,
     };
 
-    if (
-      newTimeframeValues.fromDate?.toISOString() !== timeframeValues.fromDate?.toISOString() ||
-      newTimeframeValues.toDate?.toISOString() !== timeframeValues.toDate?.toISOString() ||
-      newTimeframeValues.isRelativeToNow !== timeframeValues.isRelativeToNow
-    ) {
-      setTimeframeValues(newTimeframeValues);
-    }
-
     // Search Criteria
-    const newCriteria: Record<string, string> = {};
+    const criteria: Record<string, string> = {};
     SEARCH_CRITERIA_KEYS.forEach((key) => {
-      if (searchParams.has(key)) {
-        newCriteria[key] = searchParams.get(key) || '';
+      if (params.has(key)) {
+        criteria[key] = params.get(key) || '';
       }
     });
-    if (JSON.stringify(newCriteria) !== JSON.stringify(searchCriteria)) {
-      setSearchCriteria(newCriteria);
-    }
 
     // Sort Order
-    const sortOrderParam = searchParams.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
-    const newSortOrder = sortOrderParam
+    const sortOrderParam = params.get(TEST_RUNS_QUERY_PARAMS.SORT_ORDER);
+    const sort = sortOrderParam
       ? sortOrderParam.split(',').map((item) => {
           const [id, order] = item.split(':');
           return { id, order: order as sortOrderType };
         })
       : [];
-    if (JSON.stringify(newSortOrder) !== JSON.stringify(sortOrder)) {
-      setSortOrder(newSortOrder);
+
+    return {
+      tabIndex,
+      name,
+      visibleColumns,
+      colOrder,
+      timeframe,
+      criteria,
+      sort,
+    };
+  };
+
+  // Effect to synchronize state with URL parameters
+  useEffect(() => {
+    isUrlUpdateInProgress.current = true;
+
+    // Check if URL has any meaningful query parameters
+    const hasQueryParams = Array.from(searchParams.keys()).some(
+      (key) => key !== 'tab' && key !== TEST_RUNS_QUERY_PARAMS.TAB
+    );
+
+    // Use default query if no URL params exist, otherwise use URL params
+    const effectiveParams =
+      !hasQueryParams && currentDefaultQuery?.url
+        ? new URLSearchParams(decodeStateFromUrlParam(currentDefaultQuery.url) || '')
+        : searchParams;
+
+    // Parse the effective parameters
+    const parsed = parseQueryParams(effectiveParams);
+
+    // Update state only if values have changed
+    if (parsed.tabIndex !== selectedTabIndex) {
+      setSelectedTabIndex(parsed.tabIndex);
+    }
+
+    if (parsed.name !== queryName) {
+      setQueryName(parsed.name);
+    }
+
+    if (parsed.visibleColumns.join(',') !== selectedVisibleColumns.join(',')) {
+      setSelectedVisibleColumns(parsed.visibleColumns);
+    }
+
+    if (parsed.colOrder.map((c) => c.id).join(',') !== columnsOrder.map((c) => c.id).join(',')) {
+      setColumnsOrder(parsed.colOrder);
+    }
+
+    if (
+      parsed.timeframe.fromDate?.toISOString() !== timeframeValues.fromDate?.toISOString() ||
+      parsed.timeframe.toDate?.toISOString() !== timeframeValues.toDate?.toISOString() ||
+      parsed.timeframe.isRelativeToNow !== timeframeValues.isRelativeToNow
+    ) {
+      setTimeframeValues(parsed.timeframe);
+    }
+
+    if (JSON.stringify(parsed.criteria) !== JSON.stringify(searchCriteria)) {
+      setSearchCriteria(parsed.criteria);
+    }
+
+    if (JSON.stringify(parsed.sort) !== JSON.stringify(sortOrder)) {
+      setSortOrder(parsed.sort);
     }
 
     // Mark as initialized after the first sync
     if (!isInitialized) {
       setIsInitialized(true);
     }
+
     isUrlUpdateInProgress.current = false;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, getResolvedTimeZone]);
+  }, [searchParams, getResolvedTimeZone, currentDefaultQuery]);
 
   // Effect to update the URL when query parameters change
   useEffect(() => {
@@ -224,7 +257,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, queryName);
 
     // Visible Columns
-    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.join(','));
+    params.set(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS, selectedVisibleColumns.sort().join(','));
 
     // Sort Order
     if (sortOrder.length > 0) {
@@ -235,7 +268,13 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     // Columns Order
-    params.set(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER, columnsOrder.map((col) => col.id).join(','));
+    params.set(
+      TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER,
+      columnsOrder
+        .sort()
+        .map((col) => col.id)
+        .join(',')
+    );
 
     // Timeframe
     if (timeframeValues.isRelativeToNow) {

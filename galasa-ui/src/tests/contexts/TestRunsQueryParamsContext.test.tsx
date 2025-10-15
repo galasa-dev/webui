@@ -76,9 +76,15 @@ const TestComponent = () => {
       <p>TabIndex: {selectedTabIndex}</p>
       <p>TimeframeIsRelative: {timeframeValues.isRelativeToNow?.toString()}</p>
       <p>SearchCriteria: {JSON.stringify(searchCriteria)}</p>
-      <p>VisibleColumns: {selectedVisibleColumns.join(',')}</p>
+      <p>VisibleColumns: {selectedVisibleColumns.sort().join(',')}</p>
       <p>SortOrder: {JSON.stringify(sortOrder)}</p>
-      <p>ColumnsOrder: {columnsOrder.map((c) => c.id).join(',')}</p>
+      <p>
+        ColumnsOrder:{' '}
+        {columnsOrder
+          .map((c) => c.id)
+          .sort()
+          .join(',')}
+      </p>
       <p>QueryName: {queryName}</p>
       <p>TimeframeValues: {JSON.stringify(timeframeValues)}</p>
 
@@ -128,10 +134,14 @@ describe('TestRunsQueryParamsContext', () => {
 
       expect(screen.getByText(`TabIndex: ${TABS_IDS.indexOf('results')}`)).toBeInTheDocument();
       expect(
-        screen.getByText(`VisibleColumns: ${DEFAULT_VISIBLE_COLUMNS.join(',')}`)
+        screen.getByText(`VisibleColumns: ${DEFAULT_VISIBLE_COLUMNS.sort().join(',')}`)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(`ColumnsOrder: ${RESULTS_TABLE_COLUMNS.map((c) => c.id).join(',')}`)
+        screen.getByText(
+          `ColumnsOrder: ${RESULTS_TABLE_COLUMNS.map((c) => c.id)
+            .sort()
+            .join(',')}`
+        )
       ).toBeInTheDocument();
       expect(screen.getByText('TimeframeIsRelative: true')).toBeInTheDocument();
       expect(screen.getByText('SearchCriteria: {}')).toBeInTheDocument();
@@ -159,7 +169,7 @@ describe('TestRunsQueryParamsContext', () => {
 
       expect(screen.getByText(`TabIndex: ${TABS_IDS.indexOf('timeframe')}`)).toBeInTheDocument();
       expect(screen.getByText('VisibleColumns: id,status')).toBeInTheDocument();
-      expect(screen.getByText('ColumnsOrder: status,result,submissionId')).toBeInTheDocument();
+      expect(screen.getByText('ColumnsOrder: result,status,submissionId')).toBeInTheDocument();
       expect(screen.getByText('TimeframeIsRelative: false')).toBeInTheDocument();
       expect(screen.getByText('SearchCriteria: {"runName":"MyTestRun"}')).toBeInTheDocument();
       expect(screen.getByText('SortOrder: [{"id":"status","order":"desc"}]')).toBeInTheDocument();

@@ -158,14 +158,6 @@ const PREFERENCE_KEYS = {
 
 const TEST_RUN_PAGE_TABS = ['overview', 'methods', 'runLog', 'artifacts', '3270'];
 
-const DEFAULT_QUERY = {
-  // The URL here is the filter state, not the browser URL
-  // Should set any filter to avoid empty state
-  url: 'tab=results',
-  title: 'Tests ran in the last 24 hours',
-  createdAt: new Date().toISOString(),
-};
-
 const RESULTS_TABLE_PAGE_SIZES = [10, 20, 30, 40, 50];
 
 export {
@@ -191,6 +183,5 @@ export {
   TEST_RUN_PAGE_TABS,
   SINGLE_RUN_QUERY_PARAMS,
   LOCALE_TO_FLATPICKR_FORMAT_MAP,
-  DEFAULT_QUERY,
   RESULTS_TABLE_PAGE_SIZES,
 };

@@ -9,8 +9,7 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { SavedQueriesMetaData, SavedQueryType } from '@/utils/types/common';
 import { useState } from 'react';
-import { DEFAULT_QUERY } from '@/utils/constants/common';
-
+import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 const SAVED_QUERIES_STORAGE_KEY = 'savedQueries';
 const QUERIES_METADATA_STORAGE_KEY = 'queriesMetaData';
 

@@ -18,7 +18,6 @@ import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 import {
-  DEFAULT_QUERY,
   NOTIFICATION_VISIBLE_MILLISECS,
   TABS_IDS,
   TEST_RUNS_QUERY_PARAMS,
@@ -198,6 +197,7 @@ export default function TestRunsDetails({
     currentUrlParams.delete(TEST_RUNS_QUERY_PARAMS.TAB);
 
     let queryURL = activeQuery?.url ? decodeStateFromUrlParam(activeQuery.url) : '';
+
     if (queryURL) {
       const queryUrlParams = new URLSearchParams(queryURL);
 
@@ -210,7 +210,6 @@ export default function TestRunsDetails({
     // Disable if the current URL params (excluding tab) match the active query's URL
     if (
       currentUrlParams.toString() === queryURL ||
-      activeQuery.url === DEFAULT_QUERY.url ||
       queryURL === '' ||
       currentUrlParams.toString() === ''
     ) {
