@@ -6,6 +6,7 @@
 import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 import { appendImageDataToCharacterArray } from '@/utils/3270/appendImageDataToCharacterArray';
 import { appendMetadataStatusLine } from '@/utils/3270/appendMetadataStatusLine';
+import { appendCursor } from '@/utils/3270/appendCursor';
 
 // Return a 2D array of characters, with each character representing all properties of its parent TerminalImageField.
 export default function getArrayOfImageCharacters(
@@ -30,21 +31,7 @@ export default function getArrayOfImageCharacters(
     imageData.aid
   );
 
-  // TODO: Append cursor - after the backend is fixed as currently the cursor row and column are the wrong way round.
-
-  // const cursorRow = imageData.cursorRow;
-  // const cursorColumn = imageData.cursorColumn;
-
-  // if (cursorRow && cursorColumn) {
-
-  //   if (cursorRow < rows && cursorColumn < columns) {
-  //     if (characterArray[cursorRow][cursorColumn]) {
-  //       characterArray[cursorRow][cursorColumn].cursor = true;
-  //     } else {
-  //       characterArray[cursorRow][cursorColumn] = { character: '', cursor: true };
-  //     }
-  //   }
-  // }
+  appendCursor(imageData.cursorRow, imageData.cursorColumn, rows, columns, characterArray);
 
   return characterArray;
 }
