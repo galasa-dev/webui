@@ -5,7 +5,7 @@
  */
 import '@testing-library/jest-dom';
 import { appendMetadataStatusLine } from '@/utils/3270/appendMetadataStatusLine';
-import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
+import { TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 
 describe('appendMetadataStatusLine', () => {
   const imageDataId = 'testId';

@@ -65,7 +65,16 @@ function drawCharacters(
     // Edit context if character cell found.
     row.forEach((characterCell) => {
       if (characterCell) {
-        context.fillText(characterCell.character, x, y);
+        if (characterCell.cursor) {
+          // Invert background and foreground
+          context.fillStyle = characterColour;
+          context.fillRect(x, y - cellHeight / 2, characterWidth, cellHeight);
+          context.fillStyle = backgroundColour;
+          context.fillText(characterCell.character, x, y);
+          context.fillStyle = characterColour;
+        } else {
+          context.fillText(characterCell.character, x, y);
+        }
 
         // TODO: Extra image fields to be handled here, such as background colour.
       }
