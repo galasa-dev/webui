@@ -68,7 +68,6 @@ function drawCharacters(
         if (characterCell.cursor) {
           // Invert background and foreground
           context.fillStyle = characterColour;
-          console.log(characterWidth);
           context.fillRect(x, y - cellHeight / 2, characterWidth, cellHeight);
           context.fillStyle = backgroundColour;
           context.fillText(characterCell.character, x, y);
