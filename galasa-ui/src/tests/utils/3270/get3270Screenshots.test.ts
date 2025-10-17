@@ -7,8 +7,8 @@ import '@testing-library/jest-dom';
 import {
   populateFlattenedZos3270TerminalDataAndAllImageData,
   splitScreenAndTerminal,
-  flattenedZos3270TerminalData,
-  allImageData,
+  newFlattenedZos3270TerminalData,
+  newAllImageData,
 } from '@/utils/3270/get3270Screenshots';
 import { CellFor3270, TerminalImage } from '@/utils/interfaces/3270Terminal';
 
@@ -392,8 +392,8 @@ describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
   ];
 
   beforeEach(() => {
-    flattenedZos3270TerminalData.length = 0;
-    allImageData.length = 0;
+    newFlattenedZos3270TerminalData.length = 0;
+    newAllImageData.length = 0;
   });
 
   test('should error when tackling images with an empty fields array', () => {
@@ -411,7 +411,7 @@ describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
     // Assert
 
     // The function should still push a valid object with an empty imageFields array.
-    expect(allImageData).toEqual([
+    expect(newAllImageData).toEqual([
       {
         id: 'image-4',
         imageSize: { columns: 80, rows: 24 },
@@ -420,7 +420,7 @@ describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
     ] as TerminalImage[]);
 
     // The terminal data should also be populated correctly.
-    expect(flattenedZos3270TerminalData).toEqual([
+    expect(newFlattenedZos3270TerminalData).toEqual([
       {
         id: 'image-4',
         Terminal: 'image',
@@ -462,7 +462,7 @@ describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
     populateFlattenedZos3270TerminalDataAndAllImageData(mockImagesWithoutRowAndColumn);
 
     // Assert
-    expect(allImageData).toEqual([
+    expect(newAllImageData).toEqual([
       {
         id: 'Terminal_Test-1',
         sequence: 1,
@@ -489,7 +489,7 @@ describe('populateFlattenedZos3270TerminalDataAndAllImageData', () => {
     populateFlattenedZos3270TerminalDataAndAllImageData(mockImages);
 
     // Assert
-    expect(flattenedZos3270TerminalData).toEqual(mockCorrectFlattenedZos3270TerminalData);
-    expect(allImageData).toEqual(mockCorrectAllImageData);
+    expect(newFlattenedZos3270TerminalData).toEqual(mockCorrectFlattenedZos3270TerminalData);
+    expect(newAllImageData).toEqual(mockCorrectAllImageData);
   });
 });
