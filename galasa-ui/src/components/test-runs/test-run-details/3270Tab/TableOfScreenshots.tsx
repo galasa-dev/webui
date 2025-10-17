@@ -143,7 +143,7 @@ export default function TableOfScreenshots({
     // eslint-disable-next-line
   }, [filteredRows, highlightedRowId]);
 
-  useMemo(() => {
+  useEffect(() => {
     // Ensure screenshots are only collected once.
     if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
       screenshotsCollected.current = true;

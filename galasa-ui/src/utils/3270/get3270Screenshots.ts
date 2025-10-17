@@ -107,6 +107,8 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: Term
 }
 
 export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], runId: string) => {
+  allImageData.length = 0;
+  flattenedZos3270TerminalData.length = 0;
   for (var terminal of zos3270TerminalData) {
     const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
       .filter((node) => (node as FileNode).isFile)
