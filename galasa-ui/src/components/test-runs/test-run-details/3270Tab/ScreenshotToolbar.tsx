@@ -6,7 +6,7 @@
 
 'use client';
 import React, { useState, useEffect } from 'react';
-import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
+import styles from '@/styles/test-runs/test-run-details/Tab3270.module.css';
 import { ChevronRight, ChevronLeft, Copy, CloudDownload } from '@carbon/icons-react';
 import { Button, Loading, InlineNotification } from '@carbon/react';
 import { useTranslations } from 'next-intl';

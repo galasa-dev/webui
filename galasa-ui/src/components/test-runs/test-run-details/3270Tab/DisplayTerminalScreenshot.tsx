@@ -7,7 +7,7 @@
 'use client';
 import React, { useRef, useState, useEffect } from 'react';
 import { SkeletonPlaceholder } from '@carbon/react';
-import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
+import styles from '@/styles/test-runs/test-run-details/Tab3270.module.css';
 import { TerminalImage, TerminalImageCharacter } from '@/utils/interfaces/3270Terminal';
 import getArrayOfImageCharacters from '@/utils/3270/getArrayOfImageCharacters';
 import { screenshotRenderer } from '@/utils/3270/screenshotRenderer';

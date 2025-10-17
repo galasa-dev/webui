@@ -26,7 +26,7 @@ import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
 import { useTranslations } from 'next-intl';
 import { TreeNodeData } from '@/utils/functions/artifacts';
-import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
+import styles from '@/styles/test-runs/test-run-details/Tab3270.module.css';
 import { CellFor3270, TerminalImage, DropdownOption } from '@/utils/interfaces/3270Terminal';
 
 export default function TableOfScreenshots({
@@ -143,7 +143,7 @@ export default function TableOfScreenshots({
     // eslint-disable-next-line
   }, [filteredRows, highlightedRowId]);
 
-  useMemo(() => {
+  useEffect(() => {
     // Ensure screenshots are only collected once.
     if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
       screenshotsCollected.current = true;

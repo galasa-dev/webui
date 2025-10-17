@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import TableOfScreenshots from '@/components/test-runs/test-run-details/3270Tab/TableOfScreenshots';
 import DisplayTerminalScreenshot from '@/components/test-runs/test-run-details/3270Tab/DisplayTerminalScreenshot';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';
-import styles from '@/styles/test-runs/test-run-details/tab3270.module.css';
+import styles from '@/styles/test-runs/test-run-details/Tab3270.module.css';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import ErrorPage from '@/app/error/page';
 import { TerminalImage } from '@/utils/interfaces/3270Terminal';
