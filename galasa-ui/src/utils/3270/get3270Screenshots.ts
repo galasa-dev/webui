@@ -9,8 +9,9 @@ import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
 import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/3270Terminal';
 import pako from 'pako';
 
-export const flattenedZos3270TerminalData: CellFor3270[] = [];
-export const allImageData: TerminalImage[] = [];
+export const newFlattenedZos3270TerminalData: CellFor3270[] = [];
+export const newAllImageData: TerminalImage[] = [];
+let previousRunId: string = '';
 
 // Expected input: "Terminal1-1" which would mean the terminal name is "Terminal1" and we're looking at screen number 1.
 export function splitScreenAndTerminal(terminalNameAndScreenNumberSeparatedByDash: string) {
@@ -64,7 +65,7 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: Term
     const id = image.id;
     const result = splitScreenAndTerminal(id);
 
-    flattenedZos3270TerminalData.push({
+    newFlattenedZos3270TerminalData.push({
       id: id,
       Terminal: result.terminalName,
       screenNumber: result.screenNumber,
@@ -92,7 +93,7 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: Term
         highlight: imageField.highlight,
       }));
 
-    allImageData.push({
+    newAllImageData.push({
       id: image.id,
       sequence: image.sequence,
       inbound: image.inbound,
@@ -107,34 +108,39 @@ export function populateFlattenedZos3270TerminalDataAndAllImageData(images: Term
 }
 
 export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], runId: string) => {
-  allImageData.length = 0;
-  flattenedZos3270TerminalData.length = 0;
-  for (var terminal of zos3270TerminalData) {
-    const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
-      .filter((node) => (node as FileNode).isFile)
-      .map((node) => node as FileNode);
+  // Test if user is requesting same resource as the previously fetched one, if so then simply return existing value.
+  if (
+    newAllImageData.length === 0 ||
+    newFlattenedZos3270TerminalData.length === 0 ||
+    previousRunId !== runId
+  ) {
+    newAllImageData.length = 0;
+    newFlattenedZos3270TerminalData.length = 0;
 
-    for (var file of zippedFilesContainingImageJSON) {
-      await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
-        // Unzip the content
-        const images: TerminalImage[] = unzipBase64(artifactData).images;
+    for (var terminal of zos3270TerminalData) {
+      const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
+        .filter((node) => (node as FileNode).isFile)
+        .map((node) => node as FileNode);
 
-        populateFlattenedZos3270TerminalDataAndAllImageData(images);
-      });
+      for (var file of zippedFilesContainingImageJSON) {
+        await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
+          // Unzip the content
+          const images: TerminalImage[] = unzipBase64(artifactData).images;
+
+          populateFlattenedZos3270TerminalDataAndAllImageData(images);
+        });
+      }
     }
+
+    // Sort terminal data according to terminal name descending, then screen number descending.
+    newFlattenedZos3270TerminalData.sort(function (a, b) {
+      if (a.Terminal === b.Terminal) {
+        return a.screenNumber - b.screenNumber;
+      }
+      return a.Terminal > b.Terminal ? 1 : -1;
+    });
   }
-
-  // Sort terminal data according to terminal name descending, then screen number descending.
-  flattenedZos3270TerminalData.sort(function (a, b) {
-    if (a.Terminal === b.Terminal) {
-      return a.screenNumber - b.screenNumber;
-    }
-    return a.Terminal > b.Terminal ? 1 : -1;
-  });
-
-  // Rename variables for returning to avoid confusion in TableOfScreenshots.tsx.
-  const newFlattenedZos3270TerminalData = flattenedZos3270TerminalData;
-  const newAllImageData = allImageData;
+  previousRunId = runId;
 
   return { newFlattenedZos3270TerminalData, newAllImageData };
 };
