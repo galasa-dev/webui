@@ -119,8 +119,8 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
 
     for (var terminal of zos3270TerminalData) {
       const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
-        .filter((node) => (node as FileNode).isFile)
-        .map((node) => node as FileNode);
+        .map((node) => node as FileNode)
+        .filter((node) => node.isFile);
 
       for (var file of zippedFilesContainingImageJSON) {
         await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
