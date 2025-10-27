@@ -67,9 +67,6 @@ export function ArtifactsTab({
   const ZIP_EXTENSIONS = ['zip', 'gz', 'jar', 'rar', '7z'];
   const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
 
-  const { isFeatureEnabled } = useFeatureFlags();
-  const is3270ScreenEnabled = isFeatureEnabled(FEATURE_FLAGS.IS_3270_SCREEN_ENABLED);
-
   function formatFileSize(bytes: number) {
     let fileSize = '';
 
@@ -195,18 +192,16 @@ export function ArtifactsTab({
 
     setTreeData(root);
 
-    if (is3270ScreenEnabled) {
-      // This checks for the terminal structure, and sets the zosTerminalData hook in TestRunDetails for later use in get3270Screenshots.ts.
-      checkForZosTerminalFolderStructure(
-        root,
-        setZos3270TerminalFolderExists,
-        setZos3270TerminalData
-      );
-    }
+    // This checks for the terminal structure, and sets the zosTerminalData hook in TestRunDetails for later use in get3270Screenshots.ts.
+    checkForZosTerminalFolderStructure(
+      root,
+      setZos3270TerminalFolderExists,
+      setZos3270TerminalData
+    );
 
     // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
     // eslint-disable-next-line
-  }, [artifacts, checkForZosTerminalFolderStructure, is3270ScreenEnabled]);
+  }, [artifacts, checkForZosTerminalFolderStructure]);
 
   const createFolderSegments = (
     segments: string[],
