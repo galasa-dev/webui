@@ -49,7 +49,7 @@ export default function DisplayTerminalScreenshot({
   }, [arrayOfImageCharacters]);
 
   if (isLoading) {
-    return <SkeletonPlaceholder className={styles.skeletonScreenshot} />;
+    return <SkeletonPlaceholder id={styles.skeletonScreenshot} />;
   }
 
   return <canvas className={styles.screenshot} id="canvas" ref={canvasRef} />;

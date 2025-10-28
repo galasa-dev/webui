@@ -61,11 +61,11 @@
   max-height: min(calc(100vh - 450px), 550px);
 }
 
-.skeletonScreenshot {
-  object-fit: contain !important;
-  max-width: 1100px !important;
-  height: calc(100% - 48px) !important;
-  width: auto !important;
+#skeletonScreenshot {
+  object-fit: contain;
+  max-width: 1100px;
+  height: calc(100% - 48px);
+  width: auto;
 }
 
 .notification {
