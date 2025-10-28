@@ -32,8 +32,8 @@
   "forwardPorts": [3000],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "./check-envs.sh && ./build-locally.sh -c"
-  
+  "postCreateCommand": "bash -c './check-envs.sh && ./build-locally.sh -c'"
+
   // Configure tool-specific properties.
   // "customizations": {},
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
