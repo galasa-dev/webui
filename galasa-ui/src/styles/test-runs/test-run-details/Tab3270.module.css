@@ -62,10 +62,10 @@
 }
 
 .skeletonScreenshot {
-  object-fit: contain;
-  max-width: 1100px;
-  height: calc(100% - 48px);
-  width: auto;
+  object-fit: contain !important;
+  max-width: 1100px !important;
+  height: calc(100% - 48px) !important;
+  width: auto !important;
 }
 
 .notification {
