@@ -24,7 +24,8 @@
   "remoteUser": "node",
 
   "mounts": [
-    "source=${localEnv:HOME}/.m2,target=/home/node/.m2,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.m2,target=/home/node/.m2,type=bind,consistency=cached",
+    "source=${localEnv:NODE_EXTRA_CA_CERTS},target=/home/node/certs.pem,type=bind,consistency=cached"
   ],
 
   // Environment variables - please set GALASA_TOKEN or GALASA_DEV_TOKEN, and GALASA_API_SERVER_URL
@@ -34,7 +35,7 @@
     "GALASA_API_SERVER_URL":"${localEnv:GALASA_API_SERVER_URL}",
 
     "SOURCE_MAVEN":"file://${containerEnv:HOME}/.m2/repository",
-    "NODE_USE_SYSTEM_CA":"1"
+    "NODE_EXTRA_CA_CERTS":"/home/node/certs.pem"
   },
 
   "forwardPorts": [3000],
