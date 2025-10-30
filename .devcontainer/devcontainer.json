@@ -1,11 +1,13 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 {
   "name": "Node.js & TypeScript",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
-  // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11",
@@ -19,23 +21,23 @@
     }
   },
 
-  // Environment variables
+  "remoteUser": "node",
+
+  "mounts": [
+    "source=${localEnv:HOME}/.m2,target=/home/node/.m2,type=bind,consistency=cached"
+  ],
+
+  // Environment variables - please set GALASA_TOKEN or GALASA_DEV_TOKEN, and GALASA_API_SERVER_URL
   "remoteEnv": {
     "GALASA_TOKEN":"${localEnv:GALASA_TOKEN}",
     "GALASA_DEV_TOKEN":"${localEnv:GALASA_DEV_TOKEN}",
     "GALASA_API_SERVER_URL":"${localEnv:GALASA_API_SERVER_URL}",
-    "SOURCE_MAVEN":"${localEnv:SOURCE_MAVEN}",
+
+    "SOURCE_MAVEN":"file://${containerEnv:HOME}/.m2/repository",
     "NODE_USE_SYSTEM_CA":"1"
   },
 
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [3000],
 
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bash -c './check-envs.sh && ./build-locally.sh -c'"
-
-  // Configure tool-specific properties.
-  // "customizations": {},
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
+  "postCreateCommand": "bash -c './.devcontainer/check-envs.sh && ./build-locally.sh -c'"
 }

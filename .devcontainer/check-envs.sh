@@ -1,3 +1,8 @@
+ #
+# Copyright contributors to the Galasa project
+#
+# SPDX-License-Identifier: EPL-2.0
+#
 REQUIRED_ENVS=("GALASA_API_SERVER_URL" "GALASA_TOKEN")
 
 for VAR in "${REQUIRED_ENVS[@]}"; do
