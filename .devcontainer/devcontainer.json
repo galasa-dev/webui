@@ -28,17 +28,15 @@
     "source=${localEnv:NODE_EXTRA_CA_CERTS},target=/home/node/certs.pem,type=bind,consistency=cached"
   ],
 
-  // Environment variables - please set GALASA_TOKEN or GALASA_DEV_TOKEN, and GALASA_API_SERVER_URL
-  "remoteEnv": {
-    "GALASA_TOKEN":"${localEnv:GALASA_TOKEN}",
+  // Note: changing your local environment variables requires a vscode reset.
+  "containerEnv": {
     "GALASA_DEV_TOKEN":"${localEnv:GALASA_DEV_TOKEN}",
     "GALASA_API_SERVER_URL":"${localEnv:GALASA_API_SERVER_URL}",
-
-    "SOURCE_MAVEN":"file://${containerEnv:HOME}/.m2/repository",
+    "SOURCE_MAVEN":"${localEnv:SOURCE_MAVEN}",
     "NODE_EXTRA_CA_CERTS":"/home/node/certs.pem"
   },
 
   "forwardPorts": [3000],
 
-  "postCreateCommand": "bash -c './.devcontainer/check-envs.sh && ./build-locally.sh -c'"
+  "postCreateCommand": "bash -c './.devcontainer/dev-container-setup.sh && ./build-locally.sh -c'"
 }
