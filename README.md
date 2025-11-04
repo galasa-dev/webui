@@ -25,11 +25,11 @@ When attempting to run Galasa's webui locally, you may need to set some environm
 
 ### NODE_EXTRA_CA_CERTS and NODE_USE_SYSTEM_CA
 
-- You are required to validate yourself when connecting to a Galasa service. This can be done with `NODE_EXTRA_CA_CERTS` or `NODE_USE_SYSTEM_CA` (only available to the manual approach).
+- If you want to connect to a remote Galasa service that requires certificates signed by internal or corporate CAs, then you'll need to set either NODE_EXTRA_CA_CERTS or NODE_USE_SYSTEM_CA (manual set up only) so that the frontend can trust the certificates.
 
-- `NODE_EXTRA_CA_CERTS`: The path to a PEM file which should contain your intermediate and root CA certificates, e.g. `/Users/user_name/Galasa/certs.pem`. 
+- `NODE_EXTRA_CA_CERTS`: The path to a PEM file which should contain your intermediate and root CA certificates, e.g. `/Users/user_name/Galasa/certs.pem`.
 
-- `NODE_USE_SYSTEM_CA` (only available to the manual approach): This tells the UI to ignore certificate errors and trust server certificates if they are in the local system keychain, e.g. `NODE_USE_SYSTEM_CA=1`. This is OK for development purposes, but it is not advised to use this technique on a production deployment of a UI.
+- `NODE_USE_SYSTEM_CA` (only available to the manual approach): This tells the UI to trust server certificates if they are in the local system keychain, e.g. `NODE_USE_SYSTEM_CA=1`. This is OK for development purposes, but it is not advised to use this technique on a production deployment of a UI.
 
 ### SOURCE_MAVEN
 
@@ -92,7 +92,7 @@ If you are contacting a deployed Galasa service which uses a custom signing auth
 In such cases, you can do either of the following:
 
 - (Only availble to the Manual Approach) Tell the Web UI to trust servers if their certificates are in the local host system certificate store.
-Set an environment variable `export NODE_USE_SYSTEM_CA=1` which tells the UI to ignore certificate errors and trust server certificates if they are in the local system keychain. Then re-start the web UI.
+Set an environment variable `export NODE_USE_SYSTEM_CA=1` which tells the UI to trust server certificates if they are in the local system keychain. Then re-start the web UI.
 This is OK for development purposes, but it is not advised to use this technique on a production deployment of a UI.
 
 - Tell the Web UI to trust servers using a specific set of certificates.

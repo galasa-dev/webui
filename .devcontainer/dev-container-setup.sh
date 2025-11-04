@@ -1,21 +1,25 @@
+#!/bin/bash
+
 #
 # Copyright contributors to the Galasa project
 #
 # SPDX-License-Identifier: EPL-2.0
 #
 
-function check_required_environemnt_variables () {
-    REQUIRED_ENVS=("GALASA_API_SERVER_URL")
+GALASA_DEV_TOKEN_VALUE="$1"
+GALASA_API_SERVER_URL_VALUE="$2"
+SOURCE_MAVEN_VALUE="$3"
 
-    for VAR in "${REQUIRED_ENVS[@]}"; do
-        if [ -z "${!VAR}" ]; then
-            echo "Error: Required environment variable $VAR is not set! Please set the variable on your host machine and restart VS Code."
+PROFILE_FILE="/home/node/.bashrc"
 
-            exit 1
-        fi
-    done
+if [ -n "$GALASA_DEV_TOKEN_VALUE" ]; then
+  echo "export GALASA_DEV_TOKEN=$GALASA_DEV_TOKEN_VALUE" >> $PROFILE_FILE
+fi
 
-    echo "All required environment variables are set."
-}
+if [ -n "$GALASA_API_SERVER_URL_VALUE" ]; then
+  echo "export GALASA_API_SERVER_URL=$GALASA_API_SERVER_URL_VALUE" >> $PROFILE_FILE
+fi
 
-check_required_environemnt_variables
+if [ -n "$SOURCE_MAVEN_VALUE" ]; then
+  echo "export SOURCE_MAVEN=$SOURCE_MAVEN_VALUE" >> $PROFILE_FILE
+fi
