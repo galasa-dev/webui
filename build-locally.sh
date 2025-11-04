@@ -178,7 +178,14 @@ function generate_rest_client {
 
 function run_tests {
     cd ${BASEDIR}/galasa-ui
-    npm test -- --watchAll=false
+    
+    if [ "$IS_DEV_CONTAINER" = "true" ]; then
+        # Jest defaults to using all available CPU threads for parallel test execution. In a containerised environment, this can lead to high thread coordination overhead that slows things down, hence limit CPU cores by 50%.
+        npm test -- --maxWorkers=50% --watchAll=false
+    else
+        npm test -- --watchAll=false
+    fi
+
     rc=$?
     if [[ "${rc}" != "0" ]]; then
         error "Failing tests."
