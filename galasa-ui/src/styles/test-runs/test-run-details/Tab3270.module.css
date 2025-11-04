@@ -61,7 +61,7 @@
   max-height: min(calc(100vh - 450px), 550px);
 }
 
-.skeletonScreenshot {
+#skeletonScreenshot {
   object-fit: contain;
   max-width: 1100px;
   height: calc(100% - 48px);
