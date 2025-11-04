@@ -34,15 +34,12 @@
   ],
 
   // Note: changing your local environment variables requires a vscode restart.
-   "containerEnv": {
-    "GALASA_DEV_TOKEN":"${localEnv:GALASA_DEV_TOKEN}",
-    "GALASA_API_SERVER_URL":"${localEnv:GALASA_API_SERVER_URL}",
-    "SOURCE_MAVEN":"${localEnv:SOURCE_MAVEN}",
+  "containerEnv": {
     "NODE_EXTRA_CA_CERTS":"/home/node/certs.pem",
     "IS_DEV_CONTAINER": "true"
   },
 
   "forwardPorts": [3000],
 
-  "postCreateCommand": "bash -c 'sudo chown -R node:node /workspaces/webui/galasa-ui/node_modules && ./.devcontainer/dev-container-setup.sh && ./build-locally.sh -c'"
+  "postCreateCommand": "bash -c 'sudo chown -R node:node /workspaces/webui/galasa-ui/node_modules && ./.devcontainer/dev-container-setup.sh \"${localEnv:GALASA_DEV_TOKEN}\" \"${localEnv:GALASA_API_SERVER_URL}\" \"${localEnv:SOURCE_MAVEN}\" && ./build-locally.sh -c'"
 }
