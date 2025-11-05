@@ -14,7 +14,9 @@ When setting up the galasa webui locally, you can either use [(1) our developmen
 
 ## Important Information
 
-When attempting to run Galasa's webui locally, you may need to set some environment variables. See below:
+When attempting to run Galasa's webui locally, you may need to set some environment variables. 
+
+**Note: If setting up in a dev container, your variables will be printed to the console if not set in a .env file.**
 
 ### GALASA_DEV_TOKEN and GALASA_API_SERVER_URL
 - In order to [connect the local development web UI with a remote API server](#connecting-the-local-development-web-ui-with-a-remote-api-server), you must set the following environment variables (see link for instructions).
@@ -50,38 +52,38 @@ export SOURCE_MAVEN="https://development.galasa.dev/main/maven-repo/obr"
 2. Install a code editor that has Dev Container support, in this setup we will be using Visual Studio Code.
 3. Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) VSCode extension by Microsoft.
 4. Clone the repository.
-5. Install and run (open) a container engine, such as Docker Desktop, Rancher Desktop or Podman.
-6. Run the project in a dev container via the instructions on the VSCode extension.
+5. Install and open a container engine, such as Docker Desktop, Rancher Desktop or Podman.
+6. Run the project in a dev container via the VSCode extension.
 - Note: Changing your environment variables will require you to restart VSCode for the changes to be reflected in the container.
 
 ## (2) Manual set up
 
-1. Ensure environemnt variables from [Important Information](#important-information) are set
-2. Clone the repository
-3. Required items to install: Java, Gradle and Python. Please reference the [devcontainer.json](.devcontainer/devcontainer.json) for known compatible versions 
-4. Run the `setup-locally.sh` script and follow instructions
+1. Ensure environemnt variables from [Important Information](#important-information) are set.
+2. Clone the repository.
+3. Required items to install: Java, Gradle and Python. Please reference the [devcontainer.json](.devcontainer/devcontainer.json) for known compatible versions.
+4. Run the `setup-locally.sh` script and follow instructions.
 
 ## To build
 
-- Run the `build-locally.sh` script
+- Run the `build-locally.sh` script.
 
 ## To run development server locally
 
 Either run:
 - `run-locally.sh` or
-- `npm run dev` (from inside the galasa-ui folder)
+- `npm run dev` (from inside the galasa-ui folder).
 
 ## Connecting the local development web UI with a remote API server
 
 If you would like to run the web UI locally and have it connect to an existing Galasa service's backend, perform the following steps:
 
-1. Make sure that you have access to an existing Galasa service and are able to log in to its web UI - if you do not have access, contact your Galasa service administrator
-2. Navigate to the remote Galasa service's webui and create a new personal access token. The personal access token value will be in the form `<string>:<string>` - note this token value down
-3. Set the `GALASA_DEV_TOKEN` environment variable, either in the terminal that you will use to start the webui or inside a new `.env.development.local` file, to be the personal access token that was just created
+1. Make sure that you have access to an existing Galasa service and are able to log in to its web UI - if you do not have access, contact your Galasa service administrator.
+2. Navigate to the remote Galasa service's webui and create a new personal access token. The personal access token value will be in the form `<string>:<string>` - note this token value down.
+3. Set the `GALASA_DEV_TOKEN` environment variable, either in the terminal that you will use to start the webui or inside a new `.env.development.local` file, to be the personal access token that was just created.
     - For example, if your access token was `my:token`, you could create a new `.env.development.local` file next to the existing `.env` file and then set the environment variable in the file like `GALASA_DEV_TOKEN="my:token"`
-4. Set the `GALASA_API_SERVER_URL` environment variable, either in the same terminal that you will use to start the webui or inside the `.env.development.local` file that you may have created in step 3, to be the URL of the remote Galasa service's API server
+4. Set the `GALASA_API_SERVER_URL` environment variable, either in the same terminal that you will use to start the webui or inside the `.env.development.local` file that you may have created in step 3, to be the URL of the remote Galasa service's API server.
     - For example, if the Galasa service's webui URL was `https://my-galasa-service.dev`, then the API server URL would be `https://my-galasa-service.dev/api` (added `/api` to the end of the URL)
-5. Start the webui locally
+5. Start the webui locally.
 
 ## Common problems when running the UI locally
 
