@@ -49,5 +49,5 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'sudo chown -R node:node /workspaces/webui/galasa-ui/node_modules && ./.devcontainer/dev-container-setup.sh \"${localEnv:GALASA_DEV_TOKEN}\" \"${localEnv:GALASA_API_SERVER_URL}\" \"${localEnv:SOURCE_MAVEN}\"'"
+  "postCreateCommand": "bash -c 'sudo chown -R node:node /workspaces/webui/galasa-ui/node_modules && ./.devcontainer/dev-container-setup.sh \"${localEnv:GALASA_DEV_TOKEN}\" \"${localEnv:GALASA_API_SERVER_URL}\" \"${localEnv:SOURCE_MAVEN}\" && /usr/local/python/3.11.14/bin/pip3 install pre-commit'"
 }
