@@ -6,6 +6,11 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+success() { printf "${green}✔ %s${reset}\n" "$@"
+}
+error() { printf "${red}✖ %s${reset}\n" "$@"
+}
+
 function set_env_vars() {
   local GALASA_DEV_TOKEN_VALUE="$1"
   local GALASA_API_SERVER_URL_VALUE="$2"
@@ -23,7 +28,7 @@ function set_env_vars() {
   if [ -n "$SOURCE_MAVEN_VALUE" ]; then
     echo "export SOURCE_MAVEN=$SOURCE_MAVEN_VALUE" >> "$PROFILE_FILE"
   fi
-  
+
   success "Existing local envs copied sucessfully"
 }
 
@@ -46,7 +51,3 @@ error() {
   echo "ERROR: $1" 1>&2
 }
 
-success() { printf "${green}✔ %s${reset}\n" "$@"
-}
-error() { printf "${red}✖ %s${reset}\n" "$@"
-}
