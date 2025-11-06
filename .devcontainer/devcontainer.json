@@ -41,5 +41,13 @@
 
   "forwardPorts": [3000],
 
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
   "postCreateCommand": "bash -c 'sudo chown -R node:node /workspaces/webui/galasa-ui/node_modules && ./.devcontainer/dev-container-setup.sh \"${localEnv:GALASA_DEV_TOKEN}\" \"${localEnv:GALASA_API_SERVER_URL}\" \"${localEnv:SOURCE_MAVEN}\"'"
 }
