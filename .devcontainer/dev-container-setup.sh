@@ -6,11 +6,26 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+#-----------------------------------------------------------------------------------------                   
+# Set Colors
+#-----------------------------------------------------------------------------------------  
+reset=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 76)
+
+#-----------------------------------------------------------------------------------------                   
+# Headers and Logging
+#-----------------------------------------------------------------------------------------      
 success() { printf "${green}✔ %s${reset}\n" "$@"
 }
 error() { printf "${red}✖ %s${reset}\n" "$@"
 }
 
+#-----------------------------------------------------------------------------------------                   
+# Functions
+#----------------------------------------------------------------------------------------- 
+
+# Sets envs if they are specified on local machine (prevents null values)
 function set_env_vars() {
   local GALASA_DEV_TOKEN_VALUE="$1"
   local GALASA_API_SERVER_URL_VALUE="$2"
@@ -32,6 +47,7 @@ function set_env_vars() {
   success "Existing local envs copied sucessfully"
 }
 
+# Installs required python package, pre-commit, for detect-secrets
 function setup_python {
   which pip3
   rc=$?
@@ -46,8 +62,3 @@ function setup_python {
 
 set_env_vars "$1" "$2" "$3"
 setup_python
-
-error() {
-  echo "ERROR: $1" 1>&2
-}
-
