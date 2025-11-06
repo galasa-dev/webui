@@ -23,6 +23,8 @@ function set_env_vars() {
   if [ -n "$SOURCE_MAVEN_VALUE" ]; then
     echo "export SOURCE_MAVEN=$SOURCE_MAVEN_VALUE" >> "$PROFILE_FILE"
   fi
+  
+  success "Existing local envs copied sucessfully"
 }
 
 function setup_python {
@@ -39,3 +41,12 @@ function setup_python {
 
 set_env_vars "$1" "$2" "$3"
 setup_python
+
+error() {
+  echo "ERROR: $1" 1>&2
+}
+
+success() { printf "${green}✔ %s${reset}\n" "$@"
+}
+error() { printf "${red}✖ %s${reset}\n" "$@"
+}
