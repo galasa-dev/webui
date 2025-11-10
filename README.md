@@ -60,7 +60,7 @@ export SOURCE_MAVEN="https://development.galasa.dev/main/maven-repo/obr"
 
 1. Ensure environemnt variables from [Important Information](#important-information) are set.
 2. Clone the repository.
-3. Required items to install: Java, Gradle and Python. Please reference the [devcontainer.json](.devcontainer/devcontainer.json) for known compatible versions.
+3. Required items to install: Node (via nvm), npm (via nvm), Java (via sdkman), Gradle and Python. Please reference the [devcontainer.json](.devcontainer/devcontainer.json) for known compatible versions.
 4. Run the `setup-locally.sh` script and follow instructions.
 
 ## To build
