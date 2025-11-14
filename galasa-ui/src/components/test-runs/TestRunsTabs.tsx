@@ -57,6 +57,7 @@ export default function TestRunsTabs({
     isInitialized,
     searchParams,
   } = useTestRunsQueryParams();
+  console.log('isRelativeToNow Test runs tabs', timeframeValues.isRelativeToNow);
 
   // Define the tabs with their corresponding labels, memoized to avoid unnecessary re-renders
   const TABS_CONFIG = useMemo<TabConfig[]>(() => {

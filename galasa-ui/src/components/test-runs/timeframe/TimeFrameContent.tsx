@@ -121,12 +121,13 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const { getResolvedTimeZone } = useDateTimeFormat();
 
   const [notification, setNotification] = useState<Notification | null>(null);
-  const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions>(
-    values.isRelativeToNow ? FromSelectionOptions.duration : FromSelectionOptions.specificFromTime
+  const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions | null>(
+    FromSelectionOptions.specificFromTime
   );
-  const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
-    values.isRelativeToNow ? ToSelectionOptions.now : ToSelectionOptions.specificToTime
+  const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions | null>(
+    ToSelectionOptions.specificToTime
   );
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
@@ -196,6 +197,21 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
     const isRelativeToNow = selectedToOption === ToSelectionOptions.now;
     setValues((prevValues) => ({ ...prevValues, isRelativeToNow }));
   }, [selectedToOption, setValues]);
+
+  // Initialize selected options only when isRelativeToNow becomes defined for the first time
+  useEffect(() => {
+    if (!hasInitialized && values.isRelativeToNow !== undefined) {
+      const fromOpt = values.isRelativeToNow
+        ? FromSelectionOptions.duration
+        : FromSelectionOptions.specificFromTime;
+      const toOpt = values.isRelativeToNow
+        ? ToSelectionOptions.now
+        : ToSelectionOptions.specificToTime;
+      setSelectedFromOption(fromOpt);
+      setSelectedToOption(toOpt);
+      setHasInitialized(true);
+    }
+  }, [values.isRelativeToNow, hasInitialized]);
 
   return (
     <div className={styles.timeFrameContainer}>
