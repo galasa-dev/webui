@@ -7,7 +7,6 @@
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Search, OverflowMenu, Button } from '@carbon/react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import styles from '@/styles/test-runs/test-run-details/LogTab.module.css';
 import { Checkbox } from '@carbon/react';
 import {
@@ -129,9 +128,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     urlWithoutLines.searchParams.delete('line');
 
     // Construct the permalink
-    console.log("Hello" + urlWithoutLines.toString())
     const permalink = `${urlWithoutLines.toString()}#log-${startLine}-${startOffset}-${endLine}-${endOffset}`;
-    console.log(permalink);
 
     navigator.clipboard.writeText(permalink);
 
@@ -590,9 +587,9 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
                   ? translations('matchCounter', {
-                    current: currentMatchIndex + 1,
-                    total: totalMatches,
-                  })
+                      current: currentMatchIndex + 1,
+                      total: totalMatches,
+                    })
                   : translations('noMatches')}
               </span>
               <Button
