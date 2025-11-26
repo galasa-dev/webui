@@ -189,6 +189,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                   iconDescription={translations('addCurrentQuery')}
                   onClick={handleAddCurrentQuery}
                   tooltipPosition="top"
+                  tooltipAlignment="end"
                 />
               </div>
 

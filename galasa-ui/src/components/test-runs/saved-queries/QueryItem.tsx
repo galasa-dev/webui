@@ -208,7 +208,7 @@ export default function QueryItem({
         iconDescription={translations('actions')}
         flipped
         className={styles.overflowMenu}
-        direction="top"
+        align="left"
       >
         {actions.map((action) => (
           <OverflowMenuItem
