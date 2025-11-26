@@ -217,6 +217,7 @@ export default function QueryItem({
             onClick={action.onClick}
             isDelete={action.isDelete}
             disabled={action.disabled}
+            id={isDefault && action.isDelete ? styles.defaultQueryDeleteButton : undefined}
           />
         ))}
       </OverflowMenu>

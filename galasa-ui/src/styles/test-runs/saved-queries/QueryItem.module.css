@@ -76,3 +76,7 @@
 .overflowMenu:hover {
   background-color: var(--cds-layer-selected);
 }
+
+#defaultQueryDeleteButton:hover {
+  color: var(--cds-text-disabled);
+}
