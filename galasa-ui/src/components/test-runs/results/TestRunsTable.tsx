@@ -44,6 +44,7 @@ import useResultsTablePageSize from '@/hooks/useResultsTablePageSize';
 interface CustomCellProps {
   header: string;
   value: any;
+  href: string;
 }
 
 interface TestRunsTableProps {
@@ -144,8 +145,13 @@ export default function TestRunsTable({
    * This component encapsulates the logic for rendering a cell.
    * It renders a special layout for the 'result' column and a default for all others.
    */
-  const CustomCell = ({ header, value }: CustomCellProps) => {
-    let cellComponent = <TableCell>{value}</TableCell>;
+  const CustomCell = ({ header, value, href }: CustomCellProps) => {
+    let cellComponent = (
+      <TableCell className={styles.linkCell}>
+        {value}
+        <a href={href} className={styles.linkOverlay} />
+      </TableCell>
+    );
 
     if (value === 'N/A' || !value) {
       return <TableCell>N/A</TableCell>;
@@ -153,13 +159,19 @@ export default function TestRunsTable({
 
     if (header === 'result') {
       cellComponent = (
-        <TableCell>
+        <TableCell className={styles.linkCell}>
           <StatusIndicator status={value as string} />
+          <a href={href} className={styles.linkOverlay} />
         </TableCell>
       );
     } else if (header === 'submittedAt') {
       // Format the date using the context's formatDate function
-      cellComponent = <TableCell>{formatDate(new Date(value))}</TableCell>;
+      cellComponent = (
+        <TableCell className={styles.linkCell}>
+          {formatDate(new Date(value))}
+          <a href={href} className={styles.linkOverlay} />
+        </TableCell>
+      );
     }
 
     return cellComponent;
@@ -227,7 +239,12 @@ export default function TestRunsTable({
                       className={styles.clickableRow}
                     >
                       {row.cells.map((cell) => (
-                        <CustomCell key={cell.id} value={cell.value} header={cell.info.header} />
+                        <CustomCell
+                          key={cell.id}
+                          value={cell.value}
+                          header={cell.info.header}
+                          href={`/test-runs/${row.id}`}
+                        />
                       ))}
                     </TableRow>
                   ))}
