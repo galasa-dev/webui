@@ -279,3 +279,27 @@ describe('TestRunsTable Interactions', () => {
     });
   });
 });
+
+describe('TestRunsTable rendering of TableCells', () => {
+  test('places an anchor with the correct href in every table cell', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(8);
+
+    // Act
+    render(<TestRunsTable {...defaultProps} runsList={mockRuns} />);
+
+    // Assert
+    const tableRows = screen.getAllByRole('row').slice(1); // Get all rows other than the header
+
+    tableRows.forEach((row, rowIndex) => {
+      const rowRunId = mockRuns[rowIndex].id;
+      const cells = within(row).getAllByRole('cell'); // Get all cells in the row
+
+      cells.forEach((cell) => {
+        // Every cell should have a link as no null value cells are in the mock data
+        const link = within(cell).getByRole('link');
+        expect(link).toHaveAttribute('href', `/test-runs/${rowRunId}`);
+      });
+    });
+  });
+});
