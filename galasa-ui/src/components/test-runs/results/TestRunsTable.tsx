@@ -40,6 +40,7 @@ import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useDisappearingNotification } from '@/hooks/useDisappearingNotification';
 import { getTimeframeText } from '@/utils/functions/timeFrameText';
 import useResultsTablePageSize from '@/hooks/useResultsTablePageSize';
+import Link from 'next/link';
 
 interface CustomCellProps {
   header: string;
@@ -142,7 +143,7 @@ export default function TestRunsTable({
     let cellComponent = (
       <TableCell className={styles.linkCell}>
         {value}
-        <a href={href} className={styles.linkOverlay} />
+        <Link href={href} prefetch={false} className={styles.linkOverlay} />
       </TableCell>
     );
 
@@ -154,7 +155,7 @@ export default function TestRunsTable({
       cellComponent = (
         <TableCell className={styles.linkCell}>
           <StatusIndicator status={value as string} />
-          <a href={href} className={styles.linkOverlay} />
+          <Link href={href} prefetch={false} className={styles.linkOverlay} />
         </TableCell>
       );
     } else if (header === 'submittedAt') {
@@ -162,7 +163,7 @@ export default function TestRunsTable({
       cellComponent = (
         <TableCell className={styles.linkCell}>
           {formatDate(new Date(value))}
-          <a href={href} className={styles.linkOverlay} />
+          <Link href={href} prefetch={false} className={styles.linkOverlay} />
         </TableCell>
       );
     }
