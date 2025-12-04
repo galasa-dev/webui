@@ -173,6 +173,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
               <p className={styles.headerTitle}>{translations('savedQueries')}</p>
               <div className={styles.toolbar}>
                 <Search
+                  className={styles.collapsibleSideNavSearch}
                   labelText={translations('searchSavedQueries')}
                   placeholder={translations('searchSavedQueries')}
                   size="lg"
@@ -189,6 +190,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                   iconDescription={translations('addCurrentQuery')}
                   onClick={handleAddCurrentQuery}
                   tooltipPosition="top"
+                  tooltipAlignment="end"
                 />
               </div>
 

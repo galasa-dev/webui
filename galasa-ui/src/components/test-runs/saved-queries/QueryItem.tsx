@@ -208,7 +208,7 @@ export default function QueryItem({
         iconDescription={translations('actions')}
         flipped
         className={styles.overflowMenu}
-        direction="top"
+        align="top"
       >
         {actions.map((action) => (
           <OverflowMenuItem
@@ -217,6 +217,7 @@ export default function QueryItem({
             onClick={action.onClick}
             isDelete={action.isDelete}
             disabled={action.disabled}
+            id={isDefault && action.isDelete ? styles.defaultQueryDeleteButton : undefined}
           />
         ))}
       </OverflowMenu>

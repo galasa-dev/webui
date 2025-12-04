@@ -32,7 +32,7 @@
 }
 
 .sideNavExpanded {
-  width: 320px;
+  width: 330px;
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
@@ -48,7 +48,7 @@
 }
 
 .innerContentWrapper {
-  width: 320px;
+  width: 330px;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -81,8 +81,6 @@
 
 .sideNavContent {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -93,4 +91,8 @@
   bottom: 5.5rem;
   right: 1rem;
   z-index: 9999;
+}
+
+.collapsibleSideNavSearch {
+  width: 80%;
 }
