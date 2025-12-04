@@ -123,7 +123,12 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     // Construct the base URL from its parts to explicitly exclude any existing hash
     const baseUrl = window.location.origin + window.location.pathname + window.location.search;
 
-    const permalink = `${baseUrl}#log-${startLine}-${startOffset}-${endLine}-${endOffset}`;
+    // Build the URL without the 'line' parameter
+    const urlWithoutLines = new URL(baseUrl);
+    urlWithoutLines.searchParams.delete('line');
+
+    // Construct the permalink
+    const permalink = `${urlWithoutLines.toString()}#log-${startLine}-${startOffset}-${endLine}-${endOffset}`;
 
     navigator.clipboard.writeText(permalink);
 
