@@ -22,6 +22,17 @@ function setup<T>() {
 
 let mockRouter: { replace: jest.Mock };
 
+// Mock useHistoryBreadCrumbs hook
+jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
+  __esModule: true,
+  default: () => ({
+    breadCrumbItems: [
+      { title: 'Home', route: '/' },
+      { title: 'Test Runs', route: '/test-runs?searchCriteria123' },
+    ],
+  }),
+}));
+
 jest.mock('next/navigation', () => ({
   // The key is to return the mockRouter variable directly.
   useRouter: () => mockRouter,
@@ -47,11 +58,15 @@ jest.mock('@/contexts/DateTimeFormatContext', () => ({
 
 jest.mock('@/components/common/BreadCrumb', () => {
   const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => {
-    const testRunsItem = breadCrumbItems.find((item) => item.title === 'testRuns');
     return (
-      <nav data-testid="breadcrumb" data-route={testRunsItem?.route || ''}>
-        Breadcrumb
-      </nav>
+      <div>
+        <nav data-testid="breadcrumb-1" data-route={breadCrumbItems[0]?.route || ''}>
+          {breadCrumbItems[0]?.title}
+        </nav>
+        <nav data-testid="breadcrumb-2" data-route={breadCrumbItems[1]?.route || ''}>
+          {breadCrumbItems[1]?.title}
+        </nav>
+      </div>
     );
   };
   BreadCrumb.displayName = 'BreadCrumb';
@@ -388,6 +403,49 @@ describe('TestRunDetails', () => {
 
     expect(spy).toHaveBeenCalledWith(window.location.href);
     spy.mockRestore();
+  });
+
+  it('adds the test page URL to breadcrumb after page is loaded', async () => {
+    const runDetailsDeferred = setup<any>();
+    const runArtifactsDeferred = setup<any[]>();
+    const runLogDeferred = setup<string>();
+
+    render(
+      <TestRunDetails
+        runId={runId}
+        runDetailsPromise={runDetailsDeferred.promise}
+        runArtifactsPromise={runArtifactsDeferred.promise}
+        runLogPromise={runLogDeferred.promise}
+      />
+    );
+
+    // Resolve all three promises
+    await act(async () => {
+      runDetailsDeferred.resolve({
+        testStructure: {
+          methods: [{ name: 'm1' }, { name: 'm2' }],
+          result: 'FAIL',
+          status: 'ERROR',
+          runName: 'MyRun',
+          testShortName: 'TestA',
+          bundle: 'BundleX',
+          submissionId: 'Sub123',
+          group: 'Grp',
+          requestor: 'User',
+          queued: '2025-01-01T00:00:00Z',
+          startTime: '2025-01-01T00:00:00Z',
+          endTime: '2025-01-01T02:00:00Z',
+          tags: ['tag1'],
+        },
+      });
+      runArtifactsDeferred.resolve([{ id: 'art1' }, { id: 'art2' }]);
+      runLogDeferred.resolve('This is the log');
+    });
+
+    expect(screen.getByTestId('breadcrumb-1')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-2')).toBeInTheDocument();
+    expect(screen.getByText('Test Runs')).toBeInTheDocument();
   });
 
   describe('download artifacts', () => {

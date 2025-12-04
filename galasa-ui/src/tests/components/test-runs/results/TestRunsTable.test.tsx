@@ -257,25 +257,28 @@ describe('TestRunsTable Interactions', () => {
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
   });
+});
 
-  test('pushes test runs breadcrumb with current search params when a run is clicked', async () => {
+describe('TestRunsTable rendering of TableCells', () => {
+  test('places an anchor with the correct href in every table cell', async () => {
     // Arrange
-    const mockRuns = generateMockRuns(1);
-    // Provide a specific set of search params for this test's context
-    const specificSearchParams = new URLSearchParams('status=finished&requestor=user1');
-    mockUseSearchParams.mockReturnValue(specificSearchParams);
-
-    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+    const mockRuns = generateMockRuns(8);
 
     // Act
-    const tableRow = await screen.findByText('Test Run 1');
-    fireEvent.click(tableRow);
+    render(<TestRunsTable {...defaultProps} runsList={mockRuns} />);
 
     // Assert
-    // Check that the breadcrumb route is built from the mocked search params
-    expect(pushBreadCrumbMock).toHaveBeenCalledWith({
-      title: 'testRuns',
-      route: `/test-runs?${specificSearchParams.toString()}`,
+    const tableRows = screen.getAllByRole('row').slice(1); // Get all rows other than the header
+
+    tableRows.forEach((row, rowIndex) => {
+      const rowRunId = mockRuns[rowIndex].id;
+      const cells = within(row).getAllByRole('cell'); // Get all cells in the row
+
+      cells.forEach((cell) => {
+        // Every cell should have a link as no null value cells are in the mock data
+        const link = within(cell).getByRole('link');
+        expect(link).toHaveAttribute('href', `/test-runs/${rowRunId}`);
+      });
     });
   });
 });

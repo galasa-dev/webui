@@ -43,6 +43,7 @@ import {
 } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
 import { TreeNodeData } from '@/utils/functions/artifacts';
+import { TEST_RUNS } from '@/utils/constants/breadcrumb';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -59,7 +60,7 @@ const TestRunDetails = ({
   runArtifactsPromise,
 }: TestRunDetailsProps) => {
   const translations = useTranslations('TestRunDetails');
-  const { breadCrumbItems } = useHistoryBreadCrumbs();
+  const { breadCrumbItems, pushBreadCrumb } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -178,6 +179,16 @@ const TestRunDetails = ({
 
     loadRunDetails();
   }, [run, runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
+
+  useEffect(() => {
+    // If the 'Test Runs' breadcrumb is already in the items, skip.
+    if (breadCrumbItems.length > 1) return;
+    // Push the Test Runs URL to the breadcrumb history.
+    pushBreadCrumb({
+      ...TEST_RUNS,
+      route: `/test-runs?${searchParams.toString()}`,
+    });
+  });
 
   const handleShare = async () => {
     try {
