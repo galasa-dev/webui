@@ -73,7 +73,6 @@ export default function TestRunsTable({
   durationMinutes,
 }: TestRunsTableProps) {
   const translations = useTranslations('TestRunsTable');
-  const { pushBreadCrumb } = useHistoryBreadCrumbs();
   const { formatDate } = useDateTimeFormat();
 
   const router = useRouter();
@@ -131,12 +130,6 @@ export default function TestRunsTable({
 
   // Navigate to the test run details page using the runId
   const handleRowClick = (runId: string, runName: string) => {
-    // Push the current page URL to the breadcrumb history
-    pushBreadCrumb({
-      ...TEST_RUNS,
-      route: `/test-runs?${searchParams.toString()}`,
-    });
-
     // Navigate to the test run details page
     router.push(`/test-runs/${runId}`);
   };

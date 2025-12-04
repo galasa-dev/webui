@@ -257,27 +257,6 @@ describe('TestRunsTable Interactions', () => {
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
   });
-
-  test('pushes test runs breadcrumb with current search params when a run is clicked', async () => {
-    // Arrange
-    const mockRuns = generateMockRuns(1);
-    // Provide a specific set of search params for this test's context
-    const specificSearchParams = new URLSearchParams('status=finished&requestor=user1');
-    mockUseSearchParams.mockReturnValue(specificSearchParams);
-
-    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
-
-    // Act
-    const tableRow = await screen.findByText('Test Run 1');
-    fireEvent.click(tableRow);
-
-    // Assert
-    // Check that the breadcrumb route is built from the mocked search params
-    expect(pushBreadCrumbMock).toHaveBeenCalledWith({
-      title: 'testRuns',
-      route: `/test-runs?${specificSearchParams.toString()}`,
-    });
-  });
 });
 
 describe('TestRunsTable rendering of TableCells', () => {
