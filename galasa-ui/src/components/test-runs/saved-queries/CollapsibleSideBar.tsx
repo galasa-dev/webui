@@ -172,18 +172,17 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
             <div className={styles.innerContentWrapper}>
               <p className={styles.headerTitle}>{translations('savedQueries')}</p>
               <div className={styles.toolbar}>
-                <div id={styles.collapsibleSideNavSearch}>
-                  <Search
-                    labelText={translations('searchSavedQueries')}
-                    placeholder={translations('searchSavedQueries')}
-                    size="lg"
-                    value={searchTerm}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearchTerm(e.target.value)
-                    }
-                    onClear={() => setSearchTerm('')}
-                  />
-                </div>
+                <Search
+                  className={styles.collapsibleSideNavSearch}
+                  labelText={translations('searchSavedQueries')}
+                  placeholder={translations('searchSavedQueries')}
+                  size="lg"
+                  value={searchTerm}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchTerm(e.target.value)
+                  }
+                  onClear={() => setSearchTerm('')}
+                />
                 <Button
                   kind="ghost"
                   hasIconOnly
