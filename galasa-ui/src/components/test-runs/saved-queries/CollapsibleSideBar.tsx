@@ -6,9 +6,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { HeaderMenuButton, SideNavItems, Search, Button, InlineNotification } from '@carbon/react';
+import { HeaderMenuButton, Search, Button, InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
+import testRunsPageStyles from '@/styles/test-runs/TestRunsPage.module.css';
 import {
   arrayMove,
   SortableContext,
@@ -59,6 +60,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
   const [sideNavExpandedHeight, setSideNavExpandedHeight] = useState(0);
   const [mainContentElement, setMainContentElement] = useState<Element | null>(null);
+  const SIDE_NAV_MIN_HEIGHT = 700;
 
   // Isolate user-sortable queries from the default query
   const sortableQueries = useMemo(
@@ -68,8 +70,8 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
   const updateSideNavHeight = () => {
     if (mainContentElement) {
-      // As the mainContent for the test runs details is also flex, we must set this height to 0, wait a short while, then set the height of this element to the main content minus an offset.
-      setSideNavExpandedHeight(0);
+      // As the mainContent for the test runs details is also flex, we must set this height to a minimum (700), wait a short while, then set the height of this element to the main content minus an offset.
+      setSideNavExpandedHeight(SIDE_NAV_MIN_HEIGHT);
       setTimeout(() => {
         // The .clientHeight seems to need mainContentElement checked inside the setTimeout().
         if (mainContentElement) {
@@ -167,7 +169,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
   // Grab the main content element on page load.
   useEffect(() => {
-    setMainContentElement(document.querySelector('.TestRunsPage_mainContent__Ftan5'));
+    setMainContentElement(document.querySelector('.' + testRunsPageStyles.mainContent));
   }, []);
 
   useEffect(() => {
