@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { HeaderMenuButton, SideNavItems, Search, Button, InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
@@ -57,11 +57,34 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   // State to hold the data of the item currently being dragged for the DragOverlay
   const [activeQuery, setActiveQuery] = useState<SavedQueryType | null>(null);
 
+  const [sideNavExpandedHeight, setSideNavExpandedHeight] = useState(0);
+  // const [isObservingMainContentElement, setIsObservingMainContentElement] = useState(false);
+  const [mainContentElement, setMainContentElement] = useState<Element | null>(null);
+  // let mainContentElement: Element | null = null;
+  const maxNumberOfSavedQueriesToNotResizeFor = 9;  // Does not include default query.
+  // const resizeObserver = useRef(null);
+
   // Isolate user-sortable queries from the default query
   const sortableQueries = useMemo(
     () => savedQueries.filter((query) => query.createdAt !== defaultQuery.createdAt),
     [savedQueries, defaultQuery]
   );
+
+  const updateSideNavHeight = () => {
+    // Only dynamically change the height when there are enough saved queries to warrent it (due to flickering caused by flipping the heights around).
+    console.log(filteredSortableQueries.length + "   " + maxNumberOfSavedQueriesToNotResizeFor + "   " + mainContentElement);
+    if (filteredSortableQueries.length > maxNumberOfSavedQueriesToNotResizeFor && mainContentElement) {
+
+      // As the mainContent for the test runs details is also flex, we must set this height to 0, wait a short while, then set the height of this element to the main content minus an offset.
+      setSideNavExpandedHeight(0);
+      setTimeout(() => {
+        if (mainContentElement) { // The line below seems to need mainContentElement checked inside the setTimeout().
+          const newHeight = mainContentElement.clientHeight - 50;
+          setSideNavExpandedHeight(newHeight);
+        }
+      }, 1);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -148,6 +171,46 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     return sortableQueries;
   }, [searchTerm, sortableQueries]);
 
+  useEffect(() => {
+    updateSideNavHeight();
+  }, [filteredSortableQueries])
+
+  // Grab the main content element on page load.
+  useEffect(() => {
+    setMainContentElement(document.querySelector('.TestRunsPage_mainContent__Ftan5'));
+    // mainContentElement = document.querySelector('.TestRunsPage_mainContent__Ftan5');
+  }, []);
+
+  useEffect(() => {
+    // Initial update
+    updateSideNavHeight();
+
+    if (filteredSortableQueries.length <= maxNumberOfSavedQueriesToNotResizeFor) {
+      // Default constianer to a calculated height.
+      // + 3 for the Title, search bar and saved query rows, * 50(px) for each row.
+      setSideNavExpandedHeight((maxNumberOfSavedQueriesToNotResizeFor + 3) * 50);
+    }
+
+    // Add event listener for main content resize.
+    const resizeObserver = new ResizeObserver(entries => {
+      if (entries[0]) { // Check if there's a valid entry.
+        updateSideNavHeight();
+      }
+    });
+
+    if (mainContentElement) {
+      console.log("Making new reseizer")
+      resizeObserver.observe(mainContentElement);
+    }
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => {
+      if (mainContentElement) {
+        resizeObserver.unobserve(mainContentElement);
+      }
+    };
+  }, [mainContentElement])
+
   return (
     <div className={styles.container} aria-label={translations('savedQueriesHeaderLabel')}>
       <DndContext
@@ -167,6 +230,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
         <div className={styles.sidebarWrapper}>
           <div
             className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
+            style={{ height: sideNavExpandedHeight }}
             aria-label={translations('savedQueriesSidebarLabel')}
           >
             <div className={styles.innerContentWrapper}>
