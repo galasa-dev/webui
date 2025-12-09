@@ -67,13 +67,12 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   );
 
   const updateSideNavHeight = () => {
-    // Only dynamically change the height when there are enough saved queries to warrent it (due to flickering caused by flipping the heights around).
     if (mainContentElement) {
-
       // As the mainContent for the test runs details is also flex, we must set this height to 0, wait a short while, then set the height of this element to the main content minus an offset.
       setSideNavExpandedHeight(0);
       setTimeout(() => {
-        if (mainContentElement) { // The line below seems to need mainContentElement checked inside the setTimeout().
+        // The .clientHeight seems to need mainContentElement checked inside the setTimeout().
+        if (mainContentElement) {
           const newHeight = mainContentElement.clientHeight - 50;
           setSideNavExpandedHeight(newHeight);
         }
@@ -166,10 +165,6 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     return sortableQueries;
   }, [searchTerm, sortableQueries]);
 
-  useEffect(() => {
-    updateSideNavHeight();
-  }, [filteredSortableQueries])
-
   // Grab the main content element on page load.
   useEffect(() => {
     setMainContentElement(document.querySelector('.TestRunsPage_mainContent__Ftan5'));
@@ -180,8 +175,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     updateSideNavHeight();
 
     // Add event listener for main content resize.
-    const resizeObserver = new ResizeObserver(entries => {
-      if (entries[0]) { // Check if there's a valid entry.
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Check if there's a valid entry.
+      if (entries[0]) {
         updateSideNavHeight();
       }
     });
@@ -198,7 +194,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
         resizeObserver.unobserve(mainContentElement);
       }
     };
-  }, [mainContentElement])
+  }, [mainContentElement]);
 
   return (
     <div className={styles.container} aria-label={translations('savedQueriesHeaderLabel')}>
