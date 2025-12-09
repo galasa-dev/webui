@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HeaderMenuButton, SideNavItems, Search, Button, InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
@@ -58,11 +58,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   const [activeQuery, setActiveQuery] = useState<SavedQueryType | null>(null);
 
   const [sideNavExpandedHeight, setSideNavExpandedHeight] = useState(0);
-  // const [isObservingMainContentElement, setIsObservingMainContentElement] = useState(false);
   const [mainContentElement, setMainContentElement] = useState<Element | null>(null);
-  // let mainContentElement: Element | null = null;
-  const maxNumberOfSavedQueriesToNotResizeFor = 9;  // Does not include default query.
-  // const resizeObserver = useRef(null);
 
   // Isolate user-sortable queries from the default query
   const sortableQueries = useMemo(
@@ -72,8 +68,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
   const updateSideNavHeight = () => {
     // Only dynamically change the height when there are enough saved queries to warrent it (due to flickering caused by flipping the heights around).
-    console.log(filteredSortableQueries.length + "   " + maxNumberOfSavedQueriesToNotResizeFor + "   " + mainContentElement);
-    if (filteredSortableQueries.length > maxNumberOfSavedQueriesToNotResizeFor && mainContentElement) {
+    if (mainContentElement) {
 
       // As the mainContent for the test runs details is also flex, we must set this height to 0, wait a short while, then set the height of this element to the main content minus an offset.
       setSideNavExpandedHeight(0);
@@ -82,7 +77,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
           const newHeight = mainContentElement.clientHeight - 50;
           setSideNavExpandedHeight(newHeight);
         }
-      }, 1);
+      }, 0);
     }
   };
 
@@ -178,18 +173,11 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   // Grab the main content element on page load.
   useEffect(() => {
     setMainContentElement(document.querySelector('.TestRunsPage_mainContent__Ftan5'));
-    // mainContentElement = document.querySelector('.TestRunsPage_mainContent__Ftan5');
   }, []);
 
   useEffect(() => {
     // Initial update
     updateSideNavHeight();
-
-    if (filteredSortableQueries.length <= maxNumberOfSavedQueriesToNotResizeFor) {
-      // Default constianer to a calculated height.
-      // + 3 for the Title, search bar and saved query rows, * 50(px) for each row.
-      setSideNavExpandedHeight((maxNumberOfSavedQueriesToNotResizeFor + 3) * 50);
-    }
 
     // Add event listener for main content resize.
     const resizeObserver = new ResizeObserver(entries => {
@@ -199,8 +187,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     });
 
     if (mainContentElement) {
-      console.log("Making new reseizer")
       resizeObserver.observe(mainContentElement);
+    } else {
+      setSideNavExpandedHeight(800);
     }
 
     // Cleanup function to remove the event listener when the component unmounts
