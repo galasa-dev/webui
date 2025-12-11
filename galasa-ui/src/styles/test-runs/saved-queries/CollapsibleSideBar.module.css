@@ -36,7 +36,6 @@
   max-width: 360px;
   background-color: var(--cds-layer);
   border-right: 1px solid var(--cds-border-subtle);
-  height: 800px;
   overflow-y: auto;
   overflow-x: hidden;
 }
