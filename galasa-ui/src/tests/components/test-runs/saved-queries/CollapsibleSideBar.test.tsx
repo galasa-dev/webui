@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React, { act } from 'react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import CollapsibleSideBar from '@/components/test-runs/saved-queries/CollapsibleSideBar';
@@ -43,8 +43,11 @@ jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
   useTestRunsQueryParams: jest.fn(),
 }));
 
+// Stylesheet seems to somehow override CollapsibleSideBar.module.css, so the extra necessary items have been added in here.
 jest.mock('@/styles/test-runs/TestRunsPage.module.css', () => ({
-  mainContent: "TestRunsPage_mainContent__Ftan5"
+  mainContent: 'TestRunsPage_mainContent__Ftan5',
+  sideNavCollapsed: 'sideNavCollapsed',
+  sideNavExpanded: 'sideNavExpanded',
 }));
 
 // Mock the DndContext to capture the onDragEnd function for testing
@@ -359,16 +362,13 @@ describe('CollapsibleSideBar', () => {
 
   describe('updating side nav height', () => {
     test('should not observe the main content if main content not loaded', async () => {
-      await act(async () => {
-        render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
-      })
-
-      expect(mockObserve).toHaveBeenCalledTimes(0);      
+      render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
+      expect(mockObserve).toHaveBeenCalledTimes(0);
     });
 
-    test('should observe the main content if main content rendered', async () => {
+    test('should observe the main content if main content rendered, and set to height of main content -50px', async () => {
       const mainContentElement = document.createElement('div');
-      mainContentElement.className = "TestRunsPage_mainContent__Ftan5";
+      mainContentElement.className = 'TestRunsPage_mainContent__Ftan5';
       document.body.appendChild(mainContentElement);
 
       render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
@@ -379,98 +379,13 @@ describe('CollapsibleSideBar', () => {
         expect(mockObserve).toHaveBeenCalledTimes(1);
 
         if (sidebar) {
-          expect(sidebar.style.height).toBe("-50px");
+          expect(sidebar.style.height).toBe('-50px');
         } else {
           fail('could not find sidebar');
-
         }
-        
+
         document.body.innerHTML = '';
       });
     });
-
-    // const sidebar = screen.getByLabelText('Saved Queries Sidebar');
-      // const headerButton = screen.getByRole('button', { name: 'Saved Queries' });
-
-      // // Click the header button to expand the sidebar
-      // fireEvent.click(headerButton);
-
-          // // Simulate the mainContentElement resizing
-      // const mainContentElement = screen.getByRole('main');
-      // fireEvent.resize(mainContentElement, { clientHeight: 1500 });
-
-      // // Assert that the side nav height is updated correctly
-      // expect(CollapsibleSideBar.).toHaveBeenCalled();
-      // expect(CollapsibleSideBar.setSideNavExpandedHeight).toHaveBeenCalledWith(700);
-      // expect(CollapsibleSideBar.setSideNavExpandedHeight).toHaveBeenCalledWith(1500 - 50);
-
-
-    // it('should observe the mainContentElement and update side nav height on resize', () => {
-    //   // Insert test data into savedQueries
-    //   const savedQueries = [
-    //     { createdAt: '2023-01-01T00:00:00Z', title: 'Test Run 1', url: '' },
-    //     { createdAt: '2023-01-02T00:00:00Z', title: 'Test Run 2', url: '' },
-    //     { createdAt: '2023-01-03T00:00:00Z', title: 'Test Run 3', url: '' },
-    //   ];
-
-    //   // Render the CollapsibleSideBar component with the test data
-    //   render(<CollapsibleSideBar savedQueries={savedQueries} />);
-
-    //   // Simulate the mainContentElement resizing
-    //   const mainContentElement = screen.getByRole('main');
-    //   fireEvent.resize(mainContentElement, { clientHeight: 1500 });
-
-    //   // Assert that the side nav height is updated correctly
-    //   expect(CollapsibleSideBar.setSideNavExpandedHeight).toHaveBeenCalledWith(700);
-    //   expect(CollapsibleSideBar.setSideNavExpandedHeight).toHaveBeenCalledWith(1500 - 50);
-    // });
-
-    // it('should not update side nav height if mainContentElement is null', () => {
-    //   // Render the CollapsibleSideBar component without mainContentElement
-    //   render(<CollapsibleSideBar savedQueries={[]} />);
-
-    //   // Simulate the mainContentElement being null
-    //   const mainContentElement = screen.getByRole('main', { hidden: true });
-
-    //   // Assert that the side nav height is not updated
-    //   expect(CollapsibleSideBar.setSideNavExpandedHeight).not.toHaveBeenCalled();
-    // });
-
   });
 });
-
-// describe('Resizable height', () => {
-//   jest.mock('@/components/test-runs/saved-queries/CollapsibleSideBar', () => ({
-//     ...jest.requireActual('@/components/test-runs/saved-queries/CollapsibleSideBar'),
-//     setSideNavExpandedHeight: jest.fn(),
-//     setMainContentElement: jest.fn(),
-//   }));
-
-//   beforeEach(() => {
-//     setSideNavExpandedHeight.mockReset();
-//     setMainContentElement.mockReset();
-//   });
-
-//   it('should update side nav height correctly', () => {
-//     const mockMainContentElement = { clientHeight: 1200 };
-//     setMainContentElement.mockReturnValueOnce(mockMainContentElement);
-
-//     act(() => {
-//       CollapsibleSideBar.updateSideNavHeight();
-//     });
-
-//     expect(setSideNavExpandedHeight).toHaveBeenCalledWith(700);
-//     expect(setSideNavExpandedHeight).toHaveBeenCalledWith(mockMainContentElement.clientHeight - 50);
-//   });
-
-//   it('should not update side nav height if mainContentElement is null', () => {
-//     setMainContentElement.mockReturnValueOnce(null);
-
-//     act(() => {
-//       CollapsibleSideBar.updateSideNavHeight();
-//     });
-
-//     expect(setSideNavExpandedHeight).not.toHaveBeenCalled();
-//   });
-
-// })
