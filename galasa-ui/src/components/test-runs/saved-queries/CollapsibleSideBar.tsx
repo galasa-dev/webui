@@ -60,27 +60,14 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
 
   const [sideNavExpandedHeight, setSideNavExpandedHeight] = useState(0);
   const [mainContentElement, setMainContentElement] = useState<Element | null>(null);
-  const SIDE_NAV_MIN_HEIGHT = 700;
+  const SIDE_NAV_MIN_HEIGHT_PIXELS = 700;
+  const SIDE_NAV_HEIGHT_IF_NOT_RESIZABLE_PIXELS = 850;
 
   // Isolate user-sortable queries from the default query
   const sortableQueries = useMemo(
     () => savedQueries.filter((query) => query.createdAt !== defaultQuery.createdAt),
     [savedQueries, defaultQuery]
   );
-
-  const updateSideNavHeight = () => {
-    if (mainContentElement) {
-      // As the mainContent for the test runs details is also flex, we must set this height to a minimum (700), wait a short while, then set the height of this element to the main content minus an offset.
-      setSideNavExpandedHeight(SIDE_NAV_MIN_HEIGHT);
-      setTimeout(() => {
-        // The .clientHeight seems to need mainContentElement checked inside the setTimeout().
-        if (mainContentElement) {
-          const newHeight = mainContentElement.clientHeight - 50;
-          setSideNavExpandedHeight(newHeight);
-        }
-      }, 0);
-    }
-  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -173,6 +160,20 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   }, []);
 
   useEffect(() => {
+    const updateSideNavHeight = () => {
+      if (mainContentElement) {
+        // As the mainContent for the test runs details is also flex, we must set this height to a minimum, wait a short while, then set the height of this element to the main content minus an offset.
+        setSideNavExpandedHeight(SIDE_NAV_MIN_HEIGHT_PIXELS);
+        setTimeout(() => {
+          // The .clientHeight seems to need mainContentElement checked inside the setTimeout().
+          if (mainContentElement) {
+            const newHeight = mainContentElement.clientHeight - 50;
+            setSideNavExpandedHeight(newHeight);
+          }
+        }, 0);
+      }
+    };
+
     // Initial update
     updateSideNavHeight();
 
@@ -187,7 +188,7 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     if (mainContentElement) {
       resizeObserver.observe(mainContentElement);
     } else {
-      setSideNavExpandedHeight(800);
+      setSideNavExpandedHeight(SIDE_NAV_HEIGHT_IF_NOT_RESIZABLE_PIXELS);
     }
 
     // Cleanup function to remove the event listener when the component unmounts

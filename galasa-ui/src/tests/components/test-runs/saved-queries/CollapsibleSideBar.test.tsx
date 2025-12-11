@@ -43,13 +43,6 @@ jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
   useTestRunsQueryParams: jest.fn(),
 }));
 
-// Stylesheet seems to somehow override CollapsibleSideBar.module.css, so the extra necessary items have been added in here.
-jest.mock('@/styles/test-runs/TestRunsPage.module.css', () => ({
-  mainContent: 'TestRunsPage_mainContent__Ftan5',
-  sideNavCollapsed: 'sideNavCollapsed',
-  sideNavExpanded: 'sideNavExpanded',
-}));
-
 // Mock the DndContext to capture the onDragEnd function for testing
 let capturedOnDragEnd: (event: any) => void;
 jest.mock('@dnd-kit/core', () => ({
@@ -368,7 +361,7 @@ describe('CollapsibleSideBar', () => {
 
     test('should observe the main content if main content rendered, and set to height of main content -50px', async () => {
       const mainContentElement = document.createElement('div');
-      mainContentElement.className = 'TestRunsPage_mainContent__Ftan5';
+      mainContentElement.className = 'mainContent';
       document.body.appendChild(mainContentElement);
 
       render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
