@@ -96,6 +96,9 @@ const dummyRoles: RBACRole[] = [
   {
     metadata: { id: '3', name: 'owner', description: 'Owner of Galasa service', assignable: false },
   },
+  {
+    metadata: { id: '4', name: 'viewer', description: 'User can view Galasa test results', assignable: true },
+  }
 ];
 
 describe('UserRoleSection', () => {
@@ -199,7 +202,7 @@ describe('UserRoleSection', () => {
     await waitFor(() => {
       const dropdown = screen.getByTestId('dropdown') as HTMLSelectElement;
       const options = dropdown.querySelectorAll('option');
-      expect(options.length).toBe(3);
+      expect(options.length).toBe(4);
     });
 
     const dropdown = screen.getByTestId('dropdown') as HTMLSelectElement;
