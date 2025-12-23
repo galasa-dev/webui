@@ -97,8 +97,13 @@ const dummyRoles: RBACRole[] = [
     metadata: { id: '3', name: 'owner', description: 'Owner of Galasa service', assignable: false },
   },
   {
-    metadata: { id: '4', name: 'viewer', description: 'User can view Galasa test results', assignable: true },
-  }
+    metadata: {
+      id: '4',
+      name: 'viewer',
+      description: 'User can view Galasa test results',
+      assignable: true,
+    },
+  },
 ];
 
 describe('UserRoleSection', () => {
