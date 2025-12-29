@@ -51,7 +51,7 @@ export SOURCE_MAVEN="https://development.galasa.dev/main/maven-repo/obr"
 1. Ensure environment variables from [Important Information](#important-information) are set if needed.
 2. Install a code editor that has Dev Container support, in this setup we will be using Visual Studio Code.
 3. Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) VSCode extension by Microsoft.
-4. Clone the repository.
+4. Fork the repository, then clone it onto your machine.
 5. Install and open a container engine, such as Docker Desktop, Rancher Desktop or Podman.
 6. Run the project in a dev container via the VSCode extension.
 - Note: Changing your environment variables will require you to restart VSCode for the changes to be reflected in the container.
@@ -59,7 +59,7 @@ export SOURCE_MAVEN="https://development.galasa.dev/main/maven-repo/obr"
 ## (2) Manual set up
 
 1. Ensure environemnt variables from [Important Information](#important-information) are set.
-2. Clone the repository.
+2. Fork the repository, then clone it onto your machine.
 3. Required items to install: Java, Gradle and Python. Please reference the [devcontainer.json](.devcontainer/devcontainer.json) for known compatible versions.
 4. Run the `setup-locally.sh` script and follow instructions.
 
@@ -103,4 +103,4 @@ Create a `.pem` file containing the intermediate and root ca certificates used b
 
 ## How to contribute
 
-See the [contributions.md](./CONTRIBUTIONS.md) file for terms and instructions.
+See the [How to make a contribution to Galasa's webui](https://github.com/galasa-dev/galasa/blob/main/CONTRIBUTING.md) section in Galasa's contributing.md file, and the [contributions.md](./CONTRIBUTIONS.md) file for terms and instructions.
