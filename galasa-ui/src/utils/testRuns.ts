@@ -31,6 +31,7 @@ interface fetchAllTestRunsByPagingParams {
   toDate: Date;
   runName?: string;
   requestor?: string;
+  user?: string;
   group?: string;
   submissionId?: string;
   bundle?: string;
@@ -56,6 +57,7 @@ const getRasApiClient = () => {
  * @param {Date} toDate - The end date for fetching runs.
  * @param {string} [runName] - The name of the test run to filter by (optional).
  * @param {string} [requestor] - The requestor to filter by (optional).
+ * @param {string} [user] - The user to filter by (optional).
  * @param {string} [group] - The group to filter by (optional).
  * @param {string} [submissionId] - The submission ID to filter by (optional).
  * @param {string} [bundle] - The bundle to filter by (optional).
@@ -69,6 +71,7 @@ export const fetchAllTestRunsByPaging = async ({
   toDate,
   runName,
   requestor,
+  user,
   group,
   submissionId,
   bundle,
@@ -96,6 +99,7 @@ export const fetchAllTestRunsByPaging = async ({
         status,
         bundle,
         requestor,
+        user,
         fromDate,
         toDate,
         testName,

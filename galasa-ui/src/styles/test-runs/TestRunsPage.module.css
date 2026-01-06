@@ -399,3 +399,14 @@
 .clickableRow {
   cursor: pointer;
 }
+
+.linkCell {
+  position: relative;
+  padding: 0;
+}
+
+.linkOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}

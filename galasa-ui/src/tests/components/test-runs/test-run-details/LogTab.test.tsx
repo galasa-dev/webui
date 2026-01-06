@@ -542,6 +542,34 @@ Line with $dollar and ^caret`;
         expect(copyButton).toHaveClass('buttonDisabled');
       });
     });
+
+    it('copies permalink without the line parameter', async () => {
+      const writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText');
+      render(<LogTab logs={sampleLogs} />);
+      await screen.findByText(/Initializing database connection/);
+
+      const startLineNode = screen.getByText(/Initializing database connection/);
+      const endLineNode = screen.getByText(/Connection retry attempt 1/);
+
+      act(() => {
+        // Simulate selection with offsets
+        mockSelection(startLineNode, endLineNode, 5, 10);
+        fireEvent(document, new Event('selectionchange'));
+      });
+
+      const urlAfterInjection = `${window.location.origin}${window.location.pathname}${window.location.search}?line=1${window.location.hash}`;
+
+      window.history.pushState(null, '', urlAfterInjection);
+
+      const copyButton = await screen.findByTestId('icon-button-copy-permalink');
+
+      // Click the button
+      act(() => {
+        fireEvent.click(copyButton);
+      });
+
+      expect(writeTextSpy.mock.calls[0][0]).not.toContain('?line=1');
+    });
   });
 
   describe('URL Hash Handling', () => {
