@@ -829,6 +829,7 @@ describe('TestRunsTabs Component', () => {
       testName: 'N/A',
       runName: 'N/A',
       testShortName: 'N/A',
+      user: 'N/A',
     };
 
     beforeEach(() => {

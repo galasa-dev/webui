@@ -55,6 +55,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
       <InlineText title={`${translations('group')}:`} value={metadata?.group} />
       <InlineText title={`${translations('submissionId')}:`} value={metadata?.submissionId} />
       <InlineText title={`${translations('requestor')}:`} value={metadata?.requestor} />
+      <InlineText title={`${translations('user')}:`} value={metadata?.user} />
 
       <div className={styles.infoContainer}>
         <InlineText title={`${translations('submitted')}:`} value={metadata?.submitted} />

@@ -56,6 +56,12 @@ export default function SearchCriteriaContent({
       description: translations('fields.requestor.description'),
     },
     {
+      id: TEST_RUNS_QUERY_PARAMS.USER,
+      label: translations('fields.user.label'),
+      placeHolder: 'any',
+      description: translations('fields.user.description'),
+    },
+    {
       id: TEST_RUNS_QUERY_PARAMS.GROUP,
       label: translations('fields.group.label'),
       placeHolder: 'any',
@@ -296,6 +302,9 @@ export default function SearchCriteriaContent({
     let customComponent;
     switch (field.id) {
       case TEST_RUNS_QUERY_PARAMS.REQUESTOR:
+        customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+        break;
+      case TEST_RUNS_QUERY_PARAMS.USER:
         customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
         break;
       case TEST_RUNS_QUERY_PARAMS.RESULT:

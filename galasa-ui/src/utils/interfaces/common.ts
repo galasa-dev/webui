@@ -44,6 +44,7 @@ export interface runStructure {
   submittedAt: string;
   runName: string;
   requestor: string;
+  user: string;
   group: string;
   bundle: string;
   package: string;
@@ -64,6 +65,7 @@ export interface DataPoint {
     submittedAt: string;
     runName: string;
     requestor: string;
+    user: string;
     group: string;
     bundle: string;
     package: string;
