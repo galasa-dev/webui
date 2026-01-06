@@ -129,7 +129,6 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   );
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  console.log('from option:', selectedFromOption, 'to option:', selectedToOption);
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
       if ((field === 'fromDate' || field === 'toDate') && !value) {
@@ -214,15 +213,11 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         const fromOption = values.isRelativeToNow
           ? FromSelectionOptions.duration
           : FromSelectionOptions.specificFromTime;
-        console.log('Initializing from option:', fromOption);
         setSelectedFromOption(fromOption);
         setHasInitialized(true);
       }
     }
-    console.log('isRelativeToNow:', values.isRelativeToNow, 'hasInitialized:', hasInitialized);
   }, [values.isRelativeToNow, hasInitialized]);
-
-  console.log('Timeframcontent - isRelativeToNow:', values.isRelativeToNow);
 
   return (
     <div className={styles.timeFrameContainer}>
