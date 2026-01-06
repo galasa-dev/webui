@@ -129,6 +129,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   );
   const [hasInitialized, setHasInitialized] = useState(false);
 
+  console.log('from option:', selectedFromOption, 'to option:', selectedToOption);
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
       if ((field === 'fromDate' || field === 'toDate') && !value) {
@@ -173,12 +174,12 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         toDate = new Date();
       }
 
-      const isisRelativeToNow = field === 'isRelativeToNow' ? value : values.isRelativeToNow;
+      const isRelativeToNow = field === 'isRelativeToNow' ? value : values.isRelativeToNow;
       const {
         correctedFrom,
         correctedTo,
         notification: validationNotification,
-      } = applyTimeFrameRules(fromDate, toDate, isisRelativeToNow, translations);
+      } = applyTimeFrameRules(fromDate, toDate, isRelativeToNow, translations);
 
       // Set the notification if there is one
       setNotification(validationNotification);
@@ -198,20 +199,30 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
     setValues((prevValues) => ({ ...prevValues, isRelativeToNow }));
   }, [selectedToOption, setValues]);
 
-  // Initialize selected options only when isRelativeToNow becomes defined for the first time
+  // Sync selected options whenever isRelativeToNow changes (from URL or user interaction)
   useEffect(() => {
-    if (!hasInitialized && values.isRelativeToNow !== undefined) {
-      const fromOpt = values.isRelativeToNow
-        ? FromSelectionOptions.duration
-        : FromSelectionOptions.specificFromTime;
-      const toOpt = values.isRelativeToNow
+    if (values.isRelativeToNow !== undefined) {
+      const toOption = values.isRelativeToNow
         ? ToSelectionOptions.now
         : ToSelectionOptions.specificToTime;
-      setSelectedFromOption(fromOpt);
-      setSelectedToOption(toOpt);
-      setHasInitialized(true);
+
+      // Always sync the "To" option with isRelativeToNow
+      setSelectedToOption(toOption);
+
+      // Only set the "From" option on initial load
+      if (!hasInitialized) {
+        const fromOption = values.isRelativeToNow
+          ? FromSelectionOptions.duration
+          : FromSelectionOptions.specificFromTime;
+        console.log('Initializing from option:', fromOption);
+        setSelectedFromOption(fromOption);
+        setHasInitialized(true);
+      }
     }
+    console.log('isRelativeToNow:', values.isRelativeToNow, 'hasInitialized:', hasInitialized);
   }, [values.isRelativeToNow, hasInitialized]);
+
+  console.log('Timeframcontent - isRelativeToNow:', values.isRelativeToNow);
 
   return (
     <div className={styles.timeFrameContainer}>

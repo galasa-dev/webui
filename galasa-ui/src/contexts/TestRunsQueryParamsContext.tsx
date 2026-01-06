@@ -148,7 +148,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       fromDate = new Date(toDate.getTime() - DAY_MS);
       isRelativeToNow = true;
     }
-    console.log('Relative to now: ', isRelativeToNow);
 
     // Timezone
     const timezone = getResolvedTimeZone();

@@ -206,6 +206,8 @@ export default function TestRunsDetails({
       queryURL = queryUrlParams.toString();
     }
 
+    console.log('Current URL Params:', currentUrlParams.toString());
+    console.log('Active Query URL Params:', queryURL);
     let isDisabled = false;
     // Disable if the current URL params (excluding tab) match the active query's URL
     if (
