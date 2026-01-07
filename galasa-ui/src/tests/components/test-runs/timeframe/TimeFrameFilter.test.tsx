@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import TimeFrameFilter from '@/components/test-runs/timeframe/TimeFrameFilter';
 import { TimeFrameValues } from '@/utils/interfaces';
 import userEvent from '@testing-library/user-event';
@@ -59,10 +59,7 @@ describe('TimeFrameFilter', () => {
     expect(within(fromContainer).getByLabelText(/time/i)).toHaveValue('10:00');
   });
 
-  // Skipping this test due to Carbon v1.92.1 DatePicker using Flatpickr which requires calendar interaction
-  // The DatePicker functionality works in the actual application but is difficult to test with userEvent
-  test.skip('should call handleValueChange when a date is selected from the calendar', async () => {
-    const user = userEvent.setup();
+  test('should call handleValueChange when a date is selected from the calendar', () => {
     // Act
     render(
       <TimeFrameFilter
@@ -72,20 +69,30 @@ describe('TimeFrameFilter', () => {
       />
     );
 
-    // Assert: check if mockHandleValueChange is called with the correct parameters when the date input changes
+    // Get the date input element
     const fromContainer = screen.getByTestId('from-timeframe-filter');
-    const dateInput = within(fromContainer).getByLabelText(/date/i);
+    const dateInput = within(fromContainer).getByLabelText(/date/i) as HTMLInputElement;
 
-    await user.clear(dateInput);
-    await user.type(dateInput, '10/25/2023');
-    await user.tab();
+    // Access the Flatpickr instance attached to the input element
+    // Carbon's DatePicker attaches the Flatpickr instance to the input element
+    const flatpickrInstance = (dateInput as any)._flatpickr;
+    
+    // Simulate selecting a new date through Flatpickr
+    // This is the proper way to test Flatpickr-based date pickers
+    const newDate = new Date('2023-10-25');
+    
+    if (flatpickrInstance) {
+      // Use Flatpickr's setDate method to simulate user selecting a date
+      flatpickrInstance.setDate(newDate, true); // true triggers onChange
+    }
 
+    // Assert: check if mockHandleValueChange was called with the correct parameters
     expect(mockHandleValueChange).toHaveBeenCalled();
     const calledDate = mockHandleValueChange.mock.calls[0][1];
 
     expect(calledDate).toBeInstanceOf(Date);
     expect(calledDate.getDate()).toBe(25);
-    expect(calledDate.getMonth()).toBe(9);
+    expect(calledDate.getMonth()).toBe(9); // October (0-indexed)
     expect(calledDate.getFullYear()).toBe(2023);
   });
 

@@ -256,17 +256,18 @@ const TestRunDetails = ({
     router.replace(newUrl, { scroll: false });
   };
 
-  const handleTabChange = (selectedIndex: number) => {
-    setSelectedTabIndex(selectedIndex);
+  const handleTabChange = (event: { selectedIndex: number }) => {
+    const newIndex = event.selectedIndex;
+    setSelectedTabIndex(newIndex);
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[selectedIndex]);
+    params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[newIndex]);
     // When switching away from the log tab, remove the line parameter
-    if (TEST_RUN_PAGE_TABS[selectedIndex] !== 'runLog') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== 'runLog') {
       params.delete(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
     }
     // When switching away from the 3270 tab, remove the terminalScreen parameter
-    if (TEST_RUN_PAGE_TABS[selectedIndex] !== '3270') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== '3270') {
       params.delete(SINGLE_RUN_QUERY_PARAMS.TERMINAL_SCREEN);
     }
 
@@ -357,7 +358,7 @@ const TestRunDetails = ({
               {translations('test')}: {run?.testShortName}
             </span>
           </div>
-          <Tabs selectedIndex={selectedTabIndex} onSelectionChange={handleTabChange}>
+          <Tabs selectedIndex={selectedTabIndex} onChange={handleTabChange}>
             <TabList iconSize="lg" className={styles.tabs}>
               <Tab renderIcon={Dashboard} href="#">
                 {translations('tabs.overview')}

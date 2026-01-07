@@ -164,9 +164,9 @@ jest.mock('@/components/common/StatusIndicator', () => {
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => {
-  let onTabsChange: (selectedIndex: number) => void;
-  const Tabs = ({ children, onSelectionChange }: any) => {
-    onTabsChange = onSelectionChange;
+  let onTabsChange: (event: { selectedIndex: number }) => void;
+  const Tabs = ({ children, onChange }: any) => {
+    onTabsChange = onChange;
     return <div>{children}</div>;
   };
   const Tab = ({ children, renderIcon }: any) => {
@@ -179,8 +179,8 @@ jest.mock('@carbon/react', () => {
 
     return (
       <button
-        // When this button is clicked, call the stored onSelectionChange handler
-        onClick={() => onTabsChange(tabIndex)}
+        // When this button is clicked, call the stored onChange handler
+        onClick={() => onTabsChange({ selectedIndex: tabIndex })}
         // Use the text to make it findable in the test
         role="tab"
       >
