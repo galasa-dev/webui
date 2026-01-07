@@ -84,7 +84,6 @@ describe('DurationFilter', () => {
     await user.tab();
 
     // Assert: Check that the callback was fired with the final, correct value.
-    // Note: Carbon v1.92.1 NumberInput now returns numbers instead of strings
     expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', 45);
   });
 });

@@ -73,17 +73,14 @@ describe('TimeFrameFilter', () => {
     const fromContainer = screen.getByTestId('from-timeframe-filter');
     const dateInput = within(fromContainer).getByLabelText(/date/i) as HTMLInputElement;
 
-    // Access the Flatpickr instance attached to the input element
-    // Carbon's DatePicker attaches the Flatpickr instance to the input element
+    // Access the Flatpickr instance attached to the input element.
     const flatpickrInstance = (dateInput as any)._flatpickr;
-    
-    // Simulate selecting a new date through Flatpickr
-    // This is the proper way to test Flatpickr-based date pickers
+
+    // Simulate selecting a new date through Flatpickr.
     const newDate = new Date('2023-10-25');
-    
+
     if (flatpickrInstance) {
-      // Use Flatpickr's setDate method to simulate user selecting a date
-      flatpickrInstance.setDate(newDate, true); // true triggers onChange
+      flatpickrInstance.setDate(newDate, true);
     }
 
     // Assert: check if mockHandleValueChange was called with the correct parameters
@@ -92,7 +89,7 @@ describe('TimeFrameFilter', () => {
 
     expect(calledDate).toBeInstanceOf(Date);
     expect(calledDate.getDate()).toBe(25);
-    expect(calledDate.getMonth()).toBe(9); // October (0-indexed)
+    expect(calledDate.getMonth()).toBe(9);
     expect(calledDate.getFullYear()).toBe(2023);
   });
 

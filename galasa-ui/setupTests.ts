@@ -10,20 +10,18 @@
 import '@testing-library/jest-dom';
 import 'isomorphic-fetch';
 
-// Polyfill for scrollIntoView which is not available in jsdom
 // This is needed for Carbon Design System components that use scrollIntoView
 if (typeof Element !== 'undefined') {
   Element.prototype.scrollIntoView = jest.fn();
 }
 
-// Polyfill for HTMLElement.prototype.scrollTo
+// Polyfill for HTMLElement.prototype.scrollTo.
 if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.scrollTo) {
   HTMLElement.prototype.scrollTo = jest.fn();
 }
 
-// Polyfill for window.matchMedia which is not available in jsdom
-// This is needed for Carbon Design System components that use media queries
-// Only set up if window is defined (not in node environment)
+// Polyfill for window.matchMedia which is not available in jsdom.
+// This is needed for Carbon Design System components that use media queries.
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -40,8 +38,8 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Polyfill for ResizeObserver which is not available in jsdom
-// This is needed for Carbon Design System components that observe element sizes
+// Polyfill for ResizeObserver which is not available in jsdom.
+// This is needed for Carbon Design System components that observe element sizes.
 if (typeof global.ResizeObserver === 'undefined') {
   global.ResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
