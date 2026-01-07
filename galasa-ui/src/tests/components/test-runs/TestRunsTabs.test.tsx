@@ -142,6 +142,7 @@ jest.mock('@/utils/constants/common', () => ({
     TO: 'to',
     RUN_NAME: 'runName',
     REQUESTOR: 'requestor',
+    USER: 'user',
     GROUP: 'group',
     SUBMISSION_ID: 'submissionId',
     BUNDLE: 'bundle',
@@ -160,6 +161,7 @@ jest.mock('@/utils/constants/common', () => ({
   SEARCH_CRITERIA_KEYS: [
     'runName',
     'requestor',
+    'user',
     'group',
     'submissionId',
     'bundle',
