@@ -107,9 +107,8 @@ export default function TestRunsTabs({
     });
   };
 
-  const handleTabChange = (event: { selectedIndex: number }) => {
-    const currentIndex = event.selectedIndex;
-    setSelectedTabIndex(currentIndex);
+  const handleTabChange = (selectedIndex: number) => {
+    setSelectedTabIndex(selectedIndex);
   };
 
   // Create a canonical query key based on the search parameters so that it won't refetch unnecessarily
@@ -214,7 +213,7 @@ export default function TestRunsTabs({
   }, [runsData, sortOrder, columnsOrder]);
 
   return (
-    <Tabs className={styles.tabs} selectedIndex={selectedTabIndex} onChange={handleTabChange}>
+    <Tabs className={styles.tabs} selectedIndex={selectedTabIndex} onSelectionChange={handleTabChange}>
       <TabList scrollDebounceWait={200} aria-label="Test Runs Tabs">
         {TABS_CONFIG.map((tab) => (
           <Tab key={tab.label}>{tab.label}</Tab>

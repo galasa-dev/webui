@@ -50,8 +50,9 @@ export default function TimezoneSection() {
         <div className={styles.dropdownContainer}>
           <Dropdown
             className={styles.timezoneDropdown}
-            helperText={translations('selectTimeZone')}
-            label={translations('selectTimeZone')}
+            titleText={translations('selectTimeZone')}
+            // titleText, helperText, and label all have the same value. In Carbon v1.92.1, titleText is the main label and label is for the selected item placeholder.
+            label=""
             id="custom-timezone-dropdown"
             data-testid="custom-timezone-dropdown-test"
             items={SUPPORTED_TIMEZONES}

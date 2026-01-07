@@ -12,6 +12,60 @@ import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { decodeStateFromUrlParam } from '@/utils/encoding/urlEncoder';
 import { TestRunsQueryParamsProvider } from '@/contexts/TestRunsQueryParamsContext';
 import { SavedQueriesProvider } from '@/contexts/SavedQueriesContext';
+// Mock Carbon React Tabs components
+jest.mock('@carbon/react', () => {
+  const actual = jest.requireActual('@carbon/react');
+  let onTabsSelectionChange: (selectedIndex: number) => void;
+  let currentSelectedIndex = 0;
+  
+  const Tabs = ({ children, selectedIndex, onSelectionChange, className }: any) => {
+    onTabsSelectionChange = onSelectionChange;
+    currentSelectedIndex = selectedIndex;
+    return (
+      <div className={className} data-selected-index={selectedIndex}>
+        {children}
+      </div>
+    );
+  };
+  
+  const TabList = ({ children }: any) => {
+    return <div role="tablist">{children}</div>;
+  };
+  
+  const Tab = ({ children }: any) => {
+    const tabText = children;
+    const tabIndex = ['Timeframe', 'Table Design', 'Search Criteria', 'Results', 'Graph'].indexOf(tabText);
+    const isSelected = tabIndex === currentSelectedIndex;
+    
+    return (
+      <button
+        role="tab"
+        aria-selected={isSelected}
+        onClick={() => onTabsSelectionChange && onTabsSelectionChange(tabIndex)}
+      >
+        {tabText}
+      </button>
+    );
+  };
+  
+  const TabPanels = ({ children }: any) => {
+    return <div>{children}</div>;
+  };
+  
+  const TabPanel = ({ children }: any) => {
+    return <div role="tabpanel">{children}</div>;
+  };
+  
+  return {
+    ...actual,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
+  };
+});
+
 
 // Mock Child Components
 const TestRunsTableMock = jest.fn((props) => (

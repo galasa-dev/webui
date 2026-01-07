@@ -98,9 +98,11 @@ exports[`Layout renders the web UI layout 1`] = `
                           <button
                             aria-expanded="false"
                             aria-haspopup="true"
-                            aria-labelledby="tooltip-:r0:"
-                            class="cds--btn--icon-only overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
+                            aria-labelledby="tooltip-:r1:"
+                            class="overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                             data-floating-menu-container="true"
+                            tooltipalignment="center"
+                            tooltipposition="bottom"
                             type="button"
                           >
                             <svg
@@ -123,7 +125,7 @@ exports[`Layout renders the web UI layout 1`] = `
                         <span
                           aria-hidden="true"
                           class="cds--popover"
-                          id="tooltip-:r0:"
+                          id="tooltip-:r1:"
                           role="tooltip"
                         >
                           <span
@@ -153,7 +155,7 @@ exports[`Layout renders the web UI layout 1`] = `
                       >
                         <button
                           aria-label="System"
-                          aria-labelledby="tooltip-:r2:"
+                          aria-labelledby="tooltip-:r4:"
                           class="iconButton active"
                         >
                           <svg
@@ -179,7 +181,7 @@ exports[`Layout renders the web UI layout 1`] = `
                       <span
                         aria-hidden="true"
                         class="cds--popover"
-                        id="tooltip-:r2:"
+                        id="tooltip-:r4:"
                         role="tooltip"
                       >
                         <span
@@ -211,8 +213,8 @@ exports[`Layout renders the web UI layout 1`] = `
                       <button
                         aria-expanded="false"
                         aria-haspopup="true"
-                        aria-labelledby="tooltip-:r3:"
-                        class="cds--btn--icon-only cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
+                        aria-labelledby="tooltip-:r7:"
+                        class="cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                         data-floating-menu-container="true"
                         data-testid="menu-btn"
                         type="button"
@@ -238,7 +240,7 @@ exports[`Layout renders the web UI layout 1`] = `
                     <span
                       aria-hidden="true"
                       class="cds--popover"
-                      id="tooltip-:r3:"
+                      id="tooltip-:r7:"
                       role="tooltip"
                     >
                       <span
@@ -374,9 +376,11 @@ exports[`Layout renders the web UI layout 1`] = `
                         <button
                           aria-expanded="false"
                           aria-haspopup="true"
-                          aria-labelledby="tooltip-:r0:"
-                          class="cds--btn--icon-only overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
+                          aria-labelledby="tooltip-:r1:"
+                          class="overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                           data-floating-menu-container="true"
+                          tooltipalignment="center"
+                          tooltipposition="bottom"
                           type="button"
                         >
                           <svg
@@ -399,7 +403,7 @@ exports[`Layout renders the web UI layout 1`] = `
                       <span
                         aria-hidden="true"
                         class="cds--popover"
-                        id="tooltip-:r0:"
+                        id="tooltip-:r1:"
                         role="tooltip"
                       >
                         <span
@@ -429,7 +433,7 @@ exports[`Layout renders the web UI layout 1`] = `
                     >
                       <button
                         aria-label="System"
-                        aria-labelledby="tooltip-:r2:"
+                        aria-labelledby="tooltip-:r4:"
                         class="iconButton active"
                       >
                         <svg
@@ -455,7 +459,7 @@ exports[`Layout renders the web UI layout 1`] = `
                     <span
                       aria-hidden="true"
                       class="cds--popover"
-                      id="tooltip-:r2:"
+                      id="tooltip-:r4:"
                       role="tooltip"
                     >
                       <span
@@ -487,8 +491,8 @@ exports[`Layout renders the web UI layout 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
-                      aria-labelledby="tooltip-:r3:"
-                      class="cds--btn--icon-only cds--overflow-menu cds--overflow-menu--lg cds--btn cds--layout--size-lg cds--btn--primary"
+                      aria-labelledby="tooltip-:r7:"
+                      class="cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                       data-floating-menu-container="true"
                       data-testid="menu-btn"
                       type="button"
@@ -514,7 +518,7 @@ exports[`Layout renders the web UI layout 1`] = `
                   <span
                     aria-hidden="true"
                     class="cds--popover"
-                    id="tooltip-:r3:"
+                    id="tooltip-:r7:"
                     role="tooltip"
                   >
                     <span
