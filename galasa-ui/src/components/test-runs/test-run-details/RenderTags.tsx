@@ -15,7 +15,17 @@ type TagWithColour = {
   foregroundColour: string;
 };
 
-const RenderTags = ({ tags, dismissible }: { tags: string[]; dismissible: boolean }) => {
+type TagSize = 'sm' | 'md' | 'lg';
+
+const RenderTags = ({
+  tags,
+  dismissible,
+  size,
+}: {
+  tags: string[];
+  dismissible: boolean;
+  size: TagSize;
+}) => {
   const translations = useTranslations('OverviewTab');
 
   const tagsWithColours = useMemo(
@@ -44,13 +54,13 @@ const RenderTags = ({ tags, dismissible }: { tags: string[]; dismissible: boolea
             key={index}
             dismissTooltipAlignment="bottom"
             onClose={() => {}}
-            size="md"
+            size={size}
             text={tagWithColour.tag}
             title={translations('removeTag')}
             style={style}
           />
         ) : (
-          <Tag size="md" key={index} style={style}>
+          <Tag size={size} key={index} style={style}>
             {tagWithColour.tag}
           </Tag>
         );

@@ -76,7 +76,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           </div>
         </h5>
         <div className={styles.tagsContainer}>
-          <RenderTags tags={tags} dismissible={false} />
+          <RenderTags tags={tags} dismissible={false} size="md" />
         </div>
 
         <div className={styles.redirectLinks}>
@@ -114,7 +114,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             }}
           />
           <div className={styles.tagsContainer}>
-            <RenderTags tags={tags} dismissible={true} />
+            <RenderTags tags={tags} dismissible={true} size="lg" />
           </div>
         </Modal>
       )}
