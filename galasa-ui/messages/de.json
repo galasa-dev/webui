@@ -255,8 +255,14 @@
     "duration": "Dauer",
     "tags": "Tags",
     "noTags": "Keine Tags vorhanden.",
-    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
-    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
+    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests",
+    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs",
+    "modalHeading": "Tags im Testlauf bearbeiten",
+    "modalPrimaryButton": "Speichern",
+    "modalLabelText": "Geben Sie neue Tag-Namen zum Hinzufügen ein oder entfernen Sie vorhandene Tags aus dem Testlauf",
+    "modalPlaceholderText": "Geben Sie hier einen neuen Tag ein und drücken Sie die Eingabetaste",
+    "removeTag": "Tag entfernen",
+    "modalSecondaryButton": "Abbrechen"
   },
   "3270Tab": {
     "Terminal": "Terminal",
