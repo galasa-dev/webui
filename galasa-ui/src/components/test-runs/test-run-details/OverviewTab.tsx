@@ -72,21 +72,11 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           {translations('tags')}
 
           <div className={styles.tagsEditWrapper} onClick={() => setIsTagsEditModalOpen(true)}>
-            <Edit className={styles.tagsEditButton}/>
+            <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
         <div className={styles.tagsContainer}>
-          <RenderTags tags={tags} dismissible={false}/>
-          {/* {tags?.length > 0 ? (
-            tags?.map((tag, index) => (
-              <Tag size="md" key={index}>
-                {tag}
-              </Tag>
-            ))
-          ) : (
-            <p>{translations('noTags')}</p>
-          )} */}
-
+          <RenderTags tags={tags} dismissible={false} />
         </div>
 
         <div className={styles.redirectLinks}>
@@ -114,49 +104,18 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           primaryButtonText={translations('modalPrimaryButton')}
           secondaryButtonText={translations('modalSecondaryButton')}
         >
-        <TextInput
-          data-modal-primary-focus
-          id="text-input-1"
-          labelText={translations('modalLabelText')}
-          placeholder={translations('modalPlaceholderText')}
-          style={{
-            marginBottom: '24px'
-          }}
-        />
-        <div className={styles.tagsContainer}>
-          <RenderTags tags={tags} dismissible={true}/>
-          {/* {tags?.length > 0 ? (
-            tagsWithColours?.length > 0 ? (
-              tagsWithColours?.map((tagWithColour: tagWithColour, index) => {
-                return (
-                  <DismissibleTag
-                    key={index}
-                    dismissTooltipAlignment="bottom"
-                    onClose={()=> {}}
-                    size="md"
-                    text={tagWithColour.tag}
-                    title={translations('removeTag')}
-                    style={{backgroundColor: tagWithColour.backgroundColour, color: tagWithColour.foregroundColour}}
-                  />
-                )
-              })
-            ) : (
-              tags?.map((tag, index) => {
-                return (
-                  <DismissibleTag
-                    key={index}
-                    dismissTooltipAlignment="bottom"
-                    onClose={()=> {}}
-                    size="md"
-                    text={tag}
-                    title={translations('removeTag')}
-                  />
-                )
-              }))
-          ) : (
-            <p>{translations('noTags')}</p>
-          )} */}
-        </div>
+          <TextInput
+            data-modal-primary-focus
+            id="text-input-1"
+            labelText={translations('modalLabelText')}
+            placeholder={translations('modalPlaceholderText')}
+            style={{
+              marginBottom: '24px',
+            }}
+          />
+          <div className={styles.tagsContainer}>
+            <RenderTags tags={tags} dismissible={true} />
+          </div>
         </Modal>
       )}
     </>

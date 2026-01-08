@@ -54,7 +54,7 @@ const tagColours: [string, string][] = [
   ['#D65DB1', '#FFFFFF'], // Orchid
   ['#FF6F91', '#FFFFFF'], // Rose Pink
   ['#00F5FF', '#000000'], // Aqua
-  ['#A8DADC', '#000000']  // Powder Blue
+  ['#A8DADC', '#000000'], // Powder Blue
 ];
 
 export const textToHexColour = (text: string): [string, string] => {
@@ -66,4 +66,4 @@ export const textToHexColour = (text: string): [string, string] => {
   }
   const numberBetweenZeroAndLengthOfColoursArray = Math.abs(hash % (tagColours.length - 1));
   return tagColours[numberBetweenZeroAndLengthOfColoursArray];
-}
+};

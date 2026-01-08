@@ -51,7 +51,7 @@
   gap: 0.5rem;
 }
 
-.tagsEditWrapper{
+.tagsEditWrapper {
   top: 0px;
   margin-left: 0.4rem;
   display: inline-block;
@@ -65,21 +65,16 @@
   vertical-align: middle;
   overflow: hidden;
   font-weight: bold;
-  transition: .2s;
+  transition: 0.2s;
 }
 
-.tagsEditButton{
+.tagsEditButton {
   position: relative;
   width: 22px;
   height: 22px;
-  top: 0.2rem
+  top: 0.2rem;
 }
 
 .tagsEditWrapper:hover {
   background: #5c5c5c9d;
-}
-
-.tag{
-  background-color: aquamarine;
-  /* color: aquamarine; */
 }
