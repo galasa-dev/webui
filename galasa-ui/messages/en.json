@@ -234,8 +234,14 @@
     "duration": "Duration",
     "tags": "Tags",
     "noTags": "No tags were associated with this test run.",
-    "recentRunsLink": "View recent runs of the same test...",
-    "runRetriesLink": "View all attempts of this test run..."
+    "recentRunsLink": "View recent runs of the same test",
+    "runRetriesLink": "View all attempts of this test run",
+    "modalHeading": "Edit tags on test run",
+    "modalPrimaryButton": "Save",
+    "modalLabelText": "Type new tag names to add, or remove existing tags from test run",
+    "modalPlaceholderText": "Type new tag here and hit [enter]",
+    "removeTag": "Remove tag",
+    "modalSecondaryButton": "Cancel"
   },
   "3270Tab": {
     "Terminal": "Terminal",
