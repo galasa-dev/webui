@@ -7,7 +7,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/OverviewTab.module.css';
 import InlineText from './InlineText';
-import { Tag } from '@carbon/react';
 import { RunMetadata } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
 import { Link } from '@carbon/react';
@@ -17,7 +16,7 @@ import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { TextInput } from '@carbon/react';
 import { Modal } from '@carbon/react';
-import { DismissibleTag } from '@carbon/react';
+import RenderTags from './RenderTags';
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const tags = metadata?.tags || [];
@@ -77,7 +76,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           </div>
         </h5>
         <div className={styles.tagsContainer}>
-          {tags?.length > 0 ? (
+          <RenderTags tags={tags} dismissible={false}/>
+          {/* {tags?.length > 0 ? (
             tags?.map((tag, index) => (
               <Tag size="md" key={index}>
                 {tag}
@@ -85,7 +85,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             ))
           ) : (
             <p>{translations('noTags')}</p>
-          )}
+          )} */}
+
         </div>
 
         <div className={styles.redirectLinks}>
@@ -113,31 +114,48 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           primaryButtonText={translations('modalPrimaryButton')}
           secondaryButtonText={translations('modalSecondaryButton')}
         >
-          <TextInput
-            data-modal-primary-focus
-            id="text-input-1"
-            labelText={translations('modalLabelText')}
-            placeholder={translations('modalPlaceholderText')}
-            style={{
-              marginBottom: '24px'
-            }}
-          />
-          <div className={styles.tagsContainer}>
-          {tags?.length > 0 ? (
-            tags?.map((tag, index) => (
-              <DismissibleTag
-                key={index}
-                dismissTooltipAlignment="bottom"
-                onClose={()=> {}}
-                size="md"
-                text={tag}
-                title={translations('removeTag')}
-                // type="red"
-              />
-            ))
+        <TextInput
+          data-modal-primary-focus
+          id="text-input-1"
+          labelText={translations('modalLabelText')}
+          placeholder={translations('modalPlaceholderText')}
+          style={{
+            marginBottom: '24px'
+          }}
+        />
+        <div className={styles.tagsContainer}>
+          <RenderTags tags={tags} dismissible={true}/>
+          {/* {tags?.length > 0 ? (
+            tagsWithColours?.length > 0 ? (
+              tagsWithColours?.map((tagWithColour: tagWithColour, index) => {
+                return (
+                  <DismissibleTag
+                    key={index}
+                    dismissTooltipAlignment="bottom"
+                    onClose={()=> {}}
+                    size="md"
+                    text={tagWithColour.tag}
+                    title={translations('removeTag')}
+                    style={{backgroundColor: tagWithColour.backgroundColour, color: tagWithColour.foregroundColour}}
+                  />
+                )
+              })
+            ) : (
+              tags?.map((tag, index) => {
+                return (
+                  <DismissibleTag
+                    key={index}
+                    dismissTooltipAlignment="bottom"
+                    onClose={()=> {}}
+                    size="md"
+                    text={tag}
+                    title={translations('removeTag')}
+                  />
+                )
+              }))
           ) : (
             <p>{translations('noTags')}</p>
-          )}
+          )} */}
         </div>
         </Modal>
       )}

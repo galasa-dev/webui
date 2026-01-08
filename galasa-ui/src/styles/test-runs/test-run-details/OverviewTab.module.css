@@ -78,3 +78,8 @@
 .tagsEditWrapper:hover {
   background: #5c5c5c9d;
 }
+
+.tag{
+  background-color: aquamarine;
+  /* color: aquamarine; */
+}
