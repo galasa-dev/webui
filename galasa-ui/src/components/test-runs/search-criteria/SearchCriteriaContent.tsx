@@ -363,6 +363,9 @@ export default function SearchCriteriaContent({
                     <StructuredListCell>
                       {searchCriteria[field.id] || field.placeHolder}
                     </StructuredListCell>
+                    {/* This div fixes the strange behaviour that was causing the search
+                     criteria column "allowed values" to have an incorrect width */}
+                    <div />
                   </div>
                 </StructuredListRow>
               ))}

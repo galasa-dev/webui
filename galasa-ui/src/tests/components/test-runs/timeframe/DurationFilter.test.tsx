@@ -84,6 +84,6 @@ describe('DurationFilter', () => {
     await user.tab();
 
     // Assert: Check that the callback was fired with the final, correct value.
-    expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', '45');
+    expect(mockHandleValueChange).toHaveBeenLastCalledWith('durationMinutes', 45);
   });
 });
