@@ -110,7 +110,25 @@ const TestComponent = () => {
         Set Visible Columns
       </button>
       <button onClick={() => setSortOrder([{ id: 'name', order: 'asc' }])}>Set Sort Order</button>
-      <button onClick={() => setColumnsOrder([RESULTS_TABLE_COLUMNS[1], RESULTS_TABLE_COLUMNS[0]])}>
+      <button
+        onClick={() =>
+          setColumnsOrder([
+            RESULTS_TABLE_COLUMNS[12],
+            RESULTS_TABLE_COLUMNS[11],
+            RESULTS_TABLE_COLUMNS[10],
+            RESULTS_TABLE_COLUMNS[9],
+            RESULTS_TABLE_COLUMNS[8],
+            RESULTS_TABLE_COLUMNS[7],
+            RESULTS_TABLE_COLUMNS[6],
+            RESULTS_TABLE_COLUMNS[5],
+            RESULTS_TABLE_COLUMNS[4],
+            RESULTS_TABLE_COLUMNS[3],
+            RESULTS_TABLE_COLUMNS[2],
+            RESULTS_TABLE_COLUMNS[1],
+            RESULTS_TABLE_COLUMNS[0],
+          ])
+        }
+      >
         Set Columns Order
       </button>
       <button onClick={() => setQueryName('My Custom Query')}>Set Query Name</button>
@@ -352,7 +370,21 @@ describe('TestRunsQueryParamsContext', () => {
       const url = mockReplace.mock.calls[0][0];
       const decodedQuery = getDecodedParams(url);
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER)).toBe(
-        `${RESULTS_TABLE_COLUMNS[1].id},${RESULTS_TABLE_COLUMNS[0].id}`
+        [
+          RESULTS_TABLE_COLUMNS[12].id,
+          RESULTS_TABLE_COLUMNS[11].id,
+          RESULTS_TABLE_COLUMNS[10].id,
+          RESULTS_TABLE_COLUMNS[9].id,
+          RESULTS_TABLE_COLUMNS[8].id,
+          RESULTS_TABLE_COLUMNS[7].id,
+          RESULTS_TABLE_COLUMNS[6].id,
+          RESULTS_TABLE_COLUMNS[5].id,
+          RESULTS_TABLE_COLUMNS[4].id,
+          RESULTS_TABLE_COLUMNS[3].id,
+          RESULTS_TABLE_COLUMNS[2].id,
+          RESULTS_TABLE_COLUMNS[1].id,
+          RESULTS_TABLE_COLUMNS[0].id,
+        ].join(',')
       );
     });
   });

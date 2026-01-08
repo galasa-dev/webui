@@ -41,7 +41,7 @@ export function encodeStateToUrlParam(queryString: string): string {
     const params = new URLSearchParams(queryString);
     let paramObject = paramsToObject(params);
 
-    paramObject = checkUrlParamsContainsAllQueryParameterFields(paramObject);
+    paramObject = syncResultsTableColumnsWithQueryParams(paramObject);
 
     // T minify the object before doing anything else
     const minifiedObject = minifyState(paramObject);
@@ -62,7 +62,7 @@ export function encodeStateToUrlParam(queryString: string): string {
  * are added, any pre-existing saved queries without that field in the encoded
  * URL have the new column added.
  */
-export function checkUrlParamsContainsAllQueryParameterFields(
+export function syncResultsTableColumnsWithQueryParams(
   params: Record<string, string>
 ): Record<string, string> {
   // columnsOrder param used here as its used to populate TableDesignContent.

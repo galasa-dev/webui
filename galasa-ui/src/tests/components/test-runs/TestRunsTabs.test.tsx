@@ -420,7 +420,18 @@ describe('TestRunsTabs Component', () => {
       // Act: Simulate a child component updating the state
       const newOrder = [
         { id: 'result', columnName: 'Result' },
+        { id: 'tags', columnName: 'Tags' },
         { id: 'status', columnName: 'Status' },
+        { id: 'testName', columnName: 'Test Name (full)' },
+        { id: 'testShortName', columnName: 'Test Name (short)' },
+        { id: 'package', columnName: 'Package' },
+        { id: 'bundle', columnName: 'Bundle' },
+        { id: 'group', columnName: 'Group' },
+        { id: 'submissionId', columnName: 'Submission ID' },
+        { id: 'user', columnName: 'User' },
+        { id: 'requestor', columnName: 'Requestor' },
+        { id: 'runName', columnName: 'Test Run name' },
+        { id: 'submittedAt', columnName: 'Submitted at' },
       ];
       act(() => {
         if (capturedSetColumnsOrder) {
@@ -436,7 +447,9 @@ describe('TestRunsTabs Component', () => {
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
 
-      expect(decodedParams.get('columnsOrder')).toBe('result,status');
+      expect(decodedParams.get('columnsOrder')).toBe(
+        'result,tags,status,testName,testShortName,package,bundle,group,submissionId,user,requestor,runName,submittedAt'
+      );
       // Visible columns should be sorted with the same previous values
       expect(decodedParams.get('visibleColumns')).toBe(
         'requestor,result,runName,status,submittedAt,testName'
