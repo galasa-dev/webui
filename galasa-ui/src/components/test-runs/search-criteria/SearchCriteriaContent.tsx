@@ -354,6 +354,7 @@ export default function SearchCriteriaContent({
                     <StructuredListCell>
                       {searchCriteria[field.id] || field.placeHolder}
                     </StructuredListCell>
+                    <div/>
                   </div>
                 </StructuredListRow>
               ))}
