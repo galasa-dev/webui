@@ -228,6 +228,7 @@
     "group": "Group",
     "submissionId": "Submission ID",
     "requestor": "Requestor",
+    "user": "User",
     "submitted": "Submitted",
     "started": "Started",
     "finished": "Finished",
@@ -304,6 +305,7 @@
     "submittedAt": "Submitted at",
     "runName": "Test Run Name",
     "requestor": "Requestor",
+    "user": "User",
     "group": "Group",
     "bundle": "Bundle",
     "package": "Package",
@@ -337,6 +339,7 @@
     "submittedAt": "Submitted At",
     "runName": "Run Name",
     "requestor": "Requestor",
+    "user": "User",
     "submissionId": "Submission ID",
     "group": "Group",
     "bundle": "Bundle",
@@ -423,6 +426,11 @@
       "requestor": {
         "label": "Requestor",
         "placeholder": "any",
+        "description": "Enter the name of the requestor whose token was used to request the test runs you want to find."
+      },
+      "user": {
+        "label": "User",
+        "placeholder": "any",
         "description": "Enter the name of the user who requested the test runs you want to find."
       },
       "group": {
@@ -495,6 +503,7 @@
     "submittedAt": "Submitted at",
     "runName": "Test Run Name",
     "requestor": "Requestor",
+    "user": "User",
     "group": "Group",
     "bundle": "Bundle",
     "package": "Package",

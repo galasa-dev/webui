@@ -22,6 +22,7 @@ export interface RunMetadata {
   package: string;
   group: string;
   requestor: string;
+  user: string;
   rawSubmittedAt?: string;
   submitted: string;
   startedAt: string;
