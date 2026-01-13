@@ -70,6 +70,8 @@ jest.mock('next-intl', () => ({
       'fields.runName.description': 'Description for Test Run Name',
       'fields.requestor.label': 'Requestor',
       'fields.requestor.description': 'Description for Requestor',
+      'fields.user.label': 'User',
+      'fields.user.description': 'Description for User',
       'fields.group.label': 'Group',
       'fields.group.description': 'Description for Group',
       'fields.bundle.label': 'Bundle',
@@ -309,6 +311,15 @@ describe('SearchCriteriaContent', () => {
     const requestorRow =
       screen.getByText('Requestor').closest('[role="row"]') || document.createElement('div');
     fireEvent.click(requestorRow);
+
+    // The component should still render its structure
+    expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
+
+    // Switch to another filter that depends on a promise
+    // The "User" field uses the requestorPromise as users and requestors are the same group of IDs
+    const userRow =
+      screen.getByText('User').closest('[role="row"]') || document.createElement('div');
+    fireEvent.click(userRow);
 
     // The component should still render its structure
     expect(screen.getByTestId('mock-custom-search-component')).toBeInTheDocument();
