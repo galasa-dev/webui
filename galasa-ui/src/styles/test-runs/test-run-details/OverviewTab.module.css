@@ -78,3 +78,15 @@
 .tagsEditWrapper:hover {
   background: #5c5c5c9d;
 }
+
+.tagsContainer :global(.cds--tag--filter):hover :global(.cds--tag__close-icon) {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.notification {
+  margin-bottom: 1rem;
+}
+
+.tagsTextInput {
+  margin-bottom: 1.5rem;
+}

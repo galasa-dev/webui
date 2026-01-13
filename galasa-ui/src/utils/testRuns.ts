@@ -103,7 +103,6 @@ export const fetchAllTestRunsByPaging = async ({
         fromDate,
         toDate,
         testName,
-        undefined, // page
         BATCH_SIZE,
         undefined, // runId
         runName,
@@ -218,4 +217,50 @@ export const fetchTestArtifacts = async (slug: string): Promise<ArtifactIndexEnt
   }
 
   return runArtifacts;
+};
+
+/**
+ * Updates the tags for a test run by sending a PUT request to the RAS API.
+ * This function fetches the current run details, merges new tags with existing ones,
+ * removes duplicates, and sends the updated tag list to the server.
+ *
+ * @param {string} runId - The ID of the test run to update.
+ * @param {string[]} tagsToAdd - Array of tags to add to the run.
+ * @param {string[]} tagsToRemove - Array of tags to remove from the run.
+ * @returns {Promise<void>} - A promise that resolves when the update is complete.
+ * @throws {Error} - Throws an error if the update fails.
+ */
+export const updateRunTags = async (
+  runId: string,
+  tagsToAdd: string[] = [],
+  tagsToRemove: string[] = []
+): Promise<void> => {
+  const rasApiClient = getRasApiClient();
+
+  try {
+    // Fetch current run details to get existing tags
+    const currentRun = await rasApiClient.getRasRunById(runId);
+    const existingTags = currentRun.testStructure?.tags || [];
+
+    // Create a set of tags to remove for efficient lookup
+    const tagsToRemoveSet = new Set(tagsToRemove.map((tag) => tag.toLowerCase()));
+
+    // Filter out tags that should be removed
+    const filteredTags = existingTags.filter((tag) => !tagsToRemoveSet.has(tag.toLowerCase()));
+
+    // Add new tags, avoiding duplicates (case-insensitive)
+    const existingTagsLower = new Set(filteredTags.map((tag) => tag.toLowerCase()));
+    const uniqueNewTags = tagsToAdd.filter((tag) => !existingTagsLower.has(tag.toLowerCase()));
+
+    // Combine filtered existing tags with new unique tags
+    const updatedTags = [...filteredTags, ...uniqueNewTags];
+
+    // Send PUT request to update the run with new tags
+    await rasApiClient.putRasRunTagsOrStatusById(runId, {
+      tags: updatedTags,
+    });
+  } catch (error: any) {
+    console.error('Error updating run tags:', error);
+    throw error;
+  }
 };

@@ -8,6 +8,7 @@ import { DismissibleTag, Tag } from '@carbon/react';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { textToHexColour } from '@/utils/functions/textToHexColour';
+import styles from '@/styles/test-runs/test-run-details/RenderTags.module.css';
 
 type TagWithColour = {
   tag: string;
@@ -21,10 +22,14 @@ const RenderTags = ({
   tags,
   dismissible,
   size,
+  onTagRemove,
+  disabledTags = [],
 }: {
   tags: string[];
   dismissible: boolean;
   size: TagSize;
+  onTagRemove?: (tag: string) => void;
+  disabledTags?: string[];
 }) => {
   const translations = useTranslations('OverviewTab');
 
@@ -32,9 +37,10 @@ const RenderTags = ({
     () =>
       tags.map((tag) => {
         const [backgroundColour, foregroundColour] = textToHexColour(tag);
-        return { tag, backgroundColour, foregroundColour };
+        const isDisabled = disabledTags.includes(tag);
+        return { tag, backgroundColour, foregroundColour, isDisabled };
       }),
-    [tags]
+    [tags, disabledTags]
   );
 
   if (tags.length === 0) {
@@ -43,21 +49,29 @@ const RenderTags = ({
 
   return (
     <>
-      {tagsWithColours.map((tagWithColour: TagWithColour, index) => {
+      {tagsWithColours.map((tagWithColour: TagWithColour & { isDisabled: boolean }, index) => {
+        // Inline styles needed to grab colours from the "tagWithColour" variable.
         const style = {
-          backgroundColor: tagWithColour.backgroundColour,
-          color: tagWithColour.foregroundColour,
+          backgroundColor: `${tagWithColour.backgroundColour}`,
+          color: `${tagWithColour.foregroundColour}`,
+          opacity: tagWithColour.isDisabled ? 0.5 : 1,
         };
 
         return dismissible ? (
           <DismissibleTag
             key={index}
+            className={styles.dismissibleTag}
             dismissTooltipAlignment="bottom"
-            onClose={() => {}}
+            onClose={() => {
+              if (onTagRemove && !tagWithColour.isDisabled) {
+                onTagRemove(tagWithColour.tag);
+              }
+            }}
             size={size}
             text={tagWithColour.tag}
             title={translations('removeTag')}
             style={style}
+            disabled={tagWithColour.isDisabled}
           />
         ) : (
           <Tag size={size} key={index} style={style}>

@@ -241,7 +241,11 @@
     "modalLabelText": "Type new tag names to add, or remove existing tags from test run",
     "modalPlaceholderText": "Type new tag here and hit [enter]",
     "removeTag": "Remove tag",
-    "modalSecondaryButton": "Cancel"
+    "modalSecondaryButton": "Cancel",
+    "updateSuccess": "Tags updated successfully",
+    "updateSuccessMessage": "The tags have been updated for this test run.",
+    "updateError": "Failed to update tags",
+    "updateErrorMessage": "An error occurred while updating the tags. Please try again."
   },
   "3270Tab": {
     "Terminal": "Terminal",
@@ -356,7 +360,6 @@
     "isloading": "Loading graph...",
     "errorLoadingGraph": "Something went wrong loading the graph.",
     "noTestRunsFound": "No test runs found.",
-
     "limitExceeded": {
       "title": "Limit Exceeded",
       "subtitle": "Your query returned more than {maxRecords} results. Showing the first {maxRecords} records. To avoid this in the future narrow your time frame or change your search criteria to return fewer results."
