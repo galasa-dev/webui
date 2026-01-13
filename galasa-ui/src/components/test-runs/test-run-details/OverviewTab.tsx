@@ -89,7 +89,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         body: JSON.stringify({
           tagsToAdd: newTags,
           tagsToRemove: tagsToDelete,
-          existingTags: metadata.tags
+          existingTags: metadata.tags,
         }),
       });
 

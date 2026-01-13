@@ -21,7 +21,9 @@ export async function PUT(request: NextRequest, { params }: { params: { runid: s
     const tagsToRemoveSet = new Set(tagsToRemove.map((tag: string) => tag.toLowerCase()));
 
     // Filter out tags that should be removed.
-    const filteredTags = existingTags.filter((tag: string) => !tagsToRemoveSet.has(tag.toLowerCase()));
+    const filteredTags = existingTags.filter(
+      (tag: string) => !tagsToRemoveSet.has(tag.toLowerCase())
+    );
 
     // Add new tags, avoiding duplicates (case-insensitive).
     const existingTagsLower = new Set(filteredTags.map((tag: string) => tag.toLowerCase()));
