@@ -94,6 +94,7 @@ export default function TestRunsTabs({
         submittedAt: structure.queued || 'N/A',
         runName: structure.runName || 'N/A',
         requestor: structure.requestor || 'N/A',
+        user: structure.user || 'N/A',
         group: structure.group || 'N/A',
         bundle: structure.bundle || 'N/A',
         package: structure.testName?.substring(0, structure.testName.lastIndexOf('.')) || 'N/A',
@@ -121,6 +122,7 @@ export default function TestRunsTabs({
       TEST_RUNS_QUERY_PARAMS.DURATION,
       TEST_RUNS_QUERY_PARAMS.RUN_NAME,
       TEST_RUNS_QUERY_PARAMS.REQUESTOR,
+      TEST_RUNS_QUERY_PARAMS.USER,
       TEST_RUNS_QUERY_PARAMS.GROUP,
       TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID,
       TEST_RUNS_QUERY_PARAMS.BUNDLE,
@@ -141,7 +143,8 @@ export default function TestRunsTabs({
           key === TEST_RUNS_QUERY_PARAMS.TAGS ||
           key === TEST_RUNS_QUERY_PARAMS.RESULT ||
           key === TEST_RUNS_QUERY_PARAMS.STATUS ||
-          key === TEST_RUNS_QUERY_PARAMS.REQUESTOR
+          key === TEST_RUNS_QUERY_PARAMS.REQUESTOR ||
+          key === TEST_RUNS_QUERY_PARAMS.USER
         ) {
           value = value?.split(',').sort().join(',');
         }

@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     toDate,
     runName: searchParams.get(TEST_RUNS_QUERY_PARAMS.RUN_NAME) || undefined,
     requestor: searchParams.get(TEST_RUNS_QUERY_PARAMS.REQUESTOR) || undefined,
+    user: searchParams.get(TEST_RUNS_QUERY_PARAMS.USER) || undefined,
     group: searchParams.get(TEST_RUNS_QUERY_PARAMS.GROUP) || undefined,
     submissionId: searchParams.get(TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID) || undefined,
     bundle: searchParams.get(TEST_RUNS_QUERY_PARAMS.BUNDLE) || undefined,

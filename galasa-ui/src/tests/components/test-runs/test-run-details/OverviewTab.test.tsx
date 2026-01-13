@@ -43,6 +43,7 @@ jest.mock('next-intl', () => ({
       group: 'Group',
       submissionId: 'Submission ID',
       requestor: 'Requestor',
+      user: 'User',
       submitted: 'Submitted',
       started: 'Started',
       finished: 'Finished',
@@ -75,6 +76,7 @@ const completeMetadata: RunMetadata = {
   package: 'com.example.tests',
   submissionId: 'SUB123',
   requestor: 'alice@example.com',
+  user: 'alice2@example.com',
   submitted: '2025-06-10T09:00:00Z',
   startedAt: '2025-06-10T09:05:00Z',
   finishedAt: '2025-06-10T09:15:00Z',
@@ -98,6 +100,7 @@ describe('OverviewTab', () => {
       ['Group:', completeMetadata.group],
       ['Submission ID:', completeMetadata.submissionId],
       ['Requestor:', completeMetadata.requestor],
+      ['User:', completeMetadata.user],
     ].forEach(([label, value]) => {
       // check the label <p>
       expect(screen.getByText(label as string, { selector: 'p' })).toBeInTheDocument();

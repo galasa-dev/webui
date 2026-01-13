@@ -249,6 +249,7 @@
     "group": "Gruppe",
     "submissionId": "Übermittlungs-ID",
     "requestor": "Anforderer",
+    "user": "Benutzer",
     "submitted": "Eingereicht",
     "started": "Gestartet",
     "finished": "Beendet",
@@ -335,6 +336,7 @@
     "submittedAt": "Eingereicht am",
     "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
+    "user": "Benutzer",
     "group": "Gruppe",
     "bundle": "Bundle",
     "package": "Paket",
@@ -368,6 +370,7 @@
     "submittedAt": "Eingereicht am",
     "runName": "Ausführungsname",
     "requestor": "Anforderer",
+    "user": "Benutzer",
     "submissionId": "Einreichungs-ID",
     "group": "Gruppe",
     "bundle": "Paket",
@@ -455,6 +458,11 @@
       "requestor": {
         "label": "Anforderer",
         "placeholder": "beliebig",
+        "description": "Geben Sie den Namen des Anforderers ein, dessen Token zum Anfordern der Testläufe verwendet wurde, die Sie finden möchten."
+      },
+      "user": {
+        "label": "Benutzer",
+        "placeholder": "beliebig",
         "description": "Geben Sie den Namen des Benutzers ein, der die Testläufe angefordert hat, die Sie finden möchten."
       },
       "group": {
@@ -527,6 +535,7 @@
     "submittedAt": "Eingereicht am",
     "runName": "Name des Testlaufs",
     "requestor": "Anforderer",
+    "user": "Benutzer",
     "group": "Gruppe",
     "bundle": "Bundle",
     "package": "Paket",

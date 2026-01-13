@@ -9,6 +9,7 @@ import {
   decompressFromEncodedURIComponent as decompress,
 } from 'lz-string';
 import { minifyState, expandState } from './urlStateMappers';
+import { RESULTS_TABLE_COLUMNS, TEST_RUNS_QUERY_PARAMS } from '../constants/common';
 
 function paramsToObject(params: URLSearchParams): Record<string, string> {
   const obj: Record<string, string> = {};
@@ -38,7 +39,9 @@ export function encodeStateToUrlParam(queryString: string): string {
   }
   try {
     const params = new URLSearchParams(queryString);
-    const paramObject = paramsToObject(params);
+    let paramObject = paramsToObject(params);
+
+    paramObject = syncResultsTableColumnsWithQueryParams(paramObject);
 
     // T minify the object before doing anything else
     const minifiedObject = minifyState(paramObject);
@@ -52,6 +55,57 @@ export function encodeStateToUrlParam(queryString: string): string {
     console.error('Failed to encode URL state:', error);
     return '';
   }
+}
+
+/**
+ * Introduced to ensure that when new results table columns/search criteria
+ * are added, any pre-existing saved queries without that field in the encoded
+ * URL have the new column added.
+ */
+export function syncResultsTableColumnsWithQueryParams(
+  params: Record<string, string>
+): Record<string, string> {
+  // columnsOrder param used here as its used to populate TableDesignContent.
+  const columnsOrderParam = params[TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER];
+
+  if (columnsOrderParam) {
+    const columnsOrderFromURL = columnsOrderParam
+      .split(',')
+      .map((col) => col.trim())
+      .filter(Boolean);
+
+    const allColumnIds = RESULTS_TABLE_COLUMNS.map((col) => col.id);
+    const columnsOrderSet = new Set(columnsOrderFromURL);
+
+    // If adding a new column into the parameters, slot it in after
+    // its predecessor in the default order of the results table columns.
+    for (let colIndex = 0; colIndex < allColumnIds.length; colIndex++) {
+      const columnId = allColumnIds[colIndex];
+
+      if (columnsOrderSet.has(columnId)) {
+        continue;
+      }
+
+      let insertIndex = 0;
+      for (let aPreviousIndex = colIndex - 1; aPreviousIndex >= 0; aPreviousIndex--) {
+        const predecessor = allColumnIds[aPreviousIndex];
+        const predecessorIndex = columnsOrderFromURL.indexOf(predecessor);
+
+        if (predecessorIndex !== -1) {
+          insertIndex = predecessorIndex + 1;
+          break;
+        }
+      }
+
+      columnsOrderFromURL.splice(insertIndex, 0, columnId);
+      columnsOrderSet.add(columnId);
+    }
+
+    // Update parameter in URL with full columns list
+    params[TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER] = columnsOrderFromURL.join(',');
+  }
+
+  return params;
 }
 
 /**
