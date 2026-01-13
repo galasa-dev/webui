@@ -84,7 +84,6 @@ describe('fetchAllTestRunsByPaging Function', () => {
       new Date('2023-10-26T00:00:00.000Z'),
       new Date('2023-10-27T00:00:00.000Z'),
       undefined,
-      undefined,
       4,
       undefined,
       undefined,

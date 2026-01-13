@@ -103,7 +103,6 @@ export const fetchAllTestRunsByPaging = async ({
         fromDate,
         toDate,
         testName,
-        undefined, // page
         BATCH_SIZE,
         undefined, // runId
         runName,
