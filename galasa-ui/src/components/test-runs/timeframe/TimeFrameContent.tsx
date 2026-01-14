@@ -127,7 +127,6 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
     ToSelectionOptions.now
   );
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
@@ -207,17 +206,8 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
       // Always sync the "To" option with isRelativeToNow
       setSelectedToOption(toOption);
-
-      // Only set the "From" option on initial load
-      if (!hasInitialized) {
-        const fromOption = values.isRelativeToNow
-          ? FromSelectionOptions.duration
-          : FromSelectionOptions.specificFromTime;
-        setSelectedFromOption(fromOption);
-        setHasInitialized(true);
-      }
     }
-  }, [values.isRelativeToNow, hasInitialized]);
+  }, [values.isRelativeToNow]);
 
   return (
     <div className={styles.timeFrameContainer}>
