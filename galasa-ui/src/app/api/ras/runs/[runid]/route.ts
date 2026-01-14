@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest, { params }: { params: { runid: s
     const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
-    // Note: Tags are already unique from the Set in the frontend.
+    // Note: Tags are already unique from the Set in the frontend, but is checked again by the rest api.
     await rasApiClient.putRasRunTagsOrStatusById(runid, {
       tags: tags,
     });
