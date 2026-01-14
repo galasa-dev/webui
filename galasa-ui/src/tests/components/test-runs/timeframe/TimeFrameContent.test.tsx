@@ -8,8 +8,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TimeFrameContent, {
   applyTimeFrameRules,
   calculateSynchronizedState,
+  FromSelectionOptions,
+  ToSelectionOptions,
 } from '@/components/test-runs/timeframe/TimeFrameContent';
-import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState } from 'react';
@@ -391,6 +392,10 @@ describe('applyTimeFrameRules', () => {
       const toDateInput = screen.getByLabelText('To Date');
       const daysInput = screen.getByLabelText('Days');
 
+      // Click on the specific 'From' time radio button
+      const specificFromTimeRadio = screen.getByDisplayValue(FromSelectionOptions.specificFromTime);
+      fireEvent.click(specificFromTimeRadio);
+
       fireEvent.change(fromDateInput, { target: { value: '2025-08-12' } });
       fireEvent.change(toDateInput, { target: { value: '2025-08-15' } });
 
@@ -431,7 +436,13 @@ describe('applyTimeFrameRules', () => {
       const daysInput = screen.getByLabelText('Days');
       const minutesInput = screen.getByLabelText('Minutes');
 
+      const specificFromTimeRadio = screen.getByDisplayValue(FromSelectionOptions.specificFromTime);
+      const specificToTimeRadio = screen.getByDisplayValue(ToSelectionOptions.specificToTime);
+      fireEvent.click(specificFromTimeRadio);
+      fireEvent.click(specificToTimeRadio);
+
       // Change "From" date to be after "To" date
+      fireEvent.change(toDateInput, { target: { value: '08/12/2025' } });
       fireEvent.change(fromDateInput, { target: { value: '08/15/2025' } });
 
       // Check that the error notification is displayed
@@ -465,6 +476,9 @@ describe('applyTimeFrameRules', () => {
       const nowRadio = screen.getByLabelText('Now');
       // Check the initial value before the click
       expect(toDateInput).toHaveValue(new Date(initialTo).toLocaleDateString('en-US'));
+
+      const specificToTimeRadio = screen.getByDisplayValue(ToSelectionOptions.specificToTime);
+      fireEvent.click(specificToTimeRadio);
 
       // Act: Click the radio button
       fireEvent.click(nowRadio);

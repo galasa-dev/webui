@@ -23,8 +23,6 @@ import { Tile } from '@carbon/react';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
 import { Button } from '@carbon/react';
-import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import {
   FolderNode,
   ArtifactDetails,

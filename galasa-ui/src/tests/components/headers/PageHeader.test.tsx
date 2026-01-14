@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import PageHeader from '@/components/headers/PageHeader';
 import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';

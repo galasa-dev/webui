@@ -121,11 +121,11 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const { getResolvedTimeZone } = useDateTimeFormat();
 
   const [notification, setNotification] = useState<Notification | null>(null);
-  const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions | null>(
-    FromSelectionOptions.specificFromTime
+  const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions>(
+    FromSelectionOptions.duration
   );
-  const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions | null>(
-    ToSelectionOptions.specificToTime
+  const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
+    ToSelectionOptions.now
   );
   const [hasInitialized, setHasInitialized] = useState(false);
 

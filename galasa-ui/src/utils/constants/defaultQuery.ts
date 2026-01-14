@@ -1,3 +1,8 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 import { encodeStateToUrlParam } from '../encoding/urlEncoder';
 import { DEFAULT_VISIBLE_COLUMNS, RESULTS_TABLE_COLUMNS, TEST_RUNS_QUERY_PARAMS } from './common';
 
