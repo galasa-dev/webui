@@ -8,3 +8,15 @@
   --cds-layer: #ffffff00;
   --cds-text-disabled: #000000;
 }
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.tagsContainer :global(.cds--tag--filter):hover :global(.cds--tag__close-icon) {
+  background-color: rgba(0, 0, 0, 0.2);
+}

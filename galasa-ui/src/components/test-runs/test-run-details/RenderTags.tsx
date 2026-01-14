@@ -45,7 +45,7 @@ const RenderTags = ({
   }
 
   return (
-    <>
+    <div className={styles.tagsContainer}>
       {tagsWithColours.map((tagWithColour: TagWithColour, index) => {
         // Inline styles needed to grab colours from the "tagWithColour" variable.
         const style = {
@@ -74,7 +74,7 @@ const RenderTags = ({
           </Tag>
         );
       })}
-    </>
+    </div>
   );
 };
 

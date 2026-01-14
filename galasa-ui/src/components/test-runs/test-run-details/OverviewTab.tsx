@@ -168,7 +168,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           {translations('tags')}
 
           <div
-            className={styles.tagsEditWrapper}
+            className={styles.tagsEditButtonWrapper}
             onClick={() => {
               setIsTagsEditModalOpen(true);
             }}
@@ -176,9 +176,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
-        <div className={styles.tagsContainer}>
-          <RenderTags tags={tags} dismissible={false} size="md" />
-        </div>
+        <RenderTags tags={tags} dismissible={false} size="md" />
 
         <div className={styles.redirectLinks}>
           <div className={styles.linkWrapper} onClick={handleNavigationClick}>
@@ -228,14 +226,12 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             onKeyDown={handleKeyDown}
             className={styles.tagsTextInput}
           />
-          <div className={styles.tagsContainer}>
-            <RenderTags
-              tags={Array.from(stagedTags)}
-              dismissible={true}
-              size="lg"
-              onTagRemove={handleTagRemove}
-            />
-          </div>
+          <RenderTags
+            tags={Array.from(stagedTags)}
+            dismissible={true}
+            size="lg"
+            onTagRemove={handleTagRemove}
+          />
         </Modal>
       )}
     </>

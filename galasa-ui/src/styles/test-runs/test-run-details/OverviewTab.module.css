@@ -34,14 +34,8 @@
 }
 
 .tagsSection h5 {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   font-weight: 600;
-}
-
-.tagsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .redirectLinks {
@@ -51,7 +45,7 @@
   gap: 0.5rem;
 }
 
-.tagsEditWrapper {
+.tagsEditButtonWrapper {
   top: 0px;
   margin-left: 0.4rem;
   display: inline-block;
@@ -68,19 +62,15 @@
   transition: 0.2s;
 }
 
+.tagsEditButtonWrapper:hover {
+  background: #5c5c5c9d;
+}
+
 .tagsEditButton {
   position: relative;
   width: 22px;
   height: 22px;
   top: 0.2rem;
-}
-
-.tagsEditWrapper:hover {
-  background: #5c5c5c9d;
-}
-
-.tagsContainer :global(.cds--tag--filter):hover :global(.cds--tag__close-icon) {
-  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .notification {
