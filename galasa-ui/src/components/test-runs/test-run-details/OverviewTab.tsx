@@ -26,8 +26,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<Boolean>(false);
-  const [tagsToDelete, setTagsToDelete] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState<string>('');
+  const [stagedTags, setStagedTags] = useState<Set<string>>(new Set(tags));
   const [notification, setNotification] = useState<{
     kind: 'success' | 'error';
     title: string;
@@ -51,7 +51,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   }, [metadata?.rawSubmittedAt]);
 
   const handleNavigationClick = () => {
-    // Push the current URL to the breadcrumb history
+    // Push the current URL to the breadcrumb history.
     pushBreadCrumb({
       title: `${metadata.runName}`,
       route: `/test-runs/${metadata.runId}`,
@@ -59,13 +59,42 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   };
 
   const handleTagRemove = (tag: string) => {
-    setTagsToDelete((prev) => [...prev, tag]);
+    setStagedTags((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(tag);
+      return newSet;
+    });
+  };
+
+  const handleStageNewTags = () => {
+    // Parse new tags from input (comma or space separated).
+    const newTags = newTagInput
+      .split(/[,\s]+/)
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+
+    // Add new tags to staged tags Set (automatically handles duplicates).
+    setStagedTags((prev) => {
+      const newSet = new Set(prev);
+      newTags.forEach((tag) => newSet.add(tag));
+      return newSet;
+    });
+
+    // Clear the input after staging
+    setNewTagInput('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleStageNewTags();
+    }
   };
 
   const handleModalClose = () => {
     setIsTagsEditModalOpen(false);
-    setTagsToDelete([]);
     setNewTagInput('');
+    setStagedTags(new Set(tags));
     setNotification(null);
   };
 
@@ -74,22 +103,14 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     setNotification(null);
 
     try {
-      // Parse new tags from input (comma or space separated)
-      const newTags = newTagInput
-        .split(/[,\s]+/)
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-
-      // Call the API route to update tags
+      // Call the API route to update tags using the staged tags Set.
       const response = await fetch(`/api/ras/runs/${metadata.runId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tagsToAdd: newTags,
-          tagsToRemove: tagsToDelete,
-          existingTags: metadata.tags,
+          tags: Array.from(stagedTags),
         }),
       });
 
@@ -146,7 +167,12 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         <h5>
           {translations('tags')}
 
-          <div className={styles.tagsEditWrapper} onClick={() => setIsTagsEditModalOpen(true)}>
+          <div
+            className={styles.tagsEditWrapper}
+            onClick={() => {
+              setIsTagsEditModalOpen(true);
+            }}
+          >
             <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
@@ -173,7 +199,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
       {isTagsEditModalOpen && (
         <Modal
-          open={true}
+          open={isTagsEditModalOpen}
           onRequestClose={handleModalClose}
           modalHeading={`${translations('modalHeading')} ${metadata.runName}`}
           primaryButtonText={translations('modalPrimaryButton')}
@@ -199,15 +225,15 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             placeholder={translations('modalPlaceholderText')}
             value={newTagInput}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTagInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             className={styles.tagsTextInput}
           />
           <div className={styles.tagsContainer}>
             <RenderTags
-              tags={tags}
+              tags={Array.from(stagedTags)}
               dismissible={true}
               size="lg"
               onTagRemove={handleTagRemove}
-              disabledTags={tagsToDelete}
             />
           </div>
         </Modal>

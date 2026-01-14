@@ -240,7 +240,7 @@
     "modalHeading": "Edit tags on test run",
     "modalPrimaryButton": "Save",
     "modalLabelText": "Type new tag names to add, or remove existing tags from test run",
-    "modalPlaceholderText": "Type new tag here and hit [enter]",
+    "modalPlaceholderText": "Type new tag(s) here and hit [enter]",
     "removeTag": "Remove tag",
     "modalSecondaryButton": "Cancel",
     "updateSuccess": "Tags updated successfully",

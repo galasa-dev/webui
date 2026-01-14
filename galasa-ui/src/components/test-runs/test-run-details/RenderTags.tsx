@@ -23,13 +23,11 @@ const RenderTags = ({
   dismissible,
   size,
   onTagRemove,
-  disabledTags = [],
 }: {
   tags: string[];
   dismissible: boolean;
   size: TagSize;
   onTagRemove?: (tag: string) => void;
-  disabledTags?: string[];
 }) => {
   const translations = useTranslations('OverviewTab');
 
@@ -37,10 +35,9 @@ const RenderTags = ({
     () =>
       tags.map((tag) => {
         const [backgroundColour, foregroundColour] = textToHexColour(tag);
-        const isDisabled = disabledTags.includes(tag);
-        return { tag, backgroundColour, foregroundColour, isDisabled };
+        return { tag, backgroundColour, foregroundColour };
       }),
-    [tags, disabledTags]
+    [tags]
   );
 
   if (tags.length === 0) {
@@ -49,12 +46,11 @@ const RenderTags = ({
 
   return (
     <>
-      {tagsWithColours.map((tagWithColour: TagWithColour & { isDisabled: boolean }, index) => {
+      {tagsWithColours.map((tagWithColour: TagWithColour, index) => {
         // Inline styles needed to grab colours from the "tagWithColour" variable.
         const style = {
           backgroundColor: `${tagWithColour.backgroundColour}`,
           color: `${tagWithColour.foregroundColour}`,
-          opacity: tagWithColour.isDisabled ? 0.5 : 1,
         };
 
         return dismissible ? (
@@ -63,7 +59,7 @@ const RenderTags = ({
             className={styles.dismissibleTag}
             dismissTooltipAlignment="bottom"
             onClose={() => {
-              if (onTagRemove && !tagWithColour.isDisabled) {
+              if (onTagRemove) {
                 onTagRemove(tagWithColour.tag);
               }
             }}
@@ -71,7 +67,6 @@ const RenderTags = ({
             text={tagWithColour.tag}
             title={translations('removeTag')}
             style={style}
-            disabled={tagWithColour.isDisabled}
           />
         ) : (
           <Tag size={size} key={index} style={style}>
