@@ -473,5 +473,84 @@ describe('applyTimeFrameRules', () => {
         expect(toDateInput).toHaveValue(MOCK_NOW.toLocaleDateString('en-US'));
       });
     });
+
+    test('should sync "To" option when isRelativeToNow changes but keep "From" option unchanged after initialization', async () => {
+      const initialFrom = '2025-08-10T12:00:00.000Z';
+      const initialTo = '2025-08-13T12:00:00.000Z';
+
+      const TestWrapper = () => {
+        const [values, setValues] = useState<TimeFrameValues>(() => {
+          const initialFromDate = new Date(initialFrom);
+          const initialToDate = new Date(initialTo);
+
+          return {
+            ...calculateSynchronizedState(initialFromDate, initialToDate, timezone),
+            isRelativeToNow: false, // Start with specific time (not relative to now)
+          };
+        });
+
+        return (
+          <>
+            <TimeFrameContent values={values} setValues={setValues} />
+            {/* Button to simulate external isRelativeToNow change}*/}
+            <button
+              data-testid="toggle-relative"
+              onClick={() =>
+                setValues((prev) => ({ ...prev, isRelativeToNow: !prev.isRelativeToNow }))
+              }
+            >
+              Toggle isRelativeToNow
+            </button>
+          </>
+        );
+      };
+
+      render(<TestWrapper />);
+
+      const nowRadio = screen.getByLabelText('Now');
+      const specificToTimeRadio = screen.getByLabelText('A specific time', {
+        selector: '#to-specific-time',
+      });
+      const specificFromTimeRadio = screen.getByLabelText('A specific time', {
+        selector: '#from-specific-time',
+      });
+
+      // Initial state: isRelativeToNow is false, so "A specific time" should be checked for both
+      await waitFor(() => {
+        expect(specificToTimeRadio).toBeChecked();
+        expect(specificFromTimeRadio).toBeChecked();
+      });
+
+      // Act: Manually select "Duration" for the "From" option
+      const durationFromRadio = screen.getByLabelText(/Duration before/i);
+      fireEvent.click(durationFromRadio);
+
+      await waitFor(() => {
+        expect(durationFromRadio).toBeChecked();
+      });
+
+      // Simulate an external change to isRelativeToNow to true
+      const toggleButton = screen.getByTestId('toggle-relative');
+      fireEvent.click(toggleButton);
+
+      // "To" option should sync to "Now" since isRelativeToNow is now true
+      await waitFor(() => {
+        expect(nowRadio).toBeChecked();
+      });
+
+      // "From" option should remain as "Duration" (user's manual selection preserved)
+      expect(durationFromRadio).toBeChecked();
+
+      // Toggle isRelativeToNow back to false
+      fireEvent.click(toggleButton);
+
+      // "To" option should sync back to "A specific time"
+      await waitFor(() => {
+        expect(specificToTimeRadio).toBeChecked();
+      });
+
+      // "From" option should still remain as "Duration" (not reset to specific time)
+      expect(durationFromRadio).toBeChecked();
+    });
   });
 });
