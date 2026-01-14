@@ -130,6 +130,7 @@ const TestRunDetails = ({
             runDetails.testStructure?.testName.lastIndexOf('.')
           ) || 'N/A',
         requestor: runDetails.testStructure?.requestor!,
+        user: runDetails.testStructure?.user!,
         rawSubmittedAt: runDetails.testStructure?.queued,
         submitted: runDetails.testStructure?.queued
           ? formatDate(new Date(runDetails.testStructure?.queued!))

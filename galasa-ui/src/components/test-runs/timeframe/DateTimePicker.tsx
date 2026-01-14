@@ -79,7 +79,7 @@ export default function DateTimePicker({
     .replace(/d/g, 'dd');
 
   return (
-    <FormGroup className={styles.TimeFrameFilterItem}>
+    <FormGroup legendText="" className={styles.TimeFrameFilterItem}>
       <DatePicker
         locale={languageCodeForPicker}
         dateFormat={datePickerFormat}

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import TimeFrameFilter from '@/components/test-runs/timeframe/TimeFrameFilter';
 import { TimeFrameValues } from '@/utils/interfaces';
 import userEvent from '@testing-library/user-event';
@@ -59,8 +59,7 @@ describe('TimeFrameFilter', () => {
     expect(within(fromContainer).getByLabelText(/time/i)).toHaveValue('10:00');
   });
 
-  test('should call handleValueChange when a date is selected from the calendar', async () => {
-    const user = userEvent.setup();
+  test('should call handleValueChange when a date is selected from the calendar', () => {
     // Act
     render(
       <TimeFrameFilter
@@ -70,14 +69,21 @@ describe('TimeFrameFilter', () => {
       />
     );
 
-    // Assert: check if mockHandleValueChange is called with the correct parameters when the date input changes
+    // Get the date input element
     const fromContainer = screen.getByTestId('from-timeframe-filter');
-    const dateInput = within(fromContainer).getByLabelText(/date/i);
+    const dateInput = within(fromContainer).getByLabelText(/date/i) as HTMLInputElement;
 
-    await user.clear(dateInput);
-    await user.type(dateInput, '10/25/2023');
-    await user.tab();
+    // Access the Flatpickr instance attached to the input element.
+    const flatpickrInstance = (dateInput as any)._flatpickr;
 
+    // Simulate selecting a new date through Flatpickr.
+    const newDate = new Date('2023-10-25');
+
+    if (flatpickrInstance) {
+      flatpickrInstance.setDate(newDate, true);
+    }
+
+    // Assert: check if mockHandleValueChange was called with the correct parameters
     expect(mockHandleValueChange).toHaveBeenCalled();
     const calledDate = mockHandleValueChange.mock.calls[0][1];
 

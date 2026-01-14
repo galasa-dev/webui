@@ -56,6 +56,12 @@ export default function SearchCriteriaContent({
       description: translations('fields.requestor.description'),
     },
     {
+      id: TEST_RUNS_QUERY_PARAMS.USER,
+      label: translations('fields.user.label'),
+      placeHolder: 'any',
+      description: translations('fields.user.description'),
+    },
+    {
       id: TEST_RUNS_QUERY_PARAMS.GROUP,
       label: translations('fields.group.label'),
       placeHolder: 'any',
@@ -298,6 +304,9 @@ export default function SearchCriteriaContent({
       case TEST_RUNS_QUERY_PARAMS.REQUESTOR:
         customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
         break;
+      case TEST_RUNS_QUERY_PARAMS.USER:
+        customComponent = <CustomSearchComponent {...searchProps} allRequestors={allRequestors} />;
+        break;
       case TEST_RUNS_QUERY_PARAMS.RESULT:
       case TEST_RUNS_QUERY_PARAMS.STATUS:
         customComponent = <CustomCheckBoxList {...checkboxProps} />;
@@ -354,6 +363,9 @@ export default function SearchCriteriaContent({
                     <StructuredListCell>
                       {searchCriteria[field.id] || field.placeHolder}
                     </StructuredListCell>
+                    {/* This div fixes the strange behaviour that was causing the search
+                     criteria column "allowed values" to have an incorrect width */}
+                    <div />
                   </div>
                 </StructuredListRow>
               ))}
