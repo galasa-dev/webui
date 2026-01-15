@@ -20,12 +20,12 @@ type TagSize = 'sm' | 'md' | 'lg';
 
 const RenderTags = ({
   tags,
-  dismissible,
+  isDismissible,
   size,
   onTagRemove,
 }: {
   tags: string[];
-  dismissible: boolean;
+  isDismissible: boolean;
   size: TagSize;
   onTagRemove?: (tag: string) => void;
 }) => {
@@ -53,7 +53,7 @@ const RenderTags = ({
           color: `${tagWithColour.foregroundColour}`,
         };
 
-        return dismissible ? (
+        return isDismissible ? (
           <DismissibleTag
             key={index}
             className={styles.dismissibleTag}

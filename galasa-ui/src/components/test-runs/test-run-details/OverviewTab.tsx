@@ -16,6 +16,7 @@ import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { TextInput } from '@carbon/react';
 import { Modal } from '@carbon/react';
+import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants/common';
 import RenderTags from './RenderTags';
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
@@ -132,7 +133,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
         // Refresh the page to show the updated tags.
         window.location.reload();
-      }, 1500);
+      }, TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS);
     } catch (error: any) {
       console.error('Failed to update tags:', error);
       setNotification({
@@ -176,7 +177,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
-        <RenderTags tags={tags} dismissible={false} size="md" />
+        <RenderTags tags={tags} isDismissible={false} size="md" />
 
         <div className={styles.redirectLinks}>
           <div className={styles.linkWrapper} onClick={handleNavigationClick}>
@@ -195,45 +196,42 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         </div>
       </div>
 
-      {isTagsEditModalOpen && (
-        <Modal
-          open={isTagsEditModalOpen}
-          onRequestClose={handleModalClose}
-          modalHeading={`${translations('modalHeading')} ${metadata.runName}`}
-          primaryButtonText={translations('modalPrimaryButton')}
-          secondaryButtonText={translations('modalSecondaryButton')}
-          onRequestSubmit={handleSaveTags}
-          primaryButtonDisabled={isSaving}
-        >
-          {notification && (
-            <InlineNotification
-              className={styles.notification}
-              kind={notification.kind}
-              title={notification.title}
-              subtitle={notification.subtitle}
-              lowContrast
-              hideCloseButton={false}
-              onCloseButtonClick={() => setNotification(null)}
-            />
-          )}
-          <TextInput
-            data-modal-primary-focus
-            id="text-input-1"
-            labelText={translations('modalLabelText')}
-            placeholder={translations('modalPlaceholderText')}
-            value={newTagInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTagInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={styles.tagsTextInput}
+      <Modal
+        open={isTagsEditModalOpen}
+        onRequestClose={handleModalClose}
+        modalHeading={`${translations('modalHeading')} ${metadata?.runName || ''}`}
+        primaryButtonText={translations('modalPrimaryButton')}
+        secondaryButtonText={translations('modalSecondaryButton')}
+        onRequestSubmit={handleSaveTags}
+        primaryButtonDisabled={isSaving}
+      >
+        {notification && (
+          <InlineNotification
+            className={styles.notification}
+            kind={notification.kind}
+            title={notification.title}
+            subtitle={notification.subtitle}
+            lowContrast
+            hideCloseButton={false}
+            onCloseButtonClick={() => setNotification(null)}
           />
-          <RenderTags
-            tags={Array.from(stagedTags)}
-            dismissible={true}
-            size="lg"
-            onTagRemove={handleTagRemove}
-          />
-        </Modal>
-      )}
+        )}
+        <TextInput
+          data-modal-primary-focus
+          labelText={translations('modalLabelText')}
+          placeholder={translations('modalPlaceholderText')}
+          value={newTagInput}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTagInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className={styles.tagsTextInput}
+        />
+        <RenderTags
+          tags={Array.from(stagedTags)}
+          isDismissible={true}
+          size="lg"
+          onTagRemove={handleTagRemove}
+        />
+      </Modal>
     </>
   );
 };

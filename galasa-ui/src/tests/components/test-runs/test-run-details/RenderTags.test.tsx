@@ -69,7 +69,7 @@ describe('RenderTags', () => {
 
   describe('Non-dismissible tags', () => {
     it('should display fallback message when tags array is empty', () => {
-      render(<RenderTags tags={[]} dismissible={false} size="md" />);
+      render(<RenderTags tags={[]} isDismissible={false} size="md" />);
       expect(screen.getByText('No tags were associated with this test run.')).toBeInTheDocument();
     });
 
@@ -77,7 +77,7 @@ describe('RenderTags', () => {
       const tags = ['production'];
       mockTextToHexColour.mockReturnValue(['#FF0000', '#FFFFFF']);
 
-      render(<RenderTags tags={tags} dismissible={false} size="md" />);
+      render(<RenderTags tags={tags} isDismissible={false} size="md" />);
 
       const tagElements = screen.getAllByTestId('mock-tag');
       expect(tagElements).toHaveLength(1);
@@ -86,7 +86,7 @@ describe('RenderTags', () => {
 
     it('should render regular tags when dismissible is false', () => {
       const tags = ['smoke', 'regression'];
-      render(<RenderTags tags={tags} dismissible={false} size="md" />);
+      render(<RenderTags tags={tags} isDismissible={false} size="md" />);
 
       const tagElements = screen.getAllByTestId('mock-tag');
       expect(tagElements).toHaveLength(2);
@@ -96,7 +96,7 @@ describe('RenderTags', () => {
 
     it('should apply correct colors to non-dismissible tags', () => {
       const tags = ['smoke', 'regression'];
-      render(<RenderTags tags={tags} dismissible={false} size="md" />);
+      render(<RenderTags tags={tags} isDismissible={false} size="md" />);
 
       const tagElements = screen.getAllByTestId('mock-tag');
       expect(tagElements[0]).toHaveStyle({
@@ -111,7 +111,7 @@ describe('RenderTags', () => {
 
     it('should handle tags with special characters', () => {
       const tags = ['tag-with-dash', 'tag_with_underscore', 'tag.with.dot'];
-      render(<RenderTags tags={tags} dismissible={false} size="md" />);
+      render(<RenderTags tags={tags} isDismissible={false} size="md" />);
 
       const tagElements = screen.getAllByTestId('mock-tag');
       expect(tagElements).toHaveLength(3);
@@ -124,7 +124,7 @@ describe('RenderTags', () => {
   describe('Dismissible tags', () => {
     it('should render dismissible tags when dismissible is true', () => {
       const tags = ['smoke', 'regression'];
-      render(<RenderTags tags={tags} dismissible={true} size="lg" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="lg" />);
 
       const tagElements = screen.getAllByTestId('mock-dismissible-tag');
       expect(tagElements).toHaveLength(2);
@@ -134,7 +134,7 @@ describe('RenderTags', () => {
 
     it('should apply correct colors to dismissible tags', () => {
       const tags = ['smoke', 'regression'];
-      render(<RenderTags tags={tags} dismissible={true} size="lg" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="lg" />);
 
       const tagElements = screen.getAllByTestId('mock-dismissible-tag');
       expect(tagElements[0]).toHaveStyle({
@@ -151,7 +151,9 @@ describe('RenderTags', () => {
       const mockOnTagRemove = jest.fn();
       const tags = ['smoke', 'regression'];
 
-      render(<RenderTags tags={tags} dismissible={true} size="lg" onTagRemove={mockOnTagRemove} />);
+      render(
+        <RenderTags tags={tags} isDismissible={true} size="lg" onTagRemove={mockOnTagRemove} />
+      );
 
       const dismissButtons = screen.getAllByTestId('dismiss-button');
       fireEvent.click(dismissButtons[0]);
@@ -162,7 +164,7 @@ describe('RenderTags', () => {
 
     it('should pass correct size prop to dismissible tags', () => {
       const tags = ['smoke'];
-      render(<RenderTags tags={tags} dismissible={true} size="sm" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="sm" />);
 
       const tagElement = screen.getByTestId('mock-dismissible-tag');
       expect(tagElement).toHaveAttribute('data-size', 'sm');
@@ -170,7 +172,7 @@ describe('RenderTags', () => {
 
     it('should have correct title attribute for dismissible tags', () => {
       const tags = ['smoke'];
-      render(<RenderTags tags={tags} dismissible={true} size="lg" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="lg" />);
 
       const tagElement = screen.getByTestId('mock-dismissible-tag');
       expect(tagElement).toHaveAttribute('title', 'Remove tag');
@@ -180,7 +182,7 @@ describe('RenderTags', () => {
   describe('Tag sizes', () => {
     it('should render tags with small size', () => {
       const tags = ['smoke'];
-      render(<RenderTags tags={tags} dismissible={true} size="sm" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="sm" />);
 
       const tagElement = screen.getByTestId('mock-dismissible-tag');
       expect(tagElement).toHaveAttribute('data-size', 'sm');
@@ -188,7 +190,7 @@ describe('RenderTags', () => {
 
     it('should render tags with medium size', () => {
       const tags = ['smoke'];
-      render(<RenderTags tags={tags} dismissible={false} size="md" />);
+      render(<RenderTags tags={tags} isDismissible={false} size="md" />);
 
       // For non-dismissible tags, size is passed but not visible in our mock
       expect(screen.getByTestId('mock-tag')).toBeInTheDocument();
@@ -196,7 +198,7 @@ describe('RenderTags', () => {
 
     it('should render tags with large size', () => {
       const tags = ['smoke'];
-      render(<RenderTags tags={tags} dismissible={true} size="lg" />);
+      render(<RenderTags tags={tags} isDismissible={true} size="lg" />);
 
       const tagElement = screen.getByTestId('mock-dismissible-tag');
       expect(tagElement).toHaveAttribute('data-size', 'lg');

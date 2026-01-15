@@ -156,7 +156,7 @@ export default function TestRunsTable({
       const tagsArray = value.split(',');
       return (
         <TableCell className={styles.linkCell}>
-          <RenderTags tags={tagsArray} dismissible={false} size="sm" />
+          <RenderTags tags={tagsArray} isDismissible={false} size="sm" />
           <Link href={href} prefetch={false} className={styles.linkOverlay} />
         </TableCell>
       );

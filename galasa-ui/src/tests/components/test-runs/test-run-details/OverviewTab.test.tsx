@@ -14,16 +14,16 @@ import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
 // Mock RenderTags component
 jest.mock('@/components/test-runs/test-run-details/RenderTags', () => ({
   __esModule: true,
-  default: ({ tags, dismissible, onTagRemove }: any) => {
+  default: ({ tags, isDismissible, onTagRemove }: any) => {
     if (tags.length === 0) {
       return <p>No tags were associated with this test run.</p>;
     }
     return (
-      <div data-testid="mock-render-tags" data-dismissible={dismissible}>
+      <div data-testid="mock-render-tags" data-dismissible={isDismissible}>
         {tags.map((tag: string, index: number) => (
           <span key={index} data-testid="mock-tag">
             {tag}
-            {dismissible && onTagRemove && (
+            {isDismissible && onTagRemove && (
               <button data-testid={`remove-tag-${tag}`} onClick={() => onTagRemove(tag)}>
                 Remove
               </button>
