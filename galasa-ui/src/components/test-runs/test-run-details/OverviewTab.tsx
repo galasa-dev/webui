@@ -18,15 +18,16 @@ import { TextInput } from '@carbon/react';
 import { Modal } from '@carbon/react';
 import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants/common';
 import RenderTags from './RenderTags';
+import { updateRunTags } from '@/actions/runsAction';
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
-  const tags = metadata?.tags || [];
   const translations = useTranslations('OverviewTab');
   const { pushBreadCrumb } = useHistoryBreadCrumbs();
 
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
-  const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<Boolean>(false);
+  const [tags, setTags] = useState<string[]>(metadata?.tags || []);
+  const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
   const [newTagInput, setNewTagInput] = useState<string>('');
   const [stagedTags, setStagedTags] = useState<Set<string>>(new Set(tags));
   const [notification, setNotification] = useState<{
@@ -95,7 +96,6 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const handleModalClose = () => {
     setIsTagsEditModalOpen(false);
     setNewTagInput('');
-    setStagedTags(new Set(tags));
     setNotification(null);
   };
 
@@ -104,21 +104,11 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     setNotification(null);
 
     try {
-      // Call the API route to update tags using the staged tags Set.
-      const response = await fetch(`/api/ras/runs/${metadata.runId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tags: Array.from(stagedTags),
-        }),
-      });
+      // Call the server action to update tags using the staged tags Set.
+      const result = await updateRunTags(metadata.runId, Array.from(stagedTags));
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to update tags');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update tags');
       }
 
       setNotification({
@@ -127,12 +117,12 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         subtitle: translations('updateSuccessMessage'),
       });
 
+      // Set tags of the component to the staged tags tags.
+      setTags(Array.from(stagedTags));
+
       // Close modal after a short delay to show success message.
       setTimeout(() => {
         handleModalClose();
-
-        // Refresh the page to show the updated tags.
-        window.location.reload();
       }, TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS);
     } catch (error: any) {
       console.error('Failed to update tags:', error);

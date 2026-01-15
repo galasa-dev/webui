@@ -10,6 +10,12 @@ import userEvent from '@testing-library/user-event';
 import OverviewTab from '@/components/test-runs/test-run-details/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
 import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import { updateRunTags } from '@/actions/runsAction';
+
+// Mock the server action
+jest.mock('@/actions/runsAction', () => ({
+  updateRunTags: jest.fn(),
+}));
 
 // Mock RenderTags component
 jest.mock('@/components/test-runs/test-run-details/RenderTags', () => ({
@@ -342,9 +348,11 @@ describe('OverviewTab - Time and Link Logic', () => {
 });
 
 describe('OverviewTab - Tags Edit Modal', () => {
+  const mockUpdateRunTags = updateRunTags as jest.MockedFunction<typeof updateRunTags>;
+
   beforeEach(() => {
     mockGetAWeekBeforeSubmittedTime.mockReturnValue('2025-06-03T09:00:00Z');
-    global.fetch = jest.fn();
+    mockUpdateRunTags.mockClear();
   });
 
   afterEach(() => {
@@ -415,12 +423,11 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
   });
 
-  it('should successfully save tags via API', async () => {
+  it('should successfully save tags via server action', async () => {
     const user = userEvent.setup();
-    const mockFetch = global.fetch as jest.Mock;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ success: true, tags: ['smoke', 'regression'] }),
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: true,
+      tags: ['smoke', 'regression'],
     });
 
     // Mock window.location.reload.
@@ -440,24 +447,18 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await user.click(primaryButton);
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/api/ras/runs/${completeMetadata.runId}`,
-        expect.objectContaining({
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-      );
+      expect(mockUpdateRunTags).toHaveBeenCalledWith(completeMetadata.runId, [
+        'smoke',
+        'regression',
+      ]);
     });
   });
 
-  it('should display error notification when API call fails', async () => {
+  it('should display error notification when server action fails', async () => {
     const user = userEvent.setup();
-    const mockFetch = global.fetch as jest.Mock;
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ success: false, error: 'API Error' }),
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: false,
+      error: 'Server Error',
     });
 
     render(<OverviewTab metadata={completeMetadata} />);
@@ -480,10 +481,9 @@ describe('OverviewTab - Tags Edit Modal', () => {
 
   it('should display success notification when tags are saved', async () => {
     const user = userEvent.setup();
-    const mockFetch = global.fetch as jest.Mock;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ success: true, tags: ['smoke', 'regression'] }),
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: true,
+      tags: ['smoke', 'regression'],
     });
 
     // Mock window.location.reload
@@ -508,7 +508,7 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
   });
 
-  it('should reset staged tags when modal is closed', async () => {
+  it('should persist staged tags when modal is closed without saving', async () => {
     const user = userEvent.setup();
     render(<OverviewTab metadata={completeMetadata} />);
 
@@ -527,7 +527,7 @@ describe('OverviewTab - Tags Edit Modal', () => {
       expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
     });
 
-    // Close modal
+    // Close modal without saving
     const secondaryButton = screen.getByTestId('modal-secondary-button');
     await user.click(secondaryButton);
 
@@ -539,8 +539,10 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await user.click(editIcon);
 
     await waitFor(() => {
-      // Tag should be back
-      expect(screen.getByTestId('remove-tag-smoke')).toBeInTheDocument();
+      // Tag should still be removed (staged changes persist)
+      expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
+      // But regression tag should still be there
+      expect(screen.getByTestId('remove-tag-regression')).toBeInTheDocument();
     });
   });
 
