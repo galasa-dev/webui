@@ -8,7 +8,6 @@ import { Section } from '@carbon/react';
 import styles from '@/styles/HomeContent.module.css';
 import { useEffect, useState } from 'react';
 import MarkdownIt from 'markdown-it';
-import { useRouter } from 'next/navigation';
 import AccessDeniedModal from './common/AccessDeniedModal';
 import { MarkdownResponse } from '@/utils/interfaces';
 
@@ -19,7 +18,6 @@ interface HomeContentProps {
 export default function HomeContent({ markdownContentPromise }: HomeContentProps) {
   const [renderedHtmlContent, setRenderedHtmlContent] = useState<string>('');
   const [isAccessAllowed, setIsAccessAllowed] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     let md = new MarkdownIt({

@@ -220,26 +220,6 @@ export function getOneMonthAgo(): string {
 }
 
 /**
- * Accurately adds a number of months to a date, handling end-of-month edge cases.
- * If the original day doesn't exist in the target month, it will use the last valid day.
- *
- * @param date The starting date.
- * @param months The number of months to add.
- * @returns A new Date object.
- */
-export function addMonths(date: Date, months: number): Date {
-  const newDate = new Date(date);
-  const originalDay = newDate.getDate();
-  newDate.setMonth(newDate.getMonth() + months);
-
-  if (newDate.getDate() !== originalDay) {
-    newDate.setDate(0);
-  }
-
-  return newDate;
-}
-
-/**
  * Parses a time string and validates it.
  * If the string is a valid time (e.g., "9:5", "14:30"), it returns an object with the hour and minute.
  * Otherwise, it returns null.

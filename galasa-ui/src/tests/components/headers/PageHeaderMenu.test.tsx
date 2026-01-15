@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import PageHeaderMenu from '@/components/headers/PageHeaderMenu';
 import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 const fetchMock = jest.spyOn(global, 'fetch');
 

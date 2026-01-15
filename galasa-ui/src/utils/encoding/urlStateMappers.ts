@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import { TEST_RUNS_QUERY_PARAMS, TABS_IDS, TEST_RUNS_STATUS } from '../constants/common';
+import { TEST_RUNS_QUERY_PARAMS, TEST_RUNS_STATUS } from '../constants/common';
 
 // Mappings for keys and values to minify the URL state
 const keyMap: Record<string, string> = {

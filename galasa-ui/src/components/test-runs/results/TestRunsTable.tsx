@@ -16,26 +16,18 @@ import {
   Pagination,
   DataTableSkeleton,
 } from '@carbon/react';
-import {
-  ColumnDefinition,
-  DataTableHeader,
-  DataTableRow,
-  DataTableCell as IDataTableCell,
-  runStructure,
-} from '@/utils/interfaces';
+import { ColumnDefinition, DataTableHeader, DataTableRow, runStructure } from '@/utils/interfaces';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
 import { useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
 import { InlineNotification } from '@carbon/react';
-import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
-import { TEST_RUNS } from '@/utils/constants/breadcrumb';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useDisappearingNotification } from '@/hooks/useDisappearingNotification';
 import { getTimeframeText } from '@/utils/functions/timeFrameText';
@@ -69,16 +61,11 @@ export default function TestRunsTable({
   orderedHeaders,
   isLoading,
   isError,
-  isRelativeToNow,
-  durationDays,
-  durationHours,
-  durationMinutes,
 }: TestRunsTableProps) {
   const translations = useTranslations('TestRunsTable');
   const { formatDate } = useDateTimeFormat();
 
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [currentPage, setCurrentPage] = useState(1);
 

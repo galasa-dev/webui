@@ -122,10 +122,10 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
   const [notification, setNotification] = useState<Notification | null>(null);
   const [selectedFromOption, setSelectedFromOption] = useState<FromSelectionOptions>(
-    values.isRelativeToNow ? FromSelectionOptions.duration : FromSelectionOptions.specificFromTime
+    FromSelectionOptions.duration
   );
   const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
-    values.isRelativeToNow ? ToSelectionOptions.now : ToSelectionOptions.specificToTime
+    ToSelectionOptions.now
   );
 
   const handleValueChange = useCallback(
@@ -172,12 +172,12 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
         toDate = new Date();
       }
 
-      const isisRelativeToNow = field === 'isRelativeToNow' ? value : values.isRelativeToNow;
+      const isRelativeToNow = field === 'isRelativeToNow' ? value : values.isRelativeToNow;
       const {
         correctedFrom,
         correctedTo,
         notification: validationNotification,
-      } = applyTimeFrameRules(fromDate, toDate, isisRelativeToNow, translations);
+      } = applyTimeFrameRules(fromDate, toDate, isRelativeToNow, translations);
 
       // Set the notification if there is one
       setNotification(validationNotification);
@@ -196,6 +196,18 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
     const isRelativeToNow = selectedToOption === ToSelectionOptions.now;
     setValues((prevValues) => ({ ...prevValues, isRelativeToNow }));
   }, [selectedToOption, setValues]);
+
+  // Sync selected options whenever isRelativeToNow changes (from URL or user interaction)
+  useEffect(() => {
+    if (values.isRelativeToNow !== undefined) {
+      const toOption = values.isRelativeToNow
+        ? ToSelectionOptions.now
+        : ToSelectionOptions.specificToTime;
+
+      // Always sync the "To" option with isRelativeToNow
+      setSelectedToOption(toOption);
+    }
+  }, [values.isRelativeToNow]);
 
   return (
     <div className={styles.timeFrameContainer}>
