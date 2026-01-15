@@ -33,6 +33,7 @@ import { useDisappearingNotification } from '@/hooks/useDisappearingNotification
 import { getTimeframeText } from '@/utils/functions/timeFrameText';
 import useResultsTablePageSize from '@/hooks/useResultsTablePageSize';
 import Link from 'next/link';
+import RenderTags from '../test-run-details/RenderTags';
 
 interface CustomCellProps {
   header: string;
@@ -133,6 +134,20 @@ export default function TestRunsTable({
         <Link href={href} prefetch={false} className={styles.linkOverlay} />
       </TableCell>
     );
+
+    if (header === 'tags') {
+      // Handle tags column with RenderTags component.
+      if (value.length === 0) {
+        return <TableCell>N/A</TableCell>;
+      }
+      const tagsArray = value.split(', ');
+      return (
+        <TableCell className={styles.linkCell}>
+          <RenderTags tags={tagsArray} isDismissible={false} size="sm" />
+          <Link href={href} prefetch={false} className={styles.linkOverlay} />
+        </TableCell>
+      );
+    }
 
     if (value === 'N/A' || !value) {
       return <TableCell>N/A</TableCell>;

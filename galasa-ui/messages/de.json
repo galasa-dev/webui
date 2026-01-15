@@ -256,8 +256,18 @@
     "duration": "Dauer",
     "tags": "Tags",
     "noTags": "Keine Tags vorhanden.",
-    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests...",
-    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs..."
+    "recentRunsLink": "Zeige letzte Ausführungen desselben Tests",
+    "runRetriesLink": "Zeige alle Versuche dieses Testlaufs",
+    "modalHeading": "Tags im Testlauf bearbeiten",
+    "modalPrimaryButton": "Speichern",
+    "modalLabelText": "Geben Sie neue Tag-Namen zum Hinzufügen ein oder entfernen Sie vorhandene Tags aus dem Testlauf",
+    "modalPlaceholderText": "Geben Sie hier einen neuen Tag(s) ein und drücken Sie die [Eingabetaste]",
+    "removeTag": "Tag entfernen",
+    "modalSecondaryButton": "Abbrechen",
+    "updateSuccess": "Tags erfolgreich aktualisiert",
+    "updateSuccessMessage": "Die Tags wurden für diesen Testlauf aktualisiert.",
+    "updateError": "Fehler beim Aktualisieren der Tags",
+    "updateErrorMessage": "Beim Aktualisieren der Tags ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
   },
   "3270Tab": {
     "Terminal": "Terminal",

@@ -5,12 +5,43 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import OverviewTab from '@/components/test-runs/test-run-details/OverviewTab';
 import { RunMetadata } from '@/utils/interfaces';
 import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
+import { updateRunTags } from '@/actions/runsAction';
 
-// Mock the Carbon Tag component to simplify assertions
+// Mock the server action
+jest.mock('@/actions/runsAction', () => ({
+  updateRunTags: jest.fn(),
+}));
+
+// Mock RenderTags component
+jest.mock('@/components/test-runs/test-run-details/RenderTags', () => ({
+  __esModule: true,
+  default: ({ tags, isDismissible, onTagRemove }: any) => {
+    if (tags.length === 0) {
+      return <p>No tags were associated with this test run.</p>;
+    }
+    return (
+      <div data-testid="mock-render-tags" data-dismissible={isDismissible}>
+        {tags.map((tag: string, index: number) => (
+          <span key={index} data-testid="mock-tag">
+            {tag}
+            {isDismissible && onTagRemove && (
+              <button data-testid={`remove-tag-${tag}`} onClick={() => onTagRemove(tag)}>
+                Remove
+              </button>
+            )}
+          </span>
+        ))}
+      </div>
+    );
+  },
+}));
+
+// Mock the Carbon components
 jest.mock('@carbon/react', () => ({
   Tag: ({ children }: { children: React.ReactNode }) => (
     <span data-testid="mock-tag">{children}</span>
@@ -28,6 +59,48 @@ jest.mock('@carbon/react', () => ({
       {children}
     </a>
   ),
+  InlineNotification: ({ kind, title, subtitle }: any) => (
+    <div data-testid="mock-notification" data-kind={kind}>
+      <div>{title}</div>
+      <div>{subtitle}</div>
+    </div>
+  ),
+  TextInput: ({ value, onChange, onKeyDown, labelText, placeholder }: any) => (
+    <input
+      data-testid="mock-text-input"
+      value={value}
+      onChange={onChange}
+      onKeyDown={onKeyDown}
+      placeholder={placeholder}
+      aria-label={labelText}
+    />
+  ),
+  Modal: ({
+    open,
+    children,
+    modalHeading,
+    primaryButtonText,
+    secondaryButtonText,
+    onRequestSubmit,
+    onRequestClose,
+  }: any) =>
+    open ? (
+      <div data-testid="mock-modal">
+        <h2>{modalHeading}</h2>
+        {children}
+        <button data-testid="modal-primary-button" onClick={onRequestSubmit}>
+          {primaryButtonText}
+        </button>
+        <button data-testid="modal-secondary-button" onClick={onRequestClose}>
+          {secondaryButtonText}
+        </button>
+      </div>
+    ) : null,
+}));
+
+jest.mock('@carbon/icons-react', () => ({
+  Launch: () => <span data-testid="launch-icon">Launch</span>,
+  Edit: () => <span data-testid="edit-icon">Edit</span>,
 }));
 
 jest.mock('@/utils/timeOperations', () => ({
@@ -39,6 +112,7 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       bundle: 'Bundle',
       testName: 'Test',
+      testShortName: 'Test Short Name',
       package: 'Package',
       group: 'Group',
       submissionId: 'Submission ID',
@@ -50,6 +124,17 @@ jest.mock('next-intl', () => ({
       duration: 'Duration',
       tags: 'Tags',
       noTags: 'No tags were associated with this test run.',
+      recentRunsLink: 'View other recent runs of this test',
+      runRetriesLink: 'View all attempts of this test run',
+      modalHeading: 'Edit tags for',
+      modalPrimaryButton: 'Save',
+      modalSecondaryButton: 'Cancel',
+      modalLabelText: 'Add tags',
+      modalPlaceholderText: 'Enter tags separated by commas or spaces',
+      updateSuccess: 'Tags updated successfully',
+      updateSuccessMessage: 'The tags have been updated.',
+      updateError: 'Failed to update tags',
+      updateErrorMessage: 'An error occurred while updating tags.',
     };
     return translations[key] || key;
   },
@@ -121,8 +206,8 @@ describe('OverviewTab', () => {
 
   it('renders each tag when tags array is non-empty', () => {
     render(<OverviewTab metadata={completeMetadata} />);
-    // header
-    expect(screen.getByRole('heading', { level: 5, name: 'Tags' })).toBeInTheDocument();
+    // header - use getByText since h5 contains nested elements
+    expect(screen.getByText('Tags', { selector: 'h5' })).toBeInTheDocument();
     // tags
     const tagEls = screen.getAllByTestId('mock-tag');
     expect(tagEls).toHaveLength(2);
@@ -258,6 +343,218 @@ describe('OverviewTab - Time and Link Logic', () => {
         title: `${completeMetadata.runName}`,
         route: `/test-runs/${completeMetadata.runId}`,
       });
+    });
+  });
+});
+
+describe('OverviewTab - Tags Edit Modal', () => {
+  const mockUpdateRunTags = updateRunTags as jest.MockedFunction<typeof updateRunTags>;
+
+  beforeEach(() => {
+    mockGetAWeekBeforeSubmittedTime.mockReturnValue('2025-06-03T09:00:00Z');
+    mockUpdateRunTags.mockClear();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should open modal when edit icon is clicked', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    });
+  });
+
+  it('should display RenderTags component with dismissible tags in modal', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      const renderTagsInModal = screen.getAllByTestId('mock-render-tags')[1]; // Second one is in modal
+      expect(renderTagsInModal).toHaveAttribute('data-dismissible', 'true');
+    });
+  });
+
+  it('should close modal when secondary button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    });
+
+    const secondaryButton = screen.getByTestId('modal-secondary-button');
+    await user.click(secondaryButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should handle tag removal in modal', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('remove-tag-smoke')).toBeInTheDocument();
+    });
+
+    const removeButton = screen.getByTestId('remove-tag-smoke');
+    await user.click(removeButton);
+
+    await waitFor(() => {
+      // Tag should be removed from staged tags
+      expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should successfully save tags via server action', async () => {
+    const user = userEvent.setup();
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: true,
+      tags: ['smoke', 'regression'],
+    });
+
+    // Mock window.location.reload.
+    delete (window as any).location;
+    (window as any).location = { reload: jest.fn() };
+
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    });
+
+    const primaryButton = screen.getByTestId('modal-primary-button');
+    await user.click(primaryButton);
+
+    await waitFor(() => {
+      expect(mockUpdateRunTags).toHaveBeenCalledWith(completeMetadata.runId, [
+        'smoke',
+        'regression',
+      ]);
+    });
+  });
+
+  it('should display error notification when server action fails', async () => {
+    const user = userEvent.setup();
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: false,
+      error: 'Server Error',
+    });
+
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    });
+
+    const primaryButton = screen.getByTestId('modal-primary-button');
+    await user.click(primaryButton);
+
+    await waitFor(() => {
+      const notification = screen.getByTestId('mock-notification');
+      expect(notification).toHaveAttribute('data-kind', 'error');
+    });
+  });
+
+  it('should display success notification when tags are saved', async () => {
+    const user = userEvent.setup();
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: true,
+      tags: ['smoke', 'regression'],
+    });
+
+    // Mock window.location.reload
+    delete (window as any).location;
+    (window as any).location = { reload: jest.fn() };
+
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    });
+
+    const primaryButton = screen.getByTestId('modal-primary-button');
+    await user.click(primaryButton);
+
+    await waitFor(() => {
+      const notification = screen.getByTestId('mock-notification');
+      expect(notification).toHaveAttribute('data-kind', 'success');
+    });
+  });
+
+  it('should persist staged tags when modal is closed without saving', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('remove-tag-smoke')).toBeInTheDocument();
+    });
+
+    // Remove a tag
+    const removeButton = screen.getByTestId('remove-tag-smoke');
+    await user.click(removeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
+    });
+
+    // Close modal without saving
+    const secondaryButton = screen.getByTestId('modal-secondary-button');
+    await user.click(secondaryButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+    });
+
+    // Reopen modal
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      // Tag should still be removed (staged changes persist)
+      expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
+      // But regression tag should still be there
+      expect(screen.getByTestId('remove-tag-regression')).toBeInTheDocument();
+    });
+  });
+
+  it('should display modal heading with run name', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(completeMetadata.runName))).toBeInTheDocument();
     });
   });
 });

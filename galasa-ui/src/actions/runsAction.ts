@@ -49,3 +49,23 @@ export const downloadArtifactFromServer = async (runId: string, artifactUrl: str
     base64,
   };
 };
+
+export const updateRunTags = async (runId: string, tags: string[]) => {
+  try {
+    const apiConfig = createAuthenticatedApiConfiguration();
+    const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
+
+    // Note: Tags are already unique from the Set in the frontend, but is checked again by the rest api.
+    await rasApiClient.putRasRunTagsOrStatusById(runId, {
+      tags: tags,
+    });
+
+    return { success: true, tags: tags };
+  } catch (error: any) {
+    console.error('Error updating run tags:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to update tags',
+    };
+  }
+};
