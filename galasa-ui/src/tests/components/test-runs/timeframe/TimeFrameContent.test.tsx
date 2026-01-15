@@ -8,8 +8,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TimeFrameContent, {
   applyTimeFrameRules,
   calculateSynchronizedState,
+  FromSelectionOptions,
+  ToSelectionOptions,
 } from '@/components/test-runs/timeframe/TimeFrameContent';
-import { addMonths } from '@/utils/timeOperations';
 import { DAY_MS } from '@/utils/constants/common';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState } from 'react';
@@ -391,6 +392,10 @@ describe('applyTimeFrameRules', () => {
       const toDateInput = screen.getByLabelText('To Date');
       const daysInput = screen.getByLabelText('Days');
 
+      // Click on the specific 'From' time radio button
+      const specificFromTimeRadio = screen.getByDisplayValue(FromSelectionOptions.specificFromTime);
+      fireEvent.click(specificFromTimeRadio);
+
       fireEvent.change(fromDateInput, { target: { value: '2025-08-12' } });
       fireEvent.change(toDateInput, { target: { value: '2025-08-15' } });
 
@@ -431,7 +436,13 @@ describe('applyTimeFrameRules', () => {
       const daysInput = screen.getByLabelText('Days');
       const minutesInput = screen.getByLabelText('Minutes');
 
+      const specificFromTimeRadio = screen.getByDisplayValue(FromSelectionOptions.specificFromTime);
+      const specificToTimeRadio = screen.getByDisplayValue(ToSelectionOptions.specificToTime);
+      fireEvent.click(specificFromTimeRadio);
+      fireEvent.click(specificToTimeRadio);
+
       // Change "From" date to be after "To" date
+      fireEvent.change(toDateInput, { target: { value: '08/12/2025' } });
       fireEvent.change(fromDateInput, { target: { value: '08/15/2025' } });
 
       // Check that the error notification is displayed
@@ -466,6 +477,9 @@ describe('applyTimeFrameRules', () => {
       // Check the initial value before the click
       expect(toDateInput).toHaveValue(new Date(initialTo).toLocaleDateString('en-US'));
 
+      const specificToTimeRadio = screen.getByDisplayValue(ToSelectionOptions.specificToTime);
+      fireEvent.click(specificToTimeRadio);
+
       // Act: Click the radio button
       fireEvent.click(nowRadio);
 
@@ -474,7 +488,7 @@ describe('applyTimeFrameRules', () => {
       });
     });
 
-    test('should sync "To" option when isRelativeToNow changes but keep "From" option unchanged after initialization', async () => {
+    test('should synchronize the "To" option when the query changes to be relative to now', async () => {
       const initialFrom = '2025-08-10T12:00:00.000Z';
       const initialTo = '2025-08-13T12:00:00.000Z';
 
@@ -483,18 +497,15 @@ describe('applyTimeFrameRules', () => {
           const initialFromDate = new Date(initialFrom);
           const initialToDate = new Date(initialTo);
 
-          return {
-            ...calculateSynchronizedState(initialFromDate, initialToDate, timezone),
-            isRelativeToNow: false, // Start with specific time (not relative to now)
-          };
+          return calculateSynchronizedState(initialFromDate, initialToDate, timezone);
         });
 
         return (
           <>
             <TimeFrameContent values={values} setValues={setValues} />
-            {/* Button to simulate external isRelativeToNow change}*/}
+            {/* Add a button to simulate a query change */}
             <button
-              data-testid="toggle-relative"
+              role="toggle-isRelativeToNow"
               onClick={() =>
                 setValues((prev) => ({ ...prev, isRelativeToNow: !prev.isRelativeToNow }))
               }
@@ -506,51 +517,42 @@ describe('applyTimeFrameRules', () => {
       };
 
       render(<TestWrapper />);
-
       const nowRadio = screen.getByLabelText('Now');
-      const specificToTimeRadio = screen.getByLabelText('A specific time', {
-        selector: '#to-specific-time',
-      });
-      const specificFromTimeRadio = screen.getByLabelText('A specific time', {
-        selector: '#from-specific-time',
-      });
+      const durationRadio = screen.getByDisplayValue(FromSelectionOptions.duration);
+      const specificToTimeRadio = screen.getByDisplayValue(ToSelectionOptions.specificToTime);
 
-      // Initial state: isRelativeToNow is false, so "A specific time" should be checked for both
+      // Check the initial state is set to 'duration' and 'now'
       await waitFor(() => {
-        expect(specificToTimeRadio).toBeChecked();
-        expect(specificFromTimeRadio).toBeChecked();
-      });
-
-      // Act: Manually select "Duration" for the "From" option
-      const durationFromRadio = screen.getByLabelText(/Duration before/i);
-      fireEvent.click(durationFromRadio);
-
-      await waitFor(() => {
-        expect(durationFromRadio).toBeChecked();
-      });
-
-      // Simulate an external change to isRelativeToNow to true
-      const toggleButton = screen.getByTestId('toggle-relative');
-      fireEvent.click(toggleButton);
-
-      // "To" option should sync to "Now" since isRelativeToNow is now true
-      await waitFor(() => {
+        expect(durationRadio).toBeChecked();
         expect(nowRadio).toBeChecked();
       });
 
-      // "From" option should remain as "Duration" (user's manual selection preserved)
-      expect(durationFromRadio).toBeChecked();
+      // Click the specific 'To' time radio button
+      fireEvent.click(specificToTimeRadio);
 
-      // Toggle isRelativeToNow back to false
-      fireEvent.click(toggleButton);
-
-      // "To" option should sync back to "A specific time"
       await waitFor(() => {
         expect(specificToTimeRadio).toBeChecked();
+        expect(nowRadio).not.toBeChecked();
       });
 
-      // "From" option should still remain as "Duration" (not reset to specific time)
-      expect(durationFromRadio).toBeChecked();
+      // Simulate a query change
+      const toggleButton = screen.getByRole('toggle-isRelativeToNow');
+      fireEvent.click(toggleButton);
+
+      // 'To' option should have switched from specific time to 'now'
+      await waitFor(() => {
+        expect(nowRadio).toBeChecked();
+        expect(specificToTimeRadio).not.toBeChecked();
+      });
+
+      // Simulate another query change
+      fireEvent.click(toggleButton);
+
+      // 'To' option should have switched back to specific time
+      await waitFor(() => {
+        expect(specificToTimeRadio).toBeChecked();
+        expect(nowRadio).not.toBeChecked();
+      });
     });
   });
 });

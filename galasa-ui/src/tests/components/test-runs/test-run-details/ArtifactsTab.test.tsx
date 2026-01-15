@@ -6,9 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { TreeNodeData } from '@/utils/functions/artifacts';
 import { ArtifactsTab } from '@/components/test-runs/test-run-details/ArtifactsTab';
-import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270FolderStructure';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { handleDownload } from '@/utils/artifacts';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
