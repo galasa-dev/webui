@@ -161,7 +161,10 @@ const tagColours: [string, string][] = [
   ['#01A3A4', WHITE], // Persian Green
 ];
 
-export const textToHexColour = (text: string): [string, string] => {
+// Cache to store computed colours for each text input.
+const colourCache = new Map<string, [string, string]>();
+
+const computeTextToHexColour = (text: string): [string, string] => {
   let hash = 0;
   for (let i = 0; i < text.length; i++) {
     // hash << 5: Shifting bits left by 5 is the same as multiplying by 2^5 = 32).
@@ -170,4 +173,15 @@ export const textToHexColour = (text: string): [string, string] => {
   }
   const numberBetweenZeroAndLengthOfColoursArray = Math.abs(hash % (tagColours.length - 1));
   return tagColours[numberBetweenZeroAndLengthOfColoursArray];
+};
+
+export const textToHexColour = (text: string): [string, string] => {
+  if (colourCache.has(text)) {
+    return colourCache.get(text)!;
+  }
+
+  // If not cached, compute the colour.
+  const colour = computeTextToHexColour(text);
+  colourCache.set(text, colour);
+  return colour;
 };
