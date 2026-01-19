@@ -5,7 +5,7 @@
  */
 'use server';
 
-import { ResultArchiveStoreAPIApi } from '@/generated/galasaapi';
+import { ResultArchiveStoreAPIApi, TagsAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { CLIENT_API_VERSION } from '@/utils/constants/common';
 
@@ -69,3 +69,26 @@ export const updateRunTags = async (runId: string, tags: string[]) => {
     };
   }
 };
+
+export const getExistingTagObjects = async () => {
+  try {
+    const apiConfig = createAuthenticatedApiConfiguration();
+    const tagsApiClient = new TagsAPIApi(apiConfig);
+    
+    const tagsResponse = await tagsApiClient.getTags();
+    
+    // Convert to plain objects and extract tag names.
+    const tagNames = tagsResponse
+      .map(tag => tag.metadata?.name)
+      .filter((name): name is string => name !== undefined && name !== null);
+
+    return { success: true, tags: tagNames };
+  } catch (error: any) {
+    console.error('Error getting existing tags:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to get existing tags',
+      tags: [],
+    }
+  }
+}
