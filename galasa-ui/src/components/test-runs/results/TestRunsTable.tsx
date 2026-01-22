@@ -105,23 +105,30 @@ export default function TestRunsTable({
   const filteredRows = useMemo(() => {
     const searchLowerCase = search.toLowerCase();
     return paginatedRows.filter((row) => {
-      const rowFields = [
-        row.submittedAt?.toLowerCase() ?? '',
-        row.runName?.toLowerCase() ?? '',
-        row.requestor?.toLowerCase() ?? '',
-        row.user?.toLowerCase() ?? '',
-        row.group?.toLowerCase() ?? '',
-        row.testName?.toLowerCase() ?? '',
-        row.tags?.toLowerCase() ?? '',
-        row.status?.toLowerCase() ?? '',
-        row.result?.toLowerCase() ?? '',
-        row.submissionId?.toLowerCase() ?? '',
+      const runFields = [
+        { column: 'submittedAt', value: row.submittedAt?.toLowerCase() ?? '' },
+        { column: 'runName', value: row.runName?.toLowerCase() ?? '' },
+        { column: 'requestor', value: row.requestor?.toLowerCase() ?? '' },
+        { column: 'user', value: row.user?.toLowerCase() ?? '' },
+        { column: 'group', value: row.group?.toLowerCase() ?? '' },
+        { column: 'bundle', value: row.bundle?.toLowerCase() ?? '' },
+        { column: 'package', value: row.package?.toLowerCase() ?? '' },
+        { column: 'testShortName', value: row.testShortName?.toLowerCase() ?? '' },
+        { column: 'testName', value: row.testName?.toLowerCase() ?? '' },
+        { column: 'tags', value: row.tags?.toLowerCase() ?? '' },
+        { column: 'status', value: row.status?.toLowerCase() ?? '' },
+        { column: 'result', value: row.result?.toLowerCase() ?? '' },
+        { column: 'submissionId', value: row.submissionId?.toLowerCase() ?? '' },
       ];
-      return rowFields.some((field) => {
-        return field.includes(searchLowerCase);
+      // We only want to filter data in currently visible columns
+      const visibleRunFields = runFields.filter((field) => {
+        return visibleColumns.includes(field.column);
+      });
+      return visibleRunFields.some((field) => {
+        return field.value.includes(searchLowerCase);
       });
     });
-  }, [paginatedRows, search]);
+  }, [visibleColumns, paginatedRows, search]);
 
   if (isError) {
     return <ErrorPage />;
