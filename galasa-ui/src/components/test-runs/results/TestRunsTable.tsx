@@ -13,6 +13,9 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableToolbar,
+  TableToolbarContent,
+  TableToolbarSearch,
   Pagination,
   DataTableSkeleton,
 } from '@carbon/react';
@@ -22,7 +25,7 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
-import { useMemo, useState } from 'react';
+import { SetStateAction, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
@@ -73,6 +76,8 @@ export default function TestRunsTable({
   const { defaultPageSize } = useResultsTablePageSize();
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
+  const [search, setSearch] = useState('');
+
   const isNotificationVisible = useDisappearingNotification(limitExceeded);
 
   const headers =
@@ -94,6 +99,29 @@ export default function TestRunsTable({
   const timeFrameText = useMemo(() => {
     return getTimeframeText(runsList, translations, formatDate);
   }, [runsList, translations, formatDate]);
+
+  // Filter rows in the current paginatedRows if the text in the
+  // persistent toolbar search box changes and matches any table info.
+  const filteredRows = useMemo(() => {
+    const searchLowerCase = search.toLowerCase();
+    return paginatedRows.filter((row) => {
+      const rowFields = [
+        row.submittedAt?.toLowerCase() ?? '',
+        row.runName?.toLowerCase() ?? '',
+        row.requestor?.toLowerCase() ?? '',
+        row.user?.toLowerCase() ?? '',
+        row.group?.toLowerCase() ?? '',
+        row.testName?.toLowerCase() ?? '',
+        row.tags?.toLowerCase() ?? '',
+        row.status?.toLowerCase() ?? '',
+        row.result?.toLowerCase() ?? '',
+        row.submissionId?.toLowerCase() ?? '',
+      ];
+      return rowFields.some((field) => {
+        return field.includes(searchLowerCase);
+      });
+    });
+  }, [paginatedRows, search]);
 
   if (isError) {
     return <ErrorPage />;
@@ -195,7 +223,7 @@ export default function TestRunsTable({
       )}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable rows={paginatedRows} headers={headers}>
+        <DataTable rows={filteredRows} headers={headers}>
           {({
             rows,
             headers,
@@ -210,6 +238,16 @@ export default function TestRunsTable({
             getTableProps: () => TableBodyProps;
           }) => (
             <TableContainer>
+              <TableToolbar>
+                <TableToolbarContent>
+                  <TableToolbarSearch
+                    persistent
+                    onChange={(event: { target: { value: SetStateAction<string> } }) =>
+                      setSearch(event.target.value)
+                    }
+                  />
+                </TableToolbarContent>
+              </TableToolbar>
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
                   <TableRow>
