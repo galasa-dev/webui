@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import styles from '@/styles/test-runs/test-run-details/OverviewTab.module.css';
 import InlineText from './InlineText';
 import { RunMetadata } from '@/utils/interfaces';
@@ -15,8 +15,13 @@ import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants/common';
-import RenderTags from './RenderTags';
+import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
 import { updateRunTags, getExistingTagObjects } from '@/actions/runsAction';
+
+type SimpleTagType = {
+  id: string; 
+  label: string
+}
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const translations = useTranslations('OverviewTab');
@@ -25,7 +30,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const [tags, setTags] = useState<string[]>(metadata?.tags || []);
-  const [existingTagNames, setExistingTagNames] = useState<string[]>([]);
+  const [existingTagObjectNames, setexistingTagObjectNames] = useState<string[]>([]);
 
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
   const [filterInput, setFilterInput] = useState<string>('');
@@ -45,7 +50,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     const fetchExistingTags = async () => {
       try {
         const result = await getExistingTagObjects();
-        setExistingTagNames(result.tags || []);
+        setexistingTagObjectNames(result.tags || []);
 
         if (!result.success) {
           console.error('Failed to fetch existing tags:', result.error);
@@ -54,7 +59,6 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         console.error('Error fetching existing tags:', error);
       }
     };
-
     fetchExistingTags();
   }, []);
 
@@ -85,40 +89,48 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     });
   };
 
-  const handleFilterableMultiSelectChange = (selectedItems: { id: string; text: string }[]) => {
+  const handleFilterableMultiSelectChange = (selectedItems: SimpleTagType[]) => {
     // Update staged tags based on selected items
-    const newStagedTags = new Set(selectedItems.map(item => item.text));
+    const newStagedTags = new Set(selectedItems.map(item => item.label));
     setStagedTags(newStagedTags);
   };
 
-  // Create items for FilterableMultiSelect
-  const getFilterableItems = () => {
-    const items: { id: string; text: string }[] = [];
+  // Create items for FilterableMultiSelect.
+  const filterableItems = useMemo(() => {
+    const items: SimpleTagType[] = [];
 
-    // Add existing tags from the system
-    existingTagNames.forEach((tagName, index) => {
+    // Add staged tags.
+    stagedTags.forEach((tagName, index) => {
       items.push({
         id: `existing-tag-${index}`,
-        text: tagName,
+        label: tagName,
       });
     });
 
-    // Add the current filter input as an option if it's not empty and not already in the list
-    if (filterInput.trim() && !items.some(item => item.text === filterInput.trim())) {
+    // Add existing tags from the system if they aren't already there.
+    existingTagObjectNames.filter((existingTagObjectName: string)=>(!stagedTags.has(existingTagObjectName))).forEach((tagName, index) => {
+      items.push({
+        id: `existing-tag-${index}`,
+        label: tagName,
+      });
+    });
+
+
+    // Add the current filter input as an option if it's not empty and not already in the list.
+    if (filterInput.trim() && !items.some(item => item.label === filterInput.trim())) {
       items.push({
         id: 'custom-input',
-        text: filterInput.trim(),
+        label: filterInput.trim(),
       });
     }
 
     return items;
-  };
+  }, [existingTagObjectNames, stagedTags, filterInput]);
 
-  // Get initially selected items based on staged tags
-  const getInitialSelectedItems = () => {
-    const items = getFilterableItems();
-    return items.filter(item => stagedTags.has(item.text));
-  };
+  // Get initially selected items based on staged tags.
+  const initialSelectedItems = useMemo(() => {
+    return filterableItems.filter(item => stagedTags.has(item.label));
+  }, [filterableItems, stagedTags]);
 
   const handleModalClose = () => {
     setIsTagsEditModalOpen(false);
@@ -221,6 +233,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         secondaryButtonText={translations('modalSecondaryButton')}
         onRequestSubmit={handleSaveTags}
         primaryButtonDisabled={isSaving}
+        className={styles.tagsEditModal}
       >
         {notification && (
           <InlineNotification
@@ -237,11 +250,11 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           id="tags-filterable-multiselect"
           titleText={translations('modalLabelText')}
           placeholder={translations('modalPlaceholderText')}
-          items={getFilterableItems()}
-          initialSelectedItems={getInitialSelectedItems()}
-          itemToString={(item: { id: string; text: string } | null) => (item ? item.text : '')}
+          items={filterableItems}
+          initialSelectedItems={initialSelectedItems}
+          itemToString={(item: SimpleTagType | null) => (item ? item.label : '')}
           selectionFeedback="top-after-reopen"
-          onChange={({ selectedItems }: { selectedItems: { id: string; text: string }[] }) => {
+          onChange={({ selectedItems }: { selectedItems: SimpleTagType[] }) => {
             handleFilterableMultiSelectChange(selectedItems);
           }}
           onInputValueChange={(inputValue: string) => {
