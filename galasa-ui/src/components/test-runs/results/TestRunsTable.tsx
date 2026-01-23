@@ -98,32 +98,33 @@ export default function TestRunsTable({
   // Filter rows in the current paginatedRows if the text in the
   // persistent toolbar search box changes and matches any table info.
   const filteredRows = useMemo(() => {
+    if (!runsList || runsList.length === 0) {
+      return [];
+    }
+
     const searchLowerCase = search.toLowerCase();
+    const runStructureFields = Object.keys(runsList[0]) as (keyof runStructure)[];
     return runsList.filter((row) => {
-      const runFields = [
-        { column: 'submittedAt', value: row.submittedAt?.toLowerCase() ?? '' },
-        { column: 'runName', value: row.runName?.toLowerCase() ?? '' },
-        { column: 'requestor', value: row.requestor?.toLowerCase() ?? '' },
-        { column: 'user', value: row.user?.toLowerCase() ?? '' },
-        { column: 'group', value: row.group?.toLowerCase() ?? '' },
-        { column: 'bundle', value: row.bundle?.toLowerCase() ?? '' },
-        { column: 'package', value: row.package?.toLowerCase() ?? '' },
-        { column: 'testShortName', value: row.testShortName?.toLowerCase() ?? '' },
-        { column: 'testName', value: row.testName?.toLowerCase() ?? '' },
-        { column: 'tags', value: row.tags?.toLowerCase() ?? '' },
-        { column: 'status', value: row.status?.toLowerCase() ?? '' },
-        { column: 'result', value: row.result?.toLowerCase() ?? '' },
-        { column: 'submissionId', value: row.submissionId?.toLowerCase() ?? '' },
-      ];
-      // We only want to filter data in currently visible columns
-      const visibleRunFields = runFields.filter((field) => {
-        return currentVisibleColumns.split(',').includes(field.column);
-      });
-      return visibleRunFields.some((field) => {
-        return field.value.includes(searchLowerCase);
+      return runStructureFields.some((field) => {
+        // We only want to filter data in currently visible columns
+        if (!currentVisibleColumns.split(',').includes(field)) {
+          return false;
+        }
+        let value = '';
+        if (field === 'submittedAt') {
+          value =
+            row.submittedAt?.trim() !== ''
+              ? formatDate(new Date(row.submittedAt.toLowerCase()))
+              : '';
+        } else if (field === 'tags') {
+          value = row.tags?.trim() !== '' ? row.tags.toLowerCase() : 'n/a';
+        } else {
+          value = row[field]?.toLowerCase() ?? '';
+        }
+        return value.includes(searchLowerCase);
       });
     });
-  }, [currentVisibleColumns, runsList, search]);
+  }, [currentVisibleColumns, runsList, search, formatDate]);
 
   // Calculate the paginated rows based on the current page and page size,
   // and currently filtered rows (if there is a filter in the toolbar)
