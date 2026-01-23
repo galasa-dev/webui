@@ -97,35 +97,27 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   // Create items for FilterableMultiSelect.
   const filterableItems = useMemo(() => {
-    const items: SimpleTagType[] = [];
+    const itemsSet = new Set<string>();
 
-    // Add staged tags.
-    stagedTags.forEach((tagName, index) => {
-      items.push({
-        id: `existing-tag-${index}`,
-        label: tagName,
-      });
-    });
+    // Collect all unique tag names.
+    stagedTags.forEach((tagName) => itemsSet.add(tagName));
+    existingTagObjectNames.forEach((tagName) => itemsSet.add(tagName));
 
-    // Add existing tags from the system if they aren't already there.
-    existingTagObjectNames
-      .filter((existingTagObjectName: string) => !stagedTags.has(existingTagObjectName))
-      .forEach((tagName, index) => {
-        items.push({
-          id: `existing-tag-${index}`,
-          label: tagName,
-        });
-      });
-
-    // Add the current filter input as an option if it's not empty and not already in the list.
-    if (filterInput.trim() && !items.some((item) => item.label === filterInput.trim())) {
-      items.push({
-        id: 'custom-input',
-        label: filterInput.trim(),
-      });
+    // Add the current filter input if it's not empty and not already in the list.
+    if (filterInput.trim() && !itemsSet.has(filterInput.trim())) {
+      itemsSet.add(filterInput.trim());
     }
 
-    return items;
+    // Convert to array and sort alphabetically.
+    const sortedTags = Array.from(itemsSet).sort((a, b) =>
+      a.toLowerCase().localeCompare(b.toLowerCase())
+    );
+
+    // Create items with consistent IDs based on sorted order.
+    return sortedTags.map((tagName, index) => ({
+      id: `tag-${index}-${tagName}`,
+      label: tagName,
+    }));
   }, [existingTagObjectNames, stagedTags, filterInput]);
 
   // Get initially selected items based on staged tags.
