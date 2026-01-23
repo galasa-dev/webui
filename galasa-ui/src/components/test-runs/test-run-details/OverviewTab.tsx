@@ -19,9 +19,9 @@ import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
 import { updateRunTags, getExistingTagObjects } from '@/actions/runsAction';
 
 type SimpleTagType = {
-  id: string; 
-  label: string
-}
+  id: string;
+  label: string;
+};
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const translations = useTranslations('OverviewTab');
@@ -34,7 +34,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
   const [filterInput, setFilterInput] = useState<string>('');
-  const [stagedTags, setStagedTags] = useState<Set<string>>(new Set(tags));
+  const [stagedTags, setStagedTags] = useState<Set<string>>(new Set());
   const [notification, setNotification] = useState<{
     kind: 'success' | 'error';
     title: string;
@@ -91,7 +91,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   const handleFilterableMultiSelectChange = (selectedItems: SimpleTagType[]) => {
     // Update staged tags based on selected items
-    const newStagedTags = new Set(selectedItems.map(item => item.label));
+    const newStagedTags = new Set(selectedItems.map((item) => item.label));
     setStagedTags(newStagedTags);
   };
 
@@ -108,16 +108,17 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     });
 
     // Add existing tags from the system if they aren't already there.
-    existingTagObjectNames.filter((existingTagObjectName: string)=>(!stagedTags.has(existingTagObjectName))).forEach((tagName, index) => {
-      items.push({
-        id: `existing-tag-${index}`,
-        label: tagName,
+    existingTagObjectNames
+      .filter((existingTagObjectName: string) => !stagedTags.has(existingTagObjectName))
+      .forEach((tagName, index) => {
+        items.push({
+          id: `existing-tag-${index}`,
+          label: tagName,
+        });
       });
-    });
-
 
     // Add the current filter input as an option if it's not empty and not already in the list.
-    if (filterInput.trim() && !items.some(item => item.label === filterInput.trim())) {
+    if (filterInput.trim() && !items.some((item) => item.label === filterInput.trim())) {
       items.push({
         id: 'custom-input',
         label: filterInput.trim(),
@@ -129,7 +130,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
 
   // Get initially selected items based on staged tags.
   const initialSelectedItems = useMemo(() => {
-    return filterableItems.filter(item => stagedTags.has(item.label));
+    return filterableItems.filter((item) => stagedTags.has(item.label));
   }, [filterableItems, stagedTags]);
 
   const handleModalClose = () => {
@@ -200,6 +201,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           <div
             className={styles.tagsEditButtonWrapper}
             onClick={() => {
+              // Initialize staged tags from current tags when opening modal
+              setStagedTags(new Set(tags));
               setIsTagsEditModalOpen(true);
             }}
           >
@@ -254,6 +257,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           initialSelectedItems={initialSelectedItems}
           itemToString={(item: SimpleTagType | null) => (item ? item.label : '')}
           selectionFeedback="top-after-reopen"
+          selectedItems={initialSelectedItems}
           onChange={({ selectedItems }: { selectedItems: SimpleTagType[] }) => {
             handleFilterableMultiSelectChange(selectedItems);
           }}
