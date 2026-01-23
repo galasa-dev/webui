@@ -103,11 +103,12 @@ export default function TestRunsTable({
     }
 
     const searchLowerCase = search.toLowerCase();
+    const visibleColumnsSet = new Set(currentVisibleColumns.split(','));
     const runStructureFields = Object.keys(runsList[0]) as (keyof runStructure)[];
     return runsList.filter((row) => {
       return runStructureFields.some((field) => {
         // We only want to filter data in currently visible columns
-        if (!currentVisibleColumns.split(',').includes(field)) {
+        if (!visibleColumnsSet.has(field)) {
           return false;
         }
         let value = '';
