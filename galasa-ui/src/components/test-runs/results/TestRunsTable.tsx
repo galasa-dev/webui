@@ -112,12 +112,14 @@ export default function TestRunsTable({
           return false;
         }
         let value = '';
-        if (field === 'submittedAt') {
-          value =
-            row.submittedAt?.trim() !== ''
-              ? formatDate(new Date(row.submittedAt.toLowerCase()))
-              : '';
-        } else if (field === 'tags') {
+        // Reimplement in future - formatDate causes performance issues...
+        // if (field === 'submittedAt') {
+        //   value =
+        //     row.submittedAt?.trim() !== ''
+        //       ? formatDate(new Date(row.submittedAt.toLowerCase()))
+        //       : '';
+        // }
+        if (field === 'tags') {
           value = row.tags?.trim() !== '' ? row.tags.toLowerCase() : 'n/a';
         } else {
           value = row[field]?.toLowerCase() ?? '';
@@ -125,7 +127,7 @@ export default function TestRunsTable({
         return value.includes(searchLowerCase);
       });
     });
-  }, [currentVisibleColumns, runsList, search, formatDate]);
+  }, [currentVisibleColumns, runsList, search]);
 
   // Calculate the paginated rows based on the current page and page size,
   // and currently filtered rows (if there is a filter in the toolbar)
