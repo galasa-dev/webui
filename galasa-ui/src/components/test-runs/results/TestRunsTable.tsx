@@ -25,7 +25,7 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
-import { SetStateAction, useMemo, useState } from 'react';
+import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
@@ -88,23 +88,18 @@ export default function TestRunsTable({
         header: translations(column.id),
       })) || [];
 
-  // Calculate the paginated rows based on the current page and page size
-  const paginatedRows = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return runsList.slice(startIndex, endIndex);
-  }, [runsList, currentPage, pageSize]);
-
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
     return getTimeframeText(runsList, translations, formatDate);
   }, [runsList, translations, formatDate]);
 
+  const currentVisibleColumns = visibleColumns.join(',');
+
   // Filter rows in the current paginatedRows if the text in the
   // persistent toolbar search box changes and matches any table info.
   const filteredRows = useMemo(() => {
     const searchLowerCase = search.toLowerCase();
-    return paginatedRows.filter((row) => {
+    return runsList.filter((row) => {
       const runFields = [
         { column: 'submittedAt', value: row.submittedAt?.toLowerCase() ?? '' },
         { column: 'runName', value: row.runName?.toLowerCase() ?? '' },
@@ -122,13 +117,30 @@ export default function TestRunsTable({
       ];
       // We only want to filter data in currently visible columns
       const visibleRunFields = runFields.filter((field) => {
-        return visibleColumns.includes(field.column);
+        return currentVisibleColumns.split(',').includes(field.column);
       });
       return visibleRunFields.some((field) => {
         return field.value.includes(searchLowerCase);
       });
     });
-  }, [visibleColumns, paginatedRows, search]);
+  }, [currentVisibleColumns, runsList, search]);
+
+  // Calculate the paginated rows based on the current page and page size,
+  // and currently filtered rows (if there is a filter in the toolbar)
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredRows.slice(startIndex, endIndex);
+  }, [filteredRows, currentPage, pageSize]);
+
+  // Set the page back to 1 when the filter search changes
+  const previousSearch = useRef(search);
+  useEffect(() => {
+    if (previousSearch.current !== search) {
+      setCurrentPage(1);
+      previousSearch.current = search;
+    }
+  }, [search]);
 
   if (isError) {
     return <ErrorPage />;
@@ -230,7 +242,7 @@ export default function TestRunsTable({
       )}
       <p className={styles.timeFrameText}>{timeFrameText}</p>
       <div className={styles.testRunsTableContainer}>
-        <DataTable rows={filteredRows} headers={headers}>
+        <DataTable rows={paginatedRows} headers={headers}>
           {({
             rows,
             headers,
@@ -308,7 +320,7 @@ export default function TestRunsTable({
           page={currentPage}
           pageSize={pageSize}
           pageSizes={RESULTS_TABLE_PAGE_SIZES}
-          totalItems={runsList.length}
+          totalItems={filteredRows.length}
           onChange={handlePaginationChange}
         />
       </div>
