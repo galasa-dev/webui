@@ -665,8 +665,12 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
 
     // Check that initial tags are selected (checked)
-    const smokeCheckbox = screen.getByTestId('multiselect-item-smoke').querySelector('input[type="checkbox"]');
-    const regressionCheckbox = screen.getByTestId('multiselect-item-regression').querySelector('input[type="checkbox"]');
+    const smokeCheckbox = screen
+      .getByTestId('multiselect-item-smoke')
+      .querySelector('input[type="checkbox"]');
+    const regressionCheckbox = screen
+      .getByTestId('multiselect-item-regression')
+      .querySelector('input[type="checkbox"]');
 
     expect(smokeCheckbox).toBeChecked();
     expect(regressionCheckbox).toBeChecked();
@@ -688,7 +692,9 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
 
     // Select an existing tag that wasn't initially selected
-    const existingTag1Checkbox = screen.getByTestId('multiselect-item-existing-tag-1').querySelector('input[type="checkbox"]');
+    const existingTag1Checkbox = screen
+      .getByTestId('multiselect-item-existing-tag-1')
+      .querySelector('input[type="checkbox"]');
     if (existingTag1Checkbox) {
       await user.click(existingTag1Checkbox);
     }
@@ -696,8 +702,8 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await waitFor(() => {
       // The tag should now appear in the RenderTags component
       const tags = screen.getAllByTestId('mock-tag');
-      const tagTexts = tags.map(tag => tag.textContent);
-      expect(tagTexts.some(text => text?.includes('existing-tag-1'))).toBe(true);
+      const tagTexts = tags.map((tag) => tag.textContent);
+      expect(tagTexts.some((text) => text?.includes('existing-tag-1'))).toBe(true);
     });
   });
 
@@ -755,7 +761,9 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await user.type(filterInput, 'new-tag');
 
     await waitFor(async () => {
-      const newTagCheckbox = screen.getByTestId('multiselect-item-new-tag').querySelector('input[type="checkbox"]');
+      const newTagCheckbox = screen
+        .getByTestId('multiselect-item-new-tag')
+        .querySelector('input[type="checkbox"]');
       if (newTagCheckbox) {
         await user.click(newTagCheckbox);
       }
@@ -771,9 +779,12 @@ describe('OverviewTab - Tags Edit Modal', () => {
 
     // After modal closes, the main tags display should be updated
     // Wait for modal to close
-    await waitFor(() => {
-      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('should fetch existing tags on component mount', async () => {
