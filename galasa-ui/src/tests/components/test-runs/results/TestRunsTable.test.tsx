@@ -6,6 +6,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { fireEvent } from '@testing-library/react';
 import TestRunsTable from '@/components/test-runs/results/TestRunsTable';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_COLUMNS } from '@/utils/constants/common';
@@ -280,5 +281,117 @@ describe('TestRunsTable rendering of TableCells', () => {
         expect(link).toHaveAttribute('href', `/test-runs/${rowRunId}`);
       });
     });
+  });
+});
+
+const filterMockRuns = [
+  {
+    id: '1',
+    runName: 'U123',
+    requestor: 'bob',
+    group: 'group123',
+    testName: 'UnitTest',
+    status: 'passed',
+    result: 'success',
+    submittedAt: '2024-01-01',
+  },
+  {
+    id: '2',
+    runName: 'U456',
+    requestor: 'fred',
+    group: 'group456',
+    testName: 'IntegrationTest',
+    status: 'failed',
+    result: 'failure',
+    submittedAt: '2024-01-02',
+  },
+];
+
+describe('TestRunsTable filters with persistent search toolbar', () => {
+  test('renders persistent search toolbar', async () => {
+    render(<TestRunsTable {...defaultProps} runsList={filterMockRuns} />);
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+  });
+
+  test('filters table rows if search text changes', async () => {
+    // Arrange
+    render(<TestRunsTable {...defaultProps} runsList={filterMockRuns} />);
+
+    const user = userEvent.setup();
+    const searchText = screen.getByRole('searchbox');
+
+    // Assert initial state
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.getByText('U456')).toBeInTheDocument();
+
+    // Act
+    await user.type(searchText, '123');
+
+    // Assert
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.queryByText('U456')).not.toBeInTheDocument();
+  });
+
+  test('filters table rows each character', async () => {
+    // Arrange
+    render(<TestRunsTable {...defaultProps} runsList={filterMockRuns} />);
+
+    const user = userEvent.setup();
+    const searchText = screen.getByRole('searchbox');
+
+    // Assert initial state
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.getByText('U456')).toBeInTheDocument();
+
+    // Act
+    await user.type(searchText, 'U'); // Both run names start with U
+
+    // Assert
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.getByText('U456')).toBeInTheDocument();
+
+    // Act
+    await user.type(searchText, '1'); // Only 1 run name starts with U1
+
+    // Assert
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.queryByText('U456')).not.toBeInTheDocument();
+  });
+
+  test('clearing search text brings back all table rows', async () => {
+    // Arrange
+    render(<TestRunsTable {...defaultProps} runsList={filterMockRuns} />);
+
+    const user = userEvent.setup();
+    const searchText = screen.getByRole('searchbox');
+
+    // Act
+    await user.type(searchText, 'bob');
+
+    // Assert
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.queryByText('U456')).not.toBeInTheDocument();
+
+    // Act
+    await user.clear(searchText);
+
+    // Assert
+    expect(screen.getByText('U123')).toBeInTheDocument();
+    expect(screen.getByText('U456')).toBeInTheDocument();
+  });
+
+  test('filter only applies across visible columns', async () => {
+    // Arrange
+    render(<TestRunsTable {...defaultProps} runsList={filterMockRuns} />);
+
+    const user = userEvent.setup();
+    const searchText = screen.getByRole('searchbox');
+
+    // Act
+    await user.type(searchText, 'group'); // group is not a visible column
+
+    // Assert
+    expect(screen.queryByText('U123')).not.toBeInTheDocument();
+    expect(screen.queryByText('U456')).not.toBeInTheDocument();
   });
 });
