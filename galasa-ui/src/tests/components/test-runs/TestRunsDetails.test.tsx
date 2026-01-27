@@ -36,6 +36,43 @@ const mockRouter = {
 
 const mockGetResolvedTimeZone = jest.fn(() => 'UTC');
 
+const noRunsResponse = {
+  runs: [],
+};
+const singleRunResponse = {
+  runs: [
+    {
+      runId: 'run-123',
+      runName: 'U123',
+      testStructure: {
+        startTime: '2026-01-01T10:00:00Z',
+      },
+    },
+  ],
+};
+const multipleRunsResponse = {
+  runs: [
+    {
+      runId: 'run-1',
+      runName: 'U123', // same run name as below intentional.
+      testStructure: { startTime: '2026-01-01T10:00:00Z' },
+    },
+    {
+      runId: 'run-2',
+      runName: 'U123',
+      testStructure: { startTime: '2026-01-02T10:00:00Z' },
+    },
+  ],
+};
+
+// Mock the fetch that is called when "Search by Test Run Name" is used
+const mockFetchResponse = (data: any, ok = true) => {
+  return jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+    ok,
+    json: async () => data,
+  } as Response);
+};
+
 // Mock useHistoryBreadCrumbs hook
 jest.mock('@/hooks/useHistoryBreadCrumbs', () => ({
   __esModule: true,
@@ -112,11 +149,13 @@ jest.mock('next-intl', () => ({
       copiedMessage: 'URL copied to clipboard.',
       errorTitle: 'Error',
       successTitle: 'Success',
+      infoTitle: 'Info',
       copyFailedMessage: 'Failed to copy URL.',
       editQueryName: 'Edit query name',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
       newQuerySavedMessage: `Query "${vars?.name}" has been saved.`,
       queryUpdatedMessage: 'The query has been updated successfully.',
+      noTestRunsFoundMessage: 'No test runs found.',
       saveQuery: 'Save Query',
     })[key] || key,
 }));
@@ -498,6 +537,119 @@ describe('TestRunsDetails', () => {
       // Verify button is  disabled
       const saveButton = screen.getByRole('button', { name: /Save Query/i });
       expect(saveButton).toBeDisabled();
+    });
+  });
+
+  describe('Search by Test Run Name', () => {
+    test('search go button disabled if search text is empty', async () => {
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const searchInput = screen.getByTestId('search');
+      expect(searchInput).toHaveValue('');
+
+      const goButton = screen.getByRole('button', { name: 'searchButtonLabel' });
+      expect(goButton).toBeDisabled();
+    });
+
+    test('search go button enabled when search text is not empty', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const searchInput = screen.getByTestId('search');
+      expect(searchInput).toHaveValue('');
+
+      const goButton = screen.getByRole('button', { name: 'searchButtonLabel' });
+      expect(goButton).toBeDisabled();
+
+      await user.type(searchInput, 'U123');
+
+      expect(searchInput).toHaveValue('U123');
+      expect(goButton).toBeEnabled();
+    });
+    test('search by test run name one result takes you to test run details page', async () => {
+      const user = userEvent.setup();
+
+      mockFetchResponse(singleRunResponse);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const searchInput = screen.getByTestId('search');
+      const goButton = screen.getByRole('button', { name: 'searchButtonLabel' });
+
+      await user.type(searchInput, 'U123');
+      await user.click(goButton);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/test-runs/run-123');
+    });
+    test('search by test run name no results notifies no runs found', async () => {
+      const user = userEvent.setup();
+
+      mockFetchResponse(noRunsResponse);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const searchInput = screen.getByTestId('search');
+      const goButton = screen.getByRole('button', { name: 'searchButtonLabel' });
+
+      await user.type(searchInput, 'U123');
+      await user.click(goButton);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
+
+      const notification = await screen.findByTestId('notification');
+      expect(notification).toHaveClass('notification-info');
+      expect(notification).toHaveTextContent('No test runs found.');
+    });
+    test('search by test run name multiple results takes you to latest runs test run details page', async () => {
+      const user = userEvent.setup();
+
+      mockFetchResponse(multipleRunsResponse);
+
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const searchInput = screen.getByTestId('search');
+      const goButton = screen.getByRole('button', { name: 'searchButtonLabel' });
+
+      await user.type(searchInput, 'U123');
+      await user.click(goButton);
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/test-runs/run-2');
     });
   });
 });
