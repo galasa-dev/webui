@@ -410,3 +410,20 @@
   inset: 0;
   z-index: 1;
 }
+
+.breadcrumbAndSearch {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--cds-layer);
+  align-items: center;
+  padding-right: 3rem;
+}
+
+.searchAndButton {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  width: 250px;
+}

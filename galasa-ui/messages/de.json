@@ -311,6 +311,7 @@
     "title": "Testläufe",
     "errorTitle": "Fehler",
     "successTitle": "Erfolg",
+    "infoTitle": "Info",
     "copyMessage": "Seiten-URL kopieren",
     "copiedTitle": "URL erfolgreich kopiert: ",
     "copiedMessage": "Die URL dieser Seite wurde in die Zwischenablage kopiert.",
@@ -319,7 +320,10 @@
     "editQueryName": "Abfragenamen bearbeiten",
     "nameExistsError": "Eine Abfrage mit diesem Namen existiert bereits.",
     "queryUpdatedMessage": "Die Abfrage wurde erfolgreich aktualisiert.",
-    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert."
+    "newQuerySavedMessage": "Ihre Abfrage „{name}“ wurde erfolgreich gespeichert.",
+    "noTestRunsFoundMessage": "Keine Testläufe gefunden.",
+    "searchTextPlaceholder": "Suche nach Testlaufnamen",
+    "searchButtonLabel": "Gehen"
   },
   "TestRunSkeleton": {
     "status": "Status",

@@ -7,11 +7,11 @@
 import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
-import { Button, InlineNotification } from '@carbon/react';
+import { Button, InlineNotification, Search } from '@carbon/react';
 import { Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
 import CollapsibleSideBar from './saved-queries/CollapsibleSideBar';
@@ -25,6 +25,8 @@ import {
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
+import { TestRunsData } from '@/utils/testRuns';
+import { useRouter } from 'next/navigation';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -45,9 +47,15 @@ export default function TestRunsDetails({
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [editedName, setEditedName] = useState<string>('');
 
+  const [currentSearchInput, setCurrentSearchInput] = useState('');
+  const [goButtonDisabled, setGoButtonDisabled] = useState(true);
+  const [searchNotification, setSearchNotification] = useState<NotificationType | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeQuery = getQueryByName(queryName);
+
+  const router = useRouter();
 
   // Focus and select the input when editing
   useEffect(() => {
@@ -219,9 +227,91 @@ export default function TestRunsDetails({
     return isDisabled;
   }, [activeQuery, searchParams, isQuerySaved, queryName]);
 
+  // Execute the search for test runs by run name using the Search input
+  const onSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    const searchRunName = currentSearchInput.toUpperCase();
+    // Search from earliest time to now as timeframe is irrelevant
+    const searchFrom = new Date(Date.UTC(0, 0, 1, 0, 0, 0)).toISOString();
+    const searchTo = new Date().toISOString();
+
+    const url = new URL(
+      `/internal-api/test-runs?runName=${searchRunName}&from=${searchFrom}&to=${searchTo}`,
+      window.location.origin
+    );
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.error || `Server responded with status ${response.status}`);
+    }
+
+    const testRunsData = (await response.json()) as TestRunsData;
+    const runs = testRunsData.runs;
+    if (runs.length === 0) {
+      setSearchNotification({
+        kind: 'info',
+        title: translations('infoTitle'),
+        subtitle: translations('noTestRunsFoundMessage'),
+      });
+      setTimeout(() => setSearchNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+    } else if (runs.length === 1) {
+      // Navigate to the test run details page for this run
+      let runId = runs[0].runId;
+      router.push(`/test-runs/${runId}`);
+    } else {
+      // Re-runs were found
+      // Navigate to the test run details page for the latest try of this run
+      const latestRun = runs.reduce((latest, current) => {
+        const latestTime = new Date(latest.testStructure?.startTime ?? '').getTime();
+        const currentTime = new Date(current.testStructure?.startTime ?? '').getTime();
+        return currentTime > latestTime ? current : latest;
+      });
+      let runId = latestRun.runId;
+      router.push(`/test-runs/${runId}`);
+    }
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentSearchInput(event.target.value);
+    if (event.target.value === '') {
+      setGoButtonDisabled(true);
+    } else {
+      setGoButtonDisabled(false);
+    }
+  };
+
   return (
     <div className={styles.testRunsPage}>
-      <BreadCrumb breadCrumbItems={breadCrumbItems} />
+      <div className={styles.breadcrumbAndSearch}>
+        <BreadCrumb breadCrumbItems={breadCrumbItems} />
+        <form onSubmit={onSubmit}>
+          <div className={styles.searchAndButton}>
+            <Search
+              id="search-input"
+              className={styles.search}
+              placeholder={translations('searchTextPlaceholder')}
+              size="md"
+              type="text"
+              onChange={handleSearchChange}
+            />
+            <Button type="submit" size="md" disabled={goButtonDisabled}>
+              {translations('searchButtonLabel')}
+            </Button>
+            {searchNotification && (
+              <div className={styles.notification}>
+                <InlineNotification
+                  title={searchNotification.title}
+                  subtitle={searchNotification.subtitle}
+                  kind={searchNotification.kind}
+                  hideCloseButton={true}
+                />
+              </div>
+            )}
+          </div>
+        </form>
+      </div>
       <PageTile translationKey="TestRun.title" className={styles.toolbar}>
         <div className={styles.toolbarActions}>
           <Button
