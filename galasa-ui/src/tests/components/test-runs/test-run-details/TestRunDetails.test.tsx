@@ -217,7 +217,21 @@ jest.mock('@carbon/react', () => {
     c.displayName = c.name || 'Anonymous';
   });
   Tile.displayName = 'Tile';
-  return { Tab, Tabs, TabList, TabPanels, TabPanel, Loading, Tile, InlineNotification, Button };
+  const Search = ({ ...props }: any) => {
+    return <input {...props} data-testid="search" />;
+  };
+  return {
+    Tab,
+    Tabs,
+    TabList,
+    TabPanels,
+    TabPanel,
+    Loading,
+    Tile,
+    InlineNotification,
+    Button,
+    Search,
+  };
 });
 
 beforeAll(() => {

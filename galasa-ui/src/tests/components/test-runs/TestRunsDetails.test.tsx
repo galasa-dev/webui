@@ -144,6 +144,7 @@ jest.mock('@carbon/react', () => ({
       Loading...
     </div>
   ),
+  Search: ({ ...props }: any) => <input {...props} data-testid="search" />,
 }));
 
 const renderWithProviders = (ui: React.ReactElement) => {
@@ -308,7 +309,7 @@ describe('TestRunsDetails', () => {
       await user.click(editButton);
 
       // 2. Type the new name
-      const input = screen.getByRole('textbox');
+      const input = screen.getByDisplayValue('Initial Query');
       expect(input).toHaveValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'My Renamed Query');
@@ -348,7 +349,7 @@ describe('TestRunsDetails', () => {
 
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
-      const input = screen.getByRole('textbox');
+      const input = screen.getByDisplayValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'A Brand New Name');
       await user.tab();
@@ -373,7 +374,7 @@ describe('TestRunsDetails', () => {
 
       // Act
       await user.click(screen.getByRole('button', { name: /Edit query name/i }));
-      const input = screen.getByRole('textbox');
+      const input = screen.getByDisplayValue('Initial Query');
       await user.clear(input);
       await user.tab();
 
@@ -397,7 +398,7 @@ describe('TestRunsDetails', () => {
 
       await user.click(screen.getByRole('button', { name: /edit query name/i }));
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByDisplayValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'Existing Name');
       await user.tab();

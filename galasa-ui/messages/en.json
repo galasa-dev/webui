@@ -290,6 +290,7 @@
     "title": "Test Runs",
     "errorTitle": "Error",
     "successTitle": "Success",
+    "infoTitle": "Info",
     "copyMessage": "Copy page URL",
     "copiedTitle": "URL copy successful: ",
     "copiedMessage": "The URL for this page has been copied to the clipboard.",
@@ -298,7 +299,10 @@
     "editQueryName": "Edit Query Name",
     "nameExistsError": "A query with this name already exists.",
     "queryUpdatedMessage": "The query has been updated successfully.",
-    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved."
+    "newQuerySavedMessage": "Your query \"{name}\" was successfully saved.",
+    "noTestRunsFoundMessage": "No test runs found.",
+    "searchTextPlaceholder": "Search by Test Run Name",
+    "searchButtonLabel": "Go"
   },
   "TestRunSkeleton": {
     "status": "Status",
