@@ -26,6 +26,10 @@ export interface TestRunsData {
   limitExceeded: boolean;
 }
 
+interface fetchTestRunsByRunNameParams {
+  runName?: string;
+}
+
 interface fetchAllTestRunsByPagingParams {
   fromDate: Date;
   toDate: Date;
@@ -47,6 +51,51 @@ interface fetchAllTestRunsByPagingParams {
 const getRasApiClient = () => {
   const apiConfig = createAuthenticatedApiConfiguration();
   return new ResultArchiveStoreAPIApi(apiConfig);
+};
+
+/**
+ * Fetches test runs from the Result Archive Store API with a specific run name.
+ *
+ * @param {string} [runName] - The name of the test run to filter by.
+ * @returns {Promise<TestRunsData>} - A promise that resolves to an object containing the runs and a flag indicating if the limit was reached.
+ */
+export const fetchTestRunsByRunName = async ({
+  runName,
+}: fetchTestRunsByRunNameParams): Promise<TestRunsData> => {
+  if (!runName) return { runs: [], limitExceeded: false };
+
+  let runs = [] as Run[];
+
+  const rasApiClient = getRasApiClient();
+  try {
+    const response: RunResults = await rasApiClient.getRasSearchRuns(
+      'from:desc',
+      CLIENT_API_VERSION,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      BATCH_SIZE,
+      undefined, // runId
+      runName,
+      undefined,
+      undefined,
+      undefined, // detail
+      undefined,
+      'true', // includeCursor
+      undefined
+    );
+
+    runs = response.runs || [];
+  } catch (error: any) {
+    console.error('Error fetching test runs:', error);
+  }
+
+  return { runs: runs, limitExceeded: false };
 };
 
 /**

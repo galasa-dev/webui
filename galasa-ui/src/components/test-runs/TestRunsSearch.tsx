@@ -27,14 +27,7 @@ export default function TestRunsSearch() {
     event.preventDefault();
 
     const searchRunName = currentSearchInput.toUpperCase();
-    // Search from earliest time to now as timeframe is irrelevant
-    const searchFrom = new Date(Date.UTC(0, 0, 1, 0, 0, 0)).toISOString();
-    const searchTo = new Date().toISOString();
-
-    const url = new URL(
-      `/internal-api/test-runs?runName=${searchRunName}&from=${searchFrom}&to=${searchTo}`,
-      window.location.origin
-    );
+    const url = new URL(`/internal-api/test-runs?runName=${searchRunName}`, window.location.origin);
     const response = await fetch(url.toString());
 
     if (!response.ok) {
