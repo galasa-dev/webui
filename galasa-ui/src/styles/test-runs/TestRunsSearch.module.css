@@ -14,7 +14,11 @@
 }
 
 .search {
-  width: 250px;
+  min-width: 260px;
+}
+
+.button {
+  max-width: 80px;
 }
 
 .notification {
