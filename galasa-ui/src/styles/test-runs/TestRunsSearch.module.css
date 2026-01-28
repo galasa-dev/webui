@@ -1,0 +1,25 @@
+.searchContainer {
+  display: flex;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.searchContainer > * {
+  margin-left: auto;
+}
+
+.searchAndButton {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  width: 250px;
+}
+
+.notification {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1rem;
+  z-index: 9999;
+}

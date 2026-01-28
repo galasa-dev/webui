@@ -19,7 +19,7 @@
 .mainContent {
   flex: 1;
   min-width: 0;
-  padding: 5rem 4rem;
+  padding: 2.5rem 4rem;
 }
 
 @media (max-width: 768px) {
@@ -411,19 +411,3 @@
   z-index: 1;
 }
 
-.breadcrumbAndSearch {
-  display: flex;
-  justify-content: space-between;
-  background-color: var(--cds-layer);
-  align-items: center;
-  padding-right: 3rem;
-}
-
-.searchAndButton {
-  display: flex;
-  align-items: center;
-}
-
-.search {
-  width: 250px;
-}
