@@ -261,7 +261,7 @@
     "modalHeading": "Tags im Testlauf bearbeiten",
     "modalPrimaryButton": "Speichern",
     "modalLabelText": "Geben Sie neue Tag-Namen zum Hinzufügen ein oder entfernen Sie vorhandene Tags aus dem Testlauf",
-    "modalPlaceholderText": "Geben Sie hier einen neuen Tag(s) ein und drücken Sie die [Eingabetaste]",
+    "modalPlaceholderText": "Geben Sie hier ein neues Tag ein",
     "removeTag": "Tag entfernen",
     "modalSecondaryButton": "Abbrechen",
     "updateSuccess": "Tags erfolgreich aktualisiert",
