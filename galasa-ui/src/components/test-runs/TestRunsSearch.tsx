@@ -82,7 +82,7 @@ export default function TestRunsSearch() {
             type="text"
             onChange={handleSearchChange}
           />
-          <Button type="submit" size="md" disabled={goButtonDisabled}>
+          <Button className={styles.button} type="submit" size="md" disabled={goButtonDisabled}>
             {translations('searchButtonLabel')}
           </Button>
           {searchNotification && (
