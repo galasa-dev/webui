@@ -6,7 +6,7 @@
 
 import { ColumnDefinition } from '../interfaces';
 
-const CLIENT_API_VERSION = '0.46.0';
+const CLIENT_API_VERSION = '0.47.0';
 
 const COLORS = {
   RED: '#da1e28',
