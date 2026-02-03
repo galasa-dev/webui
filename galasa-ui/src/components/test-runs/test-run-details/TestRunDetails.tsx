@@ -44,6 +44,7 @@ import {
 import { NotificationType } from '@/utils/types/common';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import { TEST_RUNS } from '@/utils/constants/breadcrumb';
+import TestRunsSearch from '../TestRunsSearch';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -346,6 +347,7 @@ const TestRunDetails = ({
         <TestRunSkeleton selectedTabIndex={selectedTabIndex} />
       ) : (
         <div className={styles.testRunContainer}>
+          <TestRunsSearch />
           <div className={styles.summarySection}>
             <div>
               <span className={styles.summaryStatus}>

@@ -13,6 +13,9 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableToolbar,
+  TableToolbarContent,
+  TableToolbarSearch,
   Pagination,
   DataTableSkeleton,
 } from '@carbon/react';
@@ -22,7 +25,7 @@ import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
 import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
-import { useMemo, useState } from 'react';
+import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
@@ -73,6 +76,8 @@ export default function TestRunsTable({
   const { defaultPageSize } = useResultsTablePageSize();
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
+  const [search, setSearch] = useState('');
+
   const isNotificationVisible = useDisappearingNotification(limitExceeded);
 
   const headers =
@@ -83,17 +88,63 @@ export default function TestRunsTable({
         header: translations(column.id),
       })) || [];
 
-  // Calculate the paginated rows based on the current page and page size
-  const paginatedRows = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return runsList.slice(startIndex, endIndex);
-  }, [runsList, currentPage, pageSize]);
-
   // Generate the time frame text based on the runs data
   const timeFrameText = useMemo(() => {
     return getTimeframeText(runsList, translations, formatDate);
   }, [runsList, translations, formatDate]);
+
+  const currentVisibleColumns = visibleColumns.join(',');
+
+  // Filter rows in the current paginatedRows if the text in the
+  // persistent toolbar search box changes and matches any table info.
+  const filteredRows = useMemo(() => {
+    if (!runsList || runsList.length === 0) {
+      return [];
+    }
+
+    const searchLowerCase = search.toLowerCase();
+    const visibleColumnsSet = new Set(currentVisibleColumns.split(','));
+    const runStructureFields = Object.keys(runsList[0]) as (keyof runStructure)[];
+    return runsList.filter((row) => {
+      return runStructureFields.some((field) => {
+        // We only want to filter data in currently visible columns
+        if (!visibleColumnsSet.has(field)) {
+          return false;
+        }
+        let value = '';
+        // Reimplement in future - formatDate causes performance issues...
+        // if (field === 'submittedAt') {
+        //   value =
+        //     row.submittedAt?.trim() !== ''
+        //       ? formatDate(new Date(row.submittedAt.toLowerCase()))
+        //       : '';
+        // }
+        if (field === 'tags') {
+          value = row.tags?.trim() !== '' ? row.tags.toLowerCase() : 'n/a';
+        } else {
+          value = row[field]?.toLowerCase() ?? '';
+        }
+        return value.includes(searchLowerCase);
+      });
+    });
+  }, [currentVisibleColumns, runsList, search]);
+
+  // Calculate the paginated rows based on the current page and page size,
+  // and currently filtered rows (if there is a filter in the toolbar)
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredRows.slice(startIndex, endIndex);
+  }, [filteredRows, currentPage, pageSize]);
+
+  // Set the page back to 1 when the filter search changes
+  const previousSearch = useRef(search);
+  useEffect(() => {
+    if (previousSearch.current !== search) {
+      setCurrentPage(1);
+      previousSearch.current = search;
+    }
+  }, [search]);
 
   if (isError) {
     return <ErrorPage />;
@@ -210,6 +261,16 @@ export default function TestRunsTable({
             getTableProps: () => TableBodyProps;
           }) => (
             <TableContainer>
+              <TableToolbar>
+                <TableToolbarContent>
+                  <TableToolbarSearch
+                    persistent
+                    onChange={(event: { target: { value: SetStateAction<string> } }) =>
+                      setSearch(event.target.value)
+                    }
+                  />
+                </TableToolbarContent>
+              </TableToolbar>
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
                   <TableRow>
@@ -263,7 +324,7 @@ export default function TestRunsTable({
           page={currentPage}
           pageSize={pageSize}
           pageSizes={RESULTS_TABLE_PAGE_SIZES}
-          totalItems={runsList.length}
+          totalItems={filteredRows.length}
           onChange={handlePaginationChange}
         />
       </div>

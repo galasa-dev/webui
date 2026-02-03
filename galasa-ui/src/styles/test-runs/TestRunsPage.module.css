@@ -19,7 +19,7 @@
 .mainContent {
   flex: 1;
   min-width: 0;
-  padding: 5rem 4rem;
+  padding: 2.5rem 4rem;
 }
 
 @media (max-width: 768px) {
@@ -410,3 +410,4 @@
   inset: 0;
   z-index: 1;
 }
+

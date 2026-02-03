@@ -25,6 +25,7 @@ import {
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import QueryName from './QueryName';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
+import TestRunsSearch from './TestRunsSearch';
 
 interface TestRunsDetailsProps {
   requestorNamesPromise: Promise<string[]>;
@@ -247,6 +248,7 @@ export default function TestRunsDetails({
         <CollapsibleSideBar handleEditQueryName={handleStartEditingName} />
 
         <div className={styles.mainContent}>
+          <TestRunsSearch />
           <div className={styles.queryNameContainer}>
             <QueryName
               inputRef={inputRef}
