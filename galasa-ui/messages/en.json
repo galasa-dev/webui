@@ -246,7 +246,8 @@
     "updateSuccess": "Tags updated successfully",
     "updateSuccessMessage": "The tags have been updated for this test run.",
     "updateError": "Failed to update tags",
-    "updateErrorMessage": "An error occurred while updating the tags. Please try again."
+    "updateErrorMessage": "An error occurred while updating the tags. Please try again.",
+    "editTags": "Edit tags"
   },
   "3270Tab": {
     "Terminal": "Terminal",

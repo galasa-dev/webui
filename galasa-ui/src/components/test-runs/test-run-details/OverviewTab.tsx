@@ -18,7 +18,7 @@ import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants
 import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
 import { updateRunTags, getExistingTagObjects } from '@/actions/runsAction';
 
-type SimpleTagType = {
+type DisplayedTagType = {
   id: string;
   label: string;
 };
@@ -30,7 +30,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const [tags, setTags] = useState<string[]>(metadata?.tags || []);
-  const [existingTagObjectNames, setexistingTagObjectNames] = useState<string[]>([]);
+  const [existingTagObjectNames, setExistingTagObjectNames] = useState<string[]>([]);
 
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
   const [filterInput, setFilterInput] = useState<string>('');
@@ -50,7 +50,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     const fetchExistingTags = async () => {
       try {
         const result = await getExistingTagObjects();
-        setexistingTagObjectNames(result.tags || []);
+        setExistingTagObjectNames(result.tags || []);
 
         if (!result.success) {
           console.error('Failed to fetch existing tags:', result.error);
@@ -89,7 +89,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     });
   };
 
-  const handleFilterableMultiSelectChange = (selectedItems: SimpleTagType[]) => {
+  const handleFilterableMultiSelectChange = (selectedItems: DisplayedTagType[]) => {
     // Update staged tags based on selected items
     const newStagedTags = new Set(selectedItems.map((item) => item.label));
     setStagedTags(newStagedTags);
@@ -193,15 +193,25 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           <div
             className={styles.tagsEditButtonWrapper}
             onClick={() => {
-              // Initialize staged tags from current tags when opening modal
+              // Initialise staged tags from current tags when opening modal.
               setStagedTags(new Set(tags));
               setIsTagsEditModalOpen(true);
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setStagedTags(new Set(tags));
+                setIsTagsEditModalOpen(true);
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={translations('editTags')}
           >
             <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
-        <RenderTags tags={tags} isDismissible={false} size="md" />
+        <RenderTags tags={tags.sort()} isDismissible={false} size="md" />
 
         <div className={styles.redirectLinks}>
           <div className={styles.linkWrapper} onClick={handleNavigationClick}>
@@ -247,10 +257,10 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           placeholder={translations('modalPlaceholderText')}
           items={filterableItems}
           initialSelectedItems={initialSelectedItems}
-          itemToString={(item: SimpleTagType | null) => (item ? item.label : '')}
+          itemToString={(item: DisplayedTagType | null) => (item ? item.label : '')}
           selectionFeedback="top-after-reopen"
           selectedItems={initialSelectedItems}
-          onChange={({ selectedItems }: { selectedItems: SimpleTagType[] }) => {
+          onChange={({ selectedItems }: { selectedItems: DisplayedTagType[] }) => {
             handleFilterableMultiSelectChange(selectedItems);
           }}
           onInputValueChange={(inputValue: string) => {

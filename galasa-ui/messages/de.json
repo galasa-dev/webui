@@ -267,7 +267,8 @@
     "updateSuccess": "Tags erfolgreich aktualisiert",
     "updateSuccessMessage": "Die Tags wurden für diesen Testlauf aktualisiert.",
     "updateError": "Fehler beim Aktualisieren der Tags",
-    "updateErrorMessage": "Beim Aktualisieren der Tags ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    "updateErrorMessage": "Beim Aktualisieren der Tags ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "editTags": "Tags bearbeiten"
   },
   "3270Tab": {
     "Terminal": "Terminal",

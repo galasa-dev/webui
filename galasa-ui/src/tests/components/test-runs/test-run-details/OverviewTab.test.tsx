@@ -248,15 +248,15 @@ describe('OverviewTab', () => {
     expect(screen.getByText(completeMetadata.duration)).toBeInTheDocument();
   });
 
-  it('renders each tag when tags array is non-empty', () => {
+  it('renders each tag when tags array is non-empty, sorted', () => {
     render(<OverviewTab metadata={completeMetadata} />);
     // header - use getByText since h5 contains nested elements
     expect(screen.getByText('Tags', { selector: 'h5' })).toBeInTheDocument();
-    // tags
+
     const tagEls = screen.getAllByTestId('mock-tag');
     expect(tagEls).toHaveLength(2);
-    expect(tagEls[0]).toHaveTextContent('smoke');
-    expect(tagEls[1]).toHaveTextContent('regression');
+    expect(tagEls[0]).toHaveTextContent('regression');
+    expect(tagEls[1]).toHaveTextContent('smoke');
   });
 
   it('shows fallback text when tags is empty or missing', () => {
@@ -492,8 +492,8 @@ describe('OverviewTab - Tags Edit Modal', () => {
 
     await waitFor(() => {
       expect(mockUpdateRunTags).toHaveBeenCalledWith(completeMetadata.runId, [
-        'smoke',
         'regression',
+        'smoke',
       ]);
     });
   });
@@ -778,7 +778,6 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
 
     // After modal closes, the main tags display should be updated
-    // Wait for modal to close
     await waitFor(
       () => {
         expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
