@@ -149,8 +149,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         subtitle: translations('updateSuccessMessage'),
       });
 
-      // Set tags of the component to the staged tags tags.
-      setTags(Array.from(stagedTags));
+      // Set tags of the component to the staged tags.
+      setTags(Array.from(stagedTags).sort());
 
       // Close modal after a short delay to show success message.
       setTimeout(() => {
