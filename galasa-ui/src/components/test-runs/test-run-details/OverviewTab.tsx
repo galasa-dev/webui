@@ -90,31 +90,28 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   };
 
   const handleFilterableMultiSelectChange = (selectedItems: DisplayedTagType[]) => {
-    // Update staged tags based on selected items
+    // Update staged tags based on selected items.
     const newStagedTags = new Set(selectedItems.map((item) => item.label));
     setStagedTags(newStagedTags);
   };
 
   // Create items for FilterableMultiSelect.
   const filterableItems = useMemo(() => {
-    const itemsSet = new Set<string>();
+    const stagedAndExistingTags = new Set<string>();
 
     // Collect all unique tag names.
-    stagedTags.forEach((tagName) => itemsSet.add(tagName));
-    existingTagObjectNames.forEach((tagName) => itemsSet.add(tagName));
+    stagedTags.forEach((tagName) => stagedAndExistingTags.add(tagName));
+    existingTagObjectNames.forEach((tagName) => stagedAndExistingTags.add(tagName));
 
     // Add the current filter input if it's not empty and not already in the list.
-    if (filterInput.trim() && !itemsSet.has(filterInput.trim())) {
-      itemsSet.add(filterInput.trim());
+    if (filterInput.trim() && !stagedAndExistingTags.has(filterInput.trim())) {
+      stagedAndExistingTags.add(filterInput.trim());
     }
 
-    // Convert to array and sort alphabetically.
-    const sortedTags = Array.from(itemsSet).sort((a, b) =>
-      a.toLowerCase().localeCompare(b.toLowerCase())
-    );
+    const arrayOfStagedAndExistingTags = Array.from(stagedAndExistingTags);
 
     // Create items with consistent IDs based on sorted order.
-    return sortedTags.map((tagName, index) => ({
+    return arrayOfStagedAndExistingTags.map((tagName, index) => ({
       id: `tag-${index}-${tagName}`,
       label: tagName,
     }));
@@ -258,7 +255,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           items={filterableItems}
           initialSelectedItems={initialSelectedItems}
           itemToString={(item: DisplayedTagType | null) => (item ? item.label : '')}
-          selectionFeedback="top-after-reopen"
+          selectionFeedback="top"
           selectedItems={initialSelectedItems}
           onChange={({ selectedItems }: { selectedItems: DisplayedTagType[] }) => {
             handleFilterableMultiSelectChange(selectedItems);
@@ -269,7 +266,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           className={styles.tagsTextInput}
         />
         <RenderTags
-          tags={Array.from(stagedTags)}
+          tags={Array.from(stagedTags).sort()}
           isDismissible={true}
           size="lg"
           onTagRemove={handleTagRemove}
