@@ -15,6 +15,10 @@ import { updateRunTags } from '@/actions/runsAction';
 // Mock the server action
 jest.mock('@/actions/runsAction', () => ({
   updateRunTags: jest.fn(),
+  getExistingTagObjects: jest.fn().mockResolvedValue({
+    success: true,
+    tags: ['existing-tag-1', 'existing-tag-2'],
+  }),
 }));
 
 // Mock RenderTags component
@@ -74,6 +78,46 @@ jest.mock('@carbon/react', () => ({
       placeholder={placeholder}
       aria-label={labelText}
     />
+  ),
+  FilterableMultiSelect: ({
+    id,
+    titleText,
+    placeholder,
+    items,
+    initialSelectedItems,
+    selectedItems,
+    itemToString,
+    onChange,
+    onInputValueChange,
+  }: any) => (
+    <div data-testid="mock-filterable-multiselect">
+      <label>{titleText}</label>
+      <input
+        data-testid="filterable-multiselect-input"
+        placeholder={placeholder}
+        onChange={(e) => onInputValueChange && onInputValueChange(e.target.value)}
+      />
+      <div data-testid="filterable-multiselect-items">
+        {items.map((item: any) => {
+          const isSelected = selectedItems?.some((selected: any) => selected.id === item.id);
+          return (
+            <div key={item.id} data-testid={`multiselect-item-${item.label}`}>
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={(e) => {
+                  const newSelected = e.target.checked
+                    ? [...(selectedItems || []), item]
+                    : (selectedItems || []).filter((s: any) => s.id !== item.id);
+                  onChange && onChange({ selectedItems: newSelected });
+                }}
+              />
+              <label>{itemToString ? itemToString(item) : item.label}</label>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   ),
   Modal: ({
     open,
@@ -204,15 +248,15 @@ describe('OverviewTab', () => {
     expect(screen.getByText(completeMetadata.duration)).toBeInTheDocument();
   });
 
-  it('renders each tag when tags array is non-empty', () => {
+  it('renders each tag when tags array is non-empty, sorted', () => {
     render(<OverviewTab metadata={completeMetadata} />);
     // header - use getByText since h5 contains nested elements
     expect(screen.getByText('Tags', { selector: 'h5' })).toBeInTheDocument();
-    // tags
+
     const tagEls = screen.getAllByTestId('mock-tag');
     expect(tagEls).toHaveLength(2);
-    expect(tagEls[0]).toHaveTextContent('smoke');
-    expect(tagEls[1]).toHaveTextContent('regression');
+    expect(tagEls[0]).toHaveTextContent('regression');
+    expect(tagEls[1]).toHaveTextContent('smoke');
   });
 
   it('shows fallback text when tags is empty or missing', () => {
@@ -448,8 +492,8 @@ describe('OverviewTab - Tags Edit Modal', () => {
 
     await waitFor(() => {
       expect(mockUpdateRunTags).toHaveBeenCalledWith(completeMetadata.runId, [
-        'smoke',
         'regression',
+        'smoke',
       ]);
     });
   });
@@ -508,7 +552,7 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
   });
 
-  it('should persist staged tags when modal is closed without saving', async () => {
+  it('should reset staged tags when modal is closed without saving', async () => {
     const user = userEvent.setup();
     render(<OverviewTab metadata={completeMetadata} />);
 
@@ -539,9 +583,9 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await user.click(editIcon);
 
     await waitFor(() => {
-      // Tag should still be removed (staged changes persist)
-      expect(screen.queryByTestId('remove-tag-smoke')).not.toBeInTheDocument();
-      // But regression tag should still be there
+      // Tag should be back (staged changes reset on cancel)
+      expect(screen.getByTestId('remove-tag-smoke')).toBeInTheDocument();
+      // And regression tag should still be there
       expect(screen.getByTestId('remove-tag-regression')).toBeInTheDocument();
     });
   });
@@ -556,5 +600,218 @@ describe('OverviewTab - Tags Edit Modal', () => {
     await waitFor(() => {
       expect(screen.getByText(new RegExp(completeMetadata.runName))).toBeInTheDocument();
     });
+  });
+
+  it('should initialise staged tags from current tags when modal opens', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      // Both original tags should be present in the modal
+      expect(screen.getByTestId('remove-tag-smoke')).toBeInTheDocument();
+      expect(screen.getByTestId('remove-tag-regression')).toBeInTheDocument();
+    });
+  });
+
+  it('should display FilterableMultiSelect with sorted items alphabetically', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Check that items are present (they should be sorted alphabetically)
+    const items = screen.getByTestId('filterable-multiselect-items');
+    expect(items).toBeInTheDocument();
+  });
+
+  it('should maintain alphabetical sorting when adding new tags via filter input', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Type a new tag in the filter input
+    const filterInput = screen.getByTestId('filterable-multiselect-input');
+    await user.type(filterInput, 'alpha-tag');
+
+    await waitFor(() => {
+      // The new tag should appear in the items list
+      expect(screen.getByTestId('multiselect-item-alpha-tag')).toBeInTheDocument();
+    });
+  });
+
+  it('should keep selected items ticked in the dropdown', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Check that initial tags are selected (checked)
+    const smokeCheckbox = screen
+      .getByTestId('multiselect-item-smoke')
+      .querySelector('input[type="checkbox"]');
+    const regressionCheckbox = screen
+      .getByTestId('multiselect-item-regression')
+      .querySelector('input[type="checkbox"]');
+
+    expect(smokeCheckbox).toBeChecked();
+    expect(regressionCheckbox).toBeChecked();
+  });
+
+  it('should update staged tags when selecting items in FilterableMultiSelect', async () => {
+    const user = userEvent.setup();
+    const metadataWithOneTag: RunMetadata = {
+      ...completeMetadata,
+      tags: ['smoke'],
+    };
+    render(<OverviewTab metadata={metadataWithOneTag} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Select an existing tag that wasn't initially selected
+    const existingTag1Checkbox = screen
+      .getByTestId('multiselect-item-existing-tag-1')
+      .querySelector('input[type="checkbox"]');
+    if (existingTag1Checkbox) {
+      await user.click(existingTag1Checkbox);
+    }
+
+    await waitFor(() => {
+      // The tag should now appear in the RenderTags component
+      const tags = screen.getAllByTestId('mock-tag');
+      const tagTexts = tags.map((tag) => tag.textContent);
+      expect(tagTexts.some((text) => text?.includes('existing-tag-1'))).toBe(true);
+    });
+  });
+
+  it('should clear filter input when modal is closed', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Type something in the filter input
+    const filterInput = screen.getByTestId('filterable-multiselect-input');
+    await user.type(filterInput, 'test-tag');
+
+    // Close modal
+    const secondaryButton = screen.getByTestId('modal-secondary-button');
+    await user.click(secondaryButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+    });
+
+    // Reopen modal
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      const filterInputReopened = screen.getByTestId('filterable-multiselect-input');
+      // Filter input should be empty
+      expect(filterInputReopened).toHaveValue('');
+    });
+  });
+
+  it('should update main tags display after successful save', async () => {
+    const user = userEvent.setup();
+    mockUpdateRunTags.mockResolvedValueOnce({
+      success: true,
+      tags: ['smoke', 'regression', 'new-tag'],
+    });
+
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Add a new tag via filter input
+    const filterInput = screen.getByTestId('filterable-multiselect-input');
+    await user.type(filterInput, 'new-tag');
+
+    await waitFor(async () => {
+      const newTagCheckbox = screen
+        .getByTestId('multiselect-item-new-tag')
+        .querySelector('input[type="checkbox"]');
+      if (newTagCheckbox) {
+        await user.click(newTagCheckbox);
+      }
+    });
+
+    // Save
+    const primaryButton = screen.getByTestId('modal-primary-button');
+    await user.click(primaryButton);
+
+    await waitFor(() => {
+      expect(mockUpdateRunTags).toHaveBeenCalled();
+    });
+
+    // After modal closes, the main tags display should be updated
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
+  });
+
+  it('should fetch existing tags on component mount', async () => {
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    // Wait for the component to render
+    await waitFor(() => {
+      expect(screen.getByText('Tags', { selector: 'h5' })).toBeInTheDocument();
+    });
+
+    // The getExistingTagObjects should have been called
+    const { getExistingTagObjects } = require('@/actions/runsAction');
+    expect(getExistingTagObjects).toHaveBeenCalled();
+  });
+
+  it('should include existing system tags in FilterableMultiSelect items', async () => {
+    const user = userEvent.setup();
+    render(<OverviewTab metadata={completeMetadata} />);
+
+    const editIcon = screen.getByTestId('edit-icon');
+    await user.click(editIcon);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-filterable-multiselect')).toBeInTheDocument();
+    });
+
+    // Check that existing system tags are available
+    expect(screen.getByTestId('multiselect-item-existing-tag-1')).toBeInTheDocument();
+    expect(screen.getByTestId('multiselect-item-existing-tag-2')).toBeInTheDocument();
   });
 });

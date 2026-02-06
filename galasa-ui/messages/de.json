@@ -261,13 +261,14 @@
     "modalHeading": "Tags im Testlauf bearbeiten",
     "modalPrimaryButton": "Speichern",
     "modalLabelText": "Geben Sie neue Tag-Namen zum Hinzufügen ein oder entfernen Sie vorhandene Tags aus dem Testlauf",
-    "modalPlaceholderText": "Geben Sie hier einen neuen Tag(s) ein und drücken Sie die [Eingabetaste]",
+    "modalPlaceholderText": "Geben Sie hier ein neues Tag ein",
     "removeTag": "Tag entfernen",
     "modalSecondaryButton": "Abbrechen",
     "updateSuccess": "Tags erfolgreich aktualisiert",
     "updateSuccessMessage": "Die Tags wurden für diesen Testlauf aktualisiert.",
     "updateError": "Fehler beim Aktualisieren der Tags",
-    "updateErrorMessage": "Beim Aktualisieren der Tags ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    "updateErrorMessage": "Beim Aktualisieren der Tags ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "editTags": "Tags bearbeiten"
   },
   "3270Tab": {
     "Terminal": "Terminal",

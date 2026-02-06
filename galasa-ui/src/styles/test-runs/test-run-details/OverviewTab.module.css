@@ -80,3 +80,20 @@
 .tagsTextInput {
   margin-bottom: 1.5rem;
 }
+
+/* Uses :global() to access Carbon's global class */
+.tagsEditModal :global(.cds--modal-container) {
+  min-height: 25rem;
+  max-height: 35rem;
+  height: 45vh;
+}
+
+.tagsEditModal :global(#tags-filterable-multiselect__menu) {
+  max-height: 18vh;
+}
+
+.tagsEditModal :global(.cds--tag.cds--tag--filter.cds--tag--high-contrast) {
+  visibility: collapse;
+  width: 0px;
+  margin: 0px;
+}

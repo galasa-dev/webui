@@ -191,7 +191,7 @@ export default function TestRunsTable({
       if (value.length === 0) {
         return <TableCell>N/A</TableCell>;
       }
-      const tagsArray = value.split(', ');
+      const tagsArray = value.split(', ').sort();
       return (
         <TableCell className={styles.linkCell}>
           <RenderTags tags={tagsArray} isDismissible={false} size="sm" />

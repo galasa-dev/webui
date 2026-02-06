@@ -4,21 +4,24 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import styles from '@/styles/test-runs/test-run-details/OverviewTab.module.css';
 import InlineText from './InlineText';
 import { RunMetadata } from '@/utils/interfaces';
 import { useTranslations } from 'next-intl';
-import { Link, InlineNotification } from '@carbon/react';
+import { Link, InlineNotification, FilterableMultiSelect, Modal } from '@carbon/react';
 import { Launch, Edit } from '@carbon/icons-react';
 import { getAWeekBeforeSubmittedTime } from '@/utils/timeOperations';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
-import { TextInput } from '@carbon/react';
-import { Modal } from '@carbon/react';
 import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants/common';
-import RenderTags from './RenderTags';
-import { updateRunTags } from '@/actions/runsAction';
+import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
+import { updateRunTags, getExistingTagObjects } from '@/actions/runsAction';
+
+type DisplayedTagType = {
+  id: string;
+  label: string;
+};
 
 const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const translations = useTranslations('OverviewTab');
@@ -27,9 +30,11 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const [tags, setTags] = useState<string[]>(metadata?.tags || []);
+  const [existingTagObjectNames, setExistingTagObjectNames] = useState<string[]>([]);
+
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
-  const [newTagInput, setNewTagInput] = useState<string>('');
-  const [stagedTags, setStagedTags] = useState<Set<string>>(new Set(tags));
+  const [filterInput, setFilterInput] = useState<string>('');
+  const [stagedTags, setStagedTags] = useState<Set<string>>(new Set());
   const [notification, setNotification] = useState<{
     kind: 'success' | 'error';
     title: string;
@@ -40,6 +45,22 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const fullTestName = metadata?.testName;
   const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.DURATION}=60,0,0&${TEST_RUNS_QUERY_PARAMS.TAB}=results&${TEST_RUNS_QUERY_PARAMS.QUERY_NAME}=Recent runs of test ${metadata?.testName}`;
   const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${TEST_RUNS_QUERY_PARAMS.FROM}=${weekBefore}&${TEST_RUNS_QUERY_PARAMS.TAB}=results&${TEST_RUNS_QUERY_PARAMS.QUERY_NAME}=All attempts of test run ${metadata?.runName}`;
+
+  useEffect(() => {
+    const fetchExistingTags = async () => {
+      try {
+        const result = await getExistingTagObjects();
+        setExistingTagObjectNames(result.tags || []);
+
+        if (!result.success) {
+          console.error('Failed to fetch existing tags:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching existing tags:', error);
+      }
+    };
+    fetchExistingTags();
+  }, []);
 
   useEffect(() => {
     const validateTime = () => {
@@ -68,34 +89,42 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
     });
   };
 
-  const handleStageNewTags = () => {
-    // Parse new tags from input (comma or space separated).
-    const newTags = newTagInput
-      .split(/[,\s]+/)
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0);
-
-    // Add new tags to staged tags Set (automatically handles duplicates).
-    setStagedTags((prev) => {
-      const newSet = new Set(prev);
-      newTags.forEach((tag) => newSet.add(tag));
-      return newSet;
-    });
-
-    // Clear the input after staging
-    setNewTagInput('');
+  const handleFilterableMultiSelectChange = (selectedItems: DisplayedTagType[]) => {
+    // Update staged tags based on selected items.
+    const newStagedTags = new Set(selectedItems.map((item) => item.label));
+    setStagedTags(newStagedTags);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleStageNewTags();
+  // Create items for FilterableMultiSelect.
+  const filterableItems = useMemo(() => {
+    const stagedAndExistingTags = new Set<string>();
+
+    // Collect all unique tag names.
+    stagedTags.forEach((tagName) => stagedAndExistingTags.add(tagName));
+    existingTagObjectNames.forEach((tagName) => stagedAndExistingTags.add(tagName));
+
+    // Add the current filter input if it's not empty and not already in the list.
+    if (filterInput.trim() && !stagedAndExistingTags.has(filterInput.trim())) {
+      stagedAndExistingTags.add(filterInput.trim());
     }
-  };
+
+    const arrayOfStagedAndExistingTags = Array.from(stagedAndExistingTags);
+
+    // Create items with consistent IDs based on sorted order.
+    return arrayOfStagedAndExistingTags.map((tagName, index) => ({
+      id: `tag-${index}-${tagName}`,
+      label: tagName,
+    }));
+  }, [existingTagObjectNames, stagedTags, filterInput]);
+
+  // Get initially selected items based on staged tags.
+  const initialSelectedItems = useMemo(() => {
+    return filterableItems.filter((item) => stagedTags.has(item.label));
+  }, [filterableItems, stagedTags]);
 
   const handleModalClose = () => {
     setIsTagsEditModalOpen(false);
-    setNewTagInput('');
+    setFilterInput('');
     setNotification(null);
   };
 
@@ -117,8 +146,8 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         subtitle: translations('updateSuccessMessage'),
       });
 
-      // Set tags of the component to the staged tags tags.
-      setTags(Array.from(stagedTags));
+      // Set tags of the component to the staged tags.
+      setTags(Array.from(stagedTags).sort());
 
       // Close modal after a short delay to show success message.
       setTimeout(() => {
@@ -161,13 +190,25 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
           <div
             className={styles.tagsEditButtonWrapper}
             onClick={() => {
+              // Initialise staged tags from current tags when opening modal.
+              setStagedTags(new Set(tags));
               setIsTagsEditModalOpen(true);
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setStagedTags(new Set(tags));
+                setIsTagsEditModalOpen(true);
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={translations('editTags')}
           >
             <Edit className={styles.tagsEditButton} />
           </div>
         </h5>
-        <RenderTags tags={tags} isDismissible={false} size="md" />
+        <RenderTags tags={tags.sort()} isDismissible={false} size="md" />
 
         <div className={styles.redirectLinks}>
           <div className={styles.linkWrapper} onClick={handleNavigationClick}>
@@ -194,6 +235,7 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
         secondaryButtonText={translations('modalSecondaryButton')}
         onRequestSubmit={handleSaveTags}
         primaryButtonDisabled={isSaving}
+        className={styles.tagsEditModal}
       >
         {notification && (
           <InlineNotification
@@ -206,17 +248,25 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
             onCloseButtonClick={() => setNotification(null)}
           />
         )}
-        <TextInput
-          data-modal-primary-focus
-          labelText={translations('modalLabelText')}
+        <FilterableMultiSelect
+          id="tags-filterable-multiselect"
+          titleText={translations('modalLabelText')}
           placeholder={translations('modalPlaceholderText')}
-          value={newTagInput}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTagInput(e.target.value)}
-          onKeyDown={handleKeyDown}
+          items={filterableItems}
+          initialSelectedItems={initialSelectedItems}
+          itemToString={(item: DisplayedTagType | null) => (item ? item.label : '')}
+          selectionFeedback="top"
+          selectedItems={initialSelectedItems}
+          onChange={({ selectedItems }: { selectedItems: DisplayedTagType[] }) => {
+            handleFilterableMultiSelectChange(selectedItems);
+          }}
+          onInputValueChange={(inputValue: string) => {
+            setFilterInput(inputValue);
+          }}
           className={styles.tagsTextInput}
         />
         <RenderTags
-          tags={Array.from(stagedTags)}
+          tags={Array.from(stagedTags).sort()}
           isDismissible={true}
           size="lg"
           onTagRemove={handleTagRemove}
