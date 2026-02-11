@@ -99,7 +99,7 @@ export const fetchRunLog = async (runId: string) => {
   try {
     runLog = await fetchRunDetailLogs(runId);
   } catch (error: any) {
-    runLog = "Error fetching run log: " + error;
+    runLog = 'Error fetching run log: ' + error;
   }
   return runLog;
 };
