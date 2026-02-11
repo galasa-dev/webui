@@ -80,7 +80,7 @@
   border-radius: var(--border-radius);
   padding: 1rem;
   font-family: 'IBM Plex Mono', monospace;
-  height: 100vh;
+  height: 70vh;
   overflow-y: auto;
 }
 

@@ -207,7 +207,10 @@
     "filterTrace": "Trace",
     "downloadButton": "Download Run Log",
     "copyPermalinkButton": "Copy permalink with selected lines",
-    "selectLinesToCreatePermalink": "Select log lines for permalink"
+    "selectLinesToCreatePermalink": "Select log lines for permalink",
+    "refreshRunLog": "Refresh the Run Log",
+    "scrollToTop": "Scroll to top of log",
+    "scrollToBottom": "Scroll to bottom of log"
   },
   "MethodsTab": {
     "title": "Methods",

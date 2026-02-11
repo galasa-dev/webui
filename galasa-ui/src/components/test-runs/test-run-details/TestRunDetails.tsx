@@ -145,9 +145,9 @@ const TestRunDetails = ({
         duration:
           runDetails.testStructure?.startTime && runDetails.testStructure?.endTime
             ? getIsoTimeDifference(
-                runDetails.testStructure?.startTime,
-                runDetails.testStructure?.endTime
-              )
+              runDetails.testStructure?.startTime,
+              runDetails.testStructure?.endTime
+            )
             : '-',
         tags: runDetails.testStructure?.tags!,
       };
@@ -389,7 +389,7 @@ const TestRunDetails = ({
                 <MethodsTab methods={methods} onMethodClick={handleNavigateToLog} />
               </TabPanel>
               <TabPanel>
-                <LogTab logs={logs} initialLine={initialLine} />
+                <LogTab logs={logs} initialLine={initialLine} runId={runId} />
               </TabPanel>
               <TabPanel>
                 <ArtifactsTab

@@ -17,9 +17,13 @@ import {
   Term,
   LetterAa,
   Copy,
+  Renew,
+  ArrowUp,
+  ArrowDown,
 } from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
+import { fetchRunLog } from '@/actions/runsAction';
 
 interface LogLine {
   content: string;
@@ -43,6 +47,7 @@ enum RegexFlags {
 interface LogTabProps {
   logs: string;
   initialLine?: number;
+  runId: string;
 }
 
 interface selectedRange {
@@ -55,10 +60,11 @@ interface selectedRange {
 const SELECTION_CHANGE_EVENT = 'selectionchange';
 const HASH_CHANGE_EVENT = 'hashchange';
 
-export default function LogTab({ logs, initialLine }: LogTabProps) {
+export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const translations = useTranslations('LogTab');
 
   const [logContent, setLogContent] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [processedLines, setProcessedLines] = useState<LogLine[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
@@ -84,6 +90,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   );
 
   const logContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
@@ -159,6 +166,48 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   const goToPreviousMatch = () => {
     if (totalMatches > 0) {
       setCurrentMatchIndex((prev) => (prev - 1 + totalMatches) % totalMatches);
+    }
+  };
+
+  const handleRefreshLog = async () => {
+    setIsRefreshing(true);
+
+    try {
+      // Fetch fresh log from the server
+      const newRunLog = await fetchRunLog(runId);
+
+      setLogContent(newRunLog);
+
+      // Reset search and filters
+      setSearchTerm('');
+      setDebouncedSearchTerm('');
+      setCurrentMatchIndex(-1);
+      setTotalMatches(0);
+      setSearchCache(new Map());
+    } catch (error) {
+      console.error('Error refreshing logs:', error);
+      // Fallback to existing logs if fetch fails
+      setLogContent(logs);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const scrollToTop = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -587,9 +636,9 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
                   ? translations('matchCounter', {
-                      current: currentMatchIndex + 1,
-                      total: totalMatches,
-                    })
+                    current: currentMatchIndex + 1,
+                    total: totalMatches,
+                  })
                   : translations('noMatches')}
               </span>
               <Button
@@ -685,8 +734,30 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           className={!selectedRange?.startLine ? styles.buttonDisabled : ''}
           data-testid="icon-button-copy-permalink"
         />
+        <Button
+          kind="ghost"
+          renderIcon={Renew}
+          hasIconOnly
+          iconDescription={translations('refreshRunLog')}
+          onClick={handleRefreshLog}
+          disabled={isRefreshing}
+        />
+        <Button
+          kind="ghost"
+          renderIcon={ArrowUp}
+          hasIconOnly
+          iconDescription={translations('scrollToTop')}
+          onClick={scrollToTop}
+        />
+        <Button
+          kind="ghost"
+          renderIcon={ArrowDown}
+          hasIconOnly
+          iconDescription={translations('scrollToBottom')}
+          onClick={scrollToBottom}
+        />
       </div>
-      <div className={styles.runLog}>
+      <div className={styles.runLog} ref={scrollContainerRef}>
         <div className={styles.runLogContent} ref={logContainerRef}>
           {renderLogContent()}
         </div>

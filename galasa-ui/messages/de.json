@@ -228,7 +228,10 @@
     "filterTrace": "Trace",
     "downloadButton": "Laufprotokoll herunterladen",
     "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren",
-    "selectLinesToCreatePermalink": "Zeilen für Permalink wählen"
+    "selectLinesToCreatePermalink": "Zeilen für Permalink wählen",
+    "refreshRunLog": "Aktualisiere das Ausführungsprotokoll",
+    "scrollToTop": "Zum Anfang des Protokolls scrollen",
+    "scrollToBottom": "Zum Ende des Protokolls scrollen"
   },
   "MethodsTab": {
     "title": "Methoden",
@@ -389,12 +392,10 @@
     "isloading": "Diagramm wird geladen...",
     "errorLoadingGraph": "Beim Laden des Diagramms ist ein Fehler aufgetreten.",
     "noTestRunsFound": "Keine Testläufe gefunden.",
-
     "limitExceeded": {
       "title": "Grenzwert überschritten",
       "subtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten."
     },
-
     "timeFrameText": {
       "range": "Zeige Testläufe von {from} bis {to}"
     }
