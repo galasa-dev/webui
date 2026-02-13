@@ -8,10 +8,16 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import LogTab from '@/components/test-runs/test-run-details/LogTab';
 import { handleDownload } from '@/utils/artifacts';
+import { fetchRunLog } from '@/actions/runsAction';
 
 // Mock the utility function
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
+}));
+
+// Mock the fetchRunLog action
+jest.mock('@/actions/runsAction', () => ({
+  fetchRunLog: jest.fn(),
 }));
 
 // Mock the next-intl translations
@@ -41,6 +47,11 @@ jest.mock('next-intl', () => ({
         filterDebug: 'Debug',
         filterTrace: 'Trace',
         downloadButton: 'Download Run Log',
+        refreshRunLog: 'Refresh Run Log',
+        jumpToTop: 'Jump to Top',
+        jumpToBottom: 'Jump to Bottom',
+        copyPermalinkButton: 'Copy Permalink',
+        selectLinesToCreatePermalink: 'Select lines to create permalink',
       };
       return dummy[key] ?? key;
     };
@@ -688,6 +699,153 @@ Line with $dollar and ^caret`;
         },
         { timeout: 2000 }
       );
+    });
+  });
+
+  describe('Refresh Button Functionality', () => {
+    beforeEach(() => {
+      (fetchRunLog as jest.Mock).mockClear();
+    });
+
+    it('renders the refresh button', () => {
+      render(<LogTab logs={sampleLogs} runId="test-run-123" />);
+
+      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
+      expect(refreshButton).toBeInTheDocument();
+    });
+
+    it('calls fetchRunLog with correct runId when refresh button is clicked', async () => {
+      (fetchRunLog as jest.Mock).mockResolvedValue(sampleLogs);
+
+      render(<LogTab logs={sampleLogs} runId="test-run-456" />);
+
+      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
+      fireEvent.click(refreshButton);
+
+      await waitFor(() => {
+        expect(fetchRunLog).toHaveBeenCalledWith('test-run-456');
+      });
+    });
+
+    it('resets search state after refresh', async () => {
+      (fetchRunLog as jest.Mock).mockResolvedValue(sampleLogs);
+
+      render(<LogTab logs={sampleLogs} runId="test-run-123" />);
+
+      // Perform a search first
+      const searchInput = screen.getByTestId('search-input');
+      fireEvent.change(searchInput, { target: { value: 'ERROR' } });
+
+      await waitFor(() => {
+        expect(screen.getByText(/of/)).toBeInTheDocument();
+      });
+
+      // Click refresh
+      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
+      fireEvent.click(refreshButton);
+
+      // Search should be cleared
+      await waitFor(() => {
+        expect(searchInput).toHaveValue('');
+      });
+    });
+  });
+
+  describe('Scroll to Top Button Functionality', () => {
+    beforeEach(() => {
+      // Mock scrollTo method
+      Element.prototype.scrollTo = jest.fn();
+    });
+
+    it('does not show scroll to top button when at the top', () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollToTopButton = screen.queryByTestId('icon-button-jump-to-top');
+      expect(scrollToTopButton).not.toBeInTheDocument();
+    });
+
+    it('scrolls to top when scroll to top button is clicked', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position to show the button
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 100, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('icon-button-jump-to-top')).toBeInTheDocument();
+        });
+
+        const scrollToTopButton = screen.getByTestId('icon-button-jump-to-top');
+        fireEvent.click(scrollToTopButton);
+
+        expect(scrollContainer.scrollTo).toHaveBeenCalledWith({
+          top: 0,
+          behavior: 'smooth',
+        });
+      }
+    });
+  });
+
+  describe('Scroll to Bottom Button Functionality', () => {
+    beforeEach(() => {
+      // Mock scrollTo method
+      Element.prototype.scrollTo = jest.fn();
+    });
+
+    it('does not show scroll to bottom button when at the bottom', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position - at bottom
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 500, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          const scrollToBottomButton = screen.queryByTestId('icon-button-jump-to-bottom');
+          expect(scrollToBottomButton).not.toBeInTheDocument();
+        });
+      }
+    });
+
+    it('scrolls to bottom when scroll to bottom button is clicked', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position to show the button
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 0, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('icon-button-jump-to-bottom')).toBeInTheDocument();
+        });
+
+        const scrollToBottomButton = screen.getByTestId('icon-button-jump-to-bottom');
+        fireEvent.click(scrollToBottomButton);
+
+        expect(scrollContainer.scrollTo).toHaveBeenCalledWith({
+          top: 1000,
+          behavior: 'smooth',
+        });
+      }
     });
   });
 });

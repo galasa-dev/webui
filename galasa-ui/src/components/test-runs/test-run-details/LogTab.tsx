@@ -669,9 +669,9 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
                   ? translations('matchCounter', {
-                    current: currentMatchIndex + 1,
-                    total: totalMatches,
-                  })
+                      current: currentMatchIndex + 1,
+                      total: totalMatches,
+                    })
                   : translations('noMatches')}
               </span>
               <Button
