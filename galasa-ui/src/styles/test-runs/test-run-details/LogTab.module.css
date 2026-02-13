@@ -75,9 +75,13 @@
   border-bottom-right-radius: var(--border-radius);
 }
 
-.runLog {
+.runLogWrapper {
+  position: relative;
   border: 1px solid var(--galasa-border);
   border-radius: var(--border-radius);
+}
+
+.runLog {
   padding: 1rem;
   font-family: 'IBM Plex Mono', monospace;
   height: 70vh;
@@ -105,4 +109,22 @@
 .buttonDisabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.jumpToTopContainer {
+  top: 1rem;
+  right: 1rem;
+}
+
+.jumpToBottomContainer {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.jumpToTopContainer, .jumpToBottomContainer {
+  position: absolute;
+  background-color: var(--cds-layer);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  color: white;
+  z-index: 10;
 }

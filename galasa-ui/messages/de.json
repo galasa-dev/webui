@@ -230,8 +230,8 @@
     "copyPermalinkButton": "Permalink mit ausgewählten Zeilen kopieren",
     "selectLinesToCreatePermalink": "Zeilen für Permalink wählen",
     "refreshRunLog": "Aktualisiere das Ausführungsprotokoll",
-    "scrollToTop": "Zum Anfang des Protokolls scrollen",
-    "scrollToBottom": "Zum Ende des Protokolls scrollen"
+    "jumpToTop": "Zum Anfang springen",
+    "jumpToBottom": "Zum Ende springen"
   },
   "MethodsTab": {
     "title": "Methoden",

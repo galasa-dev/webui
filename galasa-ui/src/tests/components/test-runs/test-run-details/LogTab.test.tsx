@@ -151,33 +151,33 @@ describe('LogTab', () => {
 
   describe('Rendering', () => {
     it('renders the component with title and description', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.getByText(/A step-by-step log of what happened/)).toBeInTheDocument();
     });
 
     it('renders search input', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('search-input')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Find in run log')).toBeInTheDocument();
     });
 
     it('renders filter menu', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('overflow-menu')).toBeInTheDocument();
     });
 
     it('renders download button', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('icon-button-download-run-log')).toBeInTheDocument();
     });
 
     it('renders log content with line numbers', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText('1.')).toBeInTheDocument();
       expect(screen.getByText('2.')).toBeInTheDocument();
@@ -193,7 +193,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={targetLineNumber} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={targetLineNumber} />);
 
       // Wait for the line to appear
       await screen.findByText(/Connection retry attempt 1/i);
@@ -207,7 +207,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={999} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={999} />);
 
       await screen.findByText(/Starting application/);
 
@@ -218,7 +218,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={0} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={0} />);
 
       await screen.findByText(/Starting application/);
 
@@ -228,7 +228,7 @@ describe('LogTab', () => {
 
   describe('Log Processing', () => {
     it('processes log lines and assigns correct levels', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Check that different log levels are rendered
       expect(screen.getByText(/Starting application/)).toBeInTheDocument();
@@ -237,7 +237,7 @@ describe('LogTab', () => {
     });
 
     it('handles multi-line log entries', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText(/Detailed execution trace/)).toBeInTheDocument();
       expect(screen.getByText(/Multi-line continuation/)).toBeInTheDocument();
@@ -248,7 +248,7 @@ describe('LogTab', () => {
 This is a continuation line
 2024-01-01 10:00:02 INFO New info line`;
 
-      render(<LogTab logs={logsWithContinuation} />);
+      render(<LogTab logs={logsWithContinuation} runId={''} />);
 
       expect(screen.getByText(/First error line/)).toBeInTheDocument();
       expect(screen.getByText(/This is a continuation line/)).toBeInTheDocument();
@@ -257,7 +257,7 @@ This is a continuation line
 
   describe('Filtering', () => {
     it('renders all filter checkboxes', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('checkbox-error')).toBeInTheDocument();
       expect(screen.getByTestId('checkbox-warning')).toBeInTheDocument();
@@ -267,7 +267,7 @@ This is a continuation line
     });
 
     it('all filters are checked by default', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('checkbox-error')).toBeChecked();
       expect(screen.getByTestId('checkbox-warning')).toBeChecked();
@@ -277,7 +277,7 @@ This is a continuation line
     });
 
     it('toggles filter when checkbox is clicked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const errorCheckbox = screen.getByTestId('checkbox-error');
       expect(errorCheckbox).toBeChecked();
@@ -287,7 +287,7 @@ This is a continuation line
     });
 
     it('hides all content when all filters are unchecked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Uncheck all filters
       const checkboxes = [
@@ -309,7 +309,7 @@ This is a continuation line
 
   describe('Download Functionality', () => {
     it('calls handleDownload when download button is clicked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const downloadButton = screen.getByTestId('icon-button-download-run-log');
       fireEvent.click(downloadButton);
@@ -320,7 +320,7 @@ This is a continuation line
 
   describe('Edge Cases', () => {
     it('handles empty logs', () => {
-      render(<LogTab logs="" />);
+      render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.queryByText('1.')).not.toBeInTheDocument();
@@ -331,14 +331,14 @@ This is a continuation line
 Another line
 Yet another line`;
 
-      render(<LogTab logs={logsWithoutLevels} />);
+      render(<LogTab logs={logsWithoutLevels} runId={''} />);
 
       expect(screen.getByText(/Simple log line without level/)).toBeInTheDocument();
       expect(screen.getByText('1.')).toBeInTheDocument();
     });
 
     it('disables navigation buttons when no matches', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: 'NONEXISTENT' } });
@@ -358,7 +358,7 @@ Yet another line`;
       const logsWithSpecialChars = `Line with (parentheses) and [brackets]
 Line with $dollar and ^caret`;
 
-      render(<LogTab logs={logsWithSpecialChars} />);
+      render(<LogTab logs={logsWithSpecialChars} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: '(parentheses)' } });
@@ -371,7 +371,7 @@ Line with $dollar and ^caret`;
 
   describe('Search and Edge Cases', () => {
     it('handles empty logs', () => {
-      render(<LogTab logs="" />);
+      render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.queryByText('1.')).not.toBeInTheDocument();
@@ -380,7 +380,7 @@ Line with $dollar and ^caret`;
     it('handles logs without explicit levels by inheriting INFO', async () => {
       const logsWithoutLevels = `Simple log line without level\nAnother line`;
 
-      render(<LogTab logs={logsWithoutLevels} />);
+      render(<LogTab logs={logsWithoutLevels} runId={''} />);
 
       // Check that the line is visible by default.
       await waitFor(() => {
@@ -395,7 +395,7 @@ Line with $dollar and ^caret`;
     });
 
     it('disables navigation buttons when no matches', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: 'NONEXISTENT' } });
@@ -410,7 +410,7 @@ Line with $dollar and ^caret`;
     it('escapes special regex characters in search', async () => {
       const logsWithSpecialChars = `Line with $dollar and ^caret`;
 
-      render(<LogTab logs={logsWithSpecialChars} />);
+      render(<LogTab logs={logsWithSpecialChars} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
 
@@ -424,7 +424,7 @@ Line with $dollar and ^caret`;
 
     it('correctly assigns INFO level even if ERROR is in message content', async () => {
       const mixedLogs = `2024-01-01 10:00:01 INFO There is an ERROR inside this message`;
-      render(<LogTab logs={mixedLogs} />);
+      render(<LogTab logs={mixedLogs} runId={''} />);
 
       fireEvent.click(screen.getByTestId('checkbox-error'));
       await waitFor(() => {
@@ -449,7 +449,7 @@ Line with $dollar and ^caret`;
       });
 
       it('debounces the search input and updates after delay', async () => {
-        render(<LogTab logs={sampleLogs} />);
+        render(<LogTab logs={sampleLogs} runId={''} />);
         const searchInput = screen.getByTestId('search-input');
 
         fireEvent.change(searchInput, { target: { value: 'XYZ' } });
@@ -479,14 +479,14 @@ Line with $dollar and ^caret`;
     });
 
     it('copies permalink button is initially disabled', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
       expect(copyPermalinkButton).toHaveClass('buttonDisabled');
     });
 
     it('enables permalink button when a log line is selected', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the lines to be rendered
       await waitFor(() => {
@@ -512,7 +512,7 @@ Line with $dollar and ^caret`;
     });
 
     it('copies the correct permalink to the clipboard and disables the button', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
       await screen.findByText(/Initializing database connection/);
 
       const startLineNode = screen.getByText(/Initializing database connection/); // Line 2
@@ -545,7 +545,7 @@ Line with $dollar and ^caret`;
 
     it('copies permalink without the line parameter', async () => {
       const writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText');
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
       await screen.findByText(/Initializing database connection/);
 
       const startLineNode = screen.getByText(/Initializing database connection/);
@@ -624,7 +624,7 @@ Line with $dollar and ^caret`;
         writable: true,
       });
 
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the target line to be rendered and processed
       await waitFor(() => {
@@ -653,7 +653,7 @@ Line with $dollar and ^caret`;
         writable: true,
       });
 
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the content to be rendered
       await waitFor(() => {

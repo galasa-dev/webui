@@ -209,8 +209,8 @@
     "copyPermalinkButton": "Copy permalink with selected lines",
     "selectLinesToCreatePermalink": "Select log lines for permalink",
     "refreshRunLog": "Refresh the Run Log",
-    "scrollToTop": "Scroll to top of log",
-    "scrollToBottom": "Scroll to bottom of log"
+    "jumpToTop": "Jump to top",
+    "jumpToBottom": "Jump to bottom"
   },
   "MethodsTab": {
     "title": "Methods",

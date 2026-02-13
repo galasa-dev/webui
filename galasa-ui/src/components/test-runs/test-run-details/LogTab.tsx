@@ -18,8 +18,8 @@ import {
   LetterAa,
   Copy,
   Renew,
-  ArrowUp,
-  ArrowDown,
+  UpToTop,
+  DownToBottom,
 } from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
@@ -80,6 +80,8 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     TRACE: true,
   });
   const [selectedRange, setSelectedRange] = useState<selectedRange | null>(null);
+  const [isAtTop, setIsAtTop] = useState<boolean>(true);
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
 
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
@@ -192,6 +194,16 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       setIsRefreshing(false);
     }
   };
+
+  const checkScrollPosition = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      const THRESHOLD_PIXELS = 40;
+
+      setIsAtTop(scrollTop <= THRESHOLD_PIXELS);
+      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - THRESHOLD_PIXELS);
+    }
+  }, []);
 
   const scrollToTop = () => {
     if (scrollContainerRef.current) {
@@ -615,6 +627,27 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     };
   }, []);
 
+  // Track scroll position in log tab
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    // Check initial position
+    checkScrollPosition();
+
+    // Add scroll event listener
+    scrollContainer.addEventListener('scroll', checkScrollPosition);
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [checkScrollPosition]);
+
+  // Re-check scroll position when content changes
+  useEffect(() => {
+    checkScrollPosition();
+  }, [processedLines, checkScrollPosition]);
+
   const copyPermalinkText = selectedRange?.startLine
     ? translations('copyPermalinkButton')
     : translations('selectLinesToCreatePermalink');
@@ -636,9 +669,9 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
               <span className={styles.matchCounter} data-testid="match-counter">
                 {totalMatches > 0
                   ? translations('matchCounter', {
-                      current: currentMatchIndex + 1,
-                      total: totalMatches,
-                    })
+                    current: currentMatchIndex + 1,
+                    total: totalMatches,
+                  })
                   : translations('noMatches')}
               </span>
               <Button
@@ -742,25 +775,35 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
           onClick={handleRefreshLog}
           disabled={isRefreshing}
         />
-        <Button
-          kind="ghost"
-          renderIcon={ArrowUp}
-          hasIconOnly
-          iconDescription={translations('scrollToTop')}
-          onClick={scrollToTop}
-        />
-        <Button
-          kind="ghost"
-          renderIcon={ArrowDown}
-          hasIconOnly
-          iconDescription={translations('scrollToBottom')}
-          onClick={scrollToBottom}
-        />
       </div>
-      <div className={styles.runLog} ref={scrollContainerRef}>
-        <div className={styles.runLogContent} ref={logContainerRef}>
-          {renderLogContent()}
+      <div className={styles.runLogWrapper}>
+        {!isAtTop && (
+          <div className={styles.jumpToTopContainer}>
+            <Button
+              kind="ghost"
+              renderIcon={UpToTop}
+              hasIconOnly
+              iconDescription={translations('jumpToTop')}
+              onClick={scrollToTop}
+            />
+          </div>
+        )}
+        <div className={styles.runLog} ref={scrollContainerRef}>
+          <div className={styles.runLogContent} ref={logContainerRef}>
+            {renderLogContent()}
+          </div>
         </div>
+        {!isAtBottom && (
+          <div className={styles.jumpToBottomContainer}>
+            <Button
+              kind="ghost"
+              renderIcon={DownToBottom}
+              hasIconOnly
+              iconDescription={translations('jumpToBottom')}
+              onClick={scrollToBottom}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
