@@ -210,7 +210,9 @@
     "selectLinesToCreatePermalink": "Select log lines for permalink",
     "refreshRunLog": "Refresh the Run Log",
     "jumpToTop": "Jump to top",
-    "jumpToBottom": "Jump to bottom"
+    "jumpToBottom": "Jump to bottom",
+    "errorTitle": "Failed to refresh run log",
+    "errorFailedMessage": "Failed to refresh run log, error message: {errorMessage}"
   },
   "MethodsTab": {
     "title": "Methods",

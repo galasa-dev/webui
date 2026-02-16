@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { Search, OverflowMenu, Button } from '@carbon/react';
+import { Search, OverflowMenu, Button, InlineNotification } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/LogTab.module.css';
 import { Checkbox } from '@carbon/react';
 import {
@@ -24,6 +24,8 @@ import {
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
 import { fetchRunLog } from '@/actions/runsAction';
+import { NotificationType } from '@/utils/types/common';
+import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
 
 interface LogLine {
   content: string;
@@ -95,7 +97,12 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [notification, setNotification] = useState<NotificationType | null>(null);
+
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
+  const ANIMATION_BEHAVIOUR = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? 'instant'
+    : 'smooth';
 
   const handleSearchChange = (e: any) => {
     const value = e.target?.value || '';
@@ -179,15 +186,15 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       const newRunLog = await fetchRunLog(runId);
 
       setLogContent(newRunLog);
-
-      // Reset search and filters
-      setSearchTerm('');
-      setDebouncedSearchTerm('');
-      setCurrentMatchIndex(-1);
-      setTotalMatches(0);
-      setSearchCache(new Map());
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error refreshing logs:', error);
+      setNotification?.({
+        kind: 'error',
+        title: translations('errorTitle'),
+        subtitle: translations('errorFailedMessage', { errorMessage: error.message }),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+
       // Fallback to existing logs if fetch fails
       setLogContent(logs);
     } finally {
@@ -209,7 +216,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: ANIMATION_BEHAVIOUR,
       });
     }
   };
@@ -218,7 +225,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
         top: scrollContainerRef.current.scrollHeight,
-        behavior: 'smooth',
+        behavior: ANIMATION_BEHAVIOUR,
       });
     }
   };
@@ -526,7 +533,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     if (initialLine && processedLines.length > 0) {
       const lineElement = document.getElementById(`log-line-${initialLine - 1}`);
       if (lineElement) {
-        lineElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        lineElement.scrollIntoView({ behavior: ANIMATION_BEHAVIOUR, block: 'start' });
       }
     }
   }, [initialLine, processedLines]);
@@ -537,7 +544,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       const currentMatchElement = document.getElementById('current-match');
       if (currentMatchElement) {
         currentMatchElement.scrollIntoView({
-          behavior: 'smooth',
+          behavior: ANIMATION_BEHAVIOUR,
           block: 'center',
         });
       }
@@ -805,6 +812,17 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
           </div>
         )}
       </div>
+
+      {notification && (
+        <InlineNotification
+          kind={notification.kind}
+          title={notification.title}
+          subtitle={notification.subtitle}
+          onClose={() => setNotification(null)}
+          hideCloseButton={false}
+          className={styles.notification}
+        />
+      )}
     </div>
   );
 }

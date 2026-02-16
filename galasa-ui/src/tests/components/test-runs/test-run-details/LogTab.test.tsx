@@ -726,29 +726,6 @@ Line with $dollar and ^caret`;
         expect(fetchRunLog).toHaveBeenCalledWith('test-run-456');
       });
     });
-
-    it('resets search state after refresh', async () => {
-      (fetchRunLog as jest.Mock).mockResolvedValue(sampleLogs);
-
-      render(<LogTab logs={sampleLogs} runId="test-run-123" />);
-
-      // Perform a search first
-      const searchInput = screen.getByTestId('search-input');
-      fireEvent.change(searchInput, { target: { value: 'ERROR' } });
-
-      await waitFor(() => {
-        expect(screen.getByText(/of/)).toBeInTheDocument();
-      });
-
-      // Click refresh
-      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
-      fireEvent.click(refreshButton);
-
-      // Search should be cleared
-      await waitFor(() => {
-        expect(searchInput).toHaveValue('');
-      });
-    });
   });
 
   describe('Scroll to Top Button Functionality', () => {

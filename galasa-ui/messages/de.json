@@ -231,7 +231,9 @@
     "selectLinesToCreatePermalink": "Zeilen für Permalink wählen",
     "refreshRunLog": "Aktualisiere das Ausführungsprotokoll",
     "jumpToTop": "Zum Anfang springen",
-    "jumpToBottom": "Zum Ende springen"
+    "jumpToBottom": "Zum Ende springen",
+    "errorTitle": "Fehler beim Aktualisieren des Ausführungsprotokolls",
+    "errorFailedMessage": "Fehler beim Aktualisieren des Ausführungsprotokolls, Fehlermeldung: {errorMessage}"
   },
   "MethodsTab": {
     "title": "Methoden",

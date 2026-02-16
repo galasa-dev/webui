@@ -95,11 +95,10 @@ export const getExistingTagObjects = async () => {
 };
 
 export const fetchRunLog = async (runId: string) => {
-  let runLog;
   try {
-    runLog = await fetchRunDetailLogs(runId);
+    const runLog = await fetchRunDetailLogs(runId);
+    return runLog;
   } catch (error: any) {
-    runLog = 'Error fetching run log: ' + error;
+    throw new Error(error);
   }
-  return runLog;
 };
