@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { Search, OverflowMenu, Button } from '@carbon/react';
+import { Search, OverflowMenu, Button, InlineNotification } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/LogTab.module.css';
 import { Checkbox } from '@carbon/react';
 import {
@@ -17,9 +17,15 @@ import {
   Term,
   LetterAa,
   Copy,
+  Renew,
+  UpToTop,
+  DownToBottom,
 } from '@carbon/icons-react';
 import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
+import { fetchRunLog } from '@/actions/runsAction';
+import { NotificationType } from '@/utils/types/common';
+import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
 
 interface LogLine {
   content: string;
@@ -43,6 +49,7 @@ enum RegexFlags {
 interface LogTabProps {
   logs: string;
   initialLine?: number;
+  runId: string;
 }
 
 interface selectedRange {
@@ -55,10 +62,11 @@ interface selectedRange {
 const SELECTION_CHANGE_EVENT = 'selectionchange';
 const HASH_CHANGE_EVENT = 'hashchange';
 
-export default function LogTab({ logs, initialLine }: LogTabProps) {
+export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const translations = useTranslations('LogTab');
 
   const [logContent, setLogContent] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [processedLines, setProcessedLines] = useState<LogLine[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
@@ -74,6 +82,8 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     TRACE: true,
   });
   const [selectedRange, setSelectedRange] = useState<selectedRange | null>(null);
+  const [isAtTop, setIsAtTop] = useState<boolean>(true);
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
 
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
@@ -84,9 +94,15 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   );
 
   const logContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [notification, setNotification] = useState<NotificationType | null>(null);
+
   const DEBOUNCE_DELAY_MILLISECONDS = 300;
+  const ANIMATION_BEHAVIOUR = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? 'instant'
+    : 'smooth';
 
   const handleSearchChange = (e: any) => {
     const value = e.target?.value || '';
@@ -159,6 +175,58 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
   const goToPreviousMatch = () => {
     if (totalMatches > 0) {
       setCurrentMatchIndex((prev) => (prev - 1 + totalMatches) % totalMatches);
+    }
+  };
+
+  const handleRefreshLog = async () => {
+    setIsRefreshing(true);
+
+    try {
+      // Fetch fresh log from the server
+      const newRunLog = await fetchRunLog(runId);
+
+      setLogContent(newRunLog);
+    } catch (error: any) {
+      console.error('Error refreshing logs:', error);
+      setNotification?.({
+        kind: 'error',
+        title: translations('errorTitle'),
+        subtitle: translations('errorFailedMessage', { errorMessage: error.message }),
+      });
+      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+
+      // Fallback to existing logs if fetch fails
+      setLogContent(logs);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const checkScrollPosition = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      const THRESHOLD_PIXELS = 40;
+
+      setIsAtTop(scrollTop <= THRESHOLD_PIXELS);
+      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - THRESHOLD_PIXELS);
+    }
+  }, []);
+
+  const scrollToTop = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: ANIMATION_BEHAVIOUR,
+      });
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: ANIMATION_BEHAVIOUR,
+      });
     }
   };
 
@@ -465,7 +533,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
     if (initialLine && processedLines.length > 0) {
       const lineElement = document.getElementById(`log-line-${initialLine - 1}`);
       if (lineElement) {
-        lineElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        lineElement.scrollIntoView({ behavior: ANIMATION_BEHAVIOUR, block: 'start' });
       }
     }
   }, [initialLine, processedLines]);
@@ -476,7 +544,7 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       const currentMatchElement = document.getElementById('current-match');
       if (currentMatchElement) {
         currentMatchElement.scrollIntoView({
-          behavior: 'smooth',
+          behavior: ANIMATION_BEHAVIOUR,
           block: 'center',
         });
       }
@@ -565,6 +633,27 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
       }
     };
   }, []);
+
+  // Track scroll position in log tab
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    // Check initial position
+    checkScrollPosition();
+
+    // Add scroll event listener
+    scrollContainer.addEventListener('scroll', checkScrollPosition);
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [checkScrollPosition]);
+
+  // Re-check scroll position when content changes
+  useEffect(() => {
+    checkScrollPosition();
+  }, [processedLines, checkScrollPosition]);
 
   const copyPermalinkText = selectedRange?.startLine
     ? translations('copyPermalinkButton')
@@ -685,12 +774,55 @@ export default function LogTab({ logs, initialLine }: LogTabProps) {
           className={!selectedRange?.startLine ? styles.buttonDisabled : ''}
           data-testid="icon-button-copy-permalink"
         />
+        <Button
+          kind="ghost"
+          renderIcon={Renew}
+          hasIconOnly
+          iconDescription={translations('refreshRunLog')}
+          onClick={handleRefreshLog}
+          disabled={isRefreshing}
+        />
       </div>
-      <div className={styles.runLog}>
-        <div className={styles.runLogContent} ref={logContainerRef}>
-          {renderLogContent()}
+      <div className={styles.runLogWrapper}>
+        {!isAtTop && (
+          <div className={styles.jumpToTopContainer}>
+            <Button
+              kind="ghost"
+              renderIcon={UpToTop}
+              hasIconOnly
+              iconDescription={translations('jumpToTop')}
+              onClick={scrollToTop}
+            />
+          </div>
+        )}
+        <div className={styles.runLog} ref={scrollContainerRef}>
+          <div className={styles.runLogContent} ref={logContainerRef}>
+            {renderLogContent()}
+          </div>
         </div>
+        {!isAtBottom && (
+          <div className={styles.jumpToBottomContainer}>
+            <Button
+              kind="ghost"
+              renderIcon={DownToBottom}
+              hasIconOnly
+              iconDescription={translations('jumpToBottom')}
+              onClick={scrollToBottom}
+            />
+          </div>
+        )}
       </div>
+
+      {notification && (
+        <InlineNotification
+          kind={notification.kind}
+          title={notification.title}
+          subtitle={notification.subtitle}
+          onClose={() => setNotification(null)}
+          hideCloseButton={false}
+          className={styles.notification}
+        />
+      )}
     </div>
   );
 }

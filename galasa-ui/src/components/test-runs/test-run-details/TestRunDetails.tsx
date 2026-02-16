@@ -389,7 +389,7 @@ const TestRunDetails = ({
                 <MethodsTab methods={methods} onMethodClick={handleNavigateToLog} />
               </TabPanel>
               <TabPanel>
-                <LogTab logs={logs} initialLine={initialLine} />
+                <LogTab logs={logs} initialLine={initialLine} runId={runId} />
               </TabPanel>
               <TabPanel>
                 <ArtifactsTab

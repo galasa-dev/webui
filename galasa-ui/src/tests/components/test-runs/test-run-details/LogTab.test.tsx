@@ -8,10 +8,16 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import LogTab from '@/components/test-runs/test-run-details/LogTab';
 import { handleDownload } from '@/utils/artifacts';
+import { fetchRunLog } from '@/actions/runsAction';
 
 // Mock the utility function
 jest.mock('@/utils/artifacts', () => ({
   handleDownload: jest.fn(),
+}));
+
+// Mock the fetchRunLog action
+jest.mock('@/actions/runsAction', () => ({
+  fetchRunLog: jest.fn(),
 }));
 
 // Mock the next-intl translations
@@ -41,6 +47,11 @@ jest.mock('next-intl', () => ({
         filterDebug: 'Debug',
         filterTrace: 'Trace',
         downloadButton: 'Download Run Log',
+        refreshRunLog: 'Refresh Run Log',
+        jumpToTop: 'Jump to Top',
+        jumpToBottom: 'Jump to Bottom',
+        copyPermalinkButton: 'Copy Permalink',
+        selectLinesToCreatePermalink: 'Select lines to create permalink',
       };
       return dummy[key] ?? key;
     };
@@ -151,33 +162,33 @@ describe('LogTab', () => {
 
   describe('Rendering', () => {
     it('renders the component with title and description', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.getByText(/A step-by-step log of what happened/)).toBeInTheDocument();
     });
 
     it('renders search input', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('search-input')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Find in run log')).toBeInTheDocument();
     });
 
     it('renders filter menu', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('overflow-menu')).toBeInTheDocument();
     });
 
     it('renders download button', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('icon-button-download-run-log')).toBeInTheDocument();
     });
 
     it('renders log content with line numbers', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText('1.')).toBeInTheDocument();
       expect(screen.getByText('2.')).toBeInTheDocument();
@@ -193,7 +204,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={targetLineNumber} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={targetLineNumber} />);
 
       // Wait for the line to appear
       await screen.findByText(/Connection retry attempt 1/i);
@@ -207,7 +218,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={999} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={999} />);
 
       await screen.findByText(/Starting application/);
 
@@ -218,7 +229,7 @@ describe('LogTab', () => {
       const scrollIntoViewMock = jest.fn();
       window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-      render(<LogTab logs={sampleLogs} initialLine={0} />);
+      render(<LogTab logs={sampleLogs} runId={''} initialLine={0} />);
 
       await screen.findByText(/Starting application/);
 
@@ -228,7 +239,7 @@ describe('LogTab', () => {
 
   describe('Log Processing', () => {
     it('processes log lines and assigns correct levels', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Check that different log levels are rendered
       expect(screen.getByText(/Starting application/)).toBeInTheDocument();
@@ -237,7 +248,7 @@ describe('LogTab', () => {
     });
 
     it('handles multi-line log entries', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByText(/Detailed execution trace/)).toBeInTheDocument();
       expect(screen.getByText(/Multi-line continuation/)).toBeInTheDocument();
@@ -248,7 +259,7 @@ describe('LogTab', () => {
 This is a continuation line
 2024-01-01 10:00:02 INFO New info line`;
 
-      render(<LogTab logs={logsWithContinuation} />);
+      render(<LogTab logs={logsWithContinuation} runId={''} />);
 
       expect(screen.getByText(/First error line/)).toBeInTheDocument();
       expect(screen.getByText(/This is a continuation line/)).toBeInTheDocument();
@@ -257,7 +268,7 @@ This is a continuation line
 
   describe('Filtering', () => {
     it('renders all filter checkboxes', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('checkbox-error')).toBeInTheDocument();
       expect(screen.getByTestId('checkbox-warning')).toBeInTheDocument();
@@ -267,7 +278,7 @@ This is a continuation line
     });
 
     it('all filters are checked by default', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       expect(screen.getByTestId('checkbox-error')).toBeChecked();
       expect(screen.getByTestId('checkbox-warning')).toBeChecked();
@@ -277,7 +288,7 @@ This is a continuation line
     });
 
     it('toggles filter when checkbox is clicked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const errorCheckbox = screen.getByTestId('checkbox-error');
       expect(errorCheckbox).toBeChecked();
@@ -287,7 +298,7 @@ This is a continuation line
     });
 
     it('hides all content when all filters are unchecked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Uncheck all filters
       const checkboxes = [
@@ -309,7 +320,7 @@ This is a continuation line
 
   describe('Download Functionality', () => {
     it('calls handleDownload when download button is clicked', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const downloadButton = screen.getByTestId('icon-button-download-run-log');
       fireEvent.click(downloadButton);
@@ -320,7 +331,7 @@ This is a continuation line
 
   describe('Edge Cases', () => {
     it('handles empty logs', () => {
-      render(<LogTab logs="" />);
+      render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.queryByText('1.')).not.toBeInTheDocument();
@@ -331,14 +342,14 @@ This is a continuation line
 Another line
 Yet another line`;
 
-      render(<LogTab logs={logsWithoutLevels} />);
+      render(<LogTab logs={logsWithoutLevels} runId={''} />);
 
       expect(screen.getByText(/Simple log line without level/)).toBeInTheDocument();
       expect(screen.getByText('1.')).toBeInTheDocument();
     });
 
     it('disables navigation buttons when no matches', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: 'NONEXISTENT' } });
@@ -358,7 +369,7 @@ Yet another line`;
       const logsWithSpecialChars = `Line with (parentheses) and [brackets]
 Line with $dollar and ^caret`;
 
-      render(<LogTab logs={logsWithSpecialChars} />);
+      render(<LogTab logs={logsWithSpecialChars} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: '(parentheses)' } });
@@ -371,7 +382,7 @@ Line with $dollar and ^caret`;
 
   describe('Search and Edge Cases', () => {
     it('handles empty logs', () => {
-      render(<LogTab logs="" />);
+      render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
       expect(screen.queryByText('1.')).not.toBeInTheDocument();
@@ -380,7 +391,7 @@ Line with $dollar and ^caret`;
     it('handles logs without explicit levels by inheriting INFO', async () => {
       const logsWithoutLevels = `Simple log line without level\nAnother line`;
 
-      render(<LogTab logs={logsWithoutLevels} />);
+      render(<LogTab logs={logsWithoutLevels} runId={''} />);
 
       // Check that the line is visible by default.
       await waitFor(() => {
@@ -395,7 +406,7 @@ Line with $dollar and ^caret`;
     });
 
     it('disables navigation buttons when no matches', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
       fireEvent.change(searchInput, { target: { value: 'NONEXISTENT' } });
@@ -410,7 +421,7 @@ Line with $dollar and ^caret`;
     it('escapes special regex characters in search', async () => {
       const logsWithSpecialChars = `Line with $dollar and ^caret`;
 
-      render(<LogTab logs={logsWithSpecialChars} />);
+      render(<LogTab logs={logsWithSpecialChars} runId={''} />);
 
       const searchInput = screen.getByTestId('search-input');
 
@@ -424,7 +435,7 @@ Line with $dollar and ^caret`;
 
     it('correctly assigns INFO level even if ERROR is in message content', async () => {
       const mixedLogs = `2024-01-01 10:00:01 INFO There is an ERROR inside this message`;
-      render(<LogTab logs={mixedLogs} />);
+      render(<LogTab logs={mixedLogs} runId={''} />);
 
       fireEvent.click(screen.getByTestId('checkbox-error'));
       await waitFor(() => {
@@ -449,7 +460,7 @@ Line with $dollar and ^caret`;
       });
 
       it('debounces the search input and updates after delay', async () => {
-        render(<LogTab logs={sampleLogs} />);
+        render(<LogTab logs={sampleLogs} runId={''} />);
         const searchInput = screen.getByTestId('search-input');
 
         fireEvent.change(searchInput, { target: { value: 'XYZ' } });
@@ -479,14 +490,14 @@ Line with $dollar and ^caret`;
     });
 
     it('copies permalink button is initially disabled', () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       const copyPermalinkButton = screen.getByTestId('icon-button-copy-permalink');
       expect(copyPermalinkButton).toHaveClass('buttonDisabled');
     });
 
     it('enables permalink button when a log line is selected', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the lines to be rendered
       await waitFor(() => {
@@ -512,7 +523,7 @@ Line with $dollar and ^caret`;
     });
 
     it('copies the correct permalink to the clipboard and disables the button', async () => {
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
       await screen.findByText(/Initializing database connection/);
 
       const startLineNode = screen.getByText(/Initializing database connection/); // Line 2
@@ -545,7 +556,7 @@ Line with $dollar and ^caret`;
 
     it('copies permalink without the line parameter', async () => {
       const writeTextSpy = jest.spyOn(navigator.clipboard, 'writeText');
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
       await screen.findByText(/Initializing database connection/);
 
       const startLineNode = screen.getByText(/Initializing database connection/);
@@ -624,7 +635,7 @@ Line with $dollar and ^caret`;
         writable: true,
       });
 
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the target line to be rendered and processed
       await waitFor(() => {
@@ -653,7 +664,7 @@ Line with $dollar and ^caret`;
         writable: true,
       });
 
-      render(<LogTab logs={sampleLogs} />);
+      render(<LogTab logs={sampleLogs} runId={''} />);
 
       // Wait for the content to be rendered
       await waitFor(() => {
@@ -688,6 +699,130 @@ Line with $dollar and ^caret`;
         },
         { timeout: 2000 }
       );
+    });
+  });
+
+  describe('Refresh Button Functionality', () => {
+    beforeEach(() => {
+      (fetchRunLog as jest.Mock).mockClear();
+    });
+
+    it('renders the refresh button', () => {
+      render(<LogTab logs={sampleLogs} runId="test-run-123" />);
+
+      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
+      expect(refreshButton).toBeInTheDocument();
+    });
+
+    it('calls fetchRunLog with correct runId when refresh button is clicked', async () => {
+      (fetchRunLog as jest.Mock).mockResolvedValue(sampleLogs);
+
+      render(<LogTab logs={sampleLogs} runId="test-run-456" />);
+
+      const refreshButton = screen.getByTestId('icon-button-refresh-run-log');
+      fireEvent.click(refreshButton);
+
+      await waitFor(() => {
+        expect(fetchRunLog).toHaveBeenCalledWith('test-run-456');
+      });
+    });
+  });
+
+  describe('Scroll to Top Button Functionality', () => {
+    beforeEach(() => {
+      // Mock scrollTo method
+      Element.prototype.scrollTo = jest.fn();
+    });
+
+    it('does not show scroll to top button when at the top', () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollToTopButton = screen.queryByTestId('icon-button-jump-to-top');
+      expect(scrollToTopButton).not.toBeInTheDocument();
+    });
+
+    it('scrolls to top when scroll to top button is clicked', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position to show the button
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 100, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('icon-button-jump-to-top')).toBeInTheDocument();
+        });
+
+        const scrollToTopButton = screen.getByTestId('icon-button-jump-to-top');
+        fireEvent.click(scrollToTopButton);
+
+        expect(scrollContainer.scrollTo).toHaveBeenCalledWith({
+          top: 0,
+          behavior: 'smooth',
+        });
+      }
+    });
+  });
+
+  describe('Scroll to Bottom Button Functionality', () => {
+    beforeEach(() => {
+      // Mock scrollTo method
+      Element.prototype.scrollTo = jest.fn();
+    });
+
+    it('does not show scroll to bottom button when at the bottom', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position - at bottom
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 500, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          const scrollToBottomButton = screen.queryByTestId('icon-button-jump-to-bottom');
+          expect(scrollToBottomButton).not.toBeInTheDocument();
+        });
+      }
+    });
+
+    it('scrolls to bottom when scroll to bottom button is clicked', async () => {
+      render(<LogTab logs={sampleLogs} runId="" />);
+
+      const scrollContainer = screen.getByText(/Starting application/).closest('div')
+        ?.parentElement?.parentElement;
+
+      if (scrollContainer) {
+        // Mock scroll position to show the button
+        Object.defineProperty(scrollContainer, 'scrollTop', { value: 0, writable: true });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: true });
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: true });
+
+        fireEvent.scroll(scrollContainer);
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('icon-button-jump-to-bottom')).toBeInTheDocument();
+        });
+
+        const scrollToBottomButton = screen.getByTestId('icon-button-jump-to-bottom');
+        fireEvent.click(scrollToBottomButton);
+
+        expect(scrollContainer.scrollTo).toHaveBeenCalledWith({
+          top: 1000,
+          behavior: 'smooth',
+        });
+      }
     });
   });
 });

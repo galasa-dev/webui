@@ -7,6 +7,7 @@
 
 import { ResultArchiveStoreAPIApi, TagsAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
+import { fetchRunDetailLogs } from '@/utils/testRuns';
 import { CLIENT_API_VERSION } from '@/utils/constants/common';
 
 export const downloadArtifactFromServer = async (runId: string, artifactUrl: string) => {
@@ -90,5 +91,14 @@ export const getExistingTagObjects = async () => {
       error: error.message || 'Failed to get existing tags',
       tags: [],
     };
+  }
+};
+
+export const fetchRunLog = async (runId: string) => {
+  try {
+    const runLog = await fetchRunDetailLogs(runId);
+    return runLog;
+  } catch (error: any) {
+    throw new Error(error);
   }
 };
