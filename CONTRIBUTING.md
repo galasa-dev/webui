@@ -56,7 +56,7 @@ If you forgot to sign one or all of your commits, you can squash your PR changes
 
 ### Get access to a Galasa Service
 To gain access to a Galasa Service, you can either...
-1. set up one [manually](https://galasa.dev/docs/ecosystem/ecosystem-installing-k8s/#configuring-ingress).
+1. set up one [manually](https://galasa.dev/docs/ecosystem/ecosystem-installing-k8s/).
 2. Connect to our hosted Galasa Service. To get access, please reach out to the Galasa team via our support channels (see https://galasa.dev/support), or directly on a ticket you would like to work on from [our Kanban board](https://github.com/orgs/galasa-dev/projects/3). Next, go to https://galasa-service1.galasa.dev/ which will get you to authenticate via GitHub, then you'll be added to the system with the 'viewer' role. 
 
 ### Configure repository secrets and variables
@@ -90,6 +90,17 @@ git remote -v
 git checkout -b issue-number/contribution-description
 ```
 4. Make your changes and commit them, ensuring to DCO and GPG sign your commits:
+Please use https://www.conventionalcommits.org/en/v1.0.0/ as a guide for making commits, in the. format `type(scope)!: description` (Scope and ! for breaking changes are optional), where types include: 
+- feat: A new feature.
+- fix: A bug fix.
+- docs: Documentation changes.
+- style: Formatting, missing semicolons, etc..
+- refactor: Code change that neither fixes a bug nor adds a feature.
+- test: Adding missing tests or correcting existing tests.
+- build: Changes that affect the build system or external dependencies.
+- ci: Changes to CI configuration files and scripts.
+
+For example, `feat(auth): add JWT token refresh endpoint`,
 ```
 git commit -s -S -m "Add a meaningful commit message"
 ```
