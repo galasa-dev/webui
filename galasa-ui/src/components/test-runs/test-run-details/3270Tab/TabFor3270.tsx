@@ -47,18 +47,6 @@ export default function TabFor3270({
     // eslint-disable-next-line
   }, [highlightedRowId, is3270CurrentlySelected]);
 
-  // Get the 'terminalScreen' parameter
-  useEffect(() => {
-    if (is3270CurrentlySelected && highlightedRowId === '') {
-      const url = new URL(window.location.href);
-      console.log('Hello Set to ' + url.searchParams.get('terminalScreen'));
-      setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
-    }
-
-    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
-    // eslint-disable-next-line
-  }, [is3270CurrentlySelected, isLoading]);
-
   if (isError) {
     return <ErrorPage />;
   }

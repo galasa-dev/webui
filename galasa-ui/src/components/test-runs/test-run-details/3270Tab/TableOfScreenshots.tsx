@@ -78,7 +78,6 @@ export default function TableOfScreenshots({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
-  const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
   const screenshotsCollected = useRef<boolean | null>(false);
 
@@ -116,12 +115,14 @@ export default function TableOfScreenshots({
   useEffect(() => {
     // Highlight and display first element when the page loads, unless already set.
     const highlightFirstRowOnPageLoad = () => {
-      if (!initialHighlightedRowSet && filteredRows[0]) {
-        setInitialHighlightedRowSet(true);
-        if (
-          highlightedRowId === '' ||
-          !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)
-        ) {
+      if (!highlightedRowId && filteredRows[0]) {
+
+        const url = new URL(window.location.href);
+        const terminalScreen = url.searchParams.get('terminalScreen');
+
+        if (terminalScreen && filteredRows.find((filteredRow) => filteredRow.id === terminalScreen)) {
+          setHighlightedRowId(terminalScreen);
+        } else {
           setHighlightedRowId(filteredRows[0].id);
         }
       }
