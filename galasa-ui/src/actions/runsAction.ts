@@ -21,6 +21,11 @@ const getCachedApiConfiguration = (): Configuration => {
   return cachedApiConfig;
 };
 
+// Reset the cached API configuration (useful for testing)
+export const resetApiConfigCache = (): void => {
+  cachedApiConfig = null;
+};
+
 export const downloadArtifactFromServer = async (runId: string, artifactUrl: string) => {
   const apiConfig = getCachedApiConfiguration();
   const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
