@@ -116,11 +116,13 @@ export default function TableOfScreenshots({
     // Highlight and display first element when the page loads, unless already set.
     const highlightFirstRowOnPageLoad = () => {
       if (!highlightedRowId && filteredRows[0]) {
-
         const url = new URL(window.location.href);
         const terminalScreen = url.searchParams.get('terminalScreen');
 
-        if (terminalScreen && filteredRows.find((filteredRow) => filteredRow.id === terminalScreen)) {
+        if (
+          terminalScreen &&
+          filteredRows.find((filteredRow) => filteredRow.id === terminalScreen)
+        ) {
           setHighlightedRowId(terminalScreen);
         } else {
           setHighlightedRowId(filteredRows[0].id);
