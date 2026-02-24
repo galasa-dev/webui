@@ -287,7 +287,7 @@ export default function TableOfScreenshots({
           getRowProps: (options: any) => TableRowProps;
           getTableProps: () => TableBodyProps;
         }) => (
-          <Table stickyHeader {...getTableProps()} className={styles.innerScreenshotTable}>
+          <Table stickyHeader {...getTableProps()} id={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
                 {headers.map((header) => (

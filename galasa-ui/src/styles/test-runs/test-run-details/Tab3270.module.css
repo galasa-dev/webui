@@ -12,7 +12,7 @@
   cursor: pointer;
 }
 
-.innerScreenshotTable {
+#innerScreenshotTable {
   /* Override Carbon's max-height for the Table component */
   max-height: min(calc(100vh - 450px), 550px) !important;
   overflow-y: auto;

@@ -3,11 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import {
-  downloadArtifactFromServer,
-  updateRunTags,
-  resetApiConfigCache,
-} from '@/actions/runsAction';
+import { downloadArtifactFromServer, updateRunTags } from '@/actions/runsAction';
 import * as apiUtils from '@/utils/api';
 import * as galasaapi from '@/generated/galasaapi';
 import { CLIENT_API_VERSION } from '@/utils/constants/common';
@@ -34,7 +30,6 @@ describe('downloadArtifactFromServer', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    resetApiConfigCache();
   });
 
   it('parses valid JSON payload', async () => {
@@ -127,7 +122,6 @@ describe('updateRunTags', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    resetApiConfigCache();
   });
 
   it('successfully updates tags', async () => {

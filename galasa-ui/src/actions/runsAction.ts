@@ -9,25 +9,9 @@ import { ResultArchiveStoreAPIApi, TagsAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { fetchRunDetailLogs } from '@/utils/testRuns';
 import { CLIENT_API_VERSION } from '@/utils/constants/common';
-import { Configuration } from '@/generated/galasaapi';
-
-// Cache for API configuration to avoid multiple cookie accesses in the same request
-let cachedApiConfig: Configuration | null = null;
-
-const getCachedApiConfiguration = (): Configuration => {
-  if (!cachedApiConfig) {
-    cachedApiConfig = createAuthenticatedApiConfiguration();
-  }
-  return cachedApiConfig;
-};
-
-// Reset the cached API configuration (useful for testing)
-export const resetApiConfigCache = (): void => {
-  cachedApiConfig = null;
-};
 
 export const downloadArtifactFromServer = async (runId: string, artifactUrl: string) => {
-  const apiConfig = getCachedApiConfiguration();
+  const apiConfig = createAuthenticatedApiConfiguration();
   const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
   const artifactFile = await rasApiClient.getRasRunArtifactByPath(
@@ -69,7 +53,7 @@ export const downloadArtifactFromServer = async (runId: string, artifactUrl: str
 
 export const updateRunTags = async (runId: string, tags: string[]) => {
   try {
-    const apiConfig = getCachedApiConfiguration();
+    const apiConfig = createAuthenticatedApiConfiguration();
     const rasApiClient = new ResultArchiveStoreAPIApi(apiConfig);
 
     // Note: Tags are already unique from the Set in the frontend, but is checked again by the rest api.
@@ -89,7 +73,7 @@ export const updateRunTags = async (runId: string, tags: string[]) => {
 
 export const getExistingTagObjects = async () => {
   try {
-    const apiConfig = getCachedApiConfiguration();
+    const apiConfig = createAuthenticatedApiConfiguration();
     const tagsApiClient = new TagsAPIApi(apiConfig);
 
     const tagsResponse = await tagsApiClient.getTags();
