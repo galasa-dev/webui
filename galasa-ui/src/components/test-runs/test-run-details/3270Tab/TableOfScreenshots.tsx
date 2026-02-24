@@ -147,7 +147,6 @@ export default function TableOfScreenshots({
     // Ensure screenshots are only collected once.
     if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
       screenshotsCollected.current = true;
-      setIsLoading(true);
       const fetchData = async () => {
         try {
           setFlattenedZos3270TerminalData([]);

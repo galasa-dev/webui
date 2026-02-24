@@ -45,6 +45,7 @@ import { NotificationType } from '@/utils/types/common';
 import { TreeNodeData } from '@/utils/functions/artifacts';
 import { TEST_RUNS } from '@/utils/constants/breadcrumb';
 import TestRunsSearch from '../TestRunsSearch';
+import { getExistingTagObjects } from '@/actions/runsAction';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -74,9 +75,11 @@ const TestRunDetails = ({
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [notification, setNotification] = useState<NotificationType | null>(null);
+  const [existingTagObjectNames, setExistingTagObjectNames] = useState<string[]>([]);
   const { formatDate } = useDateTimeFormat();
 
   const indexOf3270Tab = TEST_RUN_PAGE_TABS.indexOf('3270');
+  const [is3270TabLoading, setIs3270TabLoading] = useState(true);
   const [is3270TabSelectedInURL, setIs3270TabSelectedInURL] = useState<boolean>(false);
   const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
   const [zos3270TerminalData, setZos3270TerminalData] = useState<TreeNodeData[]>([]);
@@ -100,12 +103,14 @@ const TestRunDetails = ({
 
   const handleZos3270TerminalFolderCheck = (newZos3270TerminalFolderExists: boolean) => {
     setZos3270TerminalFolderExists(newZos3270TerminalFolderExists);
+  };
 
+  useEffect(() => {
     // If 3270 tab has been selected in the URL, move them to the 3270 pannel from the overview page redirection
-    if (is3270TabSelectedInURL && newZos3270TerminalFolderExists) {
+    if (is3270TabSelectedInURL && zos3270TerminalFolderExists && !is3270TabLoading) {
       setSelectedTabIndex(indexOf3270Tab);
     }
-  };
+  }, [is3270TabLoading]);
 
   const handleSetZos3270TerminalData = (newZos3270TerminalData: TreeNodeData[]) => {
     setZos3270TerminalData(newZos3270TerminalData);
@@ -181,6 +186,23 @@ const TestRunDetails = ({
 
     loadRunDetails();
   }, [run, runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
+
+  // Fetch existing tags once on component mount (persists across tab changes)
+  useEffect(() => {
+    const fetchExistingTags = async () => {
+      try {
+        const result = await getExistingTagObjects();
+        if (result.success) {
+          setExistingTagObjectNames(result.tags || []);
+        } else {
+          console.error('Failed to fetch existing tags:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching existing tags:', error);
+      }
+    };
+    fetchExistingTags();
+  }, []);
 
   useEffect(() => {
     // If the 'Test Runs' breadcrumb is already in the items, skip.
@@ -383,7 +405,7 @@ const TestRunDetails = ({
             </TabList>
             <TabPanels>
               <TabPanel>
-                <OverviewTab metadata={run!} />
+                <OverviewTab metadata={run!} existingTagObjectNames={existingTagObjectNames} />
               </TabPanel>
               <TabPanel>
                 <MethodsTab methods={methods} onMethodClick={handleNavigateToLog} />
@@ -407,6 +429,8 @@ const TestRunDetails = ({
                     zos3270TerminalData={zos3270TerminalData}
                     is3270CurrentlySelected={indexOf3270Tab === selectedTabIndex}
                     handleNavigateTo3270={handleNavigateTo3270}
+                    isLoading={is3270TabLoading}
+                    setIsLoading={setIs3270TabLoading}
                   />
                 </TabPanel>
               )}
