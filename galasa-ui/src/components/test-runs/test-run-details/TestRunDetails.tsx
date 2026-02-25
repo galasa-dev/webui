@@ -110,6 +110,8 @@ const TestRunDetails = ({
     if (is3270TabSelectedInURL && zos3270TerminalFolderExists && !is3270TabLoading) {
       setSelectedTabIndex(indexOf3270Tab);
     }
+    // Ignore missing dependecies as they will be finalised by the time is3270TabLoading switches to false
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [is3270TabLoading]);
 
   const handleSetZos3270TerminalData = (newZos3270TerminalData: TreeNodeData[]) => {

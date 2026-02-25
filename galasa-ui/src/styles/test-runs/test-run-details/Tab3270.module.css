@@ -13,8 +13,7 @@
 }
 
 #innerScreenshotTable {
-  /* Override Carbon's max-height for the Table component */
-  max-height: min(calc(100vh - 450px), 550px) !important;
+  max-height: min(calc(100vh - 450px), 550px);
   overflow-y: auto;
   /* Stops sticky header overlapping table elements when scrollToTop() is called. */
   scroll-padding-top: 48px;
