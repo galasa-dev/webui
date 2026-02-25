@@ -536,7 +536,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
         lineElement.scrollIntoView({ behavior: ANIMATION_BEHAVIOUR, block: 'start' });
       }
     }
-  }, [initialLine, processedLines]);
+  }, [ANIMATION_BEHAVIOUR, initialLine, processedLines]);
 
   // Scroll to current match
   useEffect(() => {
@@ -549,7 +549,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
         });
       }
     }
-  }, [currentMatchIndex]);
+  }, [ANIMATION_BEHAVIOUR, currentMatchIndex]);
 
   useEffect(() => {
     const matchCount = searchMatches.length;

@@ -78,7 +78,6 @@ export default function TableOfScreenshots({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerminal, setSelectedTerminal] = useState<DropdownOption | null>(null);
   const [allImageData, setAllImageData] = useState<TerminalImage[]>([]);
-  const [initialHighlightedRowSet, setInitialHighlightedRowSet] = useState<boolean>(false);
 
   const screenshotsCollected = useRef<boolean | null>(false);
 
@@ -116,12 +115,16 @@ export default function TableOfScreenshots({
   useEffect(() => {
     // Highlight and display first element when the page loads, unless already set.
     const highlightFirstRowOnPageLoad = () => {
-      if (!initialHighlightedRowSet && filteredRows[0]) {
-        setInitialHighlightedRowSet(true);
+      if (!highlightedRowId && filteredRows[0]) {
+        const url = new URL(window.location.href);
+        const terminalScreen = url.searchParams.get('terminalScreen');
+
         if (
-          highlightedRowId === '' ||
-          !filteredRows.find((filteredRow) => filteredRow.id === highlightedRowId)
+          terminalScreen &&
+          filteredRows.find((filteredRow) => filteredRow.id === terminalScreen)
         ) {
+          setHighlightedRowId(terminalScreen);
+        } else {
           setHighlightedRowId(filteredRows[0].id);
         }
       }
@@ -147,7 +150,6 @@ export default function TableOfScreenshots({
     // Ensure screenshots are only collected once.
     if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
       screenshotsCollected.current = true;
-      setIsLoading(true);
       const fetchData = async () => {
         try {
           setFlattenedZos3270TerminalData([]);
@@ -285,7 +287,7 @@ export default function TableOfScreenshots({
           getRowProps: (options: any) => TableRowProps;
           getTableProps: () => TableBodyProps;
         }) => (
-          <Table stickyHeader {...getTableProps()} className={styles.innerScreenshotTable}>
+          <Table stickyHeader {...getTableProps()} id={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
                 {headers.map((header) => (

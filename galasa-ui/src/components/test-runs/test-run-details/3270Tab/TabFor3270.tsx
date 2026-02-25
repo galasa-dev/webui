@@ -19,14 +19,17 @@ export default function TabFor3270({
   zos3270TerminalData,
   is3270CurrentlySelected,
   handleNavigateTo3270,
+  isLoading,
+  setIsLoading,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
   is3270CurrentlySelected: boolean;
   handleNavigateTo3270: (highlightedRowId: string) => void;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [imageData, setImageData] = useState<TerminalImage>();
   const [moveImageSelection, setMoveImageSelection] = useState<number>(0);
   const [cannotSwitchToPreviousImage, setCannotSwitchToPreviousImage] = useState<boolean>(true);
@@ -43,17 +46,6 @@ export default function TabFor3270({
     // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
     // eslint-disable-next-line
   }, [highlightedRowId, is3270CurrentlySelected]);
-
-  // Get the 'terminalScreen' parameter
-  useEffect(() => {
-    if (is3270CurrentlySelected && highlightedRowId === '') {
-      const url = new URL(window.location.href);
-      setHighlightedRowId(url.searchParams.get('terminalScreen') || '');
-    }
-
-    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
-    // eslint-disable-next-line
-  }, [is3270CurrentlySelected]);
 
   if (isError) {
     return <ErrorPage />;

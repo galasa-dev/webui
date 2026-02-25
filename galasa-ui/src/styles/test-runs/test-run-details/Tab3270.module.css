@@ -5,14 +5,14 @@
  */
 
 .tab3270Container {
-  height: min(calc(100vh - 400px), 550px);
+  height: min(calc(100vh - 400px), 600px);
 }
 
 .clickableRow {
   cursor: pointer;
 }
 
-.innerScreenshotTable {
+#innerScreenshotTable {
   max-height: min(calc(100vh - 450px), 550px);
   overflow-y: auto;
   /* Stops sticky header overlapping table elements when scrollToTop() is called. */

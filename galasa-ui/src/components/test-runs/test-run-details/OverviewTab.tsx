@@ -16,21 +16,26 @@ import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
 import { TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS } from '@/utils/constants/common';
 import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
-import { updateRunTags, getExistingTagObjects } from '@/actions/runsAction';
+import { updateRunTags } from '@/actions/runsAction';
 
 type DisplayedTagType = {
   id: string;
   label: string;
 };
 
-const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
+const OverviewTab = ({
+  metadata,
+  existingTagObjectNames,
+}: {
+  metadata: RunMetadata;
+  existingTagObjectNames: string[];
+}) => {
   const translations = useTranslations('OverviewTab');
   const { pushBreadCrumb } = useHistoryBreadCrumbs();
 
   const [weekBefore, setWeekBefore] = useState<string | null>(null);
 
   const [tags, setTags] = useState<string[]>(metadata?.tags || []);
-  const [existingTagObjectNames, setExistingTagObjectNames] = useState<string[]>([]);
 
   const [isTagsEditModalOpen, setIsTagsEditModalOpen] = useState<boolean>(false);
   const [filterInput, setFilterInput] = useState<string>('');
@@ -45,22 +50,6 @@ const OverviewTab = ({ metadata }: { metadata: RunMetadata }) => {
   const fullTestName = metadata?.testName;
   const OTHER_RECENT_RUNS = `/test-runs?${TEST_RUNS_QUERY_PARAMS.TEST_NAME}=${fullTestName}&${TEST_RUNS_QUERY_PARAMS.BUNDLE}=${metadata?.bundle}&${TEST_RUNS_QUERY_PARAMS.PACKAGE}=${metadata?.package}&${TEST_RUNS_QUERY_PARAMS.DURATION}=60,0,0&${TEST_RUNS_QUERY_PARAMS.TAB}=results&${TEST_RUNS_QUERY_PARAMS.QUERY_NAME}=Recent runs of test ${metadata?.testName}`;
   const RETRIES_FOR_THIS_TEST_RUN = `/test-runs?${TEST_RUNS_QUERY_PARAMS.SUBMISSION_ID}=${metadata?.submissionId}&${TEST_RUNS_QUERY_PARAMS.FROM}=${weekBefore}&${TEST_RUNS_QUERY_PARAMS.TAB}=results&${TEST_RUNS_QUERY_PARAMS.QUERY_NAME}=All attempts of test run ${metadata?.runName}`;
-
-  useEffect(() => {
-    const fetchExistingTags = async () => {
-      try {
-        const result = await getExistingTagObjects();
-        setExistingTagObjectNames(result.tags || []);
-
-        if (!result.success) {
-          console.error('Failed to fetch existing tags:', result.error);
-        }
-      } catch (error) {
-        console.error('Error fetching existing tags:', error);
-      }
-    };
-    fetchExistingTags();
-  }, []);
 
   useEffect(() => {
     const validateTime = () => {
