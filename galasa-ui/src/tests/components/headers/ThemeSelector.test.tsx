@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ThemeSelector from '@/components/headers/ThemeSelector';

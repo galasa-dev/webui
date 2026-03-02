@@ -5,7 +5,6 @@
  */
 import { render, screen } from '@testing-library/react';
 import PageHeader from '@/components/headers/PageHeader';
-import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { useRouter } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';

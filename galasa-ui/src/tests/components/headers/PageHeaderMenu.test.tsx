@@ -6,7 +6,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import PageHeaderMenu from '@/components/headers/PageHeaderMenu';
-import React from 'react';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 
 const fetchMock = jest.spyOn(global, 'fetch');

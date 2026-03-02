@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import UsersTable from '@/components/users/UsersTable';
 import { UserData } from '@/generated/galasaapi';
@@ -74,8 +73,8 @@ deleteUserByNumberMock = jest.fn();
 describe('UsersTable component', () => {
   test('displays loading spinner while fetching data', async () => {
     // Create a promise that never resolves to simulate the loading state.
-    const pendingPromise: Promise<UserData[]> = new Promise(() => {});
-    const currentUserPendingPromise: Promise<UserData> = new Promise(() => {});
+    const pendingPromise: Promise<UserData[]> = new Promise(() => { });
+    const currentUserPendingPromise: Promise<UserData> = new Promise(() => { });
     render(
       <UsersTable
         usersListPromise={pendingPromise}

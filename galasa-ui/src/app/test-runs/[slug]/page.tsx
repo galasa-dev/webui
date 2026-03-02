@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import TestRunDetails from '@/components/test-runs/test-run-details/TestRunDetails';
 import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';

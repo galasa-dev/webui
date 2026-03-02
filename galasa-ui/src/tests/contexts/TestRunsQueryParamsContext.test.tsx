@@ -16,7 +16,6 @@ import {
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 
 // Mock next/navigation

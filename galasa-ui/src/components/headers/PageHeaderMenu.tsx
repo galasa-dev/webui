@@ -5,7 +5,6 @@
  */
 'use client';
 
-import React from 'react';
 import { HeaderGlobalBar, OverflowMenu, OverflowMenuItem, HeaderName } from '@carbon/react';
 import { User } from '@carbon/icons-react';
 import { useRouter } from 'next/navigation';

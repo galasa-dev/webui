@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -106,6 +105,7 @@ const generateMockRuns = (count: number) => {
       id: `${i}`,
       runName: `Test Run ${i}`,
       requestor: `user${i}`,
+      user: `user${i}`,
       group: `group${i}`,
       bundle: `bundle${i}`,
       package: `package${i}`,
@@ -133,7 +133,7 @@ describe('TestRunsTable Component', () => {
   beforeEach(() => {
     mockRouterPush.mockClear();
     // Suppress console.error for rejected promise tests
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => { });
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     mockUseRouter.mockReturnValue({ push: mockRouterPush });
     pushBreadCrumbMock.mockClear();
@@ -185,8 +185,8 @@ describe('TestRunsTable Component', () => {
     // Assert
     const warningMessage = await screen.findByText(
       `Your query returned more than ` +
-        MAX_DISPLAYABLE_TEST_RUNS +
-        ` results. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.`
+      MAX_DISPLAYABLE_TEST_RUNS +
+      ` results. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.`
     );
     expect(warningMessage).toBeInTheDocument();
   });
@@ -294,6 +294,12 @@ const filterMockRuns = [
     status: 'passed',
     result: 'success',
     submittedAt: '2024-01-01',
+    user: '',
+    bundle: '',
+    package: '',
+    testShortName: '',
+    tags: '',
+    submissionId: '',
   },
   {
     id: '2',
@@ -304,6 +310,12 @@ const filterMockRuns = [
     status: 'failed',
     result: 'failure',
     submittedAt: '2024-01-02',
+    user: '',
+    bundle: '',
+    package: '',
+    testShortName: '',
+    tags: '',
+    submissionId: '',
   },
 ];
 

@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import { AuthTokens } from '@/generated/galasaapi';
@@ -81,7 +80,7 @@ jest.mock('@/components/tokens/TokenDeleteModal', () => {
 // --- Tests ---
 describe('AccessTokensSection', () => {
   test('displays loading indicator while fetching tokens', () => {
-    const pendingPromise = new Promise<AuthTokens | undefined>(() => {});
+    const pendingPromise = new Promise<AuthTokens | undefined>(() => { });
     render(<AccessTokensSection accessTokensPromise={pendingPromise} isAddBtnVisible={true} />);
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { act, render, screen } from '@testing-library/react';
-import React from 'react';
 import HomeContent from '@/components/HomeContent';
 import { useRouter } from 'next/navigation';
 

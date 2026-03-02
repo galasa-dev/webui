@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import styles from '@/styles/test-runs/test-run-details/InlineText.module.css';
 
 const InlineText = ({ title, value }: { title: string; value: string }) => {

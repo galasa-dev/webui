@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import DateTimeFormatSection from '@/components/mysettings/TimezoneSection';
 import TimezoneSection from '@/components/mysettings/TimezoneSection';

@@ -5,7 +5,6 @@
  */
 import PageTile from '@/components/PageTile';
 import UserRoleSection from '@/components/users/UserRoleSection';
-import React from 'react';
 import { RBACRole, RoleBasedAccessControlAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';

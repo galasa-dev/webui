@@ -5,7 +5,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { act, render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ScreenshotToolbar from '@/components/test-runs/test-run-details/3270Tab/ScreenshotToolbar';

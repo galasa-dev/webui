@@ -5,7 +5,6 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
 import { FeatureFlagProvider, useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';
@@ -26,7 +25,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   let cookieSpy: jest.SpyInstance;
   beforeEach(() => {
     // Spy on the 'set' part of document.cookie
-    cookieSpy = jest.spyOn(document, 'cookie', 'set').mockImplementation(() => {});
+    cookieSpy = jest.spyOn(document, 'cookie', 'set').mockImplementation(() => { });
   });
 
   afterEach(() => {

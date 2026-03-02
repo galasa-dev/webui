@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import TestRunDetails from '@/components/test-runs/test-run-details/TestRunDetails';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
