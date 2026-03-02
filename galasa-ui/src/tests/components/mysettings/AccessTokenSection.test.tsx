@@ -80,7 +80,7 @@ jest.mock('@/components/tokens/TokenDeleteModal', () => {
 // --- Tests ---
 describe('AccessTokensSection', () => {
   test('displays loading indicator while fetching tokens', () => {
-    const pendingPromise = new Promise<AuthTokens | undefined>(() => { });
+    const pendingPromise = new Promise<AuthTokens | undefined>(() => {});
     render(<AccessTokensSection accessTokensPromise={pendingPromise} isAddBtnVisible={true} />);
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();

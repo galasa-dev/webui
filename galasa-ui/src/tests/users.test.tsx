@@ -183,7 +183,7 @@ describe('UsersPage', () => {
     mockUsersApiClient.getUserByLoginId.mockRejectedValue(new Error('API Error'));
 
     // Mock console.error to avoid error output in tests
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     render(<UsersPage />);
 

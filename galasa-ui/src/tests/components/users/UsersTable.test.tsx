@@ -73,8 +73,8 @@ deleteUserByNumberMock = jest.fn();
 describe('UsersTable component', () => {
   test('displays loading spinner while fetching data', async () => {
     // Create a promise that never resolves to simulate the loading state.
-    const pendingPromise: Promise<UserData[]> = new Promise(() => { });
-    const currentUserPendingPromise: Promise<UserData> = new Promise(() => { });
+    const pendingPromise: Promise<UserData[]> = new Promise(() => {});
+    const currentUserPendingPromise: Promise<UserData> = new Promise(() => {});
     render(
       <UsersTable
         usersListPromise={pendingPromise}

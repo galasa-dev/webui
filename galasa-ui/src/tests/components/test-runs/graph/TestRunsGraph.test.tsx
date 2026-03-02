@@ -48,9 +48,9 @@ beforeAll(() => {
   global.ResizeObserver =
     global.ResizeObserver ||
     class {
-      observe() { }
-      unobserve() { }
-      disconnect() { }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
     };
 });
 

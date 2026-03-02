@@ -142,7 +142,7 @@ describe('UserRoleSection', () => {
 
   test('displays error page if userProfilePromise rejects', async () => {
     // Suppress error logging.
-    jest.spyOn(console, 'error').mockImplementation(() => { });
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const errorPromise = Promise.reject('Error');
 
     const rolesPromise = new Promise<RBACRole[]>((resolve) => {

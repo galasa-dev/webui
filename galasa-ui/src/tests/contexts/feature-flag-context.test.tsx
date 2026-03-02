@@ -25,7 +25,7 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
   let cookieSpy: jest.SpyInstance;
   beforeEach(() => {
     // Spy on the 'set' part of document.cookie
-    cookieSpy = jest.spyOn(document, 'cookie', 'set').mockImplementation(() => { });
+    cookieSpy = jest.spyOn(document, 'cookie', 'set').mockImplementation(() => {});
   });
 
   afterEach(() => {

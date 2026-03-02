@@ -133,7 +133,7 @@ describe('TestRunsTable Component', () => {
   beforeEach(() => {
     mockRouterPush.mockClear();
     // Suppress console.error for rejected promise tests
-    jest.spyOn(console, 'error').mockImplementation(() => { });
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     mockUseRouter.mockReturnValue({ push: mockRouterPush });
     pushBreadCrumbMock.mockClear();
@@ -185,8 +185,8 @@ describe('TestRunsTable Component', () => {
     // Assert
     const warningMessage = await screen.findByText(
       `Your query returned more than ` +
-      MAX_DISPLAYABLE_TEST_RUNS +
-      ` results. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.`
+        MAX_DISPLAYABLE_TEST_RUNS +
+        ` results. To avoid this in the future narrow your time frame or change your search criteria to return fewer results.`
     );
     expect(warningMessage).toBeInTheDocument();
   });
