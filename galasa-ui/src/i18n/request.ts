@@ -10,7 +10,7 @@ import { locales, defaultLocale } from '@/i18n/config';
 const COOKIE_NAME = 'NEXT_LOCALE';
 
 export default getRequestConfig(async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookieLocale = cookieStore.get(COOKIE_NAME)?.value;
 
   const locale = locales.includes(cookieLocale as any)

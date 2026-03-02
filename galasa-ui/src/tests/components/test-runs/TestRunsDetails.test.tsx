@@ -147,7 +147,7 @@ jest.mock('@carbon/react', () => ({
   Search: ({ ...props }: any) => <input {...props} data-testid="search" />,
 }));
 
-const renderWithProviders = (ui: React.ReactElement) => {
+const renderWithProviders = (ui: React.ReactElement<any>) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>

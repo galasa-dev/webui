@@ -29,11 +29,11 @@ export async function POST(request: NextRequest) {
   const clientId = dexClient.clientId;
   if (clientId) {
     // Store the client ID to be displayed to the user later
-    cookies().set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
+    (await cookies()).set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
 
     // Store the token description to be passed to the API server on the callback
     const requestBody: TokenDetails = await request.json();
-    cookies().set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, { httpOnly: true });
+    (await cookies()).set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, { httpOnly: true });
 
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     });
     response.headers.set('Set-Cookie', authResponse.headers.get('Set-Cookie') ?? '');
 
-    cookies().set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', { httpOnly: false });
+    (await cookies()).set(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS, 'true', { httpOnly: false });
 
     return response;
   } else {

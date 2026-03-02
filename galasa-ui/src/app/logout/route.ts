@@ -14,8 +14,8 @@ export async function DELETE() {
   // an api route is made because, cookies are server side props and cannot be access directly on components
   // that use 'use client' keyword.
 
-  cookies().delete(AuthCookies.ID_TOKEN);
-  cookies().delete(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+  (await cookies()).delete(AuthCookies.ID_TOKEN);
+  (await cookies()).delete(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
 
   return new NextResponse(null, { status: 204 });
 }

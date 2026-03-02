@@ -15,13 +15,19 @@ import {
 
 // Define an interface for the component's props
 interface TestRunProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Type the props directly on the function's parameter
-export default async function TestRunPage({ params: { slug } }: TestRunProps) {
+export default async function TestRunPage(props: TestRunProps) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   const translations = await getTranslations('TestRunPage');
   // Check if run exists first
   try {

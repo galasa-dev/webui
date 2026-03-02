@@ -18,7 +18,7 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const tokenNameInputRef = useRef<HTMLInputElement>();
+  const tokenNameInputRef = useRef<HTMLInputElement>(undefined);
 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';

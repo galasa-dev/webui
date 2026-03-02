@@ -13,7 +13,7 @@ import {
   sendAuthRequest,
 } from './utils/auth';
 import { AuthProperties } from './generated/galasaapi';
-import { cookies } from 'next/headers';
+import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
 import { CLIENT_API_VERSION } from './utils/constants/common';
 import { NextURL } from 'next/dist/server/web/next-url';
 
@@ -41,7 +41,7 @@ const authenticateWithDevToken = async (devToken: string) => {
 };
 
 // Runs before any request is completed
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const requestUrl = request.nextUrl;
   let response = NextResponse.rewrite(new URL('/error', requestUrl.toString()));
 
@@ -108,7 +108,7 @@ const buildRedirectBackToWebUiUrl = (requestUrl: NextURL) => {
   const requestUrlString = requestUrl.toString();
   let responseUrl = requestUrlString.substring(0, requestUrlString.lastIndexOf('/callback'));
 
-  const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+  const shouldReturnToMySettingsPage = (cookies() as unknown as UnsafeUnwrappedCookies).get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
   if (shouldReturnToMySettingsPage?.value === 'true') {
     responseUrl += '/mysettings';
   }

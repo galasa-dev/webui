@@ -6,7 +6,7 @@
 
 import { ServerConfiguration, createConfiguration } from '@/generated/galasaapi';
 import { ConfigurationParameters } from '@/generated/galasaapi/configuration';
-import { cookies } from 'next/headers';
+import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
 import AuthCookies from './authCookies';
 
 export const GALASA_API_SERVER_URL = process.env.GALASA_API_SERVER_URL ?? '';
@@ -50,7 +50,7 @@ export const createAuthenticatedApiConfiguration = () => {
  * @returns an auth API client that includes an "Authorization" header in requests
  */
 export const getBearerToken = () => {
-  const bearerTokenCookie = cookies().get(AuthCookies.ID_TOKEN);
+  const bearerTokenCookie = (cookies() as unknown as UnsafeUnwrappedCookies).get(AuthCookies.ID_TOKEN);
   if (!bearerTokenCookie) {
     throw new Error('Unable to get bearer token, please re-authenticate');
   }

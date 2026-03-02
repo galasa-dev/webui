@@ -5,7 +5,7 @@
  */
 'use client';
 
-import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback, type JSX } from 'react';
 import { Search, OverflowMenu, Button, InlineNotification } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/LogTab.module.css';
 import { Checkbox } from '@carbon/react';
