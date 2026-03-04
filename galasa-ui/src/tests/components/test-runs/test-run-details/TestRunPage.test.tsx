@@ -2,7 +2,6 @@
  * Copyright contributors to the Galasa project
  *
  * SPDX-License-Identifier: EPL-2.0
- * @jest-environment node
  */
 
 import '@testing-library/jest-dom';
@@ -79,7 +78,7 @@ describe('TestRunPage', () => {
     mockGetArtifactList.mockResolvedValue(fakeArtifacts);
     mockGetLog.mockResolvedValue(fakeLog);
 
-    const element = await TestRunPage({ params: { slug } });
+    const element = await TestRunPage({ params: Promise.resolve({ slug }) });
 
     // Because we’ve mocked the page module to return <div data-testid="mock-page">:
     expect(element.type).toBe('div');
@@ -90,7 +89,7 @@ describe('TestRunPage', () => {
     const slug = 'not-there';
     mockGetById.mockRejectedValue({ code: 404 });
 
-    const element = await TestRunPage({ params: { slug } });
+    const element = await TestRunPage({ params: Promise.resolve({ slug }) });
 
     // Still returns our mocked element
     expect(element.type).toBe('div');
@@ -101,7 +100,7 @@ describe('TestRunPage', () => {
     const slug = 'something-went-wrong';
     mockGetById.mockRejectedValue({ code: 500 });
 
-    const element = await TestRunPage({ params: { slug } });
+    const element = await TestRunPage({ params: Promise.resolve({ slug }) });
 
     expect(element.type).toBe('div');
     expect(element.props['data-testid']).toBe('mock-page');

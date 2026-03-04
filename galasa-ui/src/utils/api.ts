@@ -6,7 +6,7 @@
 
 import { ServerConfiguration, createConfiguration } from '@/generated/galasaapi';
 import { ConfigurationParameters } from '@/generated/galasaapi/configuration';
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import AuthCookies from './authCookies';
 
 export const GALASA_API_SERVER_URL = process.env.GALASA_API_SERVER_URL ?? '';
@@ -35,8 +35,8 @@ export const createAuthenticatedApiConfiguration = () => {
     authMethods: {
       JwtAuth: {
         tokenProvider: {
-          getToken() {
-            return getBearerToken();
+          async getToken() {
+            return await getBearerToken();
           },
         },
       },
@@ -49,8 +49,9 @@ export const createAuthenticatedApiConfiguration = () => {
  * Initialise an auth API client that includes an "Authorization" header in requests.
  * @returns an auth API client that includes an "Authorization" header in requests
  */
-export const getBearerToken = () => {
-  const bearerTokenCookie = (cookies() as unknown as UnsafeUnwrappedCookies).get(AuthCookies.ID_TOKEN);
+export const getBearerToken = async () => {
+  const cookieStore = await cookies();
+  const bearerTokenCookie = cookieStore.get(AuthCookies.ID_TOKEN);
   if (!bearerTokenCookie) {
     throw new Error('Unable to get bearer token, please re-authenticate');
   }

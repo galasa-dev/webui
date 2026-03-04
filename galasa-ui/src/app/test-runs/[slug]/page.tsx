@@ -24,9 +24,7 @@ interface TestRunProps {
 export default async function TestRunPage(props: TestRunProps) {
   const params = await props.params;
 
-  const {
-    slug
-  } = params;
+  const { slug } = params;
 
   const translations = await getTranslations('TestRunPage');
   // Check if run exists first

@@ -33,7 +33,9 @@ export async function POST(request: NextRequest) {
 
     // Store the token description to be passed to the API server on the callback
     const requestBody: TokenDetails = await request.json();
-    (await cookies()).set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, { httpOnly: true });
+    (await cookies()).set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, {
+      httpOnly: true,
+    });
 
     // Authenticate with the created client to get a new refresh token for this client
     const authResponse = await sendAuthRequest(clientId);

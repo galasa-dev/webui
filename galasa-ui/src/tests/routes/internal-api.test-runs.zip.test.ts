@@ -51,7 +51,7 @@ describe('GET /internal-api/test-runs/[runId]/zip', () => {
     mockGenerateAsync.mockResolvedValue(mockZipBuffer);
 
     const request = new NextRequest(`http://localhost/internal-api?runName=${mockRunName}`);
-    const context = { params: { runId: mockRunId } };
+    const context = { params: Promise.resolve({ runId: mockRunId }) };
 
     // Act: Call the route handler
     const response = await GET(request, context);
@@ -77,7 +77,7 @@ describe('GET /internal-api/test-runs/[runId]/zip', () => {
     mockFetchTestArtifacts.mockRejectedValue(apiError);
 
     const request = new NextRequest(`http://localhost/internal-api?runName=${mockRunName}`);
-    const context = { params: { runId: mockRunId } };
+    const context = { params: Promise.resolve({ runId: mockRunId }) };
 
     // Act
     const response = await GET(request, context);
@@ -96,7 +96,7 @@ describe('GET /internal-api/test-runs/[runId]/zip', () => {
 
     // Simulate a request without a query parameter
     const request = new NextRequest('http://localhost/internal-api');
-    const params = { params: { runId: mockRunId } };
+    const params = { params: Promise.resolve({ runId: mockRunId }) };
 
     // Act
     const response = await GET(request, params);

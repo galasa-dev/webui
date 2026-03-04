@@ -13,7 +13,7 @@ import {
   sendAuthRequest,
 } from './utils/auth';
 import { AuthProperties } from './generated/galasaapi';
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { CLIENT_API_VERSION } from './utils/constants/common';
 import { NextURL } from 'next/dist/server/web/next-url';
 
@@ -54,7 +54,7 @@ export async function proxy(request: NextRequest) {
       response = await authenticateWithDevToken(process.env.GALASA_DEV_TOKEN);
     } else {
       if (requestUrl.pathname.includes('/callback')) {
-        const responseUrl = buildRedirectBackToWebUiUrl(requestUrl);
+        const responseUrl = await buildRedirectBackToWebUiUrl(requestUrl);
 
         response = await handleCallback(
           request,
@@ -104,11 +104,12 @@ const getRequestCallbackUrl = (nextUrl: NextURL) => {
   return callbackUrl;
 };
 
-const buildRedirectBackToWebUiUrl = (requestUrl: NextURL) => {
+const buildRedirectBackToWebUiUrl = async (requestUrl: NextURL) => {
   const requestUrlString = requestUrl.toString();
   let responseUrl = requestUrlString.substring(0, requestUrlString.lastIndexOf('/callback'));
 
-  const shouldReturnToMySettingsPage = (cookies() as unknown as UnsafeUnwrappedCookies).get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+  const cookieStore = await cookies();
+  const shouldReturnToMySettingsPage = cookieStore.get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
   if (shouldReturnToMySettingsPage?.value === 'true') {
     responseUrl += '/mysettings';
   }
