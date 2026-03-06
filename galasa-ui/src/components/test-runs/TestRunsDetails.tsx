@@ -49,7 +49,6 @@ export default function TestRunsDetails({
   const [maxHeight, setMaxHeight] = useState<string>('68vh');
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const mainContentRef = useRef<HTMLDivElement>(null);
 
   const activeQuery = getQueryByName(queryName);
 
@@ -268,7 +267,7 @@ export default function TestRunsDetails({
       <div className={styles.testRunsContentWrapper}>
         <CollapsibleSideBar handleEditQueryName={handleStartEditingName} />
 
-        <div className={styles.mainContent} style={{ maxHeight }} ref={mainContentRef}>
+        <div className={styles.mainContent} style={{ maxHeight }}>
           <TestRunsSearch />
           <div className={styles.queryNameContainer}>
             <QueryName
