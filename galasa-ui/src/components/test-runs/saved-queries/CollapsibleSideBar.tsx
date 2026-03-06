@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { HeaderMenuButton, Search, Button, InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
-import testRunsPageStyles from '@/styles/test-runs/TestRunsPage.module.css';
 import {
   arrayMove,
   SortableContext,
@@ -40,6 +39,7 @@ import {
 } from '@/utils/constants/common';
 import { encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
+import { getHeightOfHeaderAndFooter } from '@/utils/functions/getHeightOfHeaderAndFooter';
 
 interface CollapsibleSideBarProps {
   handleEditQueryName: (queryName: string) => void;
@@ -54,14 +54,10 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [maxHeight, setMaxHeight] = useState<string>('68vh');
 
   // State to hold the data of the item currently being dragged for the DragOverlay
   const [activeQuery, setActiveQuery] = useState<SavedQueryType | null>(null);
-
-  const [sideNavExpandedHeight, setSideNavExpandedHeight] = useState(0);
-  const [mainContentElement, setMainContentElement] = useState<Element | null>(null);
-  const SIDE_NAV_MIN_HEIGHT_PIXELS = 700;
-  const SIDE_NAV_HEIGHT_IF_NOT_RESIZABLE_PIXELS = 850;
 
   // Isolate user-sortable queries from the default query
   const sortableQueries = useMemo(
@@ -154,50 +150,23 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
     return sortableQueries;
   }, [searchTerm, sortableQueries]);
 
-  // Grab the main content element on page load.
+  // Calculate and set the dynamic max-height based on header and footer heights
   useEffect(() => {
-    setMainContentElement(document.querySelector('.' + testRunsPageStyles.mainContent));
-  }, []);
-
-  useEffect(() => {
-    const updateSideNavHeight = () => {
-      if (mainContentElement) {
-        // As the mainContent for the test runs details is also flex, we must set this height to a minimum, wait a short while, then set the height of this element to the main content minus an offset.
-        setSideNavExpandedHeight(SIDE_NAV_MIN_HEIGHT_PIXELS);
-        setTimeout(() => {
-          // The .clientHeight seems to need mainContentElement checked inside the setTimeout().
-          if (mainContentElement) {
-            const newHeight = mainContentElement.clientHeight - 50;
-            setSideNavExpandedHeight(newHeight);
-          }
-        }, 0);
-      }
+    const updateMaxHeight = () => {
+      const headerFooterHeight = getHeightOfHeaderAndFooter();
+      setMaxHeight(`calc(100vh - ${headerFooterHeight}px)`);
     };
 
-    // Initial update
-    updateSideNavHeight();
+    // Initial calculation
+    updateMaxHeight();
 
-    // Add event listener for main content resize.
-    const resizeObserver = new ResizeObserver((entries) => {
-      // Check if there's a valid entry.
-      if (entries[0]) {
-        updateSideNavHeight();
-      }
-    });
+    // Recalculate on window resize
+    window.addEventListener('resize', updateMaxHeight);
 
-    if (mainContentElement) {
-      resizeObserver.observe(mainContentElement);
-    } else {
-      setSideNavExpandedHeight(SIDE_NAV_HEIGHT_IF_NOT_RESIZABLE_PIXELS);
-    }
-
-    // Cleanup function to remove the event listener when the component unmounts
     return () => {
-      if (mainContentElement) {
-        resizeObserver.unobserve(mainContentElement);
-      }
+      window.removeEventListener('resize', updateMaxHeight);
     };
-  }, [mainContentElement]);
+  }, []);
 
   return (
     <div className={styles.container} aria-label={translations('savedQueriesHeaderLabel')}>
@@ -215,10 +184,9 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
           onClick={() => setIsExpanded(!isExpanded)}
         />
 
-        <div className={styles.sidebarWrapper}>
+        <div className={styles.sidebarWrapper} style={{ maxHeight }}>
           <div
             className={isExpanded ? styles.sideNavExpanded : styles.sideNavCollapsed}
-            style={{ height: sideNavExpandedHeight }}
             aria-label={translations('savedQueriesSidebarLabel')}
           >
             <div className={styles.innerContentWrapper}>

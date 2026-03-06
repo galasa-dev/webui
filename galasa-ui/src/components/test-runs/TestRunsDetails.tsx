@@ -8,6 +8,7 @@ import BreadCrumb from '@/components/common/BreadCrumb';
 import TestRunsTabs from '@/components/test-runs/TestRunsTabs';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { getHeightOfHeaderAndFooter } from '@/utils/functions/getHeightOfHeaderAndFooter';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
 import { NotificationType } from '@/utils/types/common';
@@ -45,8 +46,10 @@ export default function TestRunsDetails({
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [editedName, setEditedName] = useState<string>('');
+  const [maxHeight, setMaxHeight] = useState<string>('68vh');
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
   const activeQuery = getQueryByName(queryName);
 
@@ -57,6 +60,24 @@ export default function TestRunsDetails({
       inputRef.current?.select();
     }
   }, [isEditingName]);
+
+  // Calculate and set the dynamic max-height based on header and footer heights
+  useEffect(() => {
+    const updateMaxHeight = () => {
+      const headerFooterHeight = getHeightOfHeaderAndFooter();
+      setMaxHeight(`calc(100vh - ${headerFooterHeight}px)`);
+    };
+
+    // Initial calculation
+    updateMaxHeight();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', updateMaxHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateMaxHeight);
+    };
+  }, []);
 
   const handleShare = async () => {
     try {
@@ -247,7 +268,7 @@ export default function TestRunsDetails({
       <div className={styles.testRunsContentWrapper}>
         <CollapsibleSideBar handleEditQueryName={handleStartEditingName} />
 
-        <div className={styles.mainContent}>
+        <div className={styles.mainContent} style={{ maxHeight }} ref={mainContentRef}>
           <TestRunsSearch />
           <div className={styles.queryNameContainer}>
             <QueryName
