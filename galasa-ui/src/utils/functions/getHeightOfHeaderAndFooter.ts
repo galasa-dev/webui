@@ -26,9 +26,7 @@ export function getHeightOfHeaderAndFooter(): number {
       const element = elements[i] as HTMLElement;
       // Get the offsetHeight which includes padding and border
       totalHeight += element.offsetHeight;
-      console.log('Hello ' + className + ': ' + element.offsetHeight);
     }
   });
-  console.log('Hello ' + totalHeight);
   return totalHeight;
 }
