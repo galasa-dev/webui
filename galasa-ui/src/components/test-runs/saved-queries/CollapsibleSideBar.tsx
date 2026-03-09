@@ -210,23 +210,15 @@ export default function CollapsibleSideBar({ handleEditQueryName }: CollapsibleS
                     items={filteredSortableQueries.map((query) => query.createdAt)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {filteredSortableQueries.map((query, index) => {
-                      // If there are more than 10 saved queries, the last 3 should display menu upwards
-                      const shouldDisplayMenuUpwards =
-                        filteredSortableQueries.length > 12 &&
-                        index >= filteredSortableQueries.length - 3;
-
-                      return (
-                        <QueryItem
-                          query={query}
-                          key={query.createdAt}
-                          isCollapsed={!isExpanded}
-                          handleEditQueryName={handleEditQueryName}
-                          setNotification={setNotification}
-                          displayMenuUpwards={shouldDisplayMenuUpwards}
-                        />
-                      );
-                    })}
+                    {filteredSortableQueries.map((query) => (
+                      <QueryItem
+                        query={query}
+                        key={query.createdAt}
+                        isCollapsed={!isExpanded}
+                        handleEditQueryName={handleEditQueryName}
+                        setNotification={setNotification}
+                      />
+                    ))}
                   </SortableContext>
                 </div>
               </div>

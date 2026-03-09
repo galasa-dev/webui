@@ -13,7 +13,7 @@ import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
@@ -24,10 +24,11 @@ interface QueryItemProps {
   isCollapsed?: boolean;
   handleEditQueryName?: (queryName: string) => void;
   setNotification?: Dispatch<SetStateAction<NotificationType | null>>;
-  displayMenuUpwards?: boolean;
 }
 
 const ICON_SIZE = 18;
+// Height of the overflow menu with 5 items (40px per item)
+const MENU_HEIGHT = 200;
 
 export default function QueryItem({
   query,
@@ -35,7 +36,6 @@ export default function QueryItem({
   isCollapsed = false,
   handleEditQueryName,
   setNotification,
-  displayMenuUpwards = false,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
   const router = useRouter();
@@ -47,6 +47,37 @@ export default function QueryItem({
     id: query.createdAt,
     disabled,
   });
+
+  // Ref for the query item container to calculate position
+  const itemRef = useRef<HTMLDivElement>(null);
+  // State to track whether the menu should open upwards
+  const [shouldOpenUpwards, setShouldOpenUpwards] = useState(false);
+
+  // Calculate menu direction based on viewport position
+  useEffect(() => {
+    const calculateMenuDirection = () => {
+      if (!itemRef.current) return;
+
+      const rect = itemRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // Check if opening the menu downward would cause it to overflow the viewport
+      const wouldOverflow = rect.bottom + MENU_HEIGHT > viewportHeight;
+      setShouldOpenUpwards(wouldOverflow);
+    };
+
+    // Calculate on mount and when the component updates
+    calculateMenuDirection();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateMenuDirection);
+    window.addEventListener('scroll', calculateMenuDirection);
+
+    return () => {
+      window.removeEventListener('resize', calculateMenuDirection);
+      window.removeEventListener('scroll', calculateMenuDirection);
+    };
+  }, []);
 
   const isDefault = defaultQuery.createdAt === query.createdAt;
 
@@ -185,7 +216,11 @@ export default function QueryItem({
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        // Combine refs: one for dnd-kit sortable, one for position calculation
+        setNodeRef(node);
+        (itemRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       style={style}
       className={`${styles.sideNavItem} ${disabled ? styles.disabled : ''} ${isCollapsed ? styles.collapsed : ''}`}
     >
@@ -210,7 +245,7 @@ export default function QueryItem({
         iconDescription={translations('actions')}
         flipped
         className={styles.overflowMenu}
-        direction={displayMenuUpwards ? 'top' : 'bottom'}
+        direction={shouldOpenUpwards ? 'top' : 'bottom'}
       >
         {actions.map((action) => (
           <OverflowMenuItem
