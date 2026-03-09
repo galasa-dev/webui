@@ -24,6 +24,7 @@ interface QueryItemProps {
   isCollapsed?: boolean;
   handleEditQueryName?: (queryName: string) => void;
   setNotification?: Dispatch<SetStateAction<NotificationType | null>>;
+  displayMenuUpwards?: boolean;
 }
 
 const ICON_SIZE = 18;
@@ -34,6 +35,7 @@ export default function QueryItem({
   isCollapsed = false,
   handleEditQueryName,
   setNotification,
+  displayMenuUpwards = false,
 }: QueryItemProps) {
   const translations = useTranslations('QueryItem');
   const router = useRouter();
@@ -208,7 +210,7 @@ export default function QueryItem({
         iconDescription={translations('actions')}
         flipped
         className={styles.overflowMenu}
-        align="top"
+        direction={displayMenuUpwards ? 'top' : 'bottom'}
       >
         {actions.map((action) => (
           <OverflowMenuItem

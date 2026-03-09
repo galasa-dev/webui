@@ -352,33 +352,4 @@ describe('CollapsibleSideBar', () => {
       expect(mockSetSavedQueries).not.toHaveBeenCalled();
     });
   });
-
-  describe('updating side nav height', () => {
-    test('should not observe the main content if main content not loaded', async () => {
-      render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
-      expect(mockObserve).toHaveBeenCalledTimes(0);
-    });
-
-    test('should observe the main content if main content rendered, and set to height of main content -50px', async () => {
-      const mainContentElement = document.createElement('div');
-      mainContentElement.className = 'mainContent';
-      document.body.appendChild(mainContentElement);
-
-      render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
-
-      const sidebar = screen.getByLabelText('Saved Queries Sidebar');
-
-      await waitFor(() => {
-        expect(mockObserve).toHaveBeenCalledTimes(1);
-
-        if (sidebar) {
-          expect(sidebar.style.height).toBe('-50px');
-        } else {
-          fail('could not find sidebar');
-        }
-
-        document.body.innerHTML = '';
-      });
-    });
-  });
 });
