@@ -85,9 +85,9 @@ export function applyTimeFrameRules(
   correctedTo: Date;
   notification: Notification | null;
 } {
-  let correctedFrom = new Date(fromDate.getTime());
-  let correctedTo = new Date(toDate.getTime());
-  let notification: Notification | null = null;
+  const correctedFrom = new Date(fromDate.getTime());
+  const correctedTo = new Date(toDate.getTime());
+  const notification: Notification | null = null;
 
   /*
    If the 'from' date is after the 'to' date:

@@ -18,7 +18,7 @@ import { CLIENT_API_VERSION } from './utils/constants/common';
 import { NextURL } from 'next/dist/server/web/next-url';
 
 const authenticateWithDevToken = async (devToken: string) => {
-  let response = NextResponse.next();
+  const response = NextResponse.next();
   const authProperties = new AuthProperties();
 
   // Access tokens are expected to be in the form "<refresh-token>:<client-id>"

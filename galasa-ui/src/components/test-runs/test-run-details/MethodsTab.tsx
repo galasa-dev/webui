@@ -38,7 +38,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
   const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
 
   const extractMethods = (methods: TestMethod[]) => {
-    let methodDetails: MethodDetails[] = [];
+    const methodDetails: MethodDetails[] = [];
 
     methods.map((method, index) => {
       const methodDetail: MethodDetails = {

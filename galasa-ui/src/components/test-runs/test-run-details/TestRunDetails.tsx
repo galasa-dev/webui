@@ -81,7 +81,7 @@ const TestRunDetails = ({
   const indexOf3270Tab = TEST_RUN_PAGE_TABS.indexOf('3270');
   const [is3270TabLoading, setIs3270TabLoading] = useState(true);
   const [is3270TabSelectedInURL, setIs3270TabSelectedInURL] = useState<boolean>(false);
-  const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
+  const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<boolean>(false);
   const [zos3270TerminalData, setZos3270TerminalData] = useState<TreeNodeData[]>([]);
 
   // Get the selected tab index from the URL or default to the first tab

@@ -18,15 +18,13 @@
     'enable-focus-wrap-without-sentinels': false,
   ));
 
-// @use '@carbon/react/scss/config' with ($use-flexbox-grid: true,
-//   $font-path: false);
+// Disable font loading to avoid Turbopack build issues
+@use '@carbon/styles/scss/config' with ($font-path: ''
+);
 
 @use '@carbon/react';
 @use '@carbon/themes/scss/themes' as *;
 @use '@carbon/themes';
-// @use '@carbon/styles' with (
-//   $font-path: '~@ibm/plex'
-// );
 
 
 :root {

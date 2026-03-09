@@ -169,7 +169,7 @@ export function ArtifactsTab({
       const rawPath = artifact.path ?? '';
 
       // 2) Remove a leading "/" or "./" if present
-      let cleanedPath = cleanArtifactPath(rawPath);
+      const cleanedPath = cleanArtifactPath(rawPath);
 
       // 3) Split into segments and drop any empty strings
       let segments = cleanedPath.split('/').filter((seg) => seg !== '');
@@ -183,7 +183,7 @@ export function ArtifactsTab({
       }
 
       if (segments.length > 0) {
-        let currentNode: FolderNode = root;
+        const currentNode: FolderNode = root;
         createFolderSegments(segments, currentNode, artifact);
       }
     });

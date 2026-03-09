@@ -21,6 +21,12 @@ const nextConfig = {
     config.resolve.alias['~'] = path.resolve(__dirname, 'node_modules');
     return config;
   },
+  turbopack: {
+    root: path.resolve(__dirname),
+    resolveAlias: {
+      '~': path.resolve(__dirname, 'node_modules'),
+    },
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -149,7 +149,7 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
       try {
         const users = await usersListPromise;
         if (users) {
-          let flattenedUsers = flattenUserDataForTable(users);
+          const flattenedUsers = flattenUserDataForTable(users);
           setUsers(flattenedUsers);
         }
       } catch (err) {

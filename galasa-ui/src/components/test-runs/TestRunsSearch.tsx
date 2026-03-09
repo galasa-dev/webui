@@ -46,7 +46,7 @@ export default function TestRunsSearch() {
       setTimeout(() => setSearchNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } else if (runs.length === 1) {
       // Navigate to the test run details page for this run
-      let runId = runs[0].runId;
+      const runId = runs[0].runId;
       router.push(`/test-runs/${runId}`);
     } else {
       // Re-runs were found
@@ -56,7 +56,7 @@ export default function TestRunsSearch() {
         const currentTime = new Date(current.testStructure?.startTime ?? '').getTime();
         return currentTime > latestTime ? current : latest;
       });
-      let runId = latestRun.runId;
+      const runId = latestRun.runId;
       router.push(`/test-runs/${runId}`);
     }
   };
