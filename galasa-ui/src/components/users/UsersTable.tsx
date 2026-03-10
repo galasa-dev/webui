@@ -203,20 +203,24 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
             <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  {headers.map((header) => {
+                    const { key, ...headerProps } = getHeaderProps({ header }) as any;
+                    return (
+                      <TableHeader key={header.key} {...headerProps}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                   {hasEditUserPermission && (
-                    <TableHeader aria-label={translations('headers_actions')} />
+                    <TableHeader aria-label={translations('headersActions')} />
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
+                  const { key, ...rowProps } = getRowProps({ row }) as any;
                   return (
-                    <TableRow key={row.id} {...getRowProps({ row })}>
+                    <TableRow key={row.id} {...rowProps}>
                       {row.cells.map((cell: DataTableCell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}

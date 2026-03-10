@@ -58,7 +58,7 @@ export default function LanguageSelector() {
         iconDescription={`${translations('tooltip')}: ${selectedLanguage.text}`}
         aria-label="Filter menu"
         // tooltipAlignment="center"
-        tooltipPosition="bottom"
+        // tooltipPosition="bottom"
       >
         {languages.map((language) => (
           <OverflowMenuItem
