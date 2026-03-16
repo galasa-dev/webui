@@ -5,7 +5,9 @@
  */
 
 // Configure Carbon feature flags to include the missing flag
-@use '@carbon/styles/scss/feature-flags' with ($feature-flags: ('enable-css-custom-properties': true,
+@use '@carbon/styles/scss/feature-flags' with (
+  $feature-flags: (
+    'enable-css-custom-properties': true,
     'enable-css-grid': true,
     'enable-v11-release': true,
     'enable-experimental-tile-contrast': false,
@@ -16,10 +18,12 @@
     'enable-v12-toggle-reduced-label-spacing': false,
     'enable-presence': false,
     'enable-focus-wrap-without-sentinels': false,
-  ));
+  )
+);
 
 // Configure font path to use fonts from public directory
-@use '@carbon/styles/scss/config' with ($font-path: '/fonts'
+@use '@carbon/styles/scss/config' with (
+  $font-path: '/fonts'
 );
 
 @use '@carbon/react';
@@ -97,14 +101,7 @@ code {
   font-size: 20px;
 }
 
-$spaceSizes: (
-  1,
-  2,
-  3,
-  5,
-  8,
-  13
-);
+$spaceSizes: (1, 2, 3, 5, 8, 13);
 
 @each $space in $spaceSizes {
   .padding-x-#{$space} {

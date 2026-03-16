@@ -16,7 +16,7 @@ import {
   SetStateAction,
   useRef,
 } from 'react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import {
   RESULTS_TABLE_COLUMNS,
@@ -68,7 +68,6 @@ interface TestRunsQueryParamsProviderProps {
  * Provides state and functions to manage query parameters for test runs.
  */
 export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsProviderProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
@@ -297,10 +296,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (pathname === '/test-runs') {
       const encodedQuery = encodeStateToUrlParam(params.toString());
       const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
-      const currentEncodedQuery = searchParams.get('q');
-      if (encodedQuery !== currentEncodedQuery) {
-        router.replace(newUrl, { scroll: false });
-      }
+      window.history.replaceState(null, '', newUrl);
     }
   }, [
     selectedVisibleColumns,
@@ -308,12 +304,10 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     sortOrder,
     isInitialized,
     pathname,
-    router,
     selectedTabIndex,
     timeframeValues,
     searchCriteria,
     queryName,
-    searchParams,
   ]);
 
   // The value to be passed to the context consumers

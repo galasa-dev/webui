@@ -21,6 +21,7 @@
 .sidebarWrapper {
   display: flex;
   padding-top: 48px;
+  border-right: 1px solid var(--cds-border-subtle);
 }
 
 .sideNavExpanded,
@@ -35,7 +36,6 @@
   width: 330px;
   max-width: 360px;
   background-color: var(--cds-layer);
-  border-right: 1px solid var(--cds-border-subtle);
   overflow-y: auto;
   overflow-x: hidden;
 }

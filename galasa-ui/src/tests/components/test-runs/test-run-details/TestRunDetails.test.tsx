@@ -19,6 +19,15 @@ function setup<T>() {
   return { promise, resolve, reject };
 }
 
+// Mock window.history.replaceState
+const mockReplaceState = jest.fn();
+Object.defineProperty(window, 'history', {
+  writable: true,
+  value: {
+    replaceState: mockReplaceState,
+  },
+});
+
 let mockRouter: { replace: jest.Mock };
 
 // Mock useHistoryBreadCrumbs hook
@@ -259,6 +268,7 @@ describe('TestRunDetails', () => {
     };
 
     jest.clearAllMocks();
+    mockReplaceState.mockClear();
 
     mockDownloadArtifactFromServer.mockClear();
     mockHandleDownload.mockClear();
@@ -640,21 +650,21 @@ describe('TestRunDetails', () => {
       const methodsTabButton = screen.getByRole('tab', { name: 'tabs.methods' });
       fireEvent.click(methodsTabButton);
 
-      // Check that the router has been called correctly
-      expect(mockRouter.replace).toHaveBeenCalledTimes(1);
-      expect(mockRouter.replace).toHaveBeenCalledWith(`/test-runs/some-run-id?tab=methods`, {
-        scroll: false,
-      });
+      // Check that window.history.replaceState has been called correctly
+      expect(mockReplaceState).toHaveBeenCalledTimes(1);
+      expect(mockReplaceState).toHaveBeenCalledWith(null, '', `/test-runs/some-run-id?tab=methods`);
 
       // Click on the "Artifacts" tab
       const artifactsTabButton = screen.getByRole('tab', { name: 'tabs.artifacts' });
       fireEvent.click(artifactsTabButton);
 
-      // Check that the router has been called correctly
-      expect(mockRouter.replace).toHaveBeenCalledTimes(2);
-      expect(mockRouter.replace).toHaveBeenCalledWith('/test-runs/some-run-id?tab=artifacts', {
-        scroll: false,
-      });
+      // Check that window.history.replaceState has been called correctly
+      expect(mockReplaceState).toHaveBeenCalledTimes(2);
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        '/test-runs/some-run-id?tab=artifacts'
+      );
     });
 
     test('navigates to the log tab with the correct line number when a method is clicked', async () => {
@@ -689,21 +699,25 @@ describe('TestRunDetails', () => {
       const mockMethod = screen.getByTestId('mock-method-button');
       fireEvent.click(mockMethod);
 
-      // Assert that the router was called with the correct URL
+      // Assert that window.history.replaceState was called with the correct URL
       const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
       const expectedTabParam = `tab=${TEST_RUN_PAGE_TABS[logTabIndex]}`;
       const expectedLineParam = `line=123`;
 
-      expect(mockRouter.replace).toHaveBeenCalledTimes(2); // 1st for tab change, 2nd for method click
-      expect(mockRouter.replace).toHaveBeenCalledWith(expect.stringContaining(expectedTabParam), {
-        scroll: false,
-      });
-      expect(mockRouter.replace).toHaveBeenCalledWith(expect.stringContaining(expectedLineParam), {
-        scroll: false,
-      });
+      expect(mockReplaceState).toHaveBeenCalledTimes(2); // 1st for tab change, 2nd for method click
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        expect.stringContaining(expectedTabParam)
+      );
+      expect(mockReplaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        expect.stringContaining(expectedLineParam)
+      );
 
       const expectedUrl = `/test-runs/some-run-id?${expectedTabParam}&${expectedLineParam}`;
-      expect(mockRouter.replace).toHaveBeenLastCalledWith(expectedUrl, { scroll: false });
+      expect(mockReplaceState).toHaveBeenLastCalledWith(null, '', expectedUrl);
     });
   });
 });

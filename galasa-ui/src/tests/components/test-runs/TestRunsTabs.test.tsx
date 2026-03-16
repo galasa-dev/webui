@@ -95,14 +95,18 @@ jest.mock('next-intl', () => ({
   },
 }));
 
-const mockReplace = jest.fn();
+// Mock window.history.replaceState
+const mockReplaceState = jest.fn();
+Object.defineProperty(window, 'history', {
+  writable: true,
+  value: {
+    replaceState: mockReplaceState,
+  },
+});
+
 const mockUseSearchParams = jest.fn();
 
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: mockReplace,
-  }),
   useSearchParams: () => mockUseSearchParams(),
   usePathname: () => '/test-runs',
 }));
@@ -338,10 +342,10 @@ describe('TestRunsTabs Component', () => {
 
       // Assert: Wait for the initialization and save effect to run
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const urlCall = mockReplace.mock.calls[0][0];
+      const urlCall = mockReplaceState.mock.calls[0][2];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
 
       const decoded = decodeStateFromUrlParam(encodedQuery!);
@@ -371,18 +375,18 @@ describe('TestRunsTabs Component', () => {
       );
 
       // Wait for initial render and effect
-      await waitFor(() => expect(mockReplace).toHaveBeenCalled());
-      mockReplace.mockClear();
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalled());
+      mockReplaceState.mockClear();
 
       // Act
       fireEvent.click(screen.getByText('Table Design'));
 
       // Assert
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const urlCall = mockReplace.mock.calls[0][0];
+      const urlCall = mockReplaceState.mock.calls[0][2];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
 
       // We must decode the received query to check its contents
@@ -413,8 +417,8 @@ describe('TestRunsTabs Component', () => {
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-      mockReplace.mockClear();
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
+      mockReplaceState.mockClear();
 
       // Act: Simulate a child component updating the state
       const newOrder = [
@@ -439,9 +443,9 @@ describe('TestRunsTabs Component', () => {
       });
 
       // Assert: Wait for the effect to run with the new state
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
 
-      const urlCall = mockReplace.mock.calls[0][0];
+      const urlCall = mockReplaceState.mock.calls[0][2];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
@@ -468,8 +472,8 @@ describe('TestRunsTabs Component', () => {
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-      mockReplace.mockClear();
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
+      mockReplaceState.mockClear();
 
       // Act: Simulate a child component clearing the visible columns
       act(() => {
@@ -477,9 +481,9 @@ describe('TestRunsTabs Component', () => {
       });
 
       // Assert: The save-to-URL effect runs again with the new state
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
 
-      const urlCall = mockReplace.mock.calls[0][0];
+      const urlCall = mockReplaceState.mock.calls[0][2];
       const params = new URLSearchParams(urlCall.split('?')[1]);
       expect(params.get('visibleColumns')).toBeNull();
     });
@@ -497,8 +501,8 @@ describe('TestRunsTabs Component', () => {
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-      mockReplace.mockClear();
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
+      mockReplaceState.mockClear();
 
       // Act: Simulate a child component updating the sort order
       act(() => {
@@ -509,9 +513,9 @@ describe('TestRunsTabs Component', () => {
       });
 
       // Assert: The save-to-URL effect runs again with the new state
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
 
-      const urlCall = mockReplace.mock.calls[0][0];
+      const urlCall = mockReplaceState.mock.calls[0][2];
       const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
       const decoded = decodeStateFromUrlParam(encodedQuery!);
       const decodedParams = new URLSearchParams(decoded!);
@@ -532,8 +536,8 @@ describe('TestRunsTabs Component', () => {
       );
 
       // Wait for the initial save
-      await waitFor(() => expect(mockReplace).toHaveBeenCalledTimes(1));
-      mockReplace.mockClear();
+      await waitFor(() => expect(mockReplaceState).toHaveBeenCalledTimes(1));
+      mockReplaceState.mockClear();
 
       // Act: Simulate a child component clearing the visible columns
       act(() => {
@@ -541,8 +545,8 @@ describe('TestRunsTabs Component', () => {
       });
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalled();
-        const urlCall = mockReplace.mock.calls[0][0];
+        expect(mockReplaceState).toHaveBeenCalled();
+        const urlCall = mockReplaceState.mock.calls[0][2];
 
         const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');
         const decoded = decodeStateFromUrlParam(encodedQuery!);
@@ -571,8 +575,8 @@ describe('TestRunsTabs Component', () => {
 
       // Assert: Wait for the component to process the params and pass them as props
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalled();
-        const urlCall = mockReplace.mock.calls[0][0];
+        expect(mockReplaceState).toHaveBeenCalled();
+        const urlCall = mockReplaceState.mock.calls[0][2];
 
         // Decode the URL parameters to check the sortOrder
         const encodedQuery = new URLSearchParams(urlCall.split('?')[1]).get('q');

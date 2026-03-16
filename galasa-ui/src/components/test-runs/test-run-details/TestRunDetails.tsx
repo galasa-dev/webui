@@ -35,7 +35,7 @@ import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   SINGLE_RUN_QUERY_PARAMS,
   TEST_RUN_PAGE_TABS,
@@ -65,7 +65,6 @@ const TestRunDetails = ({
   const { breadCrumbItems, pushBreadCrumb } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -279,7 +278,7 @@ const TestRunDetails = ({
 
   const updateUrl = (params: URLSearchParams) => {
     const newUrl = `${pathname}?${params.toString()}`;
-    router.replace(newUrl, { scroll: false });
+    window.history.replaceState(null, '', newUrl);
   };
 
   const handleTabChange = (event: { selectedIndex: number }) => {
