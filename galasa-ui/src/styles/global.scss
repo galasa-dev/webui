@@ -18,14 +18,13 @@
     'enable-focus-wrap-without-sentinels': false,
   ));
 
-// Disable font loading to avoid Turbopack build issues
-@use '@carbon/styles/scss/config' with ($font-path: ''
+// Configure font path to use fonts from public directory
+@use '@carbon/styles/scss/config' with ($font-path: '/fonts'
 );
 
 @use '@carbon/react';
 @use '@carbon/themes/scss/themes' as *;
 @use '@carbon/themes';
-
 
 :root {
   @include themes.theme($white);

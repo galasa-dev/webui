@@ -44,15 +44,21 @@ export default function DateTimePicker({
   disabled = false,
   prefixId,
 }: DateTimePickerProps) {
-  const [localTime, setLocalTime] = useState(time);
+  const [localTime, setLocalTime] = useState(time || '');
+  const [localAmPm, setLocalAmPm] = useState(amPm || 'AM');
   const { preferences } = useDateTimeFormat();
   const translations = useTranslations('DateTimePicker');
   const invalidTimeText = translations('invalidTimeText');
 
   // Sync local state if the time prop changes from the parent
   useEffect(() => {
-    setLocalTime(time);
+    setLocalTime(time || '');
   }, [time]);
+
+  // Sync local state if the amPm prop changes from the parent
+  useEffect(() => {
+    setLocalAmPm(amPm || 'AM');
+  }, [amPm]);
 
   const handleTimeBlur = () => {
     const formattedTime = parseAndValidateTime(localTime);
@@ -106,10 +112,12 @@ export default function DateTimePicker({
       >
         <TimePickerSelect
           id={`${prefixId}-time-picker-ampm`}
-          value={amPm}
-          onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-            onAmPmChange(event.target.value)
-          }
+          value={localAmPm}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+            const newAmPm = event.target.value;
+            setLocalAmPm(newAmPm);
+            onAmPmChange(newAmPm);
+          }}
         >
           <SelectItem text={translations('AM')} value="AM" />
           <SelectItem text={translations('PM')} value="PM" />

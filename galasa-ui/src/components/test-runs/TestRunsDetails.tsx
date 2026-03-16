@@ -44,11 +44,18 @@ export default function TestRunsDetails({
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
-  const [editedName, setEditedName] = useState<string>('');
+  const [editedName, setEditedName] = useState<string>(queryName || '');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeQuery = getQueryByName(queryName);
+
+  // Sync editedName with queryName when queryName changes
+  useEffect(() => {
+    if (queryName && !isEditingName) {
+      setEditedName(queryName);
+    }
+  }, [queryName, isEditingName]);
 
   // Focus and select the input when editing
   useEffect(() => {

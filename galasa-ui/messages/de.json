@@ -399,6 +399,7 @@
       "subtitle": "Ihre Abfrage hat mehr als {maxRecords} Ergebnisse zurückgegeben. Es werden die ersten {maxRecords} Datensätze angezeigt. Um dies in Zukunft zu vermeiden, schränken Sie Ihren Zeitrahmen ein oder ändern Sie Ihre Suchkriterien, um weniger Ergebnisse zu erhalten."
     },
     "timeFrameText": {
+      "default": "Zeigt die in den letzten 24 Stunden eingereichten Testläufe an",
       "range": "Zeige Testläufe von {from} bis {to}"
     }
   },

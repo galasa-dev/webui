@@ -89,7 +89,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     return rawSearchParams;
-  }, [rawSearchParams]);
+  }, [rawSearchParams.toString()]); // Use string representation for stable comparison
 
   // Initial states
   const [selectedTabIndex, setSelectedTabIndex] = useState(TABS_IDS.indexOf('results'));
@@ -297,7 +297,10 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (pathname === '/test-runs') {
       const encodedQuery = encodeStateToUrlParam(params.toString());
       const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
-      router.replace(newUrl, { scroll: false });
+      const currentEncodedQuery = searchParams.get('q');
+      if (encodedQuery !== currentEncodedQuery) {
+        router.replace(newUrl, { scroll: false });
+      }
     }
   }, [
     selectedVisibleColumns,
@@ -310,6 +313,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     timeframeValues,
     searchCriteria,
     queryName,
+    searchParams,
   ]);
 
   // The value to be passed to the context consumers
