@@ -61,11 +61,19 @@ jest.mock('@carbon/icons-react', () => ({
 }));
 
 jest.mock('@carbon/react', () => ({
-  OverflowMenu: (props: any) => (
-    <div data-testid="overflow-menu" {...props}>
-      {props.children}
-    </div>
-  ),
+  OverflowMenu: (props: any) => {
+    // Simulate onOpen being called when the menu is clicked
+    const handleClick = () => {
+      if (props.onOpen) {
+        props.onOpen();
+      }
+    };
+    return (
+      <div data-testid="overflow-menu" {...props} onClick={handleClick}>
+        {props.children}
+      </div>
+    );
+  },
   OverflowMenuItem: (props: any) => (
     <button data-testid="overflow-menu-item" onClick={props.onClick} disabled={props.disabled}>
       {' '}
@@ -329,6 +337,163 @@ describe('QueryItem', () => {
         title: 'Success',
         subtitle: 'The query was duplicated successfully.',
       } as NotificationType);
+    });
+  });
+
+  describe('Dynamic Menu Direction', () => {
+    beforeEach(() => {
+      // Mock getBoundingClientRect
+      Element.prototype.getBoundingClientRect = jest.fn();
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('should set menu direction to bottom (downward) by default before menu is opened', () => {
+      // Mock element positioned at top of viewport with plenty of space below
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
+        bottom: 100, // Element is at 100px from top
+        top: 80,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+      });
+
+      // Mock window.innerHeight to simulate a tall viewport
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800, // 800px viewport height
+      });
+
+      render(<QueryItem query={standardQuery} />);
+
+      const overflowMenu = screen.getByTestId('overflow-menu');
+      // Menu should default to bottom direction before being opened
+      expect(overflowMenu).toHaveAttribute('direction', 'bottom');
+    });
+
+    test('should calculate and set menu direction to bottom when menu is opened with enough space below', () => {
+      // Mock element positioned at top of viewport with plenty of space below
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
+        bottom: 100, // Element is at 100px from top
+        top: 80,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+      });
+
+      // Mock window.innerHeight to simulate a tall viewport
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800, // 800px viewport height
+      });
+
+      render(<QueryItem query={standardQuery} />);
+
+      const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Simulate opening the menu (triggers onOpen callback)
+      fireEvent.click(overflowMenu);
+
+      // Menu should remain downward (direction="bottom") when there's space
+      expect(overflowMenu).toHaveAttribute('direction', 'bottom');
+    });
+
+    test('should calculate and set menu direction to top when menu is opened near bottom of viewport', () => {
+      // Mock element positioned near bottom of viewport
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
+        bottom: 750, // Element is at 750px from top
+        top: 730,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+      });
+
+      // Mock window.innerHeight
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800, // 800px viewport height
+      });
+
+      // With element at 750px and estimated menu height of 200px,
+      // total would be 950px which exceeds viewport height of 800px
+      render(<QueryItem query={standardQuery} />);
+
+      const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Simulate opening the menu (triggers onOpen callback)
+      fireEvent.click(overflowMenu);
+
+      // Menu should open upward (direction="top") to avoid overflow
+      expect(overflowMenu).toHaveAttribute('direction', 'top');
+    });
+
+    test('should recalculate menu direction when reopened after viewport changes', () => {
+      // Start with element near bottom
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
+        bottom: 750,
+        top: 730,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+      });
+
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800,
+      });
+
+      const { rerender } = render(<QueryItem query={standardQuery} />);
+
+      let overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Open menu - should calculate direction as 'top'
+      fireEvent.click(overflowMenu);
+      expect(overflowMenu).toHaveAttribute('direction', 'top');
+
+      // Simulate window resize to make viewport taller
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 1200, // Now there's enough space
+      });
+
+      // Re-render component
+      rerender(<QueryItem query={standardQuery} />);
+
+      overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Open menu again - should recalculate and now be 'bottom'
+      fireEvent.click(overflowMenu);
+      expect(overflowMenu).toHaveAttribute('direction', 'bottom');
+    });
+
+    test('should handle case when itemRef is not available', () => {
+      // Mock getBoundingClientRect to return null (simulating ref not set)
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue(null);
+
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800,
+      });
+
+      render(<QueryItem query={standardQuery} />);
+
+      const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Open menu - should not crash and maintain default direction
+      fireEvent.click(overflowMenu);
+      expect(overflowMenu).toHaveAttribute('direction', 'bottom');
     });
   });
 });
