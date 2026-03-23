@@ -13,7 +13,7 @@ import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { generateUniqueQueryName } from '@/utils/functions/savedQueries';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import { NOTIFICATION_VISIBLE_MILLISECS, TEST_RUNS_QUERY_PARAMS } from '@/utils/constants/common';
@@ -53,31 +53,19 @@ export default function QueryItem({
   // State to track whether the menu should open upwards
   const [shouldOpenUpwards, setShouldOpenUpwards] = useState(false);
 
-  // Calculate menu direction based on viewport position
-  useEffect(() => {
-    const calculateMenuDirection = () => {
-      if (!itemRef.current) return;
+  // Calculate menu direction when menu is opened
+  const handleMenuOpen = () => {
+    if (!itemRef.current) return;
 
-      const rect = itemRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
+    const rect = itemRef.current.getBoundingClientRect();
+    if (!rect) return;
 
-      // Check if opening the menu downward would cause it to overflow the viewport
-      const wouldOverflow = rect.bottom + MENU_HEIGHT > viewportHeight;
-      setShouldOpenUpwards(wouldOverflow);
-    };
+    const viewportHeight = window.innerHeight;
 
-    // Calculate on mount and when the component updates
-    calculateMenuDirection();
-
-    // Recalculate on window resize
-    window.addEventListener('resize', calculateMenuDirection);
-    window.addEventListener('scroll', calculateMenuDirection);
-
-    return () => {
-      window.removeEventListener('resize', calculateMenuDirection);
-      window.removeEventListener('scroll', calculateMenuDirection);
-    };
-  }, []);
+    // Check if opening the menu downward would cause it to overflow the viewport
+    const wouldOverflow = rect.bottom + MENU_HEIGHT > viewportHeight;
+    setShouldOpenUpwards(wouldOverflow);
+  };
 
   const isDefault = defaultQuery.createdAt === query.createdAt;
 
@@ -246,6 +234,7 @@ export default function QueryItem({
         flipped
         className={styles.overflowMenu}
         direction={shouldOpenUpwards ? 'top' : 'bottom'}
+        onOpen={handleMenuOpen}
       >
         {actions.map((action) => (
           <OverflowMenuItem

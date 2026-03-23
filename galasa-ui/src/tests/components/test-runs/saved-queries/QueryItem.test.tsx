@@ -61,11 +61,19 @@ jest.mock('@carbon/icons-react', () => ({
 }));
 
 jest.mock('@carbon/react', () => ({
-  OverflowMenu: (props: any) => (
-    <div data-testid="overflow-menu" {...props}>
-      {props.children}
-    </div>
-  ),
+  OverflowMenu: (props: any) => {
+    // Simulate onOpen being called when the menu is clicked
+    const handleClick = () => {
+      if (props.onOpen) {
+        props.onOpen();
+      }
+    };
+    return (
+      <div data-testid="overflow-menu" {...props} onClick={handleClick}>
+        {props.children}
+      </div>
+    );
+  },
   OverflowMenuItem: (props: any) => (
     <button data-testid="overflow-menu-item" onClick={props.onClick} disabled={props.disabled}>
       {' '}
@@ -342,7 +350,7 @@ describe('QueryItem', () => {
       jest.restoreAllMocks();
     });
 
-    test('should set menu direction to bottom (downward) when there is enough space below', () => {
+    test('should set menu direction to bottom (downward) by default before menu is opened', () => {
       // Mock element positioned at top of viewport with plenty of space below
       (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
         bottom: 100, // Element is at 100px from top
@@ -363,11 +371,40 @@ describe('QueryItem', () => {
       render(<QueryItem query={standardQuery} />);
 
       const overflowMenu = screen.getByTestId('overflow-menu');
-      // Menu should open downward (direction="bottom") when there's space
+      // Menu should default to bottom direction before being opened
       expect(overflowMenu).toHaveAttribute('direction', 'bottom');
     });
 
-    test('should set menu direction to top (upward) when opening downward would overflow viewport', () => {
+    test('should calculate and set menu direction to bottom when menu is opened with enough space below', () => {
+      // Mock element positioned at top of viewport with plenty of space below
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
+        bottom: 100, // Element is at 100px from top
+        top: 80,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+      });
+
+      // Mock window.innerHeight to simulate a tall viewport
+      Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: 800, // 800px viewport height
+      });
+
+      render(<QueryItem query={standardQuery} />);
+
+      const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Simulate opening the menu (triggers onOpen callback)
+      fireEvent.click(overflowMenu);
+
+      // Menu should remain downward (direction="bottom") when there's space
+      expect(overflowMenu).toHaveAttribute('direction', 'bottom');
+    });
+
+    test('should calculate and set menu direction to top when menu is opened near bottom of viewport', () => {
       // Mock element positioned near bottom of viewport
       (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
         bottom: 750, // Element is at 750px from top
@@ -390,11 +427,15 @@ describe('QueryItem', () => {
       render(<QueryItem query={standardQuery} />);
 
       const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Simulate opening the menu (triggers onOpen callback)
+      fireEvent.click(overflowMenu);
+
       // Menu should open upward (direction="top") to avoid overflow
       expect(overflowMenu).toHaveAttribute('direction', 'top');
     });
 
-    test('should recalculate menu direction on window resize', () => {
+    test('should recalculate menu direction when reopened after viewport changes', () => {
       // Start with element near bottom
       (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
         bottom: 750,
@@ -414,6 +455,9 @@ describe('QueryItem', () => {
       const { rerender } = render(<QueryItem query={standardQuery} />);
 
       let overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Open menu - should calculate direction as 'top'
+      fireEvent.click(overflowMenu);
       expect(overflowMenu).toHaveAttribute('direction', 'top');
 
       // Simulate window resize to make viewport taller
@@ -423,27 +467,19 @@ describe('QueryItem', () => {
         value: 1200, // Now there's enough space
       });
 
-      // Trigger resize event
-      fireEvent(window, new Event('resize'));
-
-      // Re-render to get updated component
+      // Re-render component
       rerender(<QueryItem query={standardQuery} />);
 
       overflowMenu = screen.getByTestId('overflow-menu');
-      // Menu should now open downward since there's space
+
+      // Open menu again - should recalculate and now be 'bottom'
+      fireEvent.click(overflowMenu);
       expect(overflowMenu).toHaveAttribute('direction', 'bottom');
     });
 
-    test('should recalculate menu direction on scroll', () => {
-      // Start with element in middle of viewport
-      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
-        bottom: 400,
-        top: 380,
-        left: 0,
-        right: 100,
-        width: 100,
-        height: 20,
-      });
+    test('should handle case when itemRef is not available', () => {
+      // Mock getBoundingClientRect to return null (simulating ref not set)
+      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue(null);
 
       Object.defineProperty(window, 'innerHeight', {
         writable: true,
@@ -451,53 +487,13 @@ describe('QueryItem', () => {
         value: 800,
       });
 
-      const { rerender } = render(<QueryItem query={standardQuery} />);
+      render(<QueryItem query={standardQuery} />);
 
-      let overflowMenu = screen.getByTestId('overflow-menu');
+      const overflowMenu = screen.getByTestId('overflow-menu');
+
+      // Open menu - should not crash and maintain default direction
+      fireEvent.click(overflowMenu);
       expect(overflowMenu).toHaveAttribute('direction', 'bottom');
-
-      // Simulate scroll that moves element near bottom
-      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
-        bottom: 750,
-        top: 730,
-        left: 0,
-        right: 100,
-        width: 100,
-        height: 20,
-      });
-
-      // Trigger scroll event
-      fireEvent(window, new Event('scroll'));
-
-      // Re-render to get updated component
-      rerender(<QueryItem query={standardQuery} />);
-
-      overflowMenu = screen.getByTestId('overflow-menu');
-      // Menu should now open upward since it would overflow
-      expect(overflowMenu).toHaveAttribute('direction', 'top');
-    });
-
-    test('should clean up event listeners on unmount', () => {
-      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
-
-      (Element.prototype.getBoundingClientRect as jest.Mock).mockReturnValue({
-        bottom: 100,
-        top: 80,
-        left: 0,
-        right: 100,
-        width: 100,
-        height: 20,
-      });
-
-      const { unmount } = render(<QueryItem query={standardQuery} />);
-
-      unmount();
-
-      // Verify that event listeners were removed
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
-
-      removeEventListenerSpy.mockRestore();
     });
   });
 });
