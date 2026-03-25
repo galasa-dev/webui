@@ -43,17 +43,6 @@ const mockPush = jest.fn();
 (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams());
 
-// Mock ResizeObserver for jsdom environment
-beforeAll(() => {
-  global.ResizeObserver =
-    global.ResizeObserver ||
-    class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
-});
-
 // Helper function to generate mock test runs data
 const generateMockRuns = (count: number) => {
   return Array.from({ length: count }, (_, index) => {

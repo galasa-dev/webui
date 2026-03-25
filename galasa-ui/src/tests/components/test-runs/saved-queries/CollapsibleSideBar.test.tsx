@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import CollapsibleSideBar from '@/components/test-runs/saved-queries/CollapsibleSideBar';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
@@ -21,9 +21,6 @@ const mockQueries = [
   { createdAt: '2023-01-02T00:00:00Z', title: 'Test Run 2', url: '' },
   { createdAt: '2023-01-03T00:00:00Z', title: 'Test Run 3', url: '' },
 ];
-let resizeObserverMock: jest.Mock;
-let mockObserve: jest.Mock;
-let mockUnobserve: jest.Mock;
 
 // Mock child components
 jest.mock('@/components/test-runs/saved-queries/QueryItem', () => ({
@@ -85,19 +82,6 @@ beforeEach(() => {
     defaultQuery: mockQueries[0],
     setSavedQueries: mockSetSavedQueries,
   }));
-
-  resizeObserverMock = jest.fn().mockImplementation(() => {
-    mockObserve = jest.fn();
-    mockUnobserve = jest.fn();
-    const mockDisconnect = jest.fn();
-
-    return {
-      observe: mockObserve,
-      unobserve: mockUnobserve,
-      disconnect: mockDisconnect,
-    };
-  });
-  window.ResizeObserver = resizeObserverMock;
 });
 
 describe('CollapsibleSideBar', () => {
@@ -349,35 +333,6 @@ describe('CollapsibleSideBar', () => {
 
       // The component logic should prevent this, as the dragged item is not in the `sortableQueries` array
       expect(mockSetSavedQueries).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('updating side nav height', () => {
-    test('should not observe the main content if main content not loaded', async () => {
-      render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
-      expect(mockObserve).toHaveBeenCalledTimes(0);
-    });
-
-    test('should observe the main content if main content rendered, and set to height of main content -50px', async () => {
-      const mainContentElement = document.createElement('div');
-      mainContentElement.className = 'mainContent';
-      document.body.appendChild(mainContentElement);
-
-      render(<CollapsibleSideBar handleEditQueryName={mockHandleEditQueryName} />);
-
-      const sidebar = screen.getByLabelText('Saved Queries Sidebar');
-
-      await waitFor(() => {
-        expect(mockObserve).toHaveBeenCalledTimes(1);
-
-        if (sidebar) {
-          expect(sidebar.style.height).toBe('-50px');
-        } else {
-          fail('could not find sidebar');
-        }
-
-        document.body.innerHTML = '';
-      });
     });
   });
 });
