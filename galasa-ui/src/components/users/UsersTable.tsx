@@ -149,7 +149,7 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
       try {
         const users = await usersListPromise;
         if (users) {
-          const flattenedUsers = flattenUserDataForTable(users);
+          let flattenedUsers = flattenUserDataForTable(users);
           setUsers(flattenedUsers);
         }
       } catch (err) {
@@ -203,24 +203,20 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
             <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => {
-                    const { key, ...headerProps } = getHeaderProps({ header }) as any;
-                    return (
-                      <TableHeader key={header.key} {...headerProps}>
-                        {header.header}
-                      </TableHeader>
-                    );
-                  })}
+                  {headers.map((header) => (
+                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                      {header.header}
+                    </TableHeader>
+                  ))}
                   {hasEditUserPermission && (
-                    <TableHeader aria-label={translations('headersActions')} />
+                    <TableHeader aria-label={translations('headers_actions')} />
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
-                  const { key, ...rowProps } = getRowProps({ row }) as any;
                   return (
-                    <TableRow key={row.id} {...rowProps}>
+                    <TableRow key={row.id} {...getRowProps({ row })}>
                       {row.cells.map((cell: DataTableCell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}

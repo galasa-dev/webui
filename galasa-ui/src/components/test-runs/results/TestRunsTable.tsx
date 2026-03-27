@@ -274,43 +274,37 @@ export default function TestRunsTable({
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
                   <TableRow>
-                    {headers.map((header) => {
-                      const { key, ...headerProps } = getHeaderProps({ header }) as any;
-                      return (
-                        <TableHeader key={header.key} {...headerProps}>
-                          {header.header}
-                        </TableHeader>
-                      );
-                    })}
+                    {headers.map((header) => (
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                        {header.header}
+                      </TableHeader>
+                    ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => {
-                    const { key, ...rowProps } = getRowProps({ row }) as any;
-                    return (
-                      <TableRow
-                        key={row.id}
-                        {...rowProps}
-                        onClick={() =>
-                          handleRowClick(
-                            row.id,
-                            row.cells.find((cell) => cell.info.header === 'testRunName')
-                              ?.value as string
-                          )
-                        }
-                        className={styles.clickableRow}
-                      >
-                        {row.cells.map((cell) => (
-                          <CustomCell
-                            key={cell.id}
-                            value={cell.value}
-                            header={cell.info.header}
-                            href={`/test-runs/${row.id}`}
-                          />
-                        ))}
-                      </TableRow>
-                    );
-                  })}
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      {...getRowProps({ row })}
+                      onClick={() =>
+                        handleRowClick(
+                          row.id,
+                          row.cells.find((cell) => cell.info.header === 'testRunName')
+                            ?.value as string
+                        )
+                      }
+                      className={styles.clickableRow}
+                    >
+                      {row.cells.map((cell) => (
+                        <CustomCell
+                          key={cell.id}
+                          value={cell.value}
+                          header={cell.info.header}
+                          href={`/test-runs/${row.id}`}
+                        />
+                      ))}
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

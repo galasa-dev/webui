@@ -38,7 +38,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
   const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
 
   const extractMethods = (methods: TestMethod[]) => {
-    const methodDetails: MethodDetails[] = [];
+    let methodDetails: MethodDetails[] = [];
 
     methods.map((method, index) => {
       const methodDetail: MethodDetails = {
@@ -114,20 +114,16 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
             <Table {...getTableProps()} aria-label="runs table" size="lg">
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => {
-                    const { key, ...headerProps } = getHeaderProps({ header }) as any;
-                    return (
-                      <TableHeader key={header.key} {...headerProps}>
-                        {header.header}
-                      </TableHeader>
-                    );
-                  })}
+                  {headers.map((header) => (
+                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                      {header.header}
+                    </TableHeader>
+                  ))}
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 {rows.map((row) => {
-                  const { key, ...rowProps } = getRowProps({ row }) as any;
                   return (
                     <TableRow
                       key={row.id}
@@ -135,7 +131,7 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
                         onMethodClick && onMethodClick(methodDetails[parseInt(row.id)])
                       }
                       className={styles.clickableRow}
-                      {...rowProps}
+                      {...getRowProps({ row })}
                     >
                       {/* Method name */}
                       <TableCell key={row.cells[0].id}>

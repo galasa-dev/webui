@@ -290,44 +290,38 @@ export default function TableOfScreenshots({
           <Table stickyHeader {...getTableProps()} id={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
-                {headers.map((header) => {
-                  const { key, ...headerProps } = getHeaderProps({ header }) as any;
-                  return (
-                    <TableHeader key={header.header} {...headerProps}>
-                      {header.header}
-                    </TableHeader>
-                  );
-                })}
+                {headers.map((header) => (
+                  <TableHeader key={header.header} {...getHeaderProps({ header })}>
+                    {header.header}
+                  </TableHeader>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => {
-                const { key, ...rowProps } = getRowProps({ row }) as any;
-                return (
-                  <TableRow
-                    key={row.id}
-                    id={row.id}
-                    {...rowProps}
-                    onClick={() => handleRowClick(row.id)}
-                    className={styles.clickableRow}
-                    role="table-row"
-                  >
-                    {row.cells.map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        style={{
-                          backgroundColor:
-                            highlightedRowId === row.id
-                              ? 'rgba(124, 124, 124, 0.468)'
-                              : 'transparent',
-                        }}
-                      >
-                        {cell.value}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              })}
+              {rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  id={row.id}
+                  {...getRowProps({ row })}
+                  onClick={() => handleRowClick(row.id)}
+                  className={styles.clickableRow}
+                  role="table-row"
+                >
+                  {row.cells.map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        backgroundColor:
+                          highlightedRowId === row.id
+                            ? 'rgba(124, 124, 124, 0.468)'
+                            : 'transparent',
+                      }}
+                    >
+                      {cell.value}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         )}
