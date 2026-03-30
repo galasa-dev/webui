@@ -16,8 +16,8 @@ const TestComponent = () => {
 
   return (
     <div>
-      <p>Test Runs Enabled: {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS).toString()}</p>
-      <button onClick={() => toggleFeatureFlag(FEATURE_FLAGS.TEST_RUNS)}>Toggle Test Runs</button>
+      <p>Test Run Graphs Enabled: {isFeatureEnabled(FEATURE_FLAGS.GRAPH).toString()}</p>
+      <button onClick={() => toggleFeatureFlag(FEATURE_FLAGS.GRAPH)}>Toggle Test Run Graphs</button>
     </div>
   );
 };
@@ -40,42 +40,41 @@ describe('Feature Flags Provider and useFeatureFlags Hook', () => {
         <TestComponent />
       </FeatureFlagProvider>
     );
-    expect(screen.getByText('Test Runs Enabled: false')).toBeInTheDocument();
+    expect(screen.getByText('Test Run Graphs Enabled: false')).toBeInTheDocument();
   });
 
   test('initializes with provided props from the server', () => {
-    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
+    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.GRAPH]: true });
     render(
       <FeatureFlagProvider initialFlags={initialFlags}>
         <TestComponent />
       </FeatureFlagProvider>
     );
 
-    expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
+    expect(screen.getByText('Test Run Graphs Enabled: true')).toBeInTheDocument();
   });
 
   test('verifies feature flag toggling and updates cookie correctly', () => {
-    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: false });
+    const initialFlags = JSON.stringify({ [FEATURE_FLAGS.GRAPH]: false });
     render(
       <FeatureFlagProvider initialFlags={initialFlags}>
         <TestComponent />
       </FeatureFlagProvider>
     );
 
-    expect(screen.getByText('Test Runs Enabled: false')).toBeInTheDocument();
+    expect(screen.getByText('Test Run Graphs Enabled: false')).toBeInTheDocument();
 
     // Due to React's strict mode
     cookieSpy.mockClear();
 
-    const toggleButton = screen.getByText('Toggle Test Runs');
+    const toggleButton = screen.getByText('Toggle Test Run Graphs');
 
     fireEvent.click(toggleButton);
 
-    expect(screen.getByText('Test Runs Enabled: true')).toBeInTheDocument();
+    expect(screen.getByText('Test Run Graphs Enabled: true')).toBeInTheDocument();
 
     const expectedCookieVal = JSON.stringify({
-      [FEATURE_FLAGS.TEST_RUNS]: true,
-      [FEATURE_FLAGS.GRAPH]: false,
+      [FEATURE_FLAGS.GRAPH]: true,
     });
 
     expect(cookieSpy).toHaveBeenCalledTimes(1);

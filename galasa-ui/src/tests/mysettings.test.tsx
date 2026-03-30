@@ -41,7 +41,7 @@ jest.mock('next-intl', () => ({
       title: 'Experimental Features',
       description:
         'Early access to new features. These are experimental and subject to change or removal.',
-      'features.testRunSearch': 'Test Run searching and viewing',
+      'features.graph': 'Test Run Graphs',
       errorTitle: 'Something went wrong!',
       errorDescription: 'Please report the problem to your Galasa Ecosystem administrator.',
     };
