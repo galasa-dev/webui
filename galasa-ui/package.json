@@ -62,6 +62,9 @@
   "overrides": {
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "eslint": "^9.17.0"
+    "eslint": "^9.17.0",
+    "pretty-format": {
+      "react-is": "19.2.4"
+    }
   }
 }
