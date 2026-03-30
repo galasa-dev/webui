@@ -15,15 +15,15 @@ jest.mock('next-intl', () => ({
       title: 'Experimental Features',
       description:
         'Early access to new features. These are experimental and subject to change or removal.',
-      'features.testRunSearch': 'Test Run searching and viewing',
+      'features.graph': 'Test Run Graphs',
     };
     return translations[key] || key;
   },
 }));
 
 describe('ExperimentalFeaturesSection', () => {
-  test('Renders correctly when "testRuns" flag is disabled: Checkbox is unchecked', () => {
-    const mockIsFeatureEnabled = (key: string) => key !== FEATURE_FLAGS.TEST_RUNS;
+  test('Renders correctly when "graph" flag is disabled: Checkbox is unchecked', () => {
+    const mockIsFeatureEnabled = (key: string) => key !== FEATURE_FLAGS.GRAPH;
 
     render(
       <FeatureFlagContext.Provider
@@ -33,13 +33,13 @@ describe('ExperimentalFeaturesSection', () => {
       </FeatureFlagContext.Provider>
     );
 
-    const checkbox = screen.getByLabelText(/Test Run/i);
+    const checkbox = screen.getByLabelText(/Test Run Graphs/i);
     expect(checkbox).not.toBeChecked();
   });
 
-  test('Renders correctly when a "testRuns" enabled: Checkbox is checked', () => {
+  test('Renders correctly when a "graph" enabled: Checkbox is checked', () => {
     const mockIsFeatureEnabled = (key: string) => {
-      return key === FEATURE_FLAGS.TEST_RUNS;
+      return key === FEATURE_FLAGS.GRAPH;
     };
 
     render(
@@ -49,7 +49,7 @@ describe('ExperimentalFeaturesSection', () => {
         <ExperimentalFeaturesSection />
       </FeatureFlagContext.Provider>
     );
-    const checkbox = screen.getByLabelText(/Test Run/i);
+    const checkbox = screen.getByLabelText(/Test Run Graphs/i);
     expect(checkbox).toBeChecked();
   });
 
@@ -64,10 +64,10 @@ describe('ExperimentalFeaturesSection', () => {
       </FeatureFlagContext.Provider>
     );
 
-    const checkbox = screen.getByRole('checkbox', { name: /Test Run/i });
+    const checkbox = screen.getByRole('checkbox', { name: /Test Run Graphs/i });
     fireEvent.click(checkbox);
 
     expect(mockToggle).toHaveBeenCalledTimes(1);
-    expect(mockToggle).toHaveBeenCalledWith(FEATURE_FLAGS.TEST_RUNS);
+    expect(mockToggle).toHaveBeenCalledWith(FEATURE_FLAGS.GRAPH);
   });
 });

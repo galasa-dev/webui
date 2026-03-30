@@ -17,12 +17,9 @@ import PageHeaderMenu from './PageHeaderMenu';
 import Image from 'next/image';
 import galasaLogo from '@/assets/images/galasaLogo.png';
 import Link from 'next/link';
-import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
 import { useTranslations } from 'next-intl';
 
 export default function PageHeader({ galasaServiceName }: { galasaServiceName: string }) {
-  const { isFeatureEnabled } = useFeatureFlags();
   const translations = useTranslations('PageHeader');
   return (
     <Theme theme="g90">
@@ -39,11 +36,8 @@ export default function PageHeader({ galasaServiceName }: { galasaServiceName: s
 
         <HeaderNavigation aria-label="Galasa menu bar navigation">
           <HeaderMenuItem href="/users">{translations('users')}</HeaderMenuItem>
-          {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS) && (
-            <HeaderMenuItem href="/test-runs">{translations('testRuns')}</HeaderMenuItem>
-          )}
+          <HeaderMenuItem href="/test-runs">{translations('testRuns')}</HeaderMenuItem>
         </HeaderNavigation>
-
         <PageHeaderMenu galasaServiceName={galasaServiceName} />
       </Header>
     </Theme>

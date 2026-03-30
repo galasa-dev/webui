@@ -59,7 +59,7 @@ test('renders the header containing the header menu', () => {
   expect(headerMenu).toBeInTheDocument();
 });
 
-test('does NOT render the "Test runs" link by default', () => {
+test('renders the "Test runs" link by default', () => {
   render(
     <FeatureFlagProvider>
       <PageHeader galasaServiceName="Galasa Service" />
@@ -67,18 +67,5 @@ test('does NOT render the "Test runs" link by default', () => {
   );
 
   const testRunsLink = screen.queryByText('Test runs');
-  expect(testRunsLink).not.toBeInTheDocument();
-});
-
-test('renders the "Test runs" link when the feature flag is enabled via prop', () => {
-  const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
-
-  render(
-    <FeatureFlagProvider initialFlags={initialFlags}>
-      <PageHeader galasaServiceName="Galasa Service" />
-    </FeatureFlagProvider>
-  );
-
-  const testRunsLink = screen.getByText('Test runs');
   expect(testRunsLink).toBeInTheDocument();
 });

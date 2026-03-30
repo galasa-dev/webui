@@ -30,7 +30,6 @@
     "title": "Experimentelle Funktionen",
     "description": "Früher Zugriff auf neue Funktionen. Diese Funktionen sind experimentell und können sich ändern oder entfernt werden.",
     "features": {
-      "testRunSearch": "Testlauf-Suche und Anzeige",
       "graph": "Testlauf-Diagramm"
     }
   },

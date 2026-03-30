@@ -79,18 +79,4 @@ describe('ResultsTablePageSizingSetting', () => {
       expect(mockSetDefaultPageSize).toHaveBeenCalledWith(50);
     });
   });
-
-  describe('when feature flag is disabled', () => {
-    beforeEach(() => {
-      mockIsFeatureEnabled.mockReturnValue(false);
-    });
-
-    test('does not render the component', () => {
-      render(<ResultsTablePageSizingSetting />);
-
-      expect(screen.queryByText('Test Run Query Results')).toBeNull();
-      expect(screen.queryByText('Configure the number of results displayed per page.')).toBeNull();
-      expect(screen.queryByTestId('custom-items-per-page-dropdown-test')).toBeNull();
-    });
-  });
 });
