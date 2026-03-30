@@ -31,15 +31,13 @@
 @use '@carbon/themes';
 
 :root {
-  @include themes.theme($white);
-  /*Set default to white theme*/
+  @include themes.theme($white); /*Set default to white theme*/
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    @include themes.theme($g100);
-    /*Use dark theme for dark system preference*/
+    @include themes.theme($g100); /*Use dark theme for dark system preference*/
     color-scheme: dark;
   }
 }
