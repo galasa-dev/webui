@@ -71,11 +71,10 @@ jobs:
           cat ${indexFile} | sed "s/export { Configuration/export { type Configuration/1" > temp/index-temp.ts &&
           cat temp/index-temp.ts | sed "s/export { PromiseMiddleware/export { type PromiseMiddleware/1" > temp/index.ts &&
           cp temp/index.ts ${indexFile} &&
-          tsconfigFile="galasa-ui/src/generated/galasaapi/tsconfig.json" &&
-          cat ${tsconfigFile} | sed 's/"target": "es5"/"target": "ES2022"/g' | \
-          sed 's/"moduleResolution": "node"/"module": "esnext",\n    "moduleResolution": "bundler"/g' | \
-          sed 's/"lib": \[ "es6", "dom" \]/"lib": [ "ES2022", "dom" ],\n    "esModuleInterop": true,\n    "skipLibCheck": true/g' > temp/tsconfig.json &&
-          cp temp/tsconfig.json ${tsconfigFile}
+          generatedPackageJson="galasa-ui/src/generated/galasaapi/package.json" &&
+          sed -i 's|"main": "./dist/index.js"|"main": "./index.ts"|g' "${generatedPackageJson}" &&
+          sed -i 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}" &&
+          sed -i 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
 
       - name: Setup Nodejs
         uses: actions/setup-node@v3

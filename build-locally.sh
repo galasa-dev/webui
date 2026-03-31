@@ -182,19 +182,13 @@ function generate_rest_client {
         echo "Module format fixed in generated package.json"
     fi
 
-    # Fix tsconfig.json to use ESM-compatible settings for Turbopack
-    echo "Fixing tsconfig.json for ESM compatibility..."
-    tsconfigFile="${BASEDIR}/galasa-ui/src/generated/galasaapi/tsconfig.json"
-    if [ -f "${tsconfigFile}" ]; then
-        cat ${tsconfigFile} | sed 's/"target": "es5"/"target": "ES2022"/g' | \
-        sed 's/"moduleResolution": "node"/"module": "esnext",\
-    "moduleResolution": "bundler"/g' | \
-        sed 's/"lib": \[ "es6", "dom" \]/"lib": [ "ES2022", "dom" ],\
-    "esModuleInterop": true,\
-    "skipLibCheck": true/g' > ${tempDir}/tsconfig.json
-        cp ${tempDir}/tsconfig.json ${tsconfigFile}
-        echo "tsconfig.json fixed for ESM compatibility"
-    fi
+    # Fix package.json entry points to use TypeScript files instead of compiled JavaScript
+    echo "Fixing package.json entry points..."
+    sed -i.bak 's|"main": "./dist/index.js"|"main": "./index.ts"|g' "${generatedPackageJson}"
+    sed -i.bak 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}"
+    sed -i.bak 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
+    rm -f "${generatedPackageJson}.bak"
+    echo "Package.json entry points fixed"
 
     success "OK"
 }
