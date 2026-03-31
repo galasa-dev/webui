@@ -42,6 +42,8 @@ export interface TimeFrameValues {
   durationHours: number;
   durationMinutes: number;
   isRelativeToNow?: boolean;
+  fromOption?: string;
+  toOption?: string;
 }
 
 export interface RunLog {

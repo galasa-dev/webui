@@ -488,7 +488,7 @@ describe('applyTimeFrameRules', () => {
       });
     });
 
-    test('should synchronize the "To" option when the query changes to be relative to now', async () => {
+    test('should preserve radio button selections when switching between queries', async () => {
       const initialFrom = '2025-08-10T12:00:00.000Z';
       const initialTo = '2025-08-13T12:00:00.000Z';
 
@@ -503,14 +503,30 @@ describe('applyTimeFrameRules', () => {
         return (
           <>
             <TimeFrameContent values={values} setValues={setValues} />
-            {/* Add a button to simulate a query change */}
+            {/* Add a button to simulate loading a different query */}
             <button
-              role="toggle-isRelativeToNow"
+              role="load-query-with-now"
               onClick={() =>
-                setValues((prev) => ({ ...prev, isRelativeToNow: !prev.isRelativeToNow }))
+                setValues((prev) => ({
+                  ...prev,
+                  isRelativeToNow: true,
+                  toOption: ToSelectionOptions.now,
+                }))
               }
             >
-              Toggle isRelativeToNow
+              Load Query with Now
+            </button>
+            <button
+              role="load-query-with-specific"
+              onClick={() =>
+                setValues((prev) => ({
+                  ...prev,
+                  isRelativeToNow: false,
+                  toOption: ToSelectionOptions.specificToTime,
+                }))
+              }
+            >
+              Load Query with Specific Time
             </button>
           </>
         );
@@ -535,20 +551,21 @@ describe('applyTimeFrameRules', () => {
         expect(nowRadio).not.toBeChecked();
       });
 
-      // Simulate a query change
-      const toggleButton = screen.getByRole('toggle-isRelativeToNow');
-      fireEvent.click(toggleButton);
+      // Simulate loading a query that uses "Now"
+      const loadNowButton = screen.getByRole('load-query-with-now');
+      fireEvent.click(loadNowButton);
 
-      // 'To' option should have switched from specific time to 'now'
+      // 'To' option should sync to 'now' based on the loaded query
       await waitFor(() => {
         expect(nowRadio).toBeChecked();
         expect(specificToTimeRadio).not.toBeChecked();
       });
 
-      // Simulate another query change
-      fireEvent.click(toggleButton);
+      // Simulate loading a query that uses "Specific Time"
+      const loadSpecificButton = screen.getByRole('load-query-with-specific');
+      fireEvent.click(loadSpecificButton);
 
-      // 'To' option should have switched back to specific time
+      // 'To' option should sync to 'specific time' based on the loaded query
       await waitFor(() => {
         expect(specificToTimeRadio).toBeChecked();
         expect(nowRadio).not.toBeChecked();

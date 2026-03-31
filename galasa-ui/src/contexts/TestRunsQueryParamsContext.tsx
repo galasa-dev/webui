@@ -128,6 +128,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     const fromParam = params.get(TEST_RUNS_QUERY_PARAMS.FROM);
     const toParam = params.get(TEST_RUNS_QUERY_PARAMS.TO);
     const durationParam = params.get(TEST_RUNS_QUERY_PARAMS.DURATION);
+    const fromOptionParam = params.get(TEST_RUNS_QUERY_PARAMS.FROM_OPTION);
+    const toOptionParam = params.get(TEST_RUNS_QUERY_PARAMS.TO_OPTION);
 
     let toDate: Date,
       fromDate: Date,
@@ -153,6 +155,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     const timeframe = {
       ...calculateSynchronizedState(fromDate, toDate, timezone),
       isRelativeToNow,
+      fromOption: fromOptionParam || undefined,
+      toOption: toOptionParam || undefined,
     };
 
     // Search Criteria
@@ -284,6 +288,14 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     } else if (timeframeValues.fromDate) {
       params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
       params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+    }
+
+    // Radio button selections
+    if (timeframeValues.fromOption) {
+      params.set(TEST_RUNS_QUERY_PARAMS.FROM_OPTION, timeframeValues.fromOption);
+    }
+    if (timeframeValues.toOption) {
+      params.set(TEST_RUNS_QUERY_PARAMS.TO_OPTION, timeframeValues.toOption);
     }
 
     // Search Criteria

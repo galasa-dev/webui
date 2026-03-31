@@ -185,29 +185,38 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
       // Update the state with the corrected values only if the notification is not an error
       if (validationNotification?.kind !== 'error') {
         const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
-        setValues((prevValues) => ({ ...prevValues, ...finalState }));
+        setValues((prevValues) => ({
+          ...prevValues,
+          ...finalState,
+          fromOption: selectedFromOption,
+          toOption: selectedToOption,
+        }));
       }
     },
-    [values, translations, setValues, getResolvedTimeZone, selectedFromOption]
+    [values, translations, setValues, getResolvedTimeZone, selectedFromOption, selectedToOption]
   );
 
   // Update the isRelativeToNow state when the selectedToOption changes
   useEffect(() => {
     const isRelativeToNow = selectedToOption === ToSelectionOptions.now;
-    setValues((prevValues) => ({ ...prevValues, isRelativeToNow }));
-  }, [selectedToOption, setValues]);
+    setValues((prevValues) => ({
+      ...prevValues,
+      isRelativeToNow,
+      fromOption: selectedFromOption,
+      toOption: selectedToOption,
+    }));
+  }, [selectedFromOption, selectedToOption, setValues]);
 
-  // Sync selected options whenever isRelativeToNow changes (from URL or user interaction)
+  // Sync radio button selections from URL parameters when query in view changes
   useEffect(() => {
-    if (values.isRelativeToNow !== undefined) {
-      const toOption = values.isRelativeToNow
-        ? ToSelectionOptions.now
-        : ToSelectionOptions.specificToTime;
-
-      // Always sync the "To" option with isRelativeToNow
-      setSelectedToOption(toOption);
+    if (values.fromOption) {
+      setSelectedFromOption(values.fromOption as FromSelectionOptions);
     }
-  }, [values.isRelativeToNow]);
+
+    if (values.toOption) {
+      setSelectedToOption(values.toOption as ToSelectionOptions);
+    }
+  }, [values.fromOption, values.toOption]);
 
   return (
     <div className={styles.timeFrameContainer}>

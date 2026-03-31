@@ -77,6 +77,8 @@ const TEST_RUNS_QUERY_PARAMS = {
   FROM: 'from',
   TO: 'to',
   DURATION: 'duration',
+  FROM_OPTION: 'fromOption',
+  TO_OPTION: 'toOption',
   RUN_NAME: 'runName',
   REQUESTOR: 'requestor',
   USER: 'user',
