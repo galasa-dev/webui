@@ -7,7 +7,7 @@
 
 import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import TimeFrameFilter from './TimeFrameFilter';
 import { dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
 import { InlineNotification } from '@carbon/react';
@@ -127,6 +127,7 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   const [selectedToOption, setSelectedToOption] = useState<ToSelectionOptions>(
     ToSelectionOptions.now
   );
+  const isSyncingFromUrl = useRef(false);
 
   const handleValueChange = useCallback(
     (field: keyof TimeFrameValues, value: any) => {
@@ -198,6 +199,11 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
 
   // Update the isRelativeToNow state when the selectedToOption changes
   useEffect(() => {
+    // Don't update if we're currently syncing from URL to avoid circular updates
+    if (isSyncingFromUrl.current) {
+      return;
+    }
+
     const isRelativeToNow = selectedToOption === ToSelectionOptions.now;
     setValues((prevValues) => ({
       ...prevValues,
@@ -210,12 +216,16 @@ export default function TimeFrameContent({ values, setValues }: TimeFrameContent
   // Sync radio button selections from URL parameters when query in view changes
   useEffect(() => {
     if (values.fromOption) {
+      isSyncingFromUrl.current = true;
       setSelectedFromOption(values.fromOption as FromSelectionOptions);
     }
 
     if (values.toOption) {
+      isSyncingFromUrl.current = true;
       setSelectedToOption(values.toOption as ToSelectionOptions);
     }
+    // Reset the ref after state updates have been processed
+    isSyncingFromUrl.current = false;
   }, [values.fromOption, values.toOption]);
 
   return (
