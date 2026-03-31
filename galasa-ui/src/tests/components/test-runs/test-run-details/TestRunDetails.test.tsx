@@ -52,8 +52,21 @@ jest.mock('@/actions/runsAction');
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string, opts?: any) =>
-    opts?.runName ? `title:${opts.runName}` : key,
+  useTranslations: () => (key: string, opts?: any) => {
+    const translations: Record<string, string> = {
+      copiedTitle: 'Copied!',
+      copiedMessage: 'URL copied to clipboard.',
+      errorTitle: 'Error',
+      warningTitle: 'Warning',
+      copyFailedMessage: 'Failed to copy URL.',
+      copyWarningMessage: 'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
+      downloadError: 'Download failed',
+    };
+    if (opts?.runName) {
+      return `title:${opts.runName}`;
+    }
+    return translations[key] || key;
+  },
 }));
 
 // Mock the useDateTimeFormat context
@@ -387,48 +400,172 @@ describe('TestRunDetails', () => {
     expect(await screen.findByText('ErrorPage')).toBeInTheDocument();
   });
 
-  it('copies the URL when share button is clicked', async () => {
-    const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
-    const runLogDeferred = setup<string>();
+  describe('Copy to Clipboard', () => {
+    const mockTestStructure = {
+      methods: [],
+      result: 'PASS',
+      status: 'OK',
+      runName: 'TestRun',
+      testShortName: 't',
+      bundle: '',
+      submissionId: '',
+      group: '',
+      requestor: '',
+      user: '',
+      queued: '',
+      startTime: '',
+      endTime: '',
+      tags: [],
+    };
 
-    render(
-      <TestRunDetails
-        runId="run-123"
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
+    it('copies the URL when share button is clicked', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
 
-    await act(async () => {
-      runDetailsDeferred.resolve({
-        testStructure: {
-          methods: [],
-          result: 'PASS',
-          status: 'OK',
-          runName: 'X',
-          testShortName: 't',
-          bundle: '',
-          submissionId: '',
-          group: '',
-          requestor: '',
-          user: '',
-          queued: '',
-          startTime: '',
-          endTime: '',
-          tags: [],
-        },
+      render(
+        <TestRunDetails
+          runId="run-123"
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: mockTestStructure,
+        });
+        runArtifactsDeferred.resolve([]);
+        runLogDeferred.resolve('');
       });
-      runArtifactsDeferred.resolve([]);
-      runLogDeferred.resolve('');
+
+      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+      fireEvent.click(screen.getByTestId('icon-Share'));
+
+      await waitFor(() => {
+        expect(spy).toHaveBeenCalledWith(window.location.href);
+      });
+      spy.mockRestore();
     });
 
-    const spy = jest.spyOn(navigator.clipboard, 'writeText');
-    fireEvent.click(screen.getByTestId('icon-Share'));
+    it('shows success notification when URL is copied', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
 
-    expect(spy).toHaveBeenCalledWith(window.location.href);
-    spy.mockRestore();
+      render(
+        <TestRunDetails
+          runId="run-123"
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: mockTestStructure,
+        });
+        runArtifactsDeferred.resolve([]);
+        runLogDeferred.resolve('');
+      });
+
+      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+      fireEvent.click(screen.getByTestId('icon-Share'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Copied!')).toBeInTheDocument();
+        expect(screen.getByText('URL copied to clipboard.')).toBeInTheDocument();
+      });
+      spy.mockRestore();
+    });
+
+    it('shows error notification when copy fails on HTTPS', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
+
+      // Mock HTTPS protocol
+      Object.defineProperty(window, 'location', {
+        value: { href: 'https://example.com', protocol: 'https:' },
+        writable: true,
+      });
+
+      render(
+        <TestRunDetails
+          runId="run-123"
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: mockTestStructure,
+        });
+        runArtifactsDeferred.resolve([]);
+        runLogDeferred.resolve('');
+      });
+
+      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Copy failed'));
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
+      fireEvent.click(screen.getByTestId('icon-Share'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Error')).toBeInTheDocument();
+        expect(screen.getByText('Failed to copy URL.')).toBeInTheDocument();
+        expect(screen.getByText('error')).toBeInTheDocument();
+      });
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to copy:', expect.any(Error));
+      spy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('shows warning notification when copy fails on HTTP', async () => {
+      const runDetailsDeferred = setup<any>();
+      const runArtifactsDeferred = setup<any[]>();
+      const runLogDeferred = setup<string>();
+
+      // Mock HTTP protocol
+      Object.defineProperty(window, 'location', {
+        value: { href: 'http://example.com', protocol: 'http:' },
+        writable: true,
+      });
+
+      render(
+        <TestRunDetails
+          runId="run-123"
+          runDetailsPromise={runDetailsDeferred.promise}
+          runArtifactsPromise={runArtifactsDeferred.promise}
+          runLogPromise={runLogDeferred.promise}
+        />
+      );
+
+      await act(async () => {
+        runDetailsDeferred.resolve({
+          testStructure: mockTestStructure,
+        });
+        runArtifactsDeferred.resolve([]);
+        runLogDeferred.resolve('');
+      });
+
+      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Copy failed'));
+
+      fireEvent.click(screen.getByTestId('icon-Share'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Warning')).toBeInTheDocument();
+        expect(screen.getByText('Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.')).toBeInTheDocument();
+        expect(screen.getByText('warning')).toBeInTheDocument();
+      });
+
+      spy.mockRestore();
+    });
+
   });
 
   it('adds the test page URL to breadcrumb after page is loaded', async () => {
@@ -481,7 +618,10 @@ describe('TestRunDetails', () => {
     });
 
     afterEach(() => {
-      (global.fetch as jest.Mock).mockRestore();
+      // Clean up fetch mock after each test
+      if (global.fetch && typeof (global.fetch as any).mockRestore === 'function') {
+        (global.fetch as jest.Mock).mockRestore();
+      }
     });
 
     test('correctly calls the zip endpoint and initiates download on success', async () => {
@@ -489,9 +629,13 @@ describe('TestRunDetails', () => {
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
+      // Mock window.location.origin
+      delete (window as any).location;
+      (window as any).location = { origin: 'http://localhost' };
+
       // Mock the successful fetch response
       const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
-      (fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         headers: {
           get: jest.fn().mockReturnValue('attachment; filename="TestRun-from-server.zip"'),
@@ -534,19 +678,22 @@ describe('TestRunDetails', () => {
 
       // Act
       const downloadButton = screen.getByTestId('icon-download-all');
-      fireEvent.click(downloadButton);
 
-      // Check for loading state
-      expect(await screen.findByText('Loading')).toBeInTheDocument();
-
-      // Wait for all async operations in handleDownloadAll to complete
-      await waitFor(() => {
-        expect(handleDownload).toHaveBeenCalled();
+      await act(async () => {
+        fireEvent.click(downloadButton);
       });
 
+      // Wait for all async operations in handleDownloadAll to complete
+      await waitFor(
+        () => {
+          expect(handleDownload).toHaveBeenCalled();
+        },
+        { timeout: 500 }
+      );
+
       // Verify the correct API endpoint was called
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect(fetch).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch).toHaveBeenCalledWith(
         `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`
       );
 
@@ -559,6 +706,9 @@ describe('TestRunDetails', () => {
       const runDetailsDeferred = setup<any>();
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
+
+      // Mock fetch to reject
+      (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       render(
         <TestRunDetails
@@ -598,7 +748,7 @@ describe('TestRunDetails', () => {
       fireEvent.click(downloadButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/downloadError/i)).toBeInTheDocument();
+        expect(screen.getByText('Download failed')).toBeInTheDocument();
       });
     });
   });

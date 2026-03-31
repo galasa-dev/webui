@@ -23,7 +23,7 @@
 
 // Configure font path to use fonts from public directory
 @use '@carbon/styles/scss/config' with (
-  $font-path: '/fonts'
+  $use-akamai-cdn: true
 );
 
 @use '@carbon/react';

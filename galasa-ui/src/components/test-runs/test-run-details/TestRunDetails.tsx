@@ -226,12 +226,22 @@ const TestRunDetails = ({
 
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
-      console.error('Failed to copy:', err);
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+      if (window.location.protocol === 'http:') {
+        setNotification({
+          kind: 'warning',
+          title: translations('warningTitle'),
+          subtitle:
+            translations('copyWarningMessage')
+        });
+        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      } else {
+        console.error('Failed to copy:', err);
+        setNotification({
+          kind: 'error',
+          title: translations('errorTitle'),
+          subtitle: translations('copyFailedMessage'),
+        });
+      }
     }
   };
 

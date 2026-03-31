@@ -74,31 +74,6 @@ function install_js_libraries {
     success "npm installed libraries. OK"
 }
 
-function copy_fonts_to_public {
-    h2 "Copying IBM Plex fonts to public directory..."
-    
-    FONTS_DIR="${BASEDIR}/galasa-ui/public/fonts"
-    
-    # Check if fonts already exist
-    if [[ -d "${FONTS_DIR}/IBM-Plex-Mono" ]] && [[ -d "${FONTS_DIR}/IBM-Plex-Sans" ]]; then
-        info "Fonts already exist in public/fonts directory. Skipping copy."
-        return 0
-    fi
-    
-    # Create fonts directory if it doesn't exist
-    mkdir -p "${FONTS_DIR}"
-    
-    # Copy IBM Plex fonts from node_modules
-    info "Copying IBM-Plex-Mono..."
-    cp -r "${BASEDIR}/galasa-ui/node_modules/@ibm/plex/IBM-Plex-Mono" "${FONTS_DIR}/"
-    
-    info "Copying IBM-Plex-Sans..."
-    cp -r "${BASEDIR}/galasa-ui/node_modules/@ibm/plex/IBM-Plex-Sans" "${FONTS_DIR}/"
-    
-    success "Fonts copied successfully to public/fonts directory."
-}
-
 check_npm_tool_available
 install_js_libraries
-copy_fonts_to_public
 success "Project set up for local builds."

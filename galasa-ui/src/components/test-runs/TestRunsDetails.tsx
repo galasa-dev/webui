@@ -75,11 +75,22 @@ export default function TestRunsDetails({
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+      if (window.location.protocol === 'http:') {
+        setNotification({
+          kind: 'warning',
+          title: translations('warningTitle'),
+          subtitle:
+            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
+        });
+        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      } else {
+        console.error('Failed to copy:', err);
+        setNotification({
+          kind: 'error',
+          title: translations('errorTitle'),
+          subtitle: translations('copyFailedMessage'),
+        });
+      }
     }
   };
 
