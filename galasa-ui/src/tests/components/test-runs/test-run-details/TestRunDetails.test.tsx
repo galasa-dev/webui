@@ -59,7 +59,8 @@ jest.mock('next-intl', () => ({
       errorTitle: 'Error',
       warningTitle: 'Warning',
       copyFailedMessage: 'Failed to copy URL.',
-      copyWarningMessage: 'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
+      copyWarningMessage:
+        'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
       downloadError: 'Download failed',
     };
     if (opts?.runName) {
@@ -509,8 +510,10 @@ describe('TestRunDetails', () => {
         runLogDeferred.resolve('');
       });
 
-      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Copy failed'));
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      const spy = jest
+        .spyOn(navigator.clipboard, 'writeText')
+        .mockRejectedValue(new Error('Copy failed'));
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       fireEvent.click(screen.getByTestId('icon-Share'));
 
@@ -553,19 +556,24 @@ describe('TestRunDetails', () => {
         runLogDeferred.resolve('');
       });
 
-      const spy = jest.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Copy failed'));
+      const spy = jest
+        .spyOn(navigator.clipboard, 'writeText')
+        .mockRejectedValue(new Error('Copy failed'));
 
       fireEvent.click(screen.getByTestId('icon-Share'));
 
       await waitFor(() => {
         expect(screen.getByText('Warning')).toBeInTheDocument();
-        expect(screen.getByText('Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.'
+          )
+        ).toBeInTheDocument();
         expect(screen.getByText('warning')).toBeInTheDocument();
       });
 
       spy.mockRestore();
     });
-
   });
 
   it('adds the test page URL to breadcrumb after page is loaded', async () => {

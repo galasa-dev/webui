@@ -230,8 +230,7 @@ const TestRunDetails = ({
         setNotification({
           kind: 'warning',
           title: translations('warningTitle'),
-          subtitle:
-            translations('copyWarningMessage')
+          subtitle: translations('copyWarningMessage'),
         });
         setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
       } else {
