@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { HeaderMenuButton, Search, Button, InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import styles from '@/styles/test-runs/saved-queries/CollapsibleSideBar.module.css';
-import testRunsPageStyles from '@/styles/test-runs/TestRunsPage.module.css';
 import {
   arrayMove,
   SortableContext,
