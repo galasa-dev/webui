@@ -76,6 +76,14 @@ jobs:
           sed -i 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}" &&
           sed -i 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
 
+      - name: Fix module format in generated package.json
+        run: |
+          generatedPackageJson="galasa-ui/src/generated/galasaapi/package.json"
+          if [ -f "${generatedPackageJson}" ]; then
+            sed -i 's/"type": "commonjs"/"type": "module"/g' "${generatedPackageJson}"
+            echo "Module format fixed in generated package.json"
+          fi
+
       - name: Setup Nodejs
         uses: actions/setup-node@v3
         with:
