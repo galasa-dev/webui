@@ -182,14 +182,6 @@ function generate_rest_client {
         echo "Module format fixed in generated package.json"
     fi
 
-    # Fix package.json entry points to use TypeScript files instead of compiled JavaScript
-    echo "Fixing package.json entry points..."
-    sed -i.bak 's|"main": "./dist/index.js"|"main": "./index.ts"|g' "${generatedPackageJson}"
-    sed -i.bak 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}"
-    sed -i.bak 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
-    rm -f "${generatedPackageJson}.bak"
-    echo "Package.json entry points fixed"
-
     success "OK"
 }
 

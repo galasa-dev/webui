@@ -70,11 +70,7 @@ jobs:
           indexFile="galasa-ui/src/generated/galasaapi/index.ts" &&
           cat ${indexFile} | sed "s/export { Configuration/export { type Configuration/1" > temp/index-temp.ts &&
           cat temp/index-temp.ts | sed "s/export { PromiseMiddleware/export { type PromiseMiddleware/1" > temp/index.ts &&
-          cp temp/index.ts ${indexFile} &&
-          generatedPackageJson="galasa-ui/src/generated/galasaapi/package.json" &&
-          sed -i 's|"main": "./dist/index.js"|"main": "./index.ts"|g' "${generatedPackageJson}" &&
-          sed -i 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}" &&
-          sed -i 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
+          cp temp/index.ts ${indexFile}
 
       - name: Setup Nodejs
         uses: actions/setup-node@v3
