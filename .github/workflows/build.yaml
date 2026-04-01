@@ -94,10 +94,10 @@ jobs:
         run: |
           npm install
 
-      # - name: Running webui's unit tests using npm
-      #   working-directory: ./galasa-ui
-      #   run: |
-      #     npm test -- --watchAll=false
+      - name: Running webui's unit tests using npm
+        working-directory: ./galasa-ui
+        run: |
+          npm test -- --watchAll=false
 
       - name: Building webui using npm
         working-directory: ./galasa-ui
