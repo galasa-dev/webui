@@ -47,11 +47,21 @@ task downloadDependencies(type: Copy) {
 
 task generateTypeScriptClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     // Generate a TypeScript client using our openapi.yaml file
-    generatorName.set("typescript")
+    generatorName.set("typescript-fetch")
     inputSpec.set("$rootDir/build/dependencies/openapi.yaml")
     outputDir.set("$rootDir/galasa-ui/src/generated/galasaapi")
     globalProperties.set([
         apiTests: "false"
+    ])
+    
+    // Configure the generator to output ESM-compatible code
+    additionalProperties.set([
+        supportsES6: "true",
+        npmName: "galasa-api-client",
+        npmVersion: "1.0.0",
+        modelPropertyNaming: "original",
+        useSingleRequestParameter: "true",
+        typescriptThreePlus: "true"
     ])
 
     // Make sure we download the openapi.yaml file before generating the client code

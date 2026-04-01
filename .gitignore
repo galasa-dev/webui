@@ -42,7 +42,4 @@ build/
 **/temp/
 
 # Ignore local env files
-
-# Ignore copied font files from node_modules
-galasa-ui/public/fonts/
 .env*.local
