@@ -20,8 +20,6 @@ import {
   Modal,
 } from '@carbon/react';
 import ErrorPage from '@/app/error/page';
-import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
-import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import { Edit, TrashCan } from '@carbon/icons-react';
 import styles from '@/styles/users/UsersList.module.css';
@@ -187,8 +185,23 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
         }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
-          getHeaderProps: (options: any) => TableHeadProps;
-          getRowProps: (options: any) => TableRowProps;
+          getHeaderProps: (options: { header: DataTableHeader }) => {
+            key: string;
+            isSortable?: boolean;
+            isSortHeader: boolean;
+            sortDirection: string;
+            onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
+          getRowProps: (options: { row: DataTableRow }) => {
+            key: string;
+            ['aria-label']: string;
+            disabled?: boolean;
+            isExpanded?: boolean;
+            isSelected?: boolean;
+            onExpand: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
           getTableProps: () => TableBodyProps;
           onInputChange: (evt: React.ChangeEvent<HTMLImageElement>) => void;
         }) => (
@@ -203,20 +216,24 @@ export default function UsersTable({ usersListPromise, currentUserPromise }: Use
             <Table {...getTableProps()} aria-label={translations('ariaLabel')} size="lg">
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  {headers.map((header) => {
+                    const { key, ...headerProps } = getHeaderProps({ header });
+                    return (
+                      <TableHeader key={key} {...headerProps}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                   {hasEditUserPermission && (
-                    <TableHeader aria-label={translations('headers_actions')} />
+                    <TableHeader aria-label={translations('headersActions')} />
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
+                  const { key, ...rowProps } = getRowProps({ row });
                   return (
-                    <TableRow key={row.id} {...getRowProps({ row })}>
+                    <TableRow key={key} {...rowProps}>
                       {row.cells.map((cell: DataTableCell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}

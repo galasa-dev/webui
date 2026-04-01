@@ -19,8 +19,6 @@ import {
   TableToolbarSearch,
   TableToolbarContent,
 } from '@carbon/react';
-import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
-import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { get3270Screenshots } from '@/utils/3270/get3270Screenshots';
@@ -283,45 +281,66 @@ export default function TableOfScreenshots({
         }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
-          getHeaderProps: (options: any) => TableHeadProps;
-          getRowProps: (options: any) => TableRowProps;
+          getHeaderProps: (options: { header: DataTableHeader }) => {
+            key: string;
+            isSortable?: boolean;
+            isSortHeader: boolean;
+            sortDirection: string;
+            onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
+          getRowProps: (options: { row: DataTableRow }) => {
+            key: string;
+            ['aria-label']: string;
+            disabled?: boolean;
+            isExpanded?: boolean;
+            isSelected?: boolean;
+            onExpand: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
           getTableProps: () => TableBodyProps;
         }) => (
           <Table stickyHeader {...getTableProps()} id={styles.innerScreenshotTable}>
             <TableHead>
               <TableRow>
-                {headers.map((header) => (
-                  <TableHeader key={header.header} {...getHeaderProps({ header })}>
-                    {header.header}
-                  </TableHeader>
-                ))}
+                {headers.map((header) => {
+                  const { key, ...headerProps } = getHeaderProps({ header });
+                  return (
+                    <TableHeader key={key} {...headerProps}>
+                      {header.header}
+                    </TableHeader>
+                  );
+                })}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  id={row.id}
-                  {...getRowProps({ row })}
-                  onClick={() => handleRowClick(row.id)}
-                  className={styles.clickableRow}
-                  role="table-row"
-                >
-                  {row.cells.map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        backgroundColor:
-                          highlightedRowId === row.id
-                            ? 'rgba(124, 124, 124, 0.468)'
-                            : 'transparent',
-                      }}
-                    >
-                      {cell.value}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+              {rows.map((row) => {
+                const { key, ...rowProps } = getRowProps({ row });
+                return (
+                  <TableRow
+                    key={key}
+                    id={row.id}
+                    {...rowProps}
+                    onClick={() => handleRowClick(row.id)}
+                    className={styles.clickableRow}
+                    role="table-row"
+                  >
+                    {row.cells.map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          backgroundColor:
+                            highlightedRowId === row.id
+                              ? 'rgba(124, 124, 124, 0.468)'
+                              : 'transparent',
+                        }}
+                      >
+                        {cell.value}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}

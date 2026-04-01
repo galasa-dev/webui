@@ -21,8 +21,6 @@ import {
 } from '@carbon/react';
 import { ColumnDefinition, DataTableHeader, DataTableRow, runStructure } from '@/utils/interfaces';
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
-import { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
-import { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
 import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
@@ -256,8 +254,23 @@ export default function TestRunsTable({
           }: {
             rows: DataTableRow[];
             headers: DataTableHeader[];
-            getHeaderProps: (options: any) => TableHeadProps;
-            getRowProps: (options: any) => TableRowProps;
+            getHeaderProps: (options: { header: DataTableHeader }) => {
+              key: string;
+              isSortable?: boolean;
+              isSortHeader: boolean;
+              sortDirection: string;
+              onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+              [key: string]: unknown;
+            };
+            getRowProps: (options: { row: DataTableRow }) => {
+              key: string;
+              ['aria-label']: string;
+              disabled?: boolean;
+              isExpanded?: boolean;
+              isSelected?: boolean;
+              onExpand: (event: React.MouseEvent<HTMLButtonElement>) => void;
+              [key: string]: unknown;
+            };
             getTableProps: () => TableBodyProps;
           }) => (
             <TableContainer>
@@ -274,37 +287,43 @@ export default function TestRunsTable({
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
                   <TableRow>
-                    {headers.map((header) => (
-                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                        {header.header}
-                      </TableHeader>
-                    ))}
+                    {headers.map((header) => {
+                      const { key, ...headerProps } = getHeaderProps({ header });
+                      return (
+                        <TableHeader key={key} {...headerProps}>
+                          {header.header}
+                        </TableHeader>
+                      );
+                    })}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      {...getRowProps({ row })}
-                      onClick={() =>
-                        handleRowClick(
-                          row.id,
-                          row.cells.find((cell) => cell.info.header === 'testRunName')
-                            ?.value as string
-                        )
-                      }
-                      className={styles.clickableRow}
-                    >
-                      {row.cells.map((cell) => (
-                        <CustomCell
-                          key={cell.id}
-                          value={cell.value}
-                          header={cell.info.header}
-                          href={`/test-runs/${row.id}`}
-                        />
-                      ))}
-                    </TableRow>
-                  ))}
+                  {rows.map((row) => {
+                    const { key, ...rowProps } = getRowProps({ row });
+                    return (
+                      <TableRow
+                        key={key}
+                        {...rowProps}
+                        onClick={() =>
+                          handleRowClick(
+                            row.id,
+                            row.cells.find((cell) => cell.info.header === 'testRunName')
+                              ?.value as string
+                          )
+                        }
+                        className={styles.clickableRow}
+                      >
+                        {row.cells.map((cell) => (
+                          <CustomCell
+                            key={cell.id}
+                            value={cell.value}
+                            header={cell.info.header}
+                            href={`/test-runs/${row.id}`}
+                          />
+                        ))}
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>
