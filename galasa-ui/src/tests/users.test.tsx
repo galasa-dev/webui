@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import UsersPage from '@/app/users/page';
@@ -45,10 +45,10 @@ jest.mock('@/components/users/UsersTable', () => {
     usersListPromise: Promise<UserData[]>;
     currentUserPromise: Promise<any>;
   }) {
-    const [usersData, setUsersData] = React.useState<string>('loading');
-    const [currentUserData, setCurrentUserData] = React.useState<string>('loading');
+    const [usersData, setUsersData] = useState<string>('loading');
+    const [currentUserData, setCurrentUserData] = useState<string>('loading');
 
-    React.useEffect(() => {
+    useEffect(() => {
       usersListPromise
         .then(() => {
           setUsersData('users-promise-resolved');
@@ -58,7 +58,7 @@ jest.mock('@/components/users/UsersTable', () => {
         });
     }, [usersListPromise]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       currentUserPromise
         .then(() => {
           setCurrentUserData('current-user-promise-resolved');

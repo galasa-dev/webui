@@ -20,7 +20,7 @@ export default function HomeContent({ markdownContentPromise }: HomeContentProps
   const [isAccessAllowed, setIsAccessAllowed] = useState(true);
 
   useEffect(() => {
-    let md = new MarkdownIt({
+    const md = new MarkdownIt({
       html: false,
     });
 

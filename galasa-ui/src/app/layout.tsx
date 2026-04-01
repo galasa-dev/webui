@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
 
   const galasaServiceName = process.env.GALASA_SERVICE_NAME?.trim() || 'Galasa Service';
-  const featureFlagsCookie = cookies().get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
+  const featureFlagsCookie = (await cookies()).get(FeatureFlagCookies.FEATURE_FLAGS)?.value;
 
   return (
     <html lang={locale}>

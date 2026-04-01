@@ -105,7 +105,7 @@ export default function ScreenshotToolbar({
 
   const handleDownloadImage = () => {
     setIsDownloading(true);
-    var link = document.createElement('a');
+    const link = document.createElement('a');
     link.download = getFileNameFromId() + '.jpeg';
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 

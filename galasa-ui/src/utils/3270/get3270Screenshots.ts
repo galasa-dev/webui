@@ -117,12 +117,12 @@ export const get3270Screenshots = async (zos3270TerminalData: TreeNodeData[], ru
     newAllImageData.length = 0;
     newFlattenedZos3270TerminalData.length = 0;
 
-    for (var terminal of zos3270TerminalData) {
+    for (const terminal of zos3270TerminalData) {
       const zippedFilesContainingImageJSON: FileNode[] = Object.values(terminal.children)
         .map((node) => node as FileNode)
         .filter((node) => node.isFile);
 
-      for (var file of zippedFilesContainingImageJSON) {
+      for (const file of zippedFilesContainingImageJSON) {
         await downloadArtifactFromServer(runId, file.url).then((artifactData) => {
           // Unzip the content
           const images: TerminalImage[] = unzipBase64(artifactData).images;

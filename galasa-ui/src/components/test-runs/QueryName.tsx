@@ -10,7 +10,7 @@ import { Edit } from '@carbon/icons-react';
 import { useTestRunsQueryParams } from '@/contexts/TestRunsQueryParamsContext';
 
 interface QueryNameProps {
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   isEditingName: boolean;
   editedName: string;
   setEditedName: React.Dispatch<React.SetStateAction<string>>;

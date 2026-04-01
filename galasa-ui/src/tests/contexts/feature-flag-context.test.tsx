@@ -5,7 +5,6 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
 import { FeatureFlagProvider, useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import FeatureFlagCookies from '@/utils/featureFlagCookies';
 import { FEATURE_FLAGS } from '@/utils/featureFlags';

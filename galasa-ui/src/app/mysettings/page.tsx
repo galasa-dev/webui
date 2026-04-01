@@ -23,15 +23,15 @@ import ResultsTablePageSizeSetting from '@/components/mysettings/ResultsTablePag
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
 
-  const clientId = cookies().get(AuthCookies.CLIENT_ID)?.value ?? '';
-  const refreshToken = cookies().get(AuthCookies.REFRESH_TOKEN)?.value ?? '';
+  const clientId = (await cookies()).get(AuthCookies.CLIENT_ID)?.value ?? '';
+  const refreshToken = (await cookies()).get(AuthCookies.REFRESH_TOKEN)?.value ?? '';
 
   // Server Action to delete auth-related cookies
   const deleteCookies = async () => {
     'use server';
 
-    cookies().delete(AuthCookies.CLIENT_ID);
-    cookies().delete(AuthCookies.REFRESH_TOKEN);
+    (await cookies()).delete(AuthCookies.CLIENT_ID);
+    (await cookies()).delete(AuthCookies.REFRESH_TOKEN);
   };
 
   const fetchUserLoginId = async () => {

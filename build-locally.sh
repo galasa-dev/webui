@@ -173,6 +173,15 @@ function generate_rest_client {
     cat ${tempDir}/index-temp.ts | sed "s/export { PromiseMiddleware/export { type PromiseMiddleware/1" > ${tempDir}/index.ts
     cp ${tempDir}/index.ts ${indexFile}
 
+    # Fix module format in generated package.json
+    echo "Fixing module format in generated package.json..."
+    generatedPackageJson="${BASEDIR}/galasa-ui/src/generated/galasaapi/package.json"
+    if [ -f "${generatedPackageJson}" ]; then
+        sed -i.bak 's/"type": "commonjs"/"type": "module"/g' "${generatedPackageJson}"
+        rm -f "${generatedPackageJson}.bak"
+        echo "Module format fixed in generated package.json"
+    fi
+
     success "OK"
 }
 

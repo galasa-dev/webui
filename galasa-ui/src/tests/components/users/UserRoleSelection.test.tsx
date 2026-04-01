@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import UserRoleSection from '@/components/users/UserRoleSection';
 import { RBACRole, UserData } from '@/generated/galasaapi';

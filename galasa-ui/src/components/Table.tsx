@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import React from 'react';
 import { Table } from '@carbon/react';
 import { TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
 import dynamic from 'next/dynamic';

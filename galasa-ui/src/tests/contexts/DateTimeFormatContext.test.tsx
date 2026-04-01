@@ -5,7 +5,6 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
 import { DateTimeFormatProvider, useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 
 // Mock a simple component to display the hook's state for our tests

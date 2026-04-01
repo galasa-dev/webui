@@ -16,20 +16,26 @@ import {
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 
 // Mock next/navigation
-const mockReplace = jest.fn();
 let mockSearchParams = new URLSearchParams();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
-    replace: mockReplace,
   }),
   useSearchParams: () => mockSearchParams,
   usePathname: () => '/test-runs',
 }));
+
+// Mock window.history.replaceState
+const mockReplaceState = jest.fn();
+Object.defineProperty(window, 'history', {
+  writable: true,
+  value: {
+    replaceState: mockReplaceState,
+  },
+});
 
 // Mock contexts
 const mockDateTimeFormat = {
@@ -138,7 +144,7 @@ const TestComponent = () => {
 
 describe('TestRunsQueryParamsContext', () => {
   beforeEach(() => {
-    mockReplace.mockClear();
+    mockReplaceState.mockClear();
     mockSearchParams = new URLSearchParams();
   });
 
@@ -282,10 +288,10 @@ describe('TestRunsQueryParamsContext', () => {
     const waitForInitialization = async () => {
       await waitFor(() => {
         // Wait for the first URL write, which signifies the component has initialized.
-        expect(mockReplace).toHaveBeenCalled();
+        expect(mockReplaceState).toHaveBeenCalled();
       });
       // After initialization, clear the mock for the actual test assertion.
-      mockReplace.mockClear();
+      mockReplaceState.mockClear();
     };
 
     const getDecodedParams = (url: string): URLSearchParams => {
@@ -305,10 +311,10 @@ describe('TestRunsQueryParamsContext', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Set Tab Index to 1' }));
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const url = mockReplace.mock.calls[0][0];
+      const url = mockReplaceState.mock.calls[0][2];
       const decodedQuery = getDecodedParams(url);
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TAB)).toBe(TABS_IDS[1]);
     });
@@ -324,10 +330,10 @@ describe('TestRunsQueryParamsContext', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Set Absolute Time' }));
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const url = mockReplace.mock.calls[0][0];
+      const url = mockReplaceState.mock.calls[0][2];
       const decodedQuery = getDecodedParams(url);
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.FROM)).toBe('2023-01-01T00:00:00.000Z');
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TO)).toBe('2023-01-02T00:00:00.000Z');
@@ -345,10 +351,10 @@ describe('TestRunsQueryParamsContext', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Set Visible Columns' }));
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const url = mockReplace.mock.calls[0][0];
+      const url = mockReplaceState.mock.calls[0][2];
       const decodedQuery = getDecodedParams(url);
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.VISIBLE_COLUMNS)).toBe('runId,runName');
     });
@@ -364,10 +370,10 @@ describe('TestRunsQueryParamsContext', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Set Columns Order' }));
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledTimes(1);
+        expect(mockReplaceState).toHaveBeenCalledTimes(1);
       });
 
-      const url = mockReplace.mock.calls[0][0];
+      const url = mockReplaceState.mock.calls[0][2];
       const decodedQuery = getDecodedParams(url);
       expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.COLUMNS_ORDER)).toBe(
         [

@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import RenderTags from '@/components/test-runs/test-run-details/RenderTags';
 import { textToHexColour } from '@/utils/functions/textToHexColour';

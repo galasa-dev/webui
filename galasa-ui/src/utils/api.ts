@@ -35,8 +35,8 @@ export const createAuthenticatedApiConfiguration = () => {
     authMethods: {
       JwtAuth: {
         tokenProvider: {
-          getToken() {
-            return getBearerToken();
+          async getToken() {
+            return await getBearerToken();
           },
         },
       },
@@ -49,8 +49,9 @@ export const createAuthenticatedApiConfiguration = () => {
  * Initialise an auth API client that includes an "Authorization" header in requests.
  * @returns an auth API client that includes an "Authorization" header in requests
  */
-export const getBearerToken = () => {
-  const bearerTokenCookie = cookies().get(AuthCookies.ID_TOKEN);
+export const getBearerToken = async () => {
+  const cookieStore = await cookies();
+  const bearerTokenCookie = cookieStore.get(AuthCookies.ID_TOKEN);
   if (!bearerTokenCookie) {
     throw new Error('Unable to get bearer token, please re-authenticate');
   }

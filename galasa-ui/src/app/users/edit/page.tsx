@@ -5,7 +5,6 @@
  */
 import PageTile from '@/components/PageTile';
 import UserRoleSection from '@/components/users/UserRoleSection';
-import React from 'react';
 import { RBACRole, RoleBasedAccessControlAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
@@ -16,11 +15,12 @@ import { EDIT_USER, HOME } from '@/utils/constants/breadcrumb';
 
 // In order to extract query param on server-side
 type UsersPageProps = {
-  params: {}; // No dynamic route parameters
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{}>; // No dynamic route parameters
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export default function EditUserPage({ searchParams }: UsersPageProps) {
+export default async function EditUserPage(props: UsersPageProps) {
+  const searchParams = await props.searchParams;
   const loginIdFromQueryParam = searchParams.loginId as string;
 
   const apiConfig = createAuthenticatedApiConfiguration();

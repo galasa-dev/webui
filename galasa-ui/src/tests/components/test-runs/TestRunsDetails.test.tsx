@@ -111,8 +111,11 @@ jest.mock('next-intl', () => ({
       copiedTitle: 'Copied!',
       copiedMessage: 'URL copied to clipboard.',
       errorTitle: 'Error',
+      warningTitle: 'Warning',
       successTitle: 'Success',
       copyFailedMessage: 'Failed to copy URL.',
+      copyWarningMessage:
+        'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
       editQueryName: 'Edit query name',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
       newQuerySavedMessage: `Query "${vars?.name}" has been saved.`,
@@ -147,7 +150,7 @@ jest.mock('@carbon/react', () => ({
   Search: ({ ...props }: any) => <input {...props} data-testid="search" />,
 }));
 
-const renderWithProviders = (ui: React.ReactElement) => {
+const renderWithProviders = (ui: React.ReactElement<any>) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
@@ -252,7 +255,13 @@ describe('TestRunsDetails', () => {
       expect(notification).toHaveTextContent('Copied!');
     });
 
-    test('shows error notification when copy fails', async () => {
+    test('shows error notification when copy fails on HTTPS', async () => {
+      // Mock HTTPS protocol
+      Object.defineProperty(window, 'location', {
+        value: { href: 'https://example.com', protocol: 'https:' },
+        writable: true,
+      });
+
       (navigator.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('Copy failed'));
       renderWithProviders(
         <TestRunsDetails
@@ -268,6 +277,34 @@ describe('TestRunsDetails', () => {
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-error');
       expect(notification).toHaveTextContent('Error');
+      expect(notification).toHaveTextContent('Failed to copy URL.');
+    });
+
+    test('shows warning notification when copy fails on HTTP', async () => {
+      // Mock HTTP protocol
+      Object.defineProperty(window, 'location', {
+        value: { href: 'http://example.com', protocol: 'http:' },
+        writable: true,
+      });
+
+      (navigator.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('Copy failed'));
+      renderWithProviders(
+        <TestRunsDetails
+          requestorNamesPromise={mockRequestorNamesPromise}
+          resultsNamesPromise={mockResultsNamesPromise}
+        />
+      );
+
+      const shareButton = screen.getByRole('button', { name: 'copyMessage' });
+      await act(async () => {
+        shareButton.click();
+      });
+      const notification = await screen.findByTestId('notification');
+      expect(notification).toHaveClass('notification-warning');
+      expect(notification).toHaveTextContent('Warning');
+      expect(notification).toHaveTextContent(
+        'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.'
+      );
     });
   });
 

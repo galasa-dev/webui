@@ -71,7 +71,8 @@ async function createZipResponse(zip: JSZip, runName: string | null): Promise<Re
   });
 }
 
-export async function GET(request: NextRequest, { params }: { params: { runId: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ runId: string }> }) {
+  const params = await props.params;
   const { runId } = params;
   if (!runId) {
     return NextResponse.json({ error: 'Run ID is required' }, { status: 400 });

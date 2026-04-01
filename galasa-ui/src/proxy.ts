@@ -18,7 +18,7 @@ import { CLIENT_API_VERSION } from './utils/constants/common';
 import { NextURL } from 'next/dist/server/web/next-url';
 
 const authenticateWithDevToken = async (devToken: string) => {
-  let response = NextResponse.next();
+  const response = NextResponse.next();
   const authProperties = new AuthProperties();
 
   // Access tokens are expected to be in the form "<refresh-token>:<client-id>"
@@ -41,7 +41,7 @@ const authenticateWithDevToken = async (devToken: string) => {
 };
 
 // Runs before any request is completed
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const requestUrl = request.nextUrl;
   let response = NextResponse.rewrite(new URL('/error', requestUrl.toString()));
 
@@ -54,7 +54,7 @@ export async function middleware(request: NextRequest) {
       response = await authenticateWithDevToken(process.env.GALASA_DEV_TOKEN);
     } else {
       if (requestUrl.pathname.includes('/callback')) {
-        const responseUrl = buildRedirectBackToWebUiUrl(requestUrl);
+        const responseUrl = await buildRedirectBackToWebUiUrl(requestUrl);
 
         response = await handleCallback(
           request,
@@ -104,11 +104,12 @@ const getRequestCallbackUrl = (nextUrl: NextURL) => {
   return callbackUrl;
 };
 
-const buildRedirectBackToWebUiUrl = (requestUrl: NextURL) => {
+const buildRedirectBackToWebUiUrl = async (requestUrl: NextURL) => {
   const requestUrlString = requestUrl.toString();
   let responseUrl = requestUrlString.substring(0, requestUrlString.lastIndexOf('/callback'));
 
-  const shouldReturnToMySettingsPage = cookies().get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+  const cookieStore = await cookies();
+  const shouldReturnToMySettingsPage = cookieStore.get(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
   if (shouldReturnToMySettingsPage?.value === 'true') {
     responseUrl += '/mysettings';
   }

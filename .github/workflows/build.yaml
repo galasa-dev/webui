@@ -70,7 +70,19 @@ jobs:
           indexFile="galasa-ui/src/generated/galasaapi/index.ts" &&
           cat ${indexFile} | sed "s/export { Configuration/export { type Configuration/1" > temp/index-temp.ts &&
           cat temp/index-temp.ts | sed "s/export { PromiseMiddleware/export { type PromiseMiddleware/1" > temp/index.ts &&
-          cp temp/index.ts ${indexFile}
+          cp temp/index.ts ${indexFile} &&
+          generatedPackageJson="galasa-ui/src/generated/galasaapi/package.json" &&
+          sed -i 's|"main": "./dist/index.js"|"main": "./index.ts"|g' "${generatedPackageJson}" &&
+          sed -i 's|"exports": { ".": "./dist/index.js" }|"exports": { ".": "./index.ts" }|g' "${generatedPackageJson}" &&
+          sed -i 's|"typings": "./dist/index.d.ts"|"typings": "./index.ts"|g' "${generatedPackageJson}"
+
+      - name: Fix module format in generated package.json
+        run: |
+          generatedPackageJson="galasa-ui/src/generated/galasaapi/package.json"
+          if [ -f "${generatedPackageJson}" ]; then
+            sed -i 's/"type": "commonjs"/"type": "module"/g' "${generatedPackageJson}"
+            echo "Module format fixed in generated package.json"
+          fi
 
       - name: Setup Nodejs
         uses: actions/setup-node@v3

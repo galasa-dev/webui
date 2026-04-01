@@ -68,7 +68,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
   });
 
   const updatePreferences = (newPreferences: Partial<typeof preferences>) => {
-    let updatedPreferences = { ...preferences, ...newPreferences };
+    const updatedPreferences = { ...preferences, ...newPreferences };
 
     // If format type is set to 'browser', reset related fields
     if (newPreferences[PREFERENCE_KEYS.DATE_TIME_FORMAT_TYPE] === 'browser') {

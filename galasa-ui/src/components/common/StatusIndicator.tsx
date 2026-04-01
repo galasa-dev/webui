@@ -15,7 +15,6 @@ import {
 } from '@carbon/icons-react';
 
 import styles from '@/styles/common/StatusIndicator.module.css';
-import React from 'react';
 
 interface StatusIndicatorProps {
   status: string;

@@ -3,16 +3,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
+// Configure font path to use fonts from public directory
+@use '@carbon/styles/scss/config' with (
+  $use-akamai-cdn: true
+);
+
 @use '@carbon/react';
 @use '@carbon/themes/scss/themes' as *;
 @use '@carbon/themes';
-@use '@carbon/styles';
 
 :root {
   @include themes.theme($white); /*Set default to white theme*/
   color-scheme: light;
 }
-@media (prefers-color-scheme: white) {
+
+@media (prefers-color-scheme: dark) {
   :root {
     @include themes.theme($g100); /*Use dark theme for dark system preference*/
     color-scheme: dark;

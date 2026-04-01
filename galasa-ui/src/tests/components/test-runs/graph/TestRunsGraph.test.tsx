@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TestRunGraph from '@/components/test-runs/graph/TestRunsGraph';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -44,17 +43,6 @@ const mockPush = jest.fn();
 (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams());
 
-// Mock ResizeObserver for jsdom environment
-beforeAll(() => {
-  global.ResizeObserver =
-    global.ResizeObserver ||
-    class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
-});
-
 // Helper function to generate mock test runs data
 const generateMockRuns = (count: number) => {
   return Array.from({ length: count }, (_, index) => {
@@ -63,10 +51,12 @@ const generateMockRuns = (count: number) => {
       id: `${i}`,
       runName: `Test Run ${i}`,
       requestor: `user${i}`,
+      user: `user${i}`,
       group: `group${i}`,
       bundle: `bundle${i}`,
       package: `package${i}`,
       testName: `test${i}`,
+      testShortName: `test${i}`,
       status: 'finished',
       result: i % 2 === 0 ? 'Failed' : 'Passed',
       submittedAt: new Date(Date.now() - i * 1000 * 60 * 60).toISOString(),

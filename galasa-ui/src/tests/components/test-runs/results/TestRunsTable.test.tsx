@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -106,6 +105,7 @@ const generateMockRuns = (count: number) => {
       id: `${i}`,
       runName: `Test Run ${i}`,
       requestor: `user${i}`,
+      user: `user${i}`,
       group: `group${i}`,
       bundle: `bundle${i}`,
       package: `package${i}`,
@@ -294,6 +294,12 @@ const filterMockRuns = [
     status: 'passed',
     result: 'success',
     submittedAt: '2024-01-01',
+    user: '',
+    bundle: '',
+    package: '',
+    testShortName: '',
+    tags: '',
+    submissionId: '',
   },
   {
     id: '2',
@@ -304,6 +310,12 @@ const filterMockRuns = [
     status: 'failed',
     result: 'failure',
     submittedAt: '2024-01-02',
+    user: '',
+    bundle: '',
+    package: '',
+    testShortName: '',
+    tags: '',
+    submissionId: '',
   },
 ];
 

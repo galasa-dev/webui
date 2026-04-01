@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { fetchAllTestRunsByPaging } from '@/utils/testRuns';
-
 import { ResultArchiveStoreAPIApi, Run } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 

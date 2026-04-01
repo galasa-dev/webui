@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
@@ -106,8 +105,8 @@ import EditUserPage from '@/app/users/edit/page';
 
 describe('EditUserPage', () => {
   const defaultProps = {
-    params: {},
-    searchParams: { loginId: 'testuser123' },
+    params: Promise.resolve({}),
+    searchParams: Promise.resolve({ loginId: 'testuser123' }),
   };
 
   beforeEach(() => {
@@ -115,16 +114,18 @@ describe('EditUserPage', () => {
   });
 
   describe('Component Rendering', () => {
-    it('should render the main content structure', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render the main content structure', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const mainElement = screen.getByRole('main');
       expect(mainElement).toBeInTheDocument();
       expect(mainElement).toHaveAttribute('id', 'content');
     });
 
-    it('should render BreadCrumb component', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render BreadCrumb component', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const breadcrumb = screen.getByTestId('breadcrumb');
       expect(breadcrumb).toBeInTheDocument();
@@ -134,16 +135,18 @@ describe('EditUserPage', () => {
       expect(screen.getByTestId('breadcrumb-item-1')).toBeInTheDocument();
     });
 
-    it('should render PageTile with correct translation key', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render PageTile with correct translation key', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const pageTile = screen.getByTestId('page-tile');
       expect(pageTile).toBeInTheDocument();
       expect(pageTile).toHaveTextContent('UserEditPage.title');
     });
 
-    it('should render UserRoleSection component', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render UserRoleSection component', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const userRoleSection = screen.getByTestId('user-role-section');
       expect(userRoleSection).toBeInTheDocument();
@@ -151,8 +154,9 @@ describe('EditUserPage', () => {
       expect(screen.getByTestId('role-details-promise')).toHaveTextContent('role-details-received');
     });
 
-    it('should render AccessTokensSection with isAddBtnVisible set to false', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render AccessTokensSection with isAddBtnVisible set to false', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const accessTokensSection = screen.getByTestId('access-tokens-section');
       expect(accessTokensSection).toBeInTheDocument();
@@ -164,38 +168,41 @@ describe('EditUserPage', () => {
   });
 
   describe('Props and SearchParams Handling', () => {
-    it('should handle loginId from searchParams correctly', () => {
+    it('should handle loginId from searchParams correctly', async () => {
       const loginId = 'user456';
       const props = {
-        params: {},
-        searchParams: { loginId },
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({ loginId }),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
 
-    it('should handle missing loginId gracefully', () => {
+    it('should handle missing loginId gracefully', async () => {
       const props = {
-        params: {},
-        searchParams: {},
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({}),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
 
-    it('should handle empty string loginId', () => {
+    it('should handle empty string loginId', async () => {
       const props = {
-        params: {},
-        searchParams: { loginId: '' },
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({ loginId: '' }),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
@@ -203,8 +210,9 @@ describe('EditUserPage', () => {
   });
 
   describe('Component Structure', () => {
-    it('should render all required components in correct order', () => {
-      render(<EditUserPage {...defaultProps} />);
+    it('should render all required components in correct order', async () => {
+      const component = await EditUserPage(defaultProps);
+      render(component);
 
       const main = screen.getByRole('main');
       const breadcrumb = screen.getByTestId('breadcrumb');
@@ -226,45 +234,48 @@ describe('EditUserPage', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle special characters in loginId', () => {
+    it('should handle special characters in loginId', async () => {
       const loginId = 'user@domain.com';
       const props = {
-        params: {},
-        searchParams: { loginId },
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({ loginId }),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
 
-    it('should handle additional searchParams', () => {
+    it('should handle additional searchParams', async () => {
       const props = {
-        params: {},
-        searchParams: {
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({
           loginId: 'testuser',
           additionalParam: 'value',
           anotherParam: 'anotherValue',
-        },
+        }),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();
     });
 
-    it('should handle array values in searchParams', () => {
+    it('should handle array values in searchParams', async () => {
       const props = {
-        params: {},
-        searchParams: {
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({
           loginId: 'testuser',
           tags: ['tag1', 'tag2'],
-        },
+        }),
       };
 
-      render(<EditUserPage {...props} />);
+      const component = await EditUserPage(props);
+      render(component);
 
       expect(screen.getByTestId('user-role-section')).toBeInTheDocument();
       expect(screen.getByTestId('access-tokens-section')).toBeInTheDocument();

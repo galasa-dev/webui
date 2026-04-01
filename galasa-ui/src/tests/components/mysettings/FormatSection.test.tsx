@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import FormatSection from '@/components/mysettings/FormatSection';
 import { SUPPORTED_LOCALES } from '@/utils/constants/common';

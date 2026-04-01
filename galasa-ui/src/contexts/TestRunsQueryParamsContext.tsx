@@ -16,7 +16,7 @@ import {
   SetStateAction,
   useRef,
 } from 'react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import {
   RESULTS_TABLE_COLUMNS,
@@ -68,7 +68,6 @@ interface TestRunsQueryParamsProviderProps {
  * Provides state and functions to manage query parameters for test runs.
  */
 export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsProviderProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const rawSearchParams = useSearchParams();
   const { getResolvedTimeZone } = useDateTimeFormat();
@@ -89,7 +88,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     }
 
     return rawSearchParams;
-  }, [rawSearchParams]);
+  }, [rawSearchParams.toString()]); // Use string representation for stable comparison
 
   // Initial states
   const [selectedTabIndex, setSelectedTabIndex] = useState(TABS_IDS.indexOf('results'));
@@ -297,7 +296,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     if (pathname === '/test-runs') {
       const encodedQuery = encodeStateToUrlParam(params.toString());
       const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
-      router.replace(newUrl, { scroll: false });
+      window.history.replaceState(null, '', newUrl);
     }
   }, [
     selectedVisibleColumns,
@@ -305,7 +304,6 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     sortOrder,
     isInitialized,
     pathname,
-    router,
     selectedTabIndex,
     timeframeValues,
     searchCriteria,

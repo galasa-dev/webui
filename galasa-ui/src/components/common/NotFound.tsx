@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import React from 'react';
 
 export default function NotFound({ title, description }: { title: string; description: string }) {
   return (

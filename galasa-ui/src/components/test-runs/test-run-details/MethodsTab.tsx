@@ -9,8 +9,8 @@ import { getIsoTimeDifference } from '@/utils/timeOperations';
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
 import { DataTable, TableContainer, Table, TableCell, TableHeader } from '@carbon/react';
 import TableBody, { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
-import TableHead, { TableHeadProps } from '@carbon/react/lib/components/DataTable/TableHead';
-import TableRow, { TableRowProps } from '@carbon/react/lib/components/DataTable/TableRow';
+import TableHead from '@carbon/react/lib/components/DataTable/TableHead';
+import TableRow from '@carbon/react/lib/components/DataTable/TableRow';
 import React, { useEffect, useState } from 'react';
 import { TableToolbarContent } from '@carbon/react';
 import { TableToolbarSearch } from '@carbon/react';
@@ -98,8 +98,23 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
         }: {
           rows: DataTableRow[];
           headers: DataTableHeader[];
-          getHeaderProps: (options: any) => TableHeadProps;
-          getRowProps: (options: any) => TableRowProps;
+          getHeaderProps: (options: { header: DataTableHeader }) => {
+            key: string;
+            isSortable?: boolean;
+            isSortHeader: boolean;
+            sortDirection: string;
+            onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
+          getRowProps: (options: { row: DataTableRow }) => {
+            key: string;
+            ['aria-label']: string;
+            disabled?: boolean;
+            isExpanded?: boolean;
+            isSelected?: boolean;
+            onExpand: (event: React.MouseEvent<HTMLButtonElement>) => void;
+            [key: string]: unknown;
+          };
           getTableProps: () => TableBodyProps;
           onInputChange: (evt: React.ChangeEvent<HTMLImageElement>) => void;
         }) => (
@@ -114,24 +129,28 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
             <Table {...getTableProps()} aria-label="runs table" size="lg">
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  {headers.map((header) => {
+                    const { key, ...headerProps } = getHeaderProps({ header });
+                    return (
+                      <TableHeader key={key} {...headerProps}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 {rows.map((row) => {
+                  const { key, ...rowProps } = getRowProps({ row });
                   return (
                     <TableRow
-                      key={row.id}
+                      key={key}
                       onClick={() =>
                         onMethodClick && onMethodClick(methodDetails[parseInt(row.id)])
                       }
                       className={styles.clickableRow}
-                      {...getRowProps({ row })}
+                      {...rowProps}
                     >
                       {/* Method name */}
                       <TableCell key={row.cells[0].id}>

@@ -17,7 +17,7 @@ import { useTranslations } from 'next-intl';
 
 interface AccessTokensSectionProps {
   accessTokensPromise: Promise<AuthTokens | undefined>;
-  isAddBtnVisible: Boolean;
+  isAddBtnVisible: boolean;
 }
 
 export default function AccessTokensSection({

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-import { middleware } from '@/middleware';
+import { proxy } from '@/proxy';
 import { authApiClient } from '@/utils/auth';
 import { encodeToBase64Url } from '@/utils/encoding/base64Encoder';
 import { NextRequest, NextResponse } from 'next/server';
@@ -63,7 +63,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -95,7 +95,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -128,7 +128,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -171,7 +171,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -206,7 +206,7 @@ describe('Middleware', () => {
     Date.now = jest.fn(() => 68764);
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(1);
@@ -233,7 +233,7 @@ describe('Middleware', () => {
     Date.now = jest.fn(() => 50000);
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(1);
@@ -247,7 +247,7 @@ describe('Middleware', () => {
     Date.now = jest.fn(() => 4324);
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(0);
@@ -277,7 +277,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(createTokenSpy).toHaveBeenCalledTimes(1);
@@ -311,7 +311,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(createTokenSpy).toHaveBeenCalledTimes(1);
@@ -350,7 +350,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(response.status).toEqual(302);
@@ -367,7 +367,7 @@ describe('Middleware', () => {
     global.fetch = jest.fn(() => Promise.reject('this is an error!')) as jest.Mock;
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(rewriteSpy).toHaveBeenCalledTimes(1);
@@ -389,7 +389,7 @@ describe('Middleware', () => {
     ) as jest.Mock;
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(rewriteSpy).toHaveBeenCalledTimes(1);
@@ -417,7 +417,7 @@ describe('Middleware', () => {
     );
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(redirectSpy).toHaveBeenCalledTimes(0);
@@ -440,7 +440,7 @@ describe('Middleware', () => {
     };
 
     // When...
-    await middleware(req);
+    await proxy(req);
 
     // Then...
     expect(rewriteSpy).toHaveBeenCalledTimes(1);
@@ -463,7 +463,7 @@ describe('Middleware', () => {
     const postAuthenticateSpy = jest.spyOn(authApiClient, 'postAuthenticate');
 
     // When...
-    const response = await middleware(req);
+    const response = await proxy(req);
 
     // Then...
     expect(postAuthenticateSpy).not.toHaveBeenCalled();

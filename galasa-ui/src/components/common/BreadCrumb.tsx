@@ -5,7 +5,6 @@
  */
 'use client';
 
-import React from 'react';
 import { Breadcrumb, BreadcrumbItem, OverflowMenuItem, OverflowMenu, Theme } from '@carbon/react';
 import '@/styles/global.scss';
 import styles from '@/styles/common/BreadCrumb.module.css';

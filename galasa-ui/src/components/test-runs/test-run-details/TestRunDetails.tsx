@@ -6,7 +6,7 @@
 'use client';
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Loading } from '@carbon/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/TestRun.module.css';
 import {
   Dashboard,
@@ -35,7 +35,7 @@ import { handleDownload } from '@/utils/artifacts';
 import { InlineNotification } from '@carbon/react';
 import { Button } from '@carbon/react';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   SINGLE_RUN_QUERY_PARAMS,
   TEST_RUN_PAGE_TABS,
@@ -65,7 +65,6 @@ const TestRunDetails = ({
   const { breadCrumbItems, pushBreadCrumb } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
 
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
@@ -81,7 +80,7 @@ const TestRunDetails = ({
   const indexOf3270Tab = TEST_RUN_PAGE_TABS.indexOf('3270');
   const [is3270TabLoading, setIs3270TabLoading] = useState(true);
   const [is3270TabSelectedInURL, setIs3270TabSelectedInURL] = useState<boolean>(false);
-  const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<Boolean>(false);
+  const [zos3270TerminalFolderExists, setZos3270TerminalFolderExists] = useState<boolean>(false);
   const [zos3270TerminalData, setZos3270TerminalData] = useState<TreeNodeData[]>([]);
 
   // Get the selected tab index from the URL or default to the first tab
@@ -227,12 +226,21 @@ const TestRunDetails = ({
 
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
-      console.error('Failed to copy:', err);
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+      if (window.location.protocol === 'http:') {
+        setNotification({
+          kind: 'warning',
+          title: translations('warningTitle'),
+          subtitle: translations('copyWarningMessage'),
+        });
+        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      } else {
+        console.error('Failed to copy:', err);
+        setNotification({
+          kind: 'error',
+          title: translations('errorTitle'),
+          subtitle: translations('copyFailedMessage'),
+        });
+      }
     }
   };
 
@@ -279,7 +287,7 @@ const TestRunDetails = ({
 
   const updateUrl = (params: URLSearchParams) => {
     const newUrl = `${pathname}?${params.toString()}`;
-    router.replace(newUrl, { scroll: false });
+    window.history.replaceState(null, '', newUrl);
   };
 
   const handleTabChange = (event: { selectedIndex: number }) => {

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import TimeFrameFilter from '@/components/test-runs/timeframe/TimeFrameFilter';
 import { TimeFrameValues } from '@/utils/interfaces';

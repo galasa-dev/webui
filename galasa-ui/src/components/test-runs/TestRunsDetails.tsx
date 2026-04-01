@@ -44,11 +44,18 @@ export default function TestRunsDetails({
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
-  const [editedName, setEditedName] = useState<string>('');
+  const [editedName, setEditedName] = useState<string>(queryName || '');
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeQuery = getQueryByName(queryName);
+
+  // Sync editedName with queryName when queryName changes
+  useEffect(() => {
+    if (queryName && !isEditingName) {
+      setEditedName(queryName);
+    }
+  }, [queryName, isEditingName]);
 
   // Focus and select the input when editing
   useEffect(() => {
@@ -68,11 +75,22 @@ export default function TestRunsDetails({
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
     } catch (err) {
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('copyFailedMessage'),
-      });
+      if (window.location.protocol === 'http:') {
+        setNotification({
+          kind: 'warning',
+          title: translations('warningTitle'),
+          subtitle:
+            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
+        });
+        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      } else {
+        console.error('Failed to copy:', err);
+        setNotification({
+          kind: 'error',
+          title: translations('errorTitle'),
+          subtitle: translations('copyFailedMessage'),
+        });
+      }
     }
   };
 

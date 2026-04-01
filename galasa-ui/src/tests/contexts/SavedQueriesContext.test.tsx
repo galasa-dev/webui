@@ -4,17 +4,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { SavedQueriesProvider, useSavedQueries } from '@/contexts/SavedQueriesContext';
-import {
-  DEFAULT_VISIBLE_COLUMNS,
-  RESULTS_TABLE_COLUMNS,
-  TEST_RUNS_QUERY_PARAMS,
-  TEST_RUNS_STATUS,
-} from '@/utils/constants/common';
 import { DEFAULT_QUERY } from '@/utils/constants/defaultQuery';
 import { SavedQueryType } from '@/utils/types/common';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 
 // Mock localStorage
 const localStorageMock = (() => {
