@@ -392,7 +392,12 @@
   transform: translateY(-50%);
 }
 
-.clickableRow {
+#tableHead,
+#clickableRow {
+  height: 56px;
+}
+
+#clickableRow {
   cursor: pointer;
 }
 

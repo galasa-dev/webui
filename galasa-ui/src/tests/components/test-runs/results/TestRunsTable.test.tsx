@@ -258,6 +258,189 @@ describe('TestRunsTable Interactions', () => {
     });
     expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
   });
+
+  test('navigates to next page when right arrow key is pressed', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Assert initial state - on page 1
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
+
+    // Act - press right arrow key
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+
+    // Assert - moved to page 2
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 21')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
+  });
+
+  test('navigates to previous page when left arrow key is pressed', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    const table = await screen.findByRole('table');
+
+    // Navigate to page 2 first
+    const nextPageButton = screen.getByRole('button', { name: /next page/i });
+    fireEvent.click(nextPageButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 21')).toBeInTheDocument();
+    });
+
+    // Act - press left arrow key
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+
+    // Assert - moved back to page 1
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
+  });
+
+  test('does not navigate beyond first page when left arrow is pressed on page 1', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Assert initial state - on page 1
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+
+    // Act - press left arrow key on first page
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+
+    // Assert - still on page 1
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
+  });
+
+  test('does not navigate beyond last page when right arrow is pressed on last page', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Navigate to page 2 (last page)
+    const nextPageButton = screen.getByRole('button', { name: /next page/i });
+    fireEvent.click(nextPageButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 21')).toBeInTheDocument();
+    });
+
+    // Act - press right arrow key on last page
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+
+    // Assert - still on page 2
+    await waitFor(() => {
+      expect(screen.getByText('Test Run 21')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Test Run 1')).not.toBeInTheDocument();
+  });
+
+  test('does not navigate when arrow keys are pressed during loading', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} isLoading={true} />);
+
+    // Act - press right arrow key while loading
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+
+    // Assert - loading skeleton is still shown, no navigation occurred
+    expect(screen.getByTestId('loading-table-skeleton')).toBeInTheDocument();
+  });
+
+  test('does not navigate when arrow keys are pressed with no data', async () => {
+    // Arrange
+    render(<TestRunsTable runsList={[]} {...defaultProps} />);
+
+    // Wait for no data message
+    await screen.findByText(/No test runs were found for the selected timeframe/i);
+
+    // Act - press arrow keys
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+
+    // Assert - no errors, still showing no data message
+    expect(
+      screen.getByText(/No test runs were found for the selected timeframe/i)
+    ).toBeInTheDocument();
+  });
+
+  test('ignores repeated keydown events', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Assert initial state - on page 1
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+
+    // Act - press right arrow key with repeat flag
+    fireEvent.keyDown(document, { key: 'ArrowRight', repeat: true });
+
+    // Assert - should not navigate (repeat events are ignored)
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
+  });
+
+  test('ignores non-arrow keys', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Assert initial state - on page 1
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+
+    // Act - press various non-arrow keys
+    fireEvent.keyDown(document, { key: 'Enter' });
+    fireEvent.keyDown(document, { key: 'Space' });
+    fireEvent.keyDown(document, { key: 'a' });
+
+    // Assert - still on page 1
+    expect(screen.getByText('Test Run 1')).toBeInTheDocument();
+    expect(screen.queryByText('Test Run 21')).not.toBeInTheDocument();
+  });
+
+  test('cleans up keyboard event listener on unmount', async () => {
+    // Arrange
+    const mockRuns = generateMockRuns(25);
+    const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+
+    const { unmount } = render(<TestRunsTable runsList={mockRuns} {...defaultProps} />);
+
+    // Wait for the table to finish loading
+    await screen.findByRole('table');
+
+    // Act - unmount the component
+    unmount();
+
+    // Assert - removeEventListener was called for keydown
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+
+    removeEventListenerSpy.mockRestore();
+  });
 });
 
 describe('TestRunsTable rendering of TableCells', () => {
