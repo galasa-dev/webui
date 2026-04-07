@@ -23,7 +23,7 @@ import { ColumnDefinition, DataTableHeader, DataTableRow, runStructure } from '@
 import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import StatusIndicator from '../../common/StatusIndicator';
-import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/app/error/page';
 import { MAX_DISPLAYABLE_TEST_RUNS, RESULTS_TABLE_PAGE_SIZES } from '@/utils/constants/common';
@@ -135,6 +135,47 @@ export default function TestRunsTable({
     return filteredRows.slice(startIndex, endIndex);
   }, [filteredRows, currentPage, pageSize]);
 
+  // Calculate total pages for arrow key navigation
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredRows.length / pageSize);
+  }, [filteredRows.length, pageSize]);
+
+  // Handle previous page navigation
+  const handlePreviousPage = useCallback(() => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }, [currentPage]);
+
+  // Handle next page navigation
+  const handleNextPage = useCallback(() => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }, [currentPage, totalPages]);
+
+  // Handle arrow key navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!e.repeat) {
+        switch (e.key) {
+          case 'ArrowLeft':
+            if (currentPage > 1 && !isLoading) {
+              handlePreviousPage();
+            }
+            break;
+
+          case 'ArrowRight':
+            if (currentPage < totalPages && !isLoading) {
+              handleNextPage();
+            }
+            break;
+        }
+      }
+    },
+    [currentPage, totalPages, isLoading, handlePreviousPage, handleNextPage]
+  );
+
   // Set the page back to 1 when the filter search changes
   const previousSearch = useRef(search);
   useEffect(() => {
@@ -143,6 +184,17 @@ export default function TestRunsTable({
       previousSearch.current = search;
     }
   }, [search]);
+
+  // Mount event listener to let users navigate between pages with left and right arrow keys
+  useEffect(() => {
+    if (!isLoading && filteredRows.length > 0) {
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [handleKeyDown, isLoading, filteredRows.length]);
 
   if (isError) {
     return <ErrorPage />;
