@@ -192,7 +192,7 @@ export default function TestRunsTable({
       const tagsArray = value.split(', ').sort();
       return (
         <TableCell className={styles.linkCell}>
-          <RenderTags tags={tagsArray} isDismissible={false} size="sm" />
+          <RenderTags tags={tagsArray} isDismissible={false} size="sm" truncate={true} />
           <Link href={href} prefetch={false} className={styles.linkOverlay} />
         </TableCell>
       );
@@ -286,7 +286,7 @@ export default function TestRunsTable({
               </TableToolbar>
               <Table {...getTableProps()} aria-label="test runs results table" size="lg">
                 <TableHead>
-                  <TableRow>
+                  <TableRow id={styles.tableHead}>
                     {headers.map((header) => {
                       const { key, ...headerProps } = getHeaderProps({ header });
                       return (
@@ -311,7 +311,7 @@ export default function TestRunsTable({
                               ?.value as string
                           )
                         }
-                        className={styles.clickableRow}
+                        id={styles.clickableRow}
                       >
                         {row.cells.map((cell) => (
                           <CustomCell

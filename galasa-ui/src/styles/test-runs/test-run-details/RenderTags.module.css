@@ -20,3 +20,29 @@
 .tagsContainer :global(.cds--tag--filter):hover :global(.cds--tag__close-icon) {
   background-color: rgba(0, 0, 0, 0.2);
 }
+
+.truncatedWrapper {
+  position: relative;
+}
+
+/* Truncated tags container - limits to 2 rows with max-height of 55px */
+.tagsContainer.truncated {
+  max-height: 55px;
+  overflow: hidden;
+  cursor: help;
+  padding-right: 50px;
+}
+
+.ellipsisTagWrapper {
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+  z-index: 1;
+  padding-left: 20px;
+}
+
+.ellipsisTag {
+  background-color: var(--cds-tag-background-gray, #e0e0e0);
+  color: var(--cds-text-primary, #161616);
+  font-weight: bold;
+}
