@@ -29,7 +29,7 @@
     "markdown-it": "^14.1.1",
     "moment-timezone": "^0.6.0",
     "next": "^16.2.1",
-    "next-intl": "^4.8.3",
+    "next-intl": "^4.9.1",
     "pako": "^2.1.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
