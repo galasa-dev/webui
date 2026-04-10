@@ -28,7 +28,7 @@
     "jwt-decode": "^3.1.2",
     "markdown-it": "^14.1.1",
     "moment-timezone": "^0.6.0",
-    "next": "^16.2.1",
+    "next": "^16.2.3",
     "next-intl": "^4.8.3",
     "pako": "^2.1.0",
     "react": "19.2.4",
