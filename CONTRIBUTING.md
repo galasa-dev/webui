@@ -57,7 +57,7 @@ If you forgot to sign one or all of your commits, you can squash your PR changes
 ### Get access to a Galasa Service
 To gain access to a Galasa Service, you can either...
 1. set up one [manually](https://galasa.dev/docs/ecosystem/ecosystem-installing-k8s/).
-2. Connect to our hosted Galasa Service. To get access, please reach out to the Galasa team via our support channels (see https://galasa.dev/support), or directly on a ticket you would like to work on from [our Kanban board](https://github.com/orgs/galasa-dev/projects/3). Next, go to https://galasa-service1.galasa.dev/ which will get you to authenticate via GitHub, then you'll be added to the system with the 'viewer' role. 
+2. Connect to our hosted Galasa Service. To get access, please reach out to the Galasa team via our support channels (see https://galasa.dev/support), or directly on a ticket you would like to work on from [our Kanban board](https://github.com/orgs/galasa-dev/projects/3). Next, go to https://galasa-service-main.galasa.dev/ which will get you to authenticate via GitHub, then you'll be added to the system with the 'viewer' role. 
 
 ### Configure repository secrets and variables
 
