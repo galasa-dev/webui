@@ -146,11 +146,11 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
                   return (
                     <TableRow
                       key={key}
+                      {...rowProps}
                       onClick={() =>
                         onMethodClick && onMethodClick(methodDetails[parseInt(row.id)])
                       }
                       className={styles.clickableRow}
-                      {...rowProps}
                     >
                       {/* Method name */}
                       <TableCell key={row.cells[0].id}>
