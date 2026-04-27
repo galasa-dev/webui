@@ -41,7 +41,7 @@ jest.mock('@/actions/runsAction', () => ({
 // Mock the next-intl translations
 jest.mock('next-intl', () => ({
   useTranslations: () => {
-    return (key: string, vars?: Record<string, any>) => {
+    return (key: string, vars?: Record<string, unknown>) => {
       // For matchCounter, return formatted "current of total"
       if (key === 'matchCounter' && vars) {
         return `${vars.current} of ${vars.total}`;
@@ -78,7 +78,7 @@ jest.mock('next-intl', () => ({
 
 // Mock Carbon Design System components
 jest.mock('@carbon/react', () => ({
-  Search: ({ placeholder, value, onChange, ...props }: any) => (
+  Search: ({ placeholder, value, onChange, ...props }: React.ComponentProps<'input'>) => (
     <input
       data-testid="search-input"
       placeholder={placeholder}
@@ -93,9 +93,11 @@ jest.mock('@carbon/react', () => ({
     disabled,
     iconDescription,
     hasIconOnly,
-    renderIcon,
     ...props
-  }: any) => (
+  }: React.ComponentProps<'button'> & {
+    iconDescription?: string;
+    hasIconOnly?: boolean;
+  }) => (
     <button
       onClick={onClick}
       disabled={disabled}
@@ -110,7 +112,12 @@ jest.mock('@carbon/react', () => ({
       {hasIconOnly ? iconDescription : children}
     </button>
   ),
-  Checkbox: ({ id, labelText, checked, onChange }: any) => (
+  Checkbox: ({
+    id,
+    labelText,
+    checked,
+    onChange,
+  }: React.ComponentProps<'input'> & { labelText: string }) => (
     <label>
       <input
         id={id}
@@ -122,7 +129,13 @@ jest.mock('@carbon/react', () => ({
       {labelText}
     </label>
   ),
-  OverflowMenu: ({ children, iconDescription }: any) => (
+  OverflowMenu: ({
+    children,
+    iconDescription,
+  }: {
+    children: React.ReactNode;
+    iconDescription?: string;
+  }) => (
     <div data-testid="overflow-menu" aria-label={iconDescription}>
       {children}
     </div>
@@ -375,7 +388,7 @@ This is a continuation line
       render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
-      
+
       // Wait a bit to ensure processing completes
       await waitFor(() => {
         expect(screen.queryByText('1.')).not.toBeInTheDocument();
@@ -432,7 +445,7 @@ Line with $dollar and ^caret`;
       render(<LogTab logs="" runId={''} />);
 
       expect(screen.getByText('Run Log')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.queryByText('1.')).not.toBeInTheDocument();
       });
@@ -651,7 +664,7 @@ Line with $dollar and ^caret`;
 
       jest.spyOn(document, 'getElementById').mockImplementation((id) => {
         if (id.startsWith('log-line-')) {
-          return mockElement as any;
+          return mockElement as unknown as HTMLElement;
         }
         return null;
       });
@@ -667,8 +680,8 @@ Line with $dollar and ^caret`;
         addRange: jest.fn(),
       };
 
-      document.createRange = jest.fn().mockReturnValue(mockRange as any);
-      window.getSelection = jest.fn().mockReturnValue(mockSelection as any);
+      document.createRange = jest.fn().mockReturnValue(mockRange as unknown as Range);
+      window.getSelection = jest.fn().mockReturnValue(mockSelection as unknown as Selection);
     });
 
     afterEach(() => {
