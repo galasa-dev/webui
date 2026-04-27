@@ -291,17 +291,8 @@ describe('TestRunDetails', () => {
 
   it('shows the skeleton while loading', async () => {
     const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
-    const runLogDeferred = setup<string>();
 
-    render(
-      <TestRunDetails
-        runId={runId}
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
+    render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
     expect(screen.getByText('Skeleton')).toBeInTheDocument();
 
@@ -324,26 +315,15 @@ describe('TestRunDetails', () => {
           tags: [],
         },
       });
-      runArtifactsDeferred.resolve([]);
-      runLogDeferred.resolve('');
     });
   });
 
   it('renders all tabs with correct props after successful load', async () => {
     const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
-    const runLogDeferred = setup<string>();
 
-    render(
-      <TestRunDetails
-        runId={runId}
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
+    render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
-    // Resolve all three promises
+    // Resolve both promises
     await act(async () => {
       runDetailsDeferred.resolve({
         testStructure: {
@@ -363,16 +343,18 @@ describe('TestRunDetails', () => {
           tags: ['tag1'],
         },
       });
-      runArtifactsDeferred.resolve([{ id: 'art1' }, { id: 'art2' }]);
-      runLogDeferred.resolve('This is the log');
     });
 
     expect(await screen.findByText('title:MyRun')).toBeInTheDocument();
     expect(screen.getByText('OverviewTab result=FAIL')).toBeInTheDocument();
     expect(screen.getByText('MethodsTab count=2')).toBeInTheDocument();
-    expect(screen.getByText('LogTab logs=This is the log')).toBeInTheDocument();
+
+    // Run log is not loaded initially, so an empty string should be displayed
+    expect(screen.getByText('LogTab logs=')).toBeInTheDocument();
+
+    // Artifacts are not loaded initially, so count should be 0
     expect(
-      screen.getByText(`ArtifactsTab count=2 runName=MyRun runId=${runId}`)
+      screen.getByText(`ArtifactsTab count=0 runName=MyRun runId=${runId}`)
     ).toBeInTheDocument();
 
     expect(screen.getByText('StatusIndicator:FAIL')).toBeInTheDocument();
@@ -380,22 +362,11 @@ describe('TestRunDetails', () => {
 
   it('renders the error page if any promise rejects', async () => {
     const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
-    const runLogDeferred = setup<string>();
 
-    render(
-      <TestRunDetails
-        runId={runId}
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
+    render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
     await act(async () => {
       runDetailsDeferred.reject(new Error('failed to load'));
-      runArtifactsDeferred.resolve([]);
-      runLogDeferred.resolve('');
     });
 
     expect(await screen.findByText('ErrorPage')).toBeInTheDocument();
@@ -421,23 +392,14 @@ describe('TestRunDetails', () => {
 
     it('copies the URL when share button is clicked', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      render(
-        <TestRunDetails
-          runId="run-123"
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
 
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([]);
         runLogDeferred.resolve('');
       });
 
@@ -452,23 +414,14 @@ describe('TestRunDetails', () => {
 
     it('shows success notification when URL is copied', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      render(
-        <TestRunDetails
-          runId="run-123"
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
 
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([]);
         runLogDeferred.resolve('');
       });
 
@@ -484,7 +437,6 @@ describe('TestRunDetails', () => {
 
     it('shows error notification when copy fails on HTTPS', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
       // Mock HTTPS protocol
@@ -493,20 +445,12 @@ describe('TestRunDetails', () => {
         writable: true,
       });
 
-      render(
-        <TestRunDetails
-          runId="run-123"
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
 
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([]);
         runLogDeferred.resolve('');
       });
 
@@ -530,7 +474,6 @@ describe('TestRunDetails', () => {
 
     it('shows warning notification when copy fails on HTTP', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
       // Mock HTTP protocol
@@ -539,20 +482,12 @@ describe('TestRunDetails', () => {
         writable: true,
       });
 
-      render(
-        <TestRunDetails
-          runId="run-123"
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
 
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([]);
         runLogDeferred.resolve('');
       });
 
@@ -578,19 +513,11 @@ describe('TestRunDetails', () => {
 
   it('adds the test page URL to breadcrumb after page is loaded', async () => {
     const runDetailsDeferred = setup<any>();
-    const runArtifactsDeferred = setup<any[]>();
     const runLogDeferred = setup<string>();
 
-    render(
-      <TestRunDetails
-        runId={runId}
-        runDetailsPromise={runDetailsDeferred.promise}
-        runArtifactsPromise={runArtifactsDeferred.promise}
-        runLogPromise={runLogDeferred.promise}
-      />
-    );
+    render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
-    // Resolve all three promises
+    // Resolve both promises
     await act(async () => {
       runDetailsDeferred.resolve({
         testStructure: {
@@ -610,7 +537,6 @@ describe('TestRunDetails', () => {
           tags: ['tag1'],
         },
       });
-      runArtifactsDeferred.resolve([{ id: 'art1' }, { id: 'art2' }]);
       runLogDeferred.resolve('This is the log');
     });
 
@@ -634,7 +560,6 @@ describe('TestRunDetails', () => {
 
     test('correctly calls the zip endpoint and initiates download on success', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
       // Mock window.location.origin
@@ -651,14 +576,7 @@ describe('TestRunDetails', () => {
         blob: jest.fn().mockResolvedValue(mockBlob),
       });
 
-      render(
-        <TestRunDetails
-          runId={runId}
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
       // Resolve promises to load the component's data
       await act(async () => {
@@ -680,7 +598,6 @@ describe('TestRunDetails', () => {
             tags: [],
           },
         });
-        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
         runLogDeferred.resolve('Log content');
       });
 
@@ -712,20 +629,12 @@ describe('TestRunDetails', () => {
 
     test('shows an error notification if download fails', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
       // Mock fetch to reject
       (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
-      render(
-        <TestRunDetails
-          runId={runId}
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
       // Resolve promises to load the component's data
       await act(async () => {
@@ -747,7 +656,6 @@ describe('TestRunDetails', () => {
             tags: [],
           },
         });
-        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
         runLogDeferred.resolve('Log content');
       });
       mockDownloadArtifactFromServer.mockRejectedValue(new Error('Download failed'));
@@ -781,24 +689,15 @@ describe('TestRunDetails', () => {
 
     test('updates URL with the current tab', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      render(
-        <TestRunDetails
-          runId={runId}
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
       // Resolve promises to load the component's data
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
         runLogDeferred.resolve('Log content');
       });
 
@@ -827,24 +726,15 @@ describe('TestRunDetails', () => {
 
     test('navigates to the log tab with the correct line number when a method is clicked', async () => {
       const runDetailsDeferred = setup<any>();
-      const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      render(
-        <TestRunDetails
-          runId={runId}
-          runDetailsPromise={runDetailsDeferred.promise}
-          runArtifactsPromise={runArtifactsDeferred.promise}
-          runLogPromise={runLogDeferred.promise}
-        />
-      );
+      render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
       // Resolve promises to load the component's data
       await act(async () => {
         runDetailsDeferred.resolve({
           testStructure: mockTestStructure,
         });
-        runArtifactsDeferred.resolve([{ path: '/logs/debug.log' }]);
         runLogDeferred.resolve('Log content');
       });
       await screen.findByText('title:TestRun');

@@ -53,7 +53,7 @@ const OverviewTab = ({
 
   useEffect(() => {
     const validateTime = () => {
-      const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt!);
+      const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt);
       if (validatedTime !== null) {
         setWeekBefore(validatedTime);
       }
@@ -142,12 +142,13 @@ const OverviewTab = ({
       setTimeout(() => {
         handleModalClose();
       }, TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update tags:', error);
       setNotification({
         kind: 'error',
         title: translations('updateError'),
-        subtitle: error.message || translations('updateErrorMessage'),
+        subtitle:
+          (error instanceof Error ? error.message : '') || translations('updateErrorMessage'),
       });
     } finally {
       setIsSaving(false);

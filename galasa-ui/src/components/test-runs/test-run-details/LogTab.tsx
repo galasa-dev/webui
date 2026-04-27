@@ -50,6 +50,8 @@ interface LogTabProps {
   logs: string;
   initialLine?: number;
   runId: string;
+  isLoadingLogs?: boolean;
+  logsError?: string | null;
 }
 
 interface selectedRange {
@@ -62,7 +64,13 @@ interface selectedRange {
 const SELECTION_CHANGE_EVENT = 'selectionchange';
 const HASH_CHANGE_EVENT = 'hashchange';
 
-export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
+export default function LogTab({
+  logs,
+  initialLine,
+  runId,
+  isLoadingLogs,
+  logsError,
+}: LogTabProps) {
   const translations = useTranslations('LogTab');
 
   const [logContent, setLogContent] = useState<string>('');
@@ -104,7 +112,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     ? 'instant'
     : 'smooth';
 
-  const handleSearchChange = (e: any) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target?.value || '';
     setSearchTerm(value);
 
@@ -186,12 +194,14 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       const newRunLog = await fetchRunLog(runId);
 
       setLogContent(newRunLog);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error refreshing logs:', error);
       setNotification?.({
         kind: 'error',
         title: translations('errorTitle'),
-        subtitle: translations('errorFailedMessage', { errorMessage: error.message }),
+        subtitle: translations('errorFailedMessage', {
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
 
@@ -663,6 +673,27 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     <div>
       <h3>{translations('title')}</h3>
       <p>{translations('description')}</p>
+
+      {isLoadingLogs && (
+        <InlineNotification
+          kind="info"
+          title={translations('loading_logs')}
+          subtitle=""
+          hideCloseButton={true}
+          className={styles.notification}
+        />
+      )}
+
+      {logsError && (
+        <InlineNotification
+          kind="error"
+          title={translations('errorTitle')}
+          subtitle={logsError}
+          hideCloseButton={false}
+          onClose={() => {}}
+          className={styles.notification}
+        />
+      )}
       <div className={styles.logContainer}>
         <div className={styles.searchContainer}>
           <Search

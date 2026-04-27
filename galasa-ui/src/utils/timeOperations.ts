@@ -189,19 +189,22 @@ export function getYesterday(): Date {
  *
  * @returns A Date object representing two days ago at midnight.
  */
-export function getAWeekBeforeSubmittedTime(submittedAt: string): string | null {
-  let result: string | null;
-  const submittedDate = new Date(submittedAt);
+export function getAWeekBeforeSubmittedTime(submittedAt?: string): string | null {
+  let result = null;
 
-  if (isNaN(submittedDate.getTime())) {
-    result = null;
-  } else {
-    const weekBefore = new Date();
-    weekBefore.setDate(weekBefore.getDate() - 7);
+  if (submittedAt) {
+    const submittedDate = new Date(submittedAt);
 
-    // Reset time to midnight
-    weekBefore.setHours(0, 0, 0, 0);
-    result = weekBefore.toISOString();
+    if (isNaN(submittedDate.getTime())) {
+      result = null;
+    } else {
+      const weekBefore = new Date();
+      weekBefore.setDate(weekBefore.getDate() - 7);
+
+      // Reset time to midnight
+      weekBefore.setHours(0, 0, 0, 0);
+      result = weekBefore.toISOString();
+    }
   }
 
   return result;

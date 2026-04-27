@@ -187,7 +187,9 @@
     "error_title": "Something went wrong",
     "error_subtitle": "There was an error downloading the artifact. It may be that the artifact is too big for this web application, try refreshing the page or downloading the test run using the 'galasactl' command-line tool.\nFor example:\ngalasactl runs download --name {runName}",
     "select_file": "Select a file to display its content",
-    "binary_file_message": "This is a binary file ({contentType}), please download it to see its content."
+    "binary_file_message": "This is a binary file ({contentType}), please download it to see its content.",
+    "loading_artifacts": "Loading artifacts...",
+    "no_artifacts": "No artifacts found for this test run."
   },
   "LogTab": {
     "title": "Run Log",
@@ -212,7 +214,8 @@
     "jumpToTop": "Jump to top",
     "jumpToBottom": "Jump to bottom",
     "errorTitle": "Failed to refresh run log",
-    "errorFailedMessage": "Failed to refresh run log, error message: {errorMessage}"
+    "errorFailedMessage": "Failed to refresh run log, error message: {errorMessage}",
+    "loading_logs": "Loading run log..."
   },
   "MethodsTab": {
     "title": "Methods",

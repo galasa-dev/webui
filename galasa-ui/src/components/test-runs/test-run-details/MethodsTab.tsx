@@ -11,7 +11,7 @@ import { DataTable, TableContainer, Table, TableCell, TableHeader } from '@carbo
 import TableBody, { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import TableHead from '@carbon/react/lib/components/DataTable/TableHead';
 import TableRow from '@carbon/react/lib/components/DataTable/TableRow';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { TableToolbarContent } from '@carbon/react';
 import { TableToolbarSearch } from '@carbon/react';
 import StatusIndicator from '../../common/StatusIndicator';
@@ -35,26 +35,16 @@ interface MethodsTabProps {
 function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
   const translations = useTranslations('MethodsTab');
 
-  const [methodDetails, setMethodDetails] = useState<MethodDetails[]>([]);
-
-  const extractMethods = (methods: TestMethod[]) => {
-    let methodDetails: MethodDetails[] = [];
-
-    methods.map((method, index) => {
-      const methodDetail: MethodDetails = {
-        id: index.toString(),
-        methodName: method.methodName || '',
-        duration: getIsoTimeDifference(method.startTime!, method.endTime!),
-        status: method.status || '',
-        result: method.result || '',
-        runLogStartLine: method.runLogStart || 0,
-      };
-
-      methodDetails.push(methodDetail);
-    });
-
-    setMethodDetails(methodDetails);
-  };
+  const methodDetails = useMemo(() => {
+    return methods.map((method, index) => ({
+      id: index.toString(),
+      methodName: method.methodName || '',
+      duration: getIsoTimeDifference(method.startTime!, method.endTime!),
+      status: method.status || '',
+      result: method.result || '',
+      runLogStartLine: method.runLogStart || 0,
+    }));
+  }, [methods]);
 
   const headers = [
     // headers we want to show in the data table
@@ -76,10 +66,6 @@ function MethodsTab({ methods, onMethodClick }: MethodsTabProps) {
       header: translations('table.duration'),
     },
   ];
-
-  useEffect(() => {
-    extractMethods(methods);
-  }, [methods]);
 
   return (
     <>

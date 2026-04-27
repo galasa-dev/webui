@@ -155,10 +155,9 @@ describe('ArtifactsTab', () => {
 
       expect(screen.getByText('Artifacts')).toBeInTheDocument();
       expect(screen.getByText('Test artifacts description')).toBeInTheDocument();
-      expect(screen.getByTestId('tree-view')).toBeInTheDocument();
     });
 
-    test('renders empty tree when no artifacts provided', () => {
+    test('renders a no_artifacts message when no artifacts provided', () => {
       render(
         <FeatureFlagProvider>
           <ArtifactsTab
@@ -171,9 +170,8 @@ describe('ArtifactsTab', () => {
         </FeatureFlagProvider>
       );
 
-      const treeView = screen.getByTestId('tree-view');
-      expect(treeView).toBeInTheDocument();
-      expect(treeView.children).toHaveLength(0);
+      const artifactsContent = screen.getByText('no_artifacts');
+      expect(artifactsContent).toBeInTheDocument();
     });
 
     test('displays default message when no file is selected', () => {

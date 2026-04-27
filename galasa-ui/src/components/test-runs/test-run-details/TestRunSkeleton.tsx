@@ -77,21 +77,9 @@ const TestRunSkeleton = ({ selectedTabIndex }: { selectedTabIndex: number }) => 
             <div className={skeletonStyles.tabContent}>
               <SkeletonText heading width="100%" className={skeletonStyles.headingSkeleton} />
               <div className={skeletonStyles.logContainer}>
-                <SkeletonText
-                  paragraph={true}
-                  width={`${Math.random() * 40 + 60}%`}
-                  className={skeletonStyles.logLine}
-                />
-                <SkeletonText
-                  paragraph={true}
-                  width={`${Math.random() * 40 + 60}%`}
-                  className={skeletonStyles.logLine}
-                />
-                <SkeletonText
-                  paragraph={true}
-                  width={`${Math.random() * 40 + 60}%`}
-                  className={skeletonStyles.logLine}
-                />
+                <SkeletonText paragraph={true} width="75%" className={skeletonStyles.logLine} />
+                <SkeletonText paragraph={true} width="85%" className={skeletonStyles.logLine} />
+                <SkeletonText paragraph={true} width="70%" className={skeletonStyles.logLine} />
               </div>
             </div>
           </TabPanel>
