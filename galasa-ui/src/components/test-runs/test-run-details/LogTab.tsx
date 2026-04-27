@@ -26,6 +26,7 @@ import { useTranslations } from 'next-intl';
 import { fetchRunLog } from '@/actions/runsAction';
 import { NotificationType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
+import { InlineLoading } from '@carbon/react';
 
 interface LogLine {
   content: string;
@@ -828,16 +829,6 @@ export default function LogTab({
       <h3>{translations('title')}</h3>
       <p>{translations('description')}</p>
 
-      {isLoadingLogs && (
-        <InlineNotification
-          kind="info"
-          title={translations('loading_logs')}
-          subtitle=""
-          hideCloseButton={true}
-          className={styles.notification}
-        />
-      )}
-
       {logsError && (
         <InlineNotification
           kind="error"
@@ -969,6 +960,7 @@ export default function LogTab({
         />
       </div>
       <div className={styles.runLogWrapper}>
+        {isLoadingLogs && <InlineLoading description={translations('loading_logs')} />}
         {!isAtTop && (
           <div className={styles.jumpToTopContainer}>
             <Button
