@@ -127,6 +127,7 @@
   },
   "TokenCard": {
     "createdAt": "Erstellt am:",
+    "expires": "Läuft ab:",
     "owner": "Inhaber"
   },
   "TokenDeleteModal": {

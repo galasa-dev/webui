@@ -22,9 +22,12 @@ function TokenCard({
 }) {
   const translations = useTranslations('TokenCard');
   const { formatDate } = useDateTimeFormat();
-  const formattedDate = useMemo(() => {
+  const formattedCreationDate = useMemo(() => {
     return formatDate(new Date(token.creationTime!));
   }, [token.creationTime, formatDate]);
+  const formattedExpiryDate = useMemo(() => {
+    return formatDate(new Date(token.expiryTime!));
+  }, [token.expiryTime, formatDate]);
 
   return (
     <SelectableTile
@@ -37,8 +40,13 @@ function TokenCard({
 
       <div className={styles.infoContainer}>
         <h6>
-          {translations('createdAt')} {formattedDate}
+          {translations('createdAt')} {formattedCreationDate}
         </h6>
+        { formattedExpiryDate && 
+          <h6>
+            {translations('expires')} {formattedExpiryDate}
+          </h6>
+        }
         <h6>
           {translations('owner')} {token.owner?.loginId}
         </h6>
