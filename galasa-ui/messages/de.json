@@ -117,6 +117,12 @@
     "token_name": "Tokenname",
     "token_name_helper_text": "Hilft beim Wiedererkennen Ihrer Token.",
     "token_name_placeholder": "z.B. galasactl Zugriff auf Windows",
+    "token_lifespan": "Token-Lebensdauer",
+    "select_lifespan": "Token-Lebensdauer auswählen",
+    "custom_lifespan": "Benutzerdefiniert",
+    "custom_lifespan_days": "Benutzerdefinierte Lebensdauer (Tage)",
+    "custom_lifespan_helper_text": "Geben Sie einen Wert zwischen 1 und 365 Tagen ein",
+    "custom_lifespan_invalid": "Die Lebensdauer muss zwischen 1 und 365 Tagen liegen",
     "error_requesting_token": "Fehler beim Anfordern des Tokens"
   },
   "TokenCard": {

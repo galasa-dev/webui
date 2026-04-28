@@ -5,12 +5,18 @@
  */
 'use client';
 
-import { Button, Modal } from '@carbon/react';
+import { Button, Modal, Dropdown, NumberInput } from '@carbon/react';
 import { useRef, useState } from 'react';
 import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useTranslations } from 'next-intl';
+import styles from '@/styles/tokens/TokenRequestModal.module.css';
+
+const PRESET_LIFESPANS = [7, 30, 90];
+const CUSTOM_VALUE_ID = 'custom';
+const MIN_LIFESPAN = 1;
+const MAX_LIFESPAN = 365;
 
 export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean }) {
   const translations = useTranslations('TokenRequestModal');
@@ -18,11 +24,40 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [selectedLifespan, setSelectedLifespan] = useState<string>(String(PRESET_LIFESPANS[0]));
+  const [customLifespan, setCustomLifespan] = useState<number>(7);
   const tokenNameInputRef = useRef<HTMLInputElement>(undefined);
+
+  const getExpiryDate = (days: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+  };
+
+  const getLifespanOptions = () => {
+    const options = PRESET_LIFESPANS.map((days) => ({
+      id: String(days),
+      label: `${days} days (${getExpiryDate(days)})`,
+    }));
+    options.push({
+      id: CUSTOM_VALUE_ID,
+      label: translations('custom_lifespan'),
+    });
+    return options;
+  };
+
+  const getEffectiveLifespan = (): number => {
+    if (selectedLifespan === CUSTOM_VALUE_ID) {
+      return customLifespan;
+    }
+    return parseInt(selectedLifespan, 10);
+  };
 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';
-    setSubmitDisabled(!tokenName);
+    const lifespan = getEffectiveLifespan();
+    const isLifespanValid = lifespan >= MIN_LIFESPAN && lifespan <= MAX_LIFESPAN;
+    setSubmitDisabled(!tokenName || !isLifespanValid);
   };
 
   const submitTokenRequest = async () => {
@@ -31,6 +66,7 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
         method: 'POST',
         body: JSON.stringify({
           tokenDescription: tokenNameInputRef.current?.value.trim(),
+          token_lifespan_days: getEffectiveLifespan(),
         }),
       });
 
@@ -72,9 +108,12 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
         secondaryButtonText={translations('cancel')}
         shouldSubmitOnEnter={true}
         open={open}
+        className={styles.modalContent}
         onRequestClose={() => {
           setOpen(false);
           setError('');
+          setSelectedLifespan(String(PRESET_LIFESPANS[0]));
+          setCustomLifespan(7);
         }}
         onRequestSubmit={async () => {
           if (!submitDisabled) {
@@ -99,6 +138,46 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
           placeholder={translations('token_name_placeholder')}
           onChange={onChangeInputValidation}
         />
+
+        <br />
+
+        <Dropdown
+          id="lifespan-dropdown"
+          titleText={translations('token_lifespan')}
+          label={translations('select_lifespan')}
+          items={getLifespanOptions()}
+          itemToString={(item: { id: string; label: string } | null) => (item ? item.label : '')}
+          selectedItem={getLifespanOptions().find((opt) => opt.id === selectedLifespan)}
+          onChange={({ selectedItem }: { selectedItem?: { id: string; label: string } }) => {
+            if (selectedItem) {
+              setSelectedLifespan(selectedItem.id);
+              onChangeInputValidation();
+            }
+          }}
+        />
+
+        {selectedLifespan === CUSTOM_VALUE_ID && (
+          <>
+            <br />
+            <NumberInput
+              id="custom-lifespan-input"
+              label={translations('custom_lifespan_days')}
+              helperText={translations('custom_lifespan_helper_text')}
+              min={MIN_LIFESPAN}
+              max={MAX_LIFESPAN}
+              value={customLifespan}
+              onChange={(_e: unknown, { value }: { value?: number | null }) => {
+                if (value !== undefined && value !== null) {
+                  setCustomLifespan(value);
+                  onChangeInputValidation();
+                }
+              }}
+              invalidText={translations('custom_lifespan_invalid')}
+              invalid={customLifespan < MIN_LIFESPAN || customLifespan > MAX_LIFESPAN}
+            />
+          </>
+        )}
+
         {error && (
           <InlineNotification
             className="margin-top-1"

@@ -9,6 +9,7 @@ const AuthCookies = {
   REFRESH_TOKEN: 'refresh_token',
   ID_TOKEN: 'id_token',
   TOKEN_DESCRIPTION: 'token_description',
+  TOKEN_LIFESPAN_DAYS: 'token_lifespan_days',
   SHOULD_REDIRECT_TO_SETTINGS: 'should_redirect_to_settings',
 };
 

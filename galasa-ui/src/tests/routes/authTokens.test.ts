@@ -65,6 +65,7 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: 'my-token',
+      token_lifespan_days: 7,
     });
 
     const request = new NextRequest('https://my-server/auth/tokens', {
@@ -95,6 +96,7 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: 'my-token',
+      token_lifespan_days: 7,
     });
 
     const request = new NextRequest('https://my-server/auth/tokens', {
@@ -124,6 +126,7 @@ describe('POST /auth/tokens', () => {
 
     const requestBody = JSON.stringify({
       tokenDescription: 'my-token',
+      token_lifespan_days: 7,
     });
 
     const request = new NextRequest('https://my-server/auth/tokens', {

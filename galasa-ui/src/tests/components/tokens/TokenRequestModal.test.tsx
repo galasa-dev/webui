@@ -19,6 +19,12 @@ jest.mock('next-intl', () => ({
       token_name: 'Token name',
       token_name_helper_text: 'Use this to distinguish between your tokens in the future.',
       token_name_placeholder: 'e.g. galasactl access for my Windows machine',
+      token_lifespan: 'Token lifespan',
+      select_lifespan: 'Select token lifespan',
+      custom_lifespan: 'Custom',
+      custom_lifespan_days: 'Custom lifespan (days)',
+      custom_lifespan_helper_text: 'Enter a value between 1 and 365 days',
+      custom_lifespan_invalid: 'Lifespan must be between 1 and 365 days',
       error_requesting_token: 'Error requesting access token',
     };
     return translations[key] || key;
@@ -327,5 +333,133 @@ describe('Token request modal', () => {
 
     // Then...
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('renders token lifespan dropdown with default value', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+    
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+
+    // Then...
+    const lifespanDropdown = screen.getByText(/Token lifespan/i);
+    expect(lifespanDropdown).toBeInTheDocument();
+  });
+
+  it('includes token_lifespan_days in POST request with default value', async () => {
+    // Given...
+    const redirectUrl = 'http://my-connector/auth';
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ url: redirectUrl }),
+      })
+    ) as jest.Mock;
+
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+    const modalCreateButtonElement = screen.getByText(/^Create$/);
+    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+    fireEvent.input(modalNameInputElement, { target: { value: 'test-token' } });
+    fireEvent.click(modalCreateButtonElement);
+
+    // Then...
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/auth/tokens',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          tokenDescription: 'test-token',
+          token_lifespan_days: 7,
+        }),
+      })
+    );
+  });
+
+  it('shows custom lifespan input when Custom is selected', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+
+    // Find and click the dropdown to open it
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+
+    // Select the Custom option
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Then...
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      expect(customInput).toBeInTheDocument();
+    });
+  });
+
+  it('includes custom token_lifespan_days in POST request', async () => {
+    // Given...
+    const redirectUrl = 'http://my-connector/auth';
+    const customDays = 45;
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ url: redirectUrl }),
+      })
+    ) as jest.Mock;
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+    fireEvent.input(modalNameInputElement, { target: { value: 'test-token' } });
+
+    // Select Custom from dropdown
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Enter custom value
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      fireEvent.change(customInput, { target: { value: customDays } });
+    });
+    const modalCreateButtonElement = screen.getByText(/^Create$/);
+    fireEvent.click(modalCreateButtonElement);
+
+    // Then...
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/auth/tokens',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          tokenDescription: 'test-token',
+          token_lifespan_days: customDays,
+        }),
+      })
+    );
   });
 });

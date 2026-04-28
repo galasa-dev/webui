@@ -117,6 +117,12 @@
     "token_name": "Token name",
     "token_name_helper_text": "Use this to distinguish between your tokens in the future.",
     "token_name_placeholder": "e.g. galasactl access for my Windows machine",
+    "token_lifespan": "Token lifespan",
+    "select_lifespan": "Select token lifespan",
+    "custom_lifespan": "Custom",
+    "custom_lifespan_days": "Custom lifespan (days)",
+    "custom_lifespan_helper_text": "Enter a value between 1 and 365 days",
+    "custom_lifespan_invalid": "Lifespan must be between 1 and 365 days",
     "error_requesting_token": "Error requesting access token"
   },
   "TokenCard": {
