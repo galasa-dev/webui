@@ -20,7 +20,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-query": "^5.90.12",
-    "@types/node": "20.19.9",
+    "@types/node": "24.11.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "adm-zip": "^0.5.16",
