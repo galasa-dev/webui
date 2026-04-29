@@ -83,7 +83,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v3
         with:
-          node-version: "20.10.0"
+          node-version: "24.11.0"
 
       - name: Installing webui's dependencies using npm
         working-directory: ./galasa-ui
