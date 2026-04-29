@@ -23,7 +23,15 @@ jest.mock('@/actions/runsAction', () => ({
 // Mock RenderTags component
 jest.mock('@/components/test-runs/test-run-details/RenderTags', () => ({
   __esModule: true,
-  default: ({ tags, isDismissible, onTagRemove }: any) => {
+  default: ({
+    tags,
+    isDismissible,
+    onTagRemove,
+  }: {
+    tags: string[];
+    isDismissible: boolean;
+    onTagRemove?: (tag: string) => void;
+  }) => {
     if (tags.length === 0) {
       return <p>No tags were associated with this test run.</p>;
     }
@@ -52,7 +60,6 @@ jest.mock('@carbon/react', () => ({
   Link: ({
     children,
     href,
-    renderIcon,
   }: {
     children: React.ReactNode;
     href: string;
@@ -62,13 +69,33 @@ jest.mock('@carbon/react', () => ({
       {children}
     </a>
   ),
-  InlineNotification: ({ kind, title, subtitle }: any) => (
+  InlineNotification: ({
+    kind,
+    title,
+    subtitle,
+  }: {
+    kind: string;
+    title: string;
+    subtitle: string;
+  }) => (
     <div data-testid="mock-notification" data-kind={kind}>
       <div>{title}</div>
       <div>{subtitle}</div>
     </div>
   ),
-  TextInput: ({ value, onChange, onKeyDown, labelText, placeholder }: any) => (
+  TextInput: ({
+    value,
+    onChange,
+    onKeyDown,
+    labelText,
+    placeholder,
+  }: {
+    value: string;
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
+    onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+    labelText: string;
+    placeholder: string;
+  }) => (
     <input
       data-testid="mock-text-input"
       value={value}
@@ -79,16 +106,24 @@ jest.mock('@carbon/react', () => ({
     />
   ),
   FilterableMultiSelect: ({
-    id,
     titleText,
     placeholder,
     items,
-    initialSelectedItems,
     selectedItems,
     itemToString,
     onChange,
     onInputValueChange,
-  }: any) => (
+  }: {
+    id?: string;
+    titleText: string;
+    placeholder: string;
+    items: Array<{ id: string; label: string }>;
+    initialSelectedItems?: Array<{ id: string; label: string }>;
+    selectedItems?: Array<{ id: string; label: string }>;
+    itemToString?: (item: { id: string; label: string }) => string;
+    onChange?: (data: { selectedItems: Array<{ id: string; label: string }> }) => void;
+    onInputValueChange?: (value: string) => void;
+  }) => (
     <div data-testid="mock-filterable-multiselect">
       <label>{titleText}</label>
       <input
@@ -97,8 +132,10 @@ jest.mock('@carbon/react', () => ({
         onChange={(e) => onInputValueChange && onInputValueChange(e.target.value)}
       />
       <div data-testid="filterable-multiselect-items">
-        {items.map((item: any) => {
-          const isSelected = selectedItems?.some((selected: any) => selected.id === item.id);
+        {items.map((item: { id: string; label: string }) => {
+          const isSelected = selectedItems?.some(
+            (selected: { id: string; label: string }) => selected.id === item.id
+          );
           return (
             <div key={item.id} data-testid={`multiselect-item-${item.label}`}>
               <input
@@ -107,8 +144,12 @@ jest.mock('@carbon/react', () => ({
                 onChange={(e) => {
                   const newSelected = e.target.checked
                     ? [...(selectedItems || []), item]
-                    : (selectedItems || []).filter((s: any) => s.id !== item.id);
-                  onChange && onChange({ selectedItems: newSelected });
+                    : (selectedItems || []).filter(
+                        (s: { id: string; label: string }) => s.id !== item.id
+                      );
+                  if (onChange) {
+                    onChange({ selectedItems: newSelected });
+                  }
                 }}
               />
               <label>{itemToString ? itemToString(item) : item.label}</label>
@@ -126,7 +167,15 @@ jest.mock('@carbon/react', () => ({
     secondaryButtonText,
     onRequestSubmit,
     onRequestClose,
-  }: any) =>
+  }: {
+    open: boolean;
+    children: React.ReactNode;
+    modalHeading: string;
+    primaryButtonText: string;
+    secondaryButtonText: string;
+    onRequestSubmit: () => void;
+    onRequestClose: () => void;
+  }) =>
     open ? (
       <div data-testid="mock-modal">
         <h2>{modalHeading}</h2>
@@ -311,7 +360,6 @@ describe('OverviewTab - Time and Link Logic', () => {
   });
 
   it('renders both links when weekBefore is valid', async () => {
-    const mockMonthAgoDate = '2025-05-10T00:00:00Z';
     const mockWeekBefore = '2025-06-03T09:00:00Z';
 
     mockGetAWeekBeforeSubmittedTime.mockReturnValue(mockWeekBefore);
@@ -553,9 +601,11 @@ describe('OverviewTab - Tags Edit Modal', () => {
       tags: ['smoke', 'regression'],
     });
 
-    // Mock window.location.reload.
-    delete (window as any).location;
-    (window as any).location = { reload: jest.fn() };
+    // Mock window.location.reload
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, reload: jest.fn() },
+    });
 
     render(
       <OverviewTab
@@ -620,8 +670,10 @@ describe('OverviewTab - Tags Edit Modal', () => {
     });
 
     // Mock window.location.reload
-    delete (window as any).location;
-    (window as any).location = { reload: jest.fn() };
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, reload: jest.fn() },
+    });
 
     render(
       <OverviewTab

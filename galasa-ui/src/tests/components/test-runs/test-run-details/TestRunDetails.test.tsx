@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import TestRunDetails from '@/components/test-runs/test-run-details/TestRunDetails';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
@@ -11,7 +12,7 @@ import { TEST_RUN_PAGE_TABS } from '@/utils/constants/common';
 
 function setup<T>() {
   let resolve!: (value: T) => void;
-  let reject!: (reason?: any) => void;
+  let reject!: (reason?: unknown) => void;
   const promise = new Promise<T>((res, rej) => {
     resolve = res;
     reject = rej;
@@ -52,7 +53,7 @@ jest.mock('@/actions/runsAction');
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string, opts?: any) => {
+  useTranslations: () => (key: string, opts?: { runName?: string }) => {
     const translations: Record<string, string> = {
       copiedTitle: 'Copied!',
       copiedMessage: 'URL copied to clipboard.',
@@ -79,7 +80,11 @@ jest.mock('@/contexts/DateTimeFormatContext', () => ({
 }));
 
 jest.mock('@/components/common/BreadCrumb', () => {
-  const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => {
+  const BreadCrumb = ({
+    breadCrumbItems,
+  }: {
+    breadCrumbItems: Array<{ title: string; route: string }>;
+  }) => {
     return (
       <div>
         <nav data-testid="breadcrumb-1" data-route={breadCrumbItems[0]?.route || ''}>
@@ -99,7 +104,9 @@ jest.mock('@/components/common/BreadCrumb', () => {
 });
 
 jest.mock('@/components/PageTile', () => {
-  const PageTile = ({ translationKey }: any) => <h1 data-testid="pagetile">{translationKey}</h1>;
+  const PageTile = ({ translationKey }: { translationKey: string }) => (
+    <h1 data-testid="pagetile">{translationKey}</h1>
+  );
   PageTile.displayName = 'PageTile';
   return {
     __esModule: true,
@@ -108,7 +115,9 @@ jest.mock('@/components/PageTile', () => {
 });
 
 jest.mock('@/components/test-runs/test-run-details/OverviewTab', () => {
-  const OverviewTab = ({ metadata }: any) => <div>OverviewTab result={metadata?.result}</div>;
+  const OverviewTab = ({ metadata }: { metadata?: { result?: string } }) => (
+    <div>OverviewTab result={metadata?.result}</div>
+  );
   OverviewTab.displayName = 'OverviewTab';
   return {
     __esModule: true,
@@ -117,7 +126,13 @@ jest.mock('@/components/test-runs/test-run-details/OverviewTab', () => {
 });
 
 jest.mock('@/components/test-runs/test-run-details/MethodsTab', () => {
-  const MethodsTab = ({ methods, onMethodClick }: any) => (
+  const MethodsTab = ({
+    methods,
+    onMethodClick,
+  }: {
+    methods?: unknown[];
+    onMethodClick: (method: { runLogStartLine: number }) => void;
+  }) => (
     <div>
       <p>MethodsTab count={methods?.length}</p>
       <button
@@ -136,7 +151,7 @@ jest.mock('@/components/test-runs/test-run-details/MethodsTab', () => {
 });
 
 jest.mock('@/components/test-runs/test-run-details/LogTab', () => {
-  const LogTab = ({ logs }: any) => <div>LogTab logs={logs}</div>;
+  const LogTab = ({ logs }: { logs: string }) => <div>LogTab logs={logs}</div>;
   LogTab.displayName = 'LogTab';
   return {
     __esModule: true,
@@ -145,7 +160,15 @@ jest.mock('@/components/test-runs/test-run-details/LogTab', () => {
 });
 
 jest.mock('@/components/test-runs/test-run-details/ArtifactsTab', () => {
-  const ArtifactsTab = ({ artifacts, runName, runId }: any) => (
+  const ArtifactsTab = ({
+    artifacts,
+    runName,
+    runId,
+  }: {
+    artifacts: unknown[];
+    runName: string;
+    runId: string;
+  }) => (
     <div>
       ArtifactsTab count={artifacts.length} runName={runName} runId={runId}
     </div>
@@ -176,7 +199,7 @@ jest.mock('@/components/test-runs/test-run-details/TestRunSkeleton', () => {
 });
 
 jest.mock('@/components/common/StatusIndicator', () => {
-  const StatusIndicator = ({ status }: any) => <span>StatusIndicator:{status}</span>;
+  const StatusIndicator = ({ status }: { status: string }) => <span>StatusIndicator:{status}</span>;
   StatusIndicator.displayName = 'StatusIndicator';
   return {
     __esModule: true,
@@ -186,13 +209,29 @@ jest.mock('@/components/common/StatusIndicator', () => {
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => {
-  let onTabsChange: (event: { selectedIndex: number }) => void;
-  const Tabs = ({ children, onChange }: any) => {
-    onTabsChange = onChange;
+  // Use a mutable object to store the onChange handler (named with Ref suffix for ESLint)
+  const tabsStateRef = { current: null as ((event: { selectedIndex: number }) => void) | null };
+
+  const Tabs = ({
+    children,
+    onChange,
+  }: {
+    children: React.ReactNode;
+    onChange: (event: { selectedIndex: number }) => void;
+  }) => {
+    // Store onChange in a mutable object property
+    // eslint-disable-next-line react-hooks/immutability -- Test mock needs to store handler for Tab components
+    tabsStateRef.current = onChange;
     return <div>{children}</div>;
   };
-  const Tab = ({ children, renderIcon }: any) => {
-    const tabText = children;
+  const Tab = ({
+    children,
+    renderIcon,
+  }: {
+    children: React.ReactNode;
+    renderIcon?: React.ComponentType;
+  }) => {
+    const tabText = typeof children === 'string' ? children : '';
     const tabIndex = ['tabs.overview', 'tabs.methods', 'tabs.runLog', 'tabs.artifacts'].indexOf(
       tabText
     );
@@ -202,7 +241,7 @@ jest.mock('@carbon/react', () => {
     return (
       <button
         // When this button is clicked, call the stored onChange handler
-        onClick={() => onTabsChange({ selectedIndex: tabIndex })}
+        onClick={() => tabsStateRef.current?.({ selectedIndex: tabIndex })}
         // Use the text to make it findable in the test
         role="tab"
       >
@@ -211,19 +250,37 @@ jest.mock('@carbon/react', () => {
       </button>
     );
   };
-  const TabList = ({ children }: any) => <div>{children}</div>;
-  const TabPanels = ({ children }: any) => <div>{children}</div>;
-  const TabPanel = ({ children }: any) => <div>{children}</div>;
+  const TabList = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+  const TabPanels = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+  const TabPanel = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
   const Loading = () => <div>Loading</div>;
-  const Tile = ({ children }: any) => <div data-testid="tile">{children}</div>;
-  const InlineNotification = ({ title, subtitle, kind, className }: any) => (
+  const Tile = ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="tile">{children}</div>
+  );
+  const InlineNotification = ({
+    title,
+    subtitle,
+    kind,
+    className,
+  }: {
+    title: string;
+    subtitle: string;
+    kind: string;
+    className?: string;
+  }) => (
     <div className={className}>
       <strong>{title}</strong>
       <p>{subtitle}</p>
       <span>{kind}</span>
     </div>
   );
-  const Button = ({ children, renderIcon, ...props }: any) => {
+  const Button = ({
+    children,
+    renderIcon,
+    ...props
+  }: React.ComponentProps<'button'> & {
+    renderIcon?: React.ComponentType;
+  }) => {
     const Icon = renderIcon;
     return (
       <button {...props}>
@@ -233,13 +290,11 @@ jest.mock('@carbon/react', () => {
     );
   };
   [Tab, Tabs, TabList, TabPanels, TabPanel, Loading, InlineNotification, Button].forEach((c) => {
-    // @ts-ignore
-    // Assigning displayName to function components for better debugging in React DevTools.
-    // TypeScript does not allow this by default, so we suppress the error.
+    // @ts-expect-error - Assigning displayName to function components for better debugging in React DevTools.
     c.displayName = c.name || 'Anonymous';
   });
   Tile.displayName = 'Tile';
-  const Search = ({ ...props }: any) => {
+  const Search = ({ ...props }: React.ComponentProps<'input'>) => {
     return <input {...props} data-testid="search" />;
   };
   return {
@@ -290,7 +345,7 @@ describe('TestRunDetails', () => {
   });
 
   it('shows the skeleton while loading', async () => {
-    const runDetailsDeferred = setup<any>();
+    const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
 
     render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
@@ -319,7 +374,7 @@ describe('TestRunDetails', () => {
   });
 
   it('renders all tabs with correct props after successful load', async () => {
-    const runDetailsDeferred = setup<any>();
+    const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
 
     render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
@@ -361,7 +416,7 @@ describe('TestRunDetails', () => {
   });
 
   it('renders the error page if any promise rejects', async () => {
-    const runDetailsDeferred = setup<any>();
+    const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
 
     render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
 
@@ -391,7 +446,7 @@ describe('TestRunDetails', () => {
     };
 
     it('copies the URL when share button is clicked', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
@@ -413,7 +468,7 @@ describe('TestRunDetails', () => {
     });
 
     it('shows success notification when URL is copied', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       render(<TestRunDetails runId="run-123" runDetailsPromise={runDetailsDeferred.promise} />);
@@ -436,7 +491,7 @@ describe('TestRunDetails', () => {
     });
 
     it('shows error notification when copy fails on HTTPS', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       // Mock HTTPS protocol
@@ -473,7 +528,7 @@ describe('TestRunDetails', () => {
     });
 
     it('shows warning notification when copy fails on HTTP', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       // Mock HTTP protocol
@@ -512,7 +567,7 @@ describe('TestRunDetails', () => {
   });
 
   it('adds the test page URL to breadcrumb after page is loaded', async () => {
-    const runDetailsDeferred = setup<any>();
+    const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
     const runLogDeferred = setup<string>();
 
     render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
@@ -553,18 +608,20 @@ describe('TestRunDetails', () => {
 
     afterEach(() => {
       // Clean up fetch mock after each test
-      if (global.fetch && typeof (global.fetch as any).mockRestore === 'function') {
+      if (global.fetch && typeof (global.fetch as jest.Mock).mockRestore === 'function') {
         (global.fetch as jest.Mock).mockRestore();
       }
     });
 
     test('correctly calls the zip endpoint and initiates download on success', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       // Mock window.location.origin
-      delete (window as any).location;
-      (window as any).location = { origin: 'http://localhost' };
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { ...window.location, origin: 'http://localhost' },
+      });
 
       // Mock the successful fetch response
       const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
@@ -628,7 +685,7 @@ describe('TestRunDetails', () => {
     });
 
     test('shows an error notification if download fails', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       // Mock fetch to reject
@@ -688,7 +745,7 @@ describe('TestRunDetails', () => {
     };
 
     test('updates URL with the current tab', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);
@@ -725,7 +782,7 @@ describe('TestRunDetails', () => {
     });
 
     test('navigates to the log tab with the correct line number when a method is clicked', async () => {
-      const runDetailsDeferred = setup<any>();
+      const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
       render(<TestRunDetails runId={runId} runDetailsPromise={runDetailsDeferred.promise} />);

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import styles from '@/styles/test-runs/test-run-details/OverviewTab.module.css';
 import InlineText from './InlineText';
 import { RunMetadata } from '@/utils/interfaces';

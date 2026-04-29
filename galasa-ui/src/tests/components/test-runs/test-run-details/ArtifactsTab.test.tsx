@@ -26,18 +26,40 @@ const mockSetZos3270TerminalData = jest.fn();
 
 // Mock Carbon components
 jest.mock('@carbon/react', () => ({
-  TreeView: ({ children, onSelect, className }: any) => (
+  TreeView: ({
+    children,
+    onSelect,
+    className,
+  }: {
+    children: React.ReactNode;
+    onSelect?: () => void;
+    className?: string;
+  }) => (
     <div className={className} data-testid="tree-view" onClick={onSelect}>
       {children}
     </div>
   ),
-  Tooltip: ({ label, children }: any) => (
+  Tooltip: ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div data-testid="tooltip">
       {label}
       {children}
     </div>
   ),
-  TreeNode: ({ children, label, onSelect, onToggle, isExpanded, renderIcon }: any) => {
+  TreeNode: ({
+    children,
+    label,
+    onSelect,
+    onToggle,
+    isExpanded,
+    renderIcon,
+  }: {
+    children?: React.ReactNode;
+    label: string;
+    onSelect?: () => void;
+    onToggle?: () => void;
+    isExpanded?: boolean;
+    renderIcon?: React.ComponentType;
+  }) => {
     const IconComponent = renderIcon;
     return (
       <div data-testid={`tree-node-${label}`} onClick={onSelect} data-expanded={isExpanded}>
@@ -52,19 +74,29 @@ jest.mock('@carbon/react', () => ({
       </div>
     );
   },
-  InlineLoading: ({ description }: any) => <div data-testid="inline-loading">{description}</div>,
-  InlineNotification: ({ title, subtitle }: any) => (
+  InlineLoading: ({ description }: { description: string }) => (
+    <div data-testid="inline-loading">{description}</div>
+  ),
+  InlineNotification: ({ title, subtitle }: { title: string; subtitle: string }) => (
     <div data-testid="inline-notification">
       <div>{title}</div>
       <div>{subtitle}</div>
     </div>
   ),
-  Tile: ({ children, className }: any) => (
+  Tile: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className} data-testid="tile">
       {children}
     </div>
   ),
-  Button: ({ onClick, iconDescription, renderIcon: Icon }: any) => (
+  Button: ({
+    onClick,
+    iconDescription,
+    renderIcon: Icon,
+  }: {
+    onClick?: () => void;
+    iconDescription?: string;
+    renderIcon?: React.ComponentType;
+  }) => (
     <button data-testid="mock-carbon-button" aria-label={iconDescription} onClick={onClick}>
       {Icon && <Icon />}
     </button>
@@ -73,7 +105,7 @@ jest.mock('@carbon/react', () => ({
 
 // Mock Carbon icons
 jest.mock('@carbon/icons-react', () => ({
-  CloudDownload: ({ size, color }: any) => (
+  CloudDownload: ({ size, color }: { size?: number; color?: string }) => (
     <div data-testid="cloud-download-icon" data-size={size} data-color={color} />
   ),
   Document: () => <div data-testid="document-icon" />,
@@ -90,7 +122,9 @@ const mockHandleDownload = handleDownload as jest.MockedFunction<typeof handleDo
 
 // Import useTranslations from the mocked module
 const { useTranslations } = jest.requireMock('next-intl');
-const mockUseTranslations = useTranslations as jest.MockedFunction<any>;
+const mockUseTranslations = useTranslations as jest.MockedFunction<
+  () => (key: string, params?: Record<string, unknown>) => string
+>;
 
 // Mock global atob function
 global.atob = jest.fn((str: string) => {
@@ -131,8 +165,8 @@ describe('ArtifactsTab', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseTranslations.mockReturnValue((key: string, params?: any) => {
-      if (key === 'error_subtitle' && params) {
+    mockUseTranslations.mockReturnValue((key: string, params?: Record<string, unknown>) => {
+      if (key === 'error_subtitle' && params && typeof params.runName === 'string') {
         return mockTranslations[key].replace('{runName}', params.runName);
       }
       return mockTranslations[key as keyof typeof mockTranslations] || key;

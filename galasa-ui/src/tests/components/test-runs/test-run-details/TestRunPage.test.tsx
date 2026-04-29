@@ -29,10 +29,9 @@ jest.mock('next-intl', () => ({
 
 // Mock the page module itself so Jest doesn't parse its ESM/TS syntax
 jest.mock('@/app/test-runs/[slug]/page', () => {
-  const React = require('react');
   return {
     __esModule: true,
-    default: async function MockTestRunPage({ params }: any) {
+    default: async function MockTestRunPage() {
       // Simulate the same async signature; return a dummy element
       return <div data-testid="mock-page">Mock</div>;
     },
@@ -43,7 +42,6 @@ import TestRunPage from '@/app/test-runs/[slug]/page';
 // Note: We keep imports of these for mocking API behavior, but tests will assert against the mock-page div
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import { ResultArchiveStoreAPIApi } from '@/generated/galasaapi';
-import ErrorPage from '@/app/error/page';
 
 jest.mock('@/utils/api');
 jest.mock('@/generated/galasaapi');

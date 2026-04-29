@@ -7,7 +7,7 @@
 
 import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/Artifacts.module.css';
 import {
   CarbonIconType,
