@@ -9,8 +9,18 @@
   width: 500px;
 }
 
+.cardContainerExpired {
+  opacity: 0.6;
+  border-left: 4px solid var(--cds-support-error);
+}
+
 .infoContainer {
   margin: 1rem 0;
+}
+
+.expiredLabel {
+  color: var(--cds-support-error);
+  font-weight: 600;
 }
 
 .icon {

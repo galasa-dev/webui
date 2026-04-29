@@ -29,12 +29,18 @@ function TokenCard({
     return formatDate(new Date(token.expiryTime!));
   }, [token.expiryTime, formatDate]);
 
+  // Check if token is expired
+  const isExpired = useMemo(() => {
+    if (!token.expiryTime) return false;
+    return new Date(token.expiryTime) < new Date();
+  }, [token.expiryTime]);
+
   return (
     <SelectableTile
       onClick={() => selectTokenForDeletion(token.tokenId)}
       value={true}
       key={token.tokenId}
-      className={styles.cardContainer}
+      className={`${styles.cardContainer} ${isExpired ? styles.cardContainerExpired : ''}`}
     >
       <h5>{token.description}</h5>
 
@@ -42,9 +48,9 @@ function TokenCard({
         <h6>
           {translations('createdAt')} {formattedCreationDate}
         </h6>
-        { formattedExpiryDate && 
-          <h6>
-            {translations('expires')} {formattedExpiryDate}
+        {formattedExpiryDate &&
+          <h6 className={isExpired ? styles.expiredLabel : ''}>
+            {isExpired ? translations('expired') : translations('expires')} {formattedExpiryDate}
           </h6>
         }
         <h6>

@@ -128,6 +128,7 @@
   "TokenCard": {
     "createdAt": "Erstellt am:",
     "expires": "Läuft ab:",
+    "expired": "Abgelaufen:",
     "owner": "Inhaber"
   },
   "TokenDeleteModal": {
