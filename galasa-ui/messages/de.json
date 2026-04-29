@@ -62,7 +62,9 @@
     "descriptionline1": "Ein Zugriffstoken ist ein eindeutiger geheimer Schlüssel, der von einem Client-Programm gehalten wird, um Zugriff auf den Galasa-Dienst zu erhalten.",
     "descriptionline2": "Ein Token hat die gleichen Zugriffsrechte wie der Benutzer, der es erstellt hat.",
     "deleteButtontext": "{count} ausgewählte Zugriffstoken löschen",
-    "error": "Fehler beim Abrufen der Token vom Galasa API-Server"
+    "error": "Fehler beim Abrufen der Token vom Galasa API-Server",
+    "warningDaysMaximumTitle": "Limit für Token-Ablaufwarnung angewendet",
+    "warningDaysMaximumSubtitle": "Der maximale Wert für service.tokens.lifespan.nearly.expired.warning.days beträgt 30 Tage."
   },
   "ResultsTablePageSizingSetting": {
     "title": "Testergebnisabfrage",
@@ -129,7 +131,8 @@
     "createdAt": "Erstellt am:",
     "expires": "Läuft ab:",
     "expired": "Abgelaufen:",
-    "owner": "Inhaber"
+    "owner": "Inhaber",
+    "nearlyExpiredWarning": "Ihr persönliches Zugriffstoken läuft bald ab . Nach dem Ablauf können Sie es nicht mehr verwenden, um Ihren Galasa-Dienst zu kontaktieren."
   },
   "TokenDeleteModal": {
     "modalHeading": "Zugriffstoken löschen",

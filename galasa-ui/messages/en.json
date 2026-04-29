@@ -62,7 +62,9 @@
     "descriptionline1": "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.",
     "descriptionline2": "A token has the same access rights as the user who allocated it.",
     "deleteButtontext": "Delete {count} selected access token",
-    "error": "Failed to fetch tokens from the Galasa API server"
+    "error": "Failed to fetch tokens from the Galasa API server",
+    "warningDaysMaximumTitle": "Token expiry warning days limit applied",
+    "warningDaysMaximumSubtitle": "The maximum value for service.tokens.lifespan.nearly.expired.warning.days is 30 days."
   },
   "ResultsTablePageSizingSetting": {
     "title": "Test Run Query Results",
@@ -129,7 +131,8 @@
     "createdAt": "Created at:",
     "expires": "Expires:",
     "expired": "Expired:",
-    "owner": "Owner"
+    "owner": "Owner",
+    "nearlyExpiredWarning": "Your personal access token will expire soon . Once it expires, you will no longer be able to use it to contact your Galasa service."
   },
   "TokenDeleteModal": {
     "modalHeading": "Delete Access Tokens",

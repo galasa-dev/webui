@@ -46,6 +46,10 @@
   margin: 1rem 0;
 }
 
+.warningNotification {
+  margin-top: 1rem;
+}
+
 .experimentalFeaturesHeaderContainer {
   display: flex;
   flex-direction: column;

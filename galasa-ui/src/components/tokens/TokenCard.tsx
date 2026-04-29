@@ -16,9 +16,11 @@ import { useMemo } from 'react';
 function TokenCard({
   token,
   selectTokenForDeletion,
+  expiryWarningDays,
 }: {
   token: AuthToken;
   selectTokenForDeletion: Function;
+  expiryWarningDays: number;
 }) {
   const translations = useTranslations('TokenCard');
   const { formatDate } = useDateTimeFormat();
@@ -34,6 +36,17 @@ function TokenCard({
     if (!token.expiryTime) return false;
     return new Date(token.expiryTime) < new Date();
   }, [token.expiryTime]);
+
+  const isNearlyExpired = useMemo(() => {
+    if (!token.expiryTime || isExpired) return false;
+
+    const expiryTime = new Date(token.expiryTime).getTime();
+    const currentTime = Date.now();
+    // Where 86400000 = 24 hours in milliseconds = 24 * 60 * 60 * 1000
+    const warningWindowInMilliseconds = expiryWarningDays * 86400000;
+
+    return expiryTime - currentTime <= warningWindowInMilliseconds;
+  }, [token.expiryTime, isExpired, expiryWarningDays]);
 
   return (
     <SelectableTile
@@ -58,7 +71,14 @@ function TokenCard({
         </h6>
       </div>
 
-      <Password className={styles.icon} size={40} />
+      <div className={styles.iconWarningContainer}>
+        <Password className={styles.icon} size={40} />
+        {isNearlyExpired && (
+          <p className={styles.expiryWarning}>
+            {translations('nearlyExpiredWarning')}
+          </p>
+        )}
+      </div>
     </SelectableTile>
   );
 }

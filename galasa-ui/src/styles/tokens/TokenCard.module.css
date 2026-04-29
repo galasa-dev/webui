@@ -15,7 +15,8 @@
 }
 
 .infoContainer {
-  margin: 1rem 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .expiredLabel {
@@ -23,6 +24,21 @@
   font-weight: 600;
 }
 
-.icon {
+.iconWarningContainer {
   margin-top: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex: 0 0 180px;
+}
+
+.expiryWarning {
+  color: var(--cds-support-warning);
+  font-size: 0.8rem;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.icon {
+  flex-shrink: 0;
 }

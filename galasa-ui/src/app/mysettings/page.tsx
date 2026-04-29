@@ -8,7 +8,7 @@ import { cookies } from 'next/headers';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import TokenResponseModal from '@/components/tokens/TokenResponseModal';
 import PageTile from '@/components/PageTile';
-import { UsersAPIApi } from '@/generated/galasaapi';
+import { ConfigurationPropertyStoreAPIApi, UsersAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import * as Constants from '@/utils/constants/common';
 import BreadCrumb from '@/components/common/BreadCrumb';
@@ -20,6 +20,30 @@ import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import ProfileRole from '@/components/users/UserRole';
 import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
 import ResultsTablePageSizeSetting from '@/components/mysettings/ResultsTablePageSizeSetting';
+
+const getValidatedWarningDays = (value?: string) => {
+  const parsedValue = Number.parseInt(value ?? '', 10);
+
+  if (Number.isNaN(parsedValue) || parsedValue < 0) {
+    return {
+      warningDays: Constants.DEFAULT_ACCESS_TOKEN_EXPIRY_WARNING_DAYS,
+      exceededMaximum: false,
+    };
+  }
+
+  if (parsedValue > Constants.MAX_ACCESS_TOKEN_EXPIRY_WARNING_DAYS) {
+    return {
+      warningDays: Constants.MAX_ACCESS_TOKEN_EXPIRY_WARNING_DAYS,
+      exceededMaximum: true,
+    };
+  }
+
+  return {
+    warningDays: parsedValue,
+    exceededMaximum: false,
+  };
+};
+
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
 
@@ -48,12 +72,29 @@ export default async function MySettings() {
     return loginId;
   };
 
+  const fetchTokenExpiryWarningConfiguration = async () => {
+    try {
+      const cpsApiClientWithAuthHeader = new ConfigurationPropertyStoreAPIApi(apiConfig);
+      const warningPropertyResponse = await cpsApiClientWithAuthHeader.getCpsProperty(
+        Constants.ACCESS_TOKEN_EXPIRY_WARNING_PROPERTY_NAMESPACE,
+        Constants.ACCESS_TOKEN_EXPIRY_WARNING_PROPERTY_NAME
+      );
+
+      const warningPropertyValue = warningPropertyResponse?.[0]?.data?.value;
+      return getValidatedWarningDays(warningPropertyValue);
+    } catch (error) {
+      return getValidatedWarningDays();
+    }
+  };
+
   // Await the login ID before using it
   const userLoginId = await fetchUserLoginId();
 
   if (!userLoginId) {
     return <ErrorPage />;
   }
+
+  const tokenExpiryWarningConfiguration = await fetchTokenExpiryWarningConfiguration();
 
   return (
     <main id="content">
@@ -63,6 +104,8 @@ export default async function MySettings() {
       <AccessTokensSection
         accessTokensPromise={fetchAccessTokens(userLoginId)}
         isAddBtnVisible={true}
+        tokenExpiryWarningDays={tokenExpiryWarningConfiguration.warningDays}
+        showMaxWarningDaysNotice={tokenExpiryWarningConfiguration.exceededMaximum}
       />
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeSettings />
