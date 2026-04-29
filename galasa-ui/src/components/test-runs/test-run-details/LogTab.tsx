@@ -255,27 +255,43 @@ export default function LogTab({
 
   const scrollToTop = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: 0,
-        behavior: ANIMATION_BEHAVIOUR,
-      });
+      // First update the visible range to include top lines
       setVisibleRange({ start: 0, end: Math.min(MIN_VISIBLE_LINES, visibleLines.length) });
+
+      // Wait for React to render the new range, then scroll
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: 0,
+            behavior: ANIMATION_BEHAVIOUR,
+          });
+        }
+      });
     }
   };
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
       const maxScroll = visibleLines.length * LINE_HEIGHT_PIXELS;
-      scrollContainerRef.current.scrollTo({
-        top: maxScroll,
-        behavior: ANIMATION_BEHAVIOUR,
-      });
+      const container = scrollContainerRef.current;
+
+      // First calculate and set the visible range for bottom lines
       const newRange = calculateVisibleRange(
         maxScroll,
-        scrollContainerRef.current.clientHeight,
+        container.clientHeight,
         visibleLines.length
       );
       setVisibleRange(newRange);
+
+      // Wait for React to render the new range, then scroll
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: maxScroll,
+            behavior: ANIMATION_BEHAVIOUR,
+          });
+        }
+      });
     }
   };
 

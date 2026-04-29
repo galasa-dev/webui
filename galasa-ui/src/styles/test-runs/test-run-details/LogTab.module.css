@@ -56,7 +56,7 @@
 .logEntry {
   line-height: 1;
 
-  /* Fixed height - CRITICAL for virtual scrolling */
+  /* Fixed height - needed for virtual scrolling */
   height: 24px;
 
   display: flex;
