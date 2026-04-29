@@ -40,6 +40,7 @@ import {
   SINGLE_RUN_QUERY_PARAMS,
   TEST_RUN_PAGE_TABS,
   NOTIFICATION_VISIBLE_MILLISECS,
+  TEST_RUN_TAB_NAMES,
 } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
 import { TreeNodeData } from '@/utils/functions/artifacts';
@@ -161,9 +162,9 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     [runId, formatDate]
   );
 
-  const loadArtifacts = async () => {
-    // Don't reload if already loaded or currently loading
-    if (artifactsLoaded || artifactsLoading) return;
+  const loadArtifacts = useCallback(async () => {
+    // Don't reload if already loaded, currently loading, or has an error
+    if (artifactsLoaded || artifactsLoading || artifactsError) return;
 
     setArtifactsLoading(true);
     setArtifactsError(null);
@@ -182,11 +183,11 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     } finally {
       setArtifactsLoading(false);
     }
-  };
+  }, [runId, artifactsLoaded, artifactsLoading, artifactsError]);
 
-  const loadLogs = async () => {
-    // Don't reload if already loaded or currently loading
-    if (logsLoaded || logsLoading) return;
+  const loadLogs = useCallback(async () => {
+    // Don't reload if already loaded, currently loading, or has an error
+    if (logsLoaded || logsLoading || logsError) return;
 
     setLogsLoading(true);
     setLogsError(null);
@@ -205,7 +206,7 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     } finally {
       setLogsLoading(false);
     }
-  };
+  }, [runId, logsLoaded, logsLoading, logsError]);
 
   useEffect(() => {
     // If run details are already loaded, skip fetching
@@ -231,21 +232,19 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
 
   // If artifacts tab is selected in URL on initial load, fetch artifacts
   useEffect(() => {
-    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf('artifacts');
+    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.ARTIFACTS);
     if (selectedTabIndex === artifactsTabIndex && !artifactsLoaded && !artifactsLoading && run) {
       loadArtifacts();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTabIndex, artifactsLoaded, artifactsLoading, run]);
+  }, [selectedTabIndex, artifactsLoaded, artifactsLoading, run, loadArtifacts]);
 
   // If log tab is selected in URL on initial load, fetch logs
   useEffect(() => {
-    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
     if (selectedTabIndex === logTabIndex && !logsLoaded && !logsLoading && run) {
       loadLogs();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTabIndex, logsLoaded, logsLoading, run]);
+  }, [selectedTabIndex, logsLoaded, logsLoading, run, loadLogs]);
 
   // Fetch existing tags once on component mount (persists across tab changes)
   useEffect(() => {
@@ -354,13 +353,13 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     setSelectedTabIndex(newIndex);
 
     // Lazy load artifacts when Artifacts tab is selected
-    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf('artifacts');
+    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.ARTIFACTS);
     if (newIndex === artifactsTabIndex && !artifactsLoaded && !artifactsLoading) {
       loadArtifacts();
     }
 
     // Lazy load logs when Run Log tab is selected
-    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
     if (newIndex === logTabIndex && !logsLoaded && !logsLoading) {
       loadLogs();
     }
@@ -368,11 +367,11 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[newIndex]);
     // When switching away from the log tab, remove the line parameter
-    if (TEST_RUN_PAGE_TABS[newIndex] !== 'runLog') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== TEST_RUN_TAB_NAMES.RUN_LOG) {
       params.delete(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
     }
     // When switching away from the 3270 tab, remove the terminalScreen parameter
-    if (TEST_RUN_PAGE_TABS[newIndex] !== '3270') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== TEST_RUN_TAB_NAMES.ZOS3270) {
       params.delete(SINGLE_RUN_QUERY_PARAMS.TERMINAL_SCREEN);
     }
 
@@ -381,7 +380,7 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
 
   // Handle method click to navigate to the log tab with the correct line number
   const handleNavigateToLog = (method: MethodDetails) => {
-    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
     setSelectedTabIndex(logTabIndex);
 
     const params = new URLSearchParams(searchParams.toString());

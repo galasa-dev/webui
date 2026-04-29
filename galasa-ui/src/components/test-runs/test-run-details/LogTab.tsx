@@ -65,8 +65,8 @@ interface selectedRange {
 const SELECTION_CHANGE_EVENT = 'selectionchange';
 const HASH_CHANGE_EVENT = 'hashchange';
 
-// Height of each log line in pixels
 const LINE_HEIGHT_PIXELS = 24;
+const MIN_VISIBLE_LINES = 100;
 
 // Number of lines to render above/below viewport
 const VIEWPORT_LINE_BUFFER_SIZE = 50;
@@ -101,7 +101,7 @@ export default function LogTab({
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
 
   // Virtual scrolling state
-  const [visibleRange, setVisibleRange] = useState({ start: 0, end: 100 });
+  const [visibleRange, setVisibleRange] = useState({ start: 0, end: MIN_VISIBLE_LINES });
 
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
@@ -259,7 +259,7 @@ export default function LogTab({
         top: 0,
         behavior: ANIMATION_BEHAVIOUR,
       });
-      setVisibleRange({ start: 0, end: Math.min(100, visibleLines.length) });
+      setVisibleRange({ start: 0, end: Math.min(MIN_VISIBLE_LINES, visibleLines.length) });
     }
   };
 
@@ -461,6 +461,9 @@ export default function LogTab({
   // Handle scroll events with throttling for virtual scrolling
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
+      const SCROLL_TIMEOUT_DELAY = 16;
+      const SCROLL_RANGE_DIFFERENCE_LIMIT = 10;
+
       const target = e.currentTarget;
       const newScrollTop = target.scrollTop;
 
@@ -478,12 +481,12 @@ export default function LogTab({
 
         // Only update if range changed significantly (avoid excessive re-renders)
         if (
-          Math.abs(newRange.start - visibleRange.start) > 10 ||
-          Math.abs(newRange.end - visibleRange.end) > 10
+          Math.abs(newRange.start - visibleRange.start) > SCROLL_RANGE_DIFFERENCE_LIMIT ||
+          Math.abs(newRange.end - visibleRange.end) > SCROLL_RANGE_DIFFERENCE_LIMIT
         ) {
           setVisibleRange(newRange);
         }
-      }, 16); // ~60fps
+      }, SCROLL_TIMEOUT_DELAY);
 
       checkScrollPosition();
     },
@@ -729,15 +732,16 @@ export default function LogTab({
       const lines = logContent.split('\n');
       let currentIndex = 0;
       const processed: LogLine[] = [];
-      let currentLevel = 'INFO';
+      let currentLevel = 'INFO'; // Default level
 
+      const MAX_IDLE_TIME_MS = 50;
       const processChunk = (deadline: IdleDeadline) => {
         // Process as many lines as we can in this idle period
         const startTime = performance.now();
 
         while (
           currentIndex < lines.length &&
-          (deadline.timeRemaining() > 0 || performance.now() - startTime < 50)
+          (deadline.timeRemaining() > 0 || performance.now() - startTime < MAX_IDLE_TIME_MS)
         ) {
           const line = lines[currentIndex];
           const detectedLevel = getLogLevel(line);
