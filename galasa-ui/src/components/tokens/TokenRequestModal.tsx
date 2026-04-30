@@ -56,7 +56,8 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';
     const lifespan = getEffectiveLifespan();
-    const isLifespanValid = lifespan >= MIN_LIFESPAN && lifespan <= MAX_LIFESPAN;
+    const isLifespanValid =
+      Number.isInteger(lifespan) && lifespan >= MIN_LIFESPAN && lifespan <= MAX_LIFESPAN;
     setSubmitDisabled(!tokenName || !isLifespanValid);
   };
 

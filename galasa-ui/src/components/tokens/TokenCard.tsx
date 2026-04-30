@@ -12,6 +12,7 @@ import { AuthToken } from '@/generated/galasaapi';
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useMemo } from 'react';
+import { DAY_MS } from '@/utils/constants/common';
 
 function TokenCard({
   token,
@@ -28,7 +29,7 @@ function TokenCard({
     return formatDate(new Date(token.creationTime!));
   }, [token.creationTime, formatDate]);
   const formattedExpiryDate = useMemo(() => {
-    return formatDate(new Date(token.expiryTime!));
+    return token.expiryTime ? formatDate(new Date(token.expiryTime)) : null;
   }, [token.expiryTime, formatDate]);
 
   // Check if token is expired
@@ -42,8 +43,7 @@ function TokenCard({
 
     const expiryTime = new Date(token.expiryTime).getTime();
     const currentTime = Date.now();
-    // Where 86400000 = 24 hours in milliseconds = 24 * 60 * 60 * 1000
-    const warningWindowInMilliseconds = expiryWarningDays * 86400000;
+    const warningWindowInMilliseconds = expiryWarningDays * DAY_MS;
 
     return expiryTime - currentTime <= warningWindowInMilliseconds;
   }, [token.expiryTime, isExpired, expiryWarningDays]);

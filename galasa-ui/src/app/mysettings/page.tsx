@@ -83,6 +83,7 @@ export default async function MySettings() {
       const warningPropertyValue = warningPropertyResponse?.[0]?.data?.value;
       return getValidatedWarningDays(warningPropertyValue);
     } catch (error) {
+      console.error('Failed to fetch token expiry warning configuration, using defaults:', error);
       return getValidatedWarningDays();
     }
   };
