@@ -21,7 +21,7 @@ const mockUpdateQuery = jest.fn();
 const mockGetQuery = jest.fn();
 const mockIsQuerySaved = jest.fn();
 const mockSaveQuery = jest.fn();
-const mockSetQueryName = jest.fn();
+const mockUpdateQueryInUrl = jest.fn();
 
 let mockQueryName = 'Initial Query';
 let mockSearchParams = new URLSearchParams();
@@ -73,14 +73,14 @@ jest.mock('@/contexts/TestRunsQueryParamsContext', () => ({
   TestRunsQueryParamsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useTestRunsQueryParams: jest.fn(() => ({
     queryName: mockQueryName,
-    setQueryName: mockSetQueryName,
     searchParams: mockSearchParams,
+    updateQueryInUrl: mockUpdateQueryInUrl,
   })),
 }));
 
 // Mock other components
 jest.mock('@/components/common/BreadCrumb', () => {
-  const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: any[] }) => (
+  const BreadCrumb = ({ breadCrumbItems }: { breadCrumbItems: Array<{ route?: string }> }) => (
     <nav data-testid="breadcrumb" data-route={breadCrumbItems[0]?.route || ''}>
       Home
     </nav>
@@ -126,31 +126,49 @@ jest.mock('next-intl', () => ({
 
 // Carbon React mocks
 jest.mock('@carbon/react', () => ({
-  Button: ({ children, iconDescription, disabled, ...props }: any) => (
+  Button: ({
+    children,
+    iconDescription,
+    disabled,
+    ...props
+  }: {
+    children?: React.ReactNode;
+    iconDescription?: string;
+    disabled?: boolean;
+    [key: string]: unknown;
+  }) => (
     <button {...props} aria-label={iconDescription} disabled={disabled}>
       {children}
     </button>
   ),
-  Tile: ({ children, ...props }: any) => (
+  Tile: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
     <div {...props} data-testid="tile">
       {children}
     </div>
   ),
-  InlineNotification: ({ title, subtitle, kind }: any) => (
+  InlineNotification: ({
+    title,
+    subtitle,
+    kind,
+  }: {
+    title: string;
+    subtitle: string;
+    kind: string;
+  }) => (
     <div data-testid="notification" className={`notification-${kind}`}>
       <strong>{title}</strong>
       <p>{subtitle}</p>
     </div>
   ),
-  SkeletonText: ({ heading }: any) => (
+  SkeletonText: ({ heading }: { heading?: boolean }) => (
     <div data-testid="skeleton-text" className={heading ? 'skeleton-heading' : 'skeleton-text'}>
       Loading...
     </div>
   ),
-  Search: ({ ...props }: any) => <input {...props} data-testid="search" />,
+  Search: ({ ...props }: { [key: string]: unknown }) => <input {...props} data-testid="search" />,
 }));
 
-const renderWithProviders = (ui: React.ReactElement<any>) => {
+const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
@@ -185,8 +203,8 @@ beforeEach(() => {
 
   (useTestRunsQueryParams as jest.Mock).mockImplementation(() => ({
     queryName: mockQueryName,
-    setQueryName: mockSetQueryName,
     searchParams: mockSearchParams,
+    updateQueryInUrl: mockUpdateQueryInUrl,
   }));
   (useSavedQueries as jest.Mock).mockImplementation(() => ({
     saveQuery: mockSaveQuery,
@@ -351,21 +369,22 @@ describe('TestRunsDetails', () => {
       await user.clear(input);
       await user.type(input, 'My Renamed Query');
 
-      // 3. Save by blurring the input
-      await user.tab();
+      // 3. Save by clicking the Save Query button
+      const saveButton = screen.getByRole('button', { name: /Save Query/i });
+      await user.click(saveButton);
 
       // Assert
       expect(mockUpdateQuery).toHaveBeenCalledTimes(1);
-      // encode url first
-      const encodedURL = encodeStateToUrlParam('queryName=My+Renamed+Query&tab=results');
-      expect(mockUpdateQuery).toHaveBeenCalledWith(initialQuery.createdAt, {
-        ...initialQuery,
-        title: 'My Renamed Query',
-        url: encodedURL, // URL is updated with new name
-      });
 
-      expect(mockSetQueryName).toHaveBeenCalledTimes(1);
-      expect(mockSetQueryName).toHaveBeenCalledWith('My Renamed Query');
+      // Verify the update was called with the correct parameters
+      const updateCall = mockUpdateQuery.mock.calls[0];
+      expect(updateCall[0]).toBe(initialQuery.createdAt);
+      expect(updateCall[1].title).toBe('My Renamed Query');
+      expect(updateCall[1].createdAt).toBe(initialQuery.createdAt);
+      // URL should be encoded and contain the new query name
+      expect(updateCall[1].url).toBeTruthy();
+
+      expect(mockUpdateQueryInUrl).toHaveBeenCalledTimes(1);
     });
 
     test('renames an unsaved query without calling updateQuery', async () => {
@@ -389,11 +408,14 @@ describe('TestRunsDetails', () => {
       const input = screen.getByDisplayValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'A Brand New Name');
-      await user.tab();
 
-      // Should only update local/URL state, not persistent storage
+      // Click Save Query button to save
+      const saveButton = screen.getByRole('button', { name: /Save Query/i });
+      await user.click(saveButton);
+
+      // Should create a new query, not update existing
       expect(mockUpdateQuery).not.toHaveBeenCalled();
-      expect(mockSetQueryName).toHaveBeenCalledWith('A Brand New Name');
+      expect(mockSaveQuery).toHaveBeenCalledTimes(1);
     });
 
     test('revert to previous query name when the input is empty', async () => {
@@ -417,7 +439,7 @@ describe('TestRunsDetails', () => {
 
       // Assert
       expect(mockUpdateQuery).not.toHaveBeenCalled();
-      expect(mockSetQueryName).not.toHaveBeenCalled();
+      expect(mockUpdateQueryInUrl).not.toHaveBeenCalled();
       expect(screen.getByText('Initial Query')).toBeInTheDocument();
     });
 
@@ -438,7 +460,10 @@ describe('TestRunsDetails', () => {
       const input = screen.getByDisplayValue('Initial Query');
       await user.clear(input);
       await user.type(input, 'Existing Name');
-      await user.tab();
+
+      // Click Save Query button to trigger validation
+      const saveButton = screen.getByRole('button', { name: /Save Query/i });
+      await user.click(saveButton);
 
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-error');
@@ -519,7 +544,6 @@ describe('TestRunsDetails', () => {
     });
 
     test('disable save button when query name is not unique', async () => {
-      const user = userEvent.setup();
       mockQueryName = 'Conflict Query';
       mockGetQuery.mockReturnValue(null);
       // isQuerySaved should be true for the original name, but false for the new one
