@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 
 interface TokenDetails {
   tokenDescription: string;
-  token_lifespan_days: number;
+  tokenLifespanDays: number;
 }
 
 // POST request handler for requests to /auth/tokens
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     cookiesStore.set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, {
       httpOnly: true,
     });
-    cookiesStore.set(AuthCookies.TOKEN_LIFESPAN_DAYS, String(requestBody.token_lifespan_days), {
+    cookiesStore.set(AuthCookies.TOKEN_LIFESPAN_DAYS, String(requestBody.tokenLifespanDays), {
       httpOnly: true,
     });
 

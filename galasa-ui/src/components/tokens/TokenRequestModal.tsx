@@ -11,43 +11,47 @@ import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useTranslations } from 'next-intl';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import styles from '@/styles/tokens/TokenRequestModal.module.css';
-
-const PRESET_LIFESPANS = [7, 30, 90];
-const CUSTOM_VALUE_ID = 'custom';
-const MIN_LIFESPAN = 1;
-const MAX_LIFESPAN = 365;
+import {
+  TOKEN_PRESET_LIFESPANS,
+  TOKEN_CUSTOM_VALUE_ID,
+  TOKEN_CUSTOM_DEFAULT_LIFESPAN,
+  TOKEN_MIN_LIFESPAN,
+  TOKEN_MAX_LIFESPAN,
+} from '@/utils/constants/common';
 
 export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean }) {
   const translations = useTranslations('TokenRequestModal');
+  const { formatDate } = useDateTimeFormat();
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [selectedLifespan, setSelectedLifespan] = useState<string>(String(PRESET_LIFESPANS[0]));
-  const [customLifespan, setCustomLifespan] = useState<number>(7);
+  const [selectedLifespan, setSelectedLifespan] = useState<string>(String(TOKEN_PRESET_LIFESPANS[0]));
+  const [customLifespan, setCustomLifespan] = useState<number>(TOKEN_CUSTOM_DEFAULT_LIFESPAN);
   const tokenNameInputRef = useRef<HTMLInputElement>(undefined);
 
   const getExpiryDate = (days: number): string => {
     const date = new Date();
     date.setDate(date.getDate() + days);
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+    return formatDate(date);
   };
 
   const getLifespanOptions = () => {
-    const options = PRESET_LIFESPANS.map((days) => ({
+    const options = TOKEN_PRESET_LIFESPANS.map((days) => ({
       id: String(days),
       label: `${days} days (${getExpiryDate(days)})`,
     }));
     options.push({
-      id: CUSTOM_VALUE_ID,
+      id: TOKEN_CUSTOM_VALUE_ID,
       label: translations('custom_lifespan'),
     });
     return options;
   };
 
   const getEffectiveLifespan = (): number => {
-    if (selectedLifespan === CUSTOM_VALUE_ID) {
+    if (selectedLifespan === TOKEN_CUSTOM_VALUE_ID) {
       return customLifespan;
     }
     return parseInt(selectedLifespan, 10);
@@ -57,7 +61,7 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';
     const lifespan = getEffectiveLifespan();
     const isLifespanValid =
-      Number.isInteger(lifespan) && lifespan >= MIN_LIFESPAN && lifespan <= MAX_LIFESPAN;
+      Number.isInteger(lifespan) && lifespan >= TOKEN_MIN_LIFESPAN && lifespan <= TOKEN_MAX_LIFESPAN;
     setSubmitDisabled(!tokenName || !isLifespanValid);
   };
 
@@ -113,8 +117,8 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
         onRequestClose={() => {
           setOpen(false);
           setError('');
-          setSelectedLifespan(String(PRESET_LIFESPANS[0]));
-          setCustomLifespan(7);
+          setSelectedLifespan(String(TOKEN_PRESET_LIFESPANS[0]));
+          setCustomLifespan(TOKEN_CUSTOM_DEFAULT_LIFESPAN);
         }}
         onRequestSubmit={async () => {
           if (!submitDisabled) {
@@ -157,15 +161,15 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
           }}
         />
 
-        {selectedLifespan === CUSTOM_VALUE_ID && (
+        {selectedLifespan === TOKEN_CUSTOM_VALUE_ID && (
           <>
             <br />
             <NumberInput
               id="custom-lifespan-input"
               label={translations('custom_lifespan_days')}
               helperText={translations('custom_lifespan_helper_text')}
-              min={MIN_LIFESPAN}
-              max={MAX_LIFESPAN}
+              min={TOKEN_MIN_LIFESPAN}
+              max={TOKEN_MAX_LIFESPAN}
               value={customLifespan}
               onChange={(_e: unknown, { value }: { value?: number | null }) => {
                 if (value !== undefined && value !== null) {
@@ -174,7 +178,7 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
                 }
               }}
               invalidText={translations('custom_lifespan_invalid')}
-              invalid={customLifespan < MIN_LIFESPAN || customLifespan > MAX_LIFESPAN}
+              invalid={customLifespan < TOKEN_MIN_LIFESPAN || customLifespan > TOKEN_MAX_LIFESPAN}
             />
           </>
         )}
