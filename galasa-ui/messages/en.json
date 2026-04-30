@@ -132,7 +132,7 @@
     "expires": "Expires:",
     "expired": "Expired:",
     "owner": "Owner",
-    "nearlyExpiredWarning": "Your personal access token will expire soon . Once it expires, you will no longer be able to use it to contact your Galasa service."
+    "nearlyExpiredWarning": "Your personal access token will expire soon. Once it expires, you will no longer be able to use it to contact this Galasa service."
   },
   "TokenDeleteModal": {
     "modalHeading": "Delete Access Tokens",

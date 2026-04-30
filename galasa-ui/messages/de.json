@@ -132,7 +132,7 @@
     "expires": "Läuft ab:",
     "expired": "Abgelaufen:",
     "owner": "Inhaber",
-    "nearlyExpiredWarning": "Ihr persönliches Zugriffstoken läuft bald ab . Nach dem Ablauf können Sie es nicht mehr verwenden, um Ihren Galasa-Dienst zu kontaktieren."
+    "nearlyExpiredWarning": "Ihr persönlicher Zugriffstoken läuft bald ab. Nach Ablauf des Tokens können Sie ihn nicht mehr verwenden, um diesen Galasa-Dienst zu kontaktieren."
   },
   "TokenDeleteModal": {
     "modalHeading": "Zugriffstoken löschen",
