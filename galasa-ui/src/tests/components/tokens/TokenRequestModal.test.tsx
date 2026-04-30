@@ -340,7 +340,7 @@ describe('Token request modal', () => {
     await act(async () => {
       render(<TokenRequestModal isDisabled={false} />);
     });
-    
+
     const openModalButtonElement = screen.getByRole('token-request-btn');
 
     // When...

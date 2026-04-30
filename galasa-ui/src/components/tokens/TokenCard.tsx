@@ -61,11 +61,11 @@ function TokenCard({
         <h6>
           {translations('createdAt')} {formattedCreationDate}
         </h6>
-        {formattedExpiryDate &&
+        {formattedExpiryDate && (
           <h6 className={isExpired ? styles.expiredLabel : ''}>
             {isExpired ? translations('expired') : translations('expires')} {formattedExpiryDate}
           </h6>
-        }
+        )}
         <h6>
           {translations('owner')} {token.owner?.loginId}
         </h6>
@@ -74,9 +74,7 @@ function TokenCard({
       <div className={styles.iconWarningContainer}>
         <Password className={styles.icon} size={40} />
         {isNearlyExpired && (
-          <p className={styles.expiryWarning}>
-            {translations('nearlyExpiredWarning')}
-          </p>
+          <p className={styles.expiryWarning}>{translations('nearlyExpiredWarning')}</p>
         )}
       </div>
     </SelectableTile>
