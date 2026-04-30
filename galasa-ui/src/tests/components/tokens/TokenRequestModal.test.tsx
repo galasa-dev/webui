@@ -462,4 +462,120 @@ describe('Token request modal', () => {
       })
     );
   });
+
+  it('shows invalid state for custom lifespan below minimum', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+
+    // Select Custom from dropdown
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Enter invalid value (0)
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      fireEvent.change(customInput, { target: { value: 0 } });
+    });
+
+    // Then...
+    const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+    expect(customInput).toHaveAttribute('data-invalid', 'true');
+  });
+
+  it('shows invalid state for custom lifespan above maximum', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+
+    // Select Custom from dropdown
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Enter invalid value (1000)
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      fireEvent.change(customInput, { target: { value: 1000 } });
+    });
+
+    // Then...
+    const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+    expect(customInput).toHaveAttribute('data-invalid', 'true');
+  });
+
+  it('enables submit button for valid custom lifespan at minimum boundary', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+    fireEvent.input(modalNameInputElement, { target: { value: 'test-token' } });
+
+    // Select Custom from dropdown
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Enter valid value at minimum (1)
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      fireEvent.change(customInput, { target: { value: 1 } });
+    });
+
+    // Then...
+    const modalCreateButtonElement = screen.getByText(/^Create$/);
+    expect(modalCreateButtonElement).not.toBeDisabled();
+  });
+
+  it('enables submit button for valid custom lifespan at maximum boundary', async () => {
+    // Given...
+    await act(async () => {
+      render(<TokenRequestModal isDisabled={false} />);
+    });
+
+    const openModalButtonElement = screen.getByRole('token-request-btn');
+    const modalNameInputElement = screen.getByLabelText(/Token Name/i);
+
+    // When...
+    fireEvent.click(openModalButtonElement);
+    fireEvent.input(modalNameInputElement, { target: { value: 'test-token' } });
+
+    // Select Custom from dropdown
+    const dropdownButton = screen.getByRole('combobox');
+    fireEvent.click(dropdownButton);
+    const customOption = screen.getByText(/^Custom$/);
+    fireEvent.click(customOption);
+
+    // Enter valid value at maximum (365)
+    await waitFor(() => {
+      const customInput = screen.getByLabelText(/Custom lifespan \(days\)/i);
+      fireEvent.change(customInput, { target: { value: 365 } });
+    });
+
+    // Then...
+    const modalCreateButtonElement = screen.getByText(/^Create$/);
+    expect(modalCreateButtonElement).not.toBeDisabled();
+  });
 });
