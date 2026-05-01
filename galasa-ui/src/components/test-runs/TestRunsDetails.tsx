@@ -10,7 +10,7 @@ import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
-import { NotificationType } from '@/utils/types/common';
+import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { Button, InlineNotification } from '@carbon/react';
 import { Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
@@ -40,7 +40,7 @@ export default function TestRunsDetails({
   const translations = useTranslations('TestRunsDetails');
 
   const { saveQuery, isQuerySaved, getQueryByName, updateQuery } = useSavedQueries();
-  const { queryName, setQueryName, searchParams } = useTestRunsQueryParams();
+  const { queryName, searchParams, updateQueryInUrl } = useTestRunsQueryParams();
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
@@ -49,6 +49,15 @@ export default function TestRunsDetails({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeQuery = getQueryByName(queryName);
+
+  const hasUnsavedNameChange = useMemo(() => {
+    let hasUnsavedChanges = false;
+    if (isEditingName) {
+      const trimmedName = editedName.trim();
+      hasUnsavedChanges = trimmedName !== '' && trimmedName !== queryName;
+    }
+    return hasUnsavedChanges;
+  }, [isEditingName, editedName, queryName]);
 
   // Sync editedName with queryName when queryName changes
   useEffect(() => {
@@ -68,28 +77,17 @@ export default function TestRunsDetails({
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setNotification({
-        kind: 'success',
-        title: translations('copiedTitle'),
-        subtitle: translations('copiedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      showNotification('success', translations('copiedTitle'), translations('copiedMessage'));
     } catch (err) {
       if (window.location.protocol === 'http:') {
-        setNotification({
-          kind: 'warning',
-          title: translations('warningTitle'),
-          subtitle:
-            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
-        });
-        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+        showNotification(
+          'warning',
+          translations('warningTitle'),
+          translations('copyWarningMessage')
+        );
       } else {
         console.error('Failed to copy:', err);
-        setNotification({
-          kind: 'error',
-          title: translations('errorTitle'),
-          subtitle: translations('copyFailedMessage'),
-        });
+        showNotification('error', translations('errorTitle'), translations('copyFailedMessage'));
       }
     }
   };
@@ -101,105 +99,106 @@ export default function TestRunsDetails({
 
   const handleFinishEditing = () => {
     setIsEditingName(false);
-    const newName = editedName.trim();
-    const oldName = queryName;
+  };
 
-    // Do nothing if the name is empty or unchanged.
-    if (!newName || newName === oldName) {
-      return;
+  const showNotification = (kind: NotificationType['kind'], title: string, subtitle: string) => {
+    setNotification({ kind, title, subtitle });
+    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+  };
+
+  const validateQueryName = (newName: string): boolean => {
+    if (isEditingName && newName !== queryName && isQuerySaved(newName)) {
+      showNotification(
+        'error',
+        translations('errorTitle'),
+        translations('nameExistsError', { name: newName })
+      );
+      return false;
     }
+    return true;
+  };
 
-    // Prevent renaming to a name that already exists
-    if (isQuerySaved(newName)) {
-      setNotification({
-        kind: 'error',
-        title: translations('errorTitle'),
-        subtitle: translations('nameExistsError', { name: newName }),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      return;
-    }
+  const prepareQueryUrlParams = (nameToSave: string): URLSearchParams => {
+    const params = new URLSearchParams(searchParams);
+    params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+    params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
+    return params;
+  };
 
-    // Find the original query using the old name
-    const queryToRename = getQueryByName(oldName);
+  const handleRenameQuery = (
+    queryToUpdate: SavedQueryType,
+    nameToSave: string,
+    urlParams: URLSearchParams
+  ) => {
+    updateQueryInUrl(urlParams);
+    updateQuery(queryToUpdate.createdAt, {
+      ...queryToUpdate,
+      title: nameToSave,
+      url: encodeStateToUrlParam(urlParams.toString()),
+    });
+    showNotification('success', translations('successTitle'), translations('queryUpdatedMessage'));
+  };
 
-    // If it was a saved query, perform the rename in storage
-    if (queryToRename) {
-      const updatedUrlParams = new URLSearchParams(searchParams);
+  const handleUpdateExistingQuery = (existingQuery: SavedQueryType, urlParams: URLSearchParams) => {
+    updateQuery(existingQuery.createdAt, {
+      ...existingQuery,
+      url: encodeStateToUrlParam(urlParams.toString()),
+    });
+    showNotification('success', translations('successTitle'), translations('queryUpdatedMessage'));
+  };
 
-      // Update the URL parameters with the new query name and switch to results tab
-      updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, newName);
-      updatedUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
-
-      updateQuery(queryToRename.createdAt, {
-        ...queryToRename,
-        title: newName,
-        url: encodeStateToUrlParam(updatedUrlParams.toString()),
-      });
-
-      setNotification({
-        kind: 'success',
-        title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-    }
-
-    // Update the local state to reflect the new name and save it to the URL
-    setQueryName(newName);
+  const handleCreateNewQuery = (nameToSave: string, urlParams: URLSearchParams) => {
+    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
+    const newQuery = {
+      title: finalQueryTitle,
+      url: encodeStateToUrlParam(urlParams.toString()),
+      createdAt: new Date().toISOString(),
+    };
+    saveQuery(newQuery);
+    showNotification(
+      'success',
+      translations('successTitle'),
+      translations('newQuerySavedMessage', { name: finalQueryTitle })
+    );
   };
 
   // Save new query or update an existing one
   const handleSaveQuery = () => {
-    const nameToSave = queryName.trim();
+    try {
+      const nameToSave = (isEditingName ? editedName : queryName || '').trim();
 
-    if (!nameToSave) return;
+      if (!nameToSave) return;
 
-    const currentUrlParams = new URLSearchParams(searchParams);
+      if (!validateQueryName(nameToSave)) return;
 
-    // Change the tab to be the results tab when saving a query
-    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
-    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
+      const urlParams = prepareQueryUrlParams(nameToSave);
+      const queryToUpdate = getQueryByName(queryName);
 
-    const existingQuery = getQueryByName(nameToSave);
+      if (queryToUpdate && queryToUpdate.title !== nameToSave) {
+        handleRenameQuery(queryToUpdate, nameToSave, urlParams);
+        return;
+      }
 
-    // If the query already exists, update it
-    if (existingQuery) {
-      updateQuery(existingQuery.createdAt, {
-        ...existingQuery,
-        url: encodeStateToUrlParam(currentUrlParams.toString()),
-      });
+      const existingQuery = getQueryByName(nameToSave);
+      if (existingQuery) {
+        handleUpdateExistingQuery(existingQuery, urlParams);
+        return;
+      }
 
-      setNotification({
-        kind: 'success',
-        title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      return;
+      handleCreateNewQuery(nameToSave, urlParams);
+    } finally {
+      if (isEditingName) {
+        setIsEditingName(false);
+      }
     }
-
-    // If the query doesn't exist, create a new one with a unique name
-    const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
-
-    const newQuery = {
-      title: finalQueryTitle,
-      url: encodeStateToUrlParam(currentUrlParams.toString()),
-      createdAt: new Date().toISOString(),
-    };
-
-    // Save the new query to the localStorage
-    saveQuery(newQuery);
-
-    setNotification({
-      kind: 'success',
-      title: translations('success'),
-      subtitle: translations('newQuerySavedMessage', { name: finalQueryTitle }),
-    });
-    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
   const isSaveQueryDisabled = useMemo(() => {
+    // Enable button if there's an unsaved name change
+    if (hasUnsavedNameChange) {
+      return false;
+    }
+
     // If query doesn't exist in storage → keep enabled (it's a new query)
     if (!activeQuery) {
       return isQuerySaved(queryName.trim()) || false;
@@ -236,7 +235,7 @@ export default function TestRunsDetails({
     }
 
     return isDisabled;
-  }, [activeQuery, searchParams, isQuerySaved, queryName]);
+  }, [activeQuery, searchParams, isQuerySaved, queryName, hasUnsavedNameChange]);
 
   return (
     <div className={styles.testRunsPage}>
@@ -275,12 +274,18 @@ export default function TestRunsDetails({
               setEditedName={setEditedName}
               handleFinishEditing={handleFinishEditing}
               handleStartEditingName={handleStartEditingName}
+              handleSaveQuery={handleSaveQuery}
               translations={translations}
             />
 
             <Button
               kind="primary"
               type="button"
+              onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => {
+                // Prevent the input's blur event from firing when clicking this button
+                // This keeps isEditingName true so the button stays enabled and onClick fires
+                e.preventDefault();
+              }}
               onClick={handleSaveQuery}
               disabled={isSaveQueryDisabled}
             >
