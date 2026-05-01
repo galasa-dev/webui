@@ -145,7 +145,7 @@ test('clicking log out button calls handleDeleteCookieApiOperation, RESPONSE OK'
   fireEvent.click(logoutBtn);
 
   await waitFor(() => {
-    expect(fetchMock).toBeCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
 
     expect(mockRouter.refresh).toHaveBeenCalled();
     expect(mockRouter.refresh).toHaveBeenCalledTimes(1);

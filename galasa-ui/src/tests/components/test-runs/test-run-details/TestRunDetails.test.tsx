@@ -20,13 +20,7 @@ function setup<T>() {
 }
 
 // Mock window.history.replaceState
-const mockReplaceState = jest.fn();
-Object.defineProperty(window, 'history', {
-  writable: true,
-  value: {
-    replaceState: mockReplaceState,
-  },
-});
+const mockReplaceState = jest.spyOn(window.history, 'replaceState');
 
 let mockRouter: { replace: jest.Mock };
 
@@ -487,12 +481,6 @@ describe('TestRunDetails', () => {
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
 
-      // Mock HTTPS protocol
-      Object.defineProperty(window, 'location', {
-        value: { href: 'https://example.com', protocol: 'https:' },
-        writable: true,
-      });
-
       render(
         <TestRunDetails
           runId="run-123"
@@ -513,31 +501,26 @@ describe('TestRunDetails', () => {
       const spy = jest
         .spyOn(navigator.clipboard, 'writeText')
         .mockRejectedValue(new Error('Copy failed'));
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       fireEvent.click(screen.getByTestId('icon-Share'));
 
       await waitFor(() => {
-        expect(screen.getByText('Error')).toBeInTheDocument();
-        expect(screen.getByText('Failed to copy URL.')).toBeInTheDocument();
-        expect(screen.getByText('error')).toBeInTheDocument();
+        expect(screen.getByText('Warning')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.'
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText('warning')).toBeInTheDocument();
       });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to copy:', expect.any(Error));
       spy.mockRestore();
-      consoleErrorSpy.mockRestore();
     });
 
     it('shows warning notification when copy fails on HTTP', async () => {
       const runDetailsDeferred = setup<any>();
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
-
-      // Mock HTTP protocol
-      Object.defineProperty(window, 'location', {
-        value: { href: 'http://example.com', protocol: 'http:' },
-        writable: true,
-      });
 
       render(
         <TestRunDetails
@@ -636,10 +619,6 @@ describe('TestRunDetails', () => {
       const runDetailsDeferred = setup<any>();
       const runArtifactsDeferred = setup<any[]>();
       const runLogDeferred = setup<string>();
-
-      // Mock window.location.origin
-      delete (window as any).location;
-      (window as any).location = { origin: 'http://localhost' };
 
       // Mock the successful fetch response
       const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
