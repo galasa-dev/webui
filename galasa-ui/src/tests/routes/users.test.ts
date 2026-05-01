@@ -60,9 +60,9 @@ describe('DELETE /auth/tokens', () => {
   it('Fetches cookies from headers, that are not null, GIVES 204 RESPONSE', async () => {
     const response = await DELETE();
 
-    expect(deleteMock).toBeCalledWith(AuthCookies.ID_TOKEN);
-    expect(deleteMock).toBeCalledWith(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
-    expect(deleteMock).toBeCalledTimes(2);
+    expect(deleteMock).toHaveBeenCalledWith(AuthCookies.ID_TOKEN);
+    expect(deleteMock).toHaveBeenCalledWith(AuthCookies.SHOULD_REDIRECT_TO_SETTINGS);
+    expect(deleteMock).toHaveBeenCalledTimes(2);
     expect(response.status).toBe(204);
   });
 });

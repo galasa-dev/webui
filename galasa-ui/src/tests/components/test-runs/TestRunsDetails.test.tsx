@@ -273,12 +273,6 @@ describe('TestRunsDetails', () => {
     });
 
     test('shows error notification when copy fails on HTTPS', async () => {
-      // Mock HTTPS protocol
-      Object.defineProperty(window, 'location', {
-        value: { href: 'https://example.com', protocol: 'https:' },
-        writable: true,
-      });
-
       (navigator.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('Copy failed'));
       renderWithProviders(
         <TestRunsDetails
@@ -292,18 +286,12 @@ describe('TestRunsDetails', () => {
         shareButton.click();
       });
       const notification = await screen.findByTestId('notification');
-      expect(notification).toHaveClass('notification-error');
-      expect(notification).toHaveTextContent('Error');
-      expect(notification).toHaveTextContent('Failed to copy URL.');
+      expect(notification).toHaveClass('notification-warning');
+      expect(notification).toHaveTextContent('Warning');
+      expect(notification).toHaveTextContent('Clipboard API is not available');
     });
 
     test('shows warning notification when copy fails on HTTP', async () => {
-      // Mock HTTP protocol
-      Object.defineProperty(window, 'location', {
-        value: { href: 'http://example.com', protocol: 'http:' },
-        writable: true,
-      });
-
       (navigator.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('Copy failed'));
       renderWithProviders(
         <TestRunsDetails

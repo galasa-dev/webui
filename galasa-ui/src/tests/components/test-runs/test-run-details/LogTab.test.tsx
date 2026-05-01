@@ -626,13 +626,7 @@ Line with $dollar and ^caret`;
 
     it('scrolls to the line specified in the URL hash and highlights it', async () => {
       // Set the URL hash before rendering
-      Object.defineProperty(window, 'location', {
-        value: {
-          ...window.location,
-          hash: '#log-3-0-3-5',
-        },
-        writable: true,
-      });
+      window.history.pushState(null, '', '#log-3-0-3-5');
 
       render(<LogTab logs={sampleLogs} runId={''} />);
 
@@ -655,13 +649,7 @@ Line with $dollar and ^caret`;
 
     it('scrolls to a new line when the hash changes', async () => {
       // Start with no hash
-      Object.defineProperty(window, 'location', {
-        value: {
-          ...window.location,
-          hash: '',
-        },
-        writable: true,
-      });
+      window.history.pushState(null, '', '/');
 
       render(<LogTab logs={sampleLogs} runId={''} />);
 
@@ -676,13 +664,7 @@ Line with $dollar and ^caret`;
 
       // Change the URL hash and trigger the event
       act(() => {
-        Object.defineProperty(window, 'location', {
-          value: {
-            ...window.location,
-            hash: '#log-5-0-5-5',
-          },
-          writable: true,
-        });
+        window.history.pushState(null, '', '#log-5-0-5-5');
 
         // Dispatch the hashchange event
         window.dispatchEvent(new HashChangeEvent('hashchange'));
