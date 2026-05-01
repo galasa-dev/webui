@@ -235,13 +235,7 @@ describe('QueryItem', () => {
 
     test('should copy query URL to clipboard and show success notification', async () => {
       // Set window.location.origin for the test to correctly form the URL
-      Object.defineProperty(window, 'location', {
-        value: {
-          origin: 'http://localhost',
-          pathname: '/test-runs',
-        },
-        writable: true,
-      });
+      window.history.pushState(null, '', '/test-runs');
 
       render(
         <QueryItem

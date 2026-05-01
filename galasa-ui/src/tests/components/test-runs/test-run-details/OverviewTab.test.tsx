@@ -601,12 +601,6 @@ describe('OverviewTab - Tags Edit Modal', () => {
       tags: ['smoke', 'regression'],
     });
 
-    // Mock window.location.reload
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { ...window.location, reload: jest.fn() },
-    });
-
     render(
       <OverviewTab
         metadata={completeMetadata}
@@ -667,12 +661,6 @@ describe('OverviewTab - Tags Edit Modal', () => {
     mockUpdateRunTags.mockResolvedValueOnce({
       success: true,
       tags: ['smoke', 'regression'],
-    });
-
-    // Mock window.location.reload
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { ...window.location, reload: jest.fn() },
     });
 
     render(

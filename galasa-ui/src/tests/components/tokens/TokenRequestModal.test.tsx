@@ -30,14 +30,8 @@ afterEach(() => {
 });
 
 describe('Token request modal', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: { replace: jest.fn() },
-    });
-  });
-
-  afterEach(() => {
-    window.location.href = '';
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('renders invisible token request modal', async () => {
@@ -113,7 +107,12 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.replace).toHaveBeenCalledWith(redirectUrl);
+    expect(global.fetch).toHaveBeenCalledWith('/auth/tokens', {
+      method: 'POST',
+      body: JSON.stringify({
+        tokenDescription: 'dummy',
+      }),
+    });
   });
 
   it('renders an error notification when the token POST request returns an error response', async () => {
@@ -299,7 +298,12 @@ describe('Token request modal', () => {
 
     // Then...
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
-    expect(window.location.replace).toHaveBeenCalledWith(redirectUrl);
+    expect(global.fetch).toHaveBeenCalledWith('/auth/tokens', {
+      method: 'POST',
+      body: JSON.stringify({
+        tokenDescription: 'dummy',
+      }),
+    });
   });
 
   it('does not submit a request for a token when the token name field is empty', async () => {

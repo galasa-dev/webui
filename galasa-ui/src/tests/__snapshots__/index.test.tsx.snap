@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Galasa Ecosystem homepage 1`] = `
 {
@@ -18,7 +18,13 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
           <div
             class="homeContentWrapper"
           >
-            <div />
+            <div>
+              <p>
+                Dummy markdown content
+              </p>
+              
+
+            </div>
           </div>
         </section>
       </main>
@@ -38,7 +44,13 @@ exports[`renders Galasa Ecosystem homepage 1`] = `
         <div
           class="homeContentWrapper"
         >
-          <div />
+          <div>
+            <p>
+              Dummy markdown content
+            </p>
+            
+
+          </div>
         </div>
       </section>
     </main>
