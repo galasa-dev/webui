@@ -16,6 +16,7 @@ interface QueryNameProps {
   setEditedName: React.Dispatch<React.SetStateAction<string>>;
   handleFinishEditing: () => void;
   handleStartEditingName: (name: string) => void;
+  handleSaveQuery: () => void;
   translations: (key: string) => string;
 }
 
@@ -30,6 +31,7 @@ export default function QueryName({
   setEditedName,
   handleFinishEditing,
   handleStartEditingName,
+  handleSaveQuery,
   translations,
 }: QueryNameProps) {
   const { queryName } = useTestRunsQueryParams();
@@ -50,6 +52,8 @@ export default function QueryName({
                 onBlur={handleFinishEditing}
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter') {
+                    handleSaveQuery();
+                  } else if (e.key === 'Escape') {
                     handleFinishEditing();
                   }
                 }}

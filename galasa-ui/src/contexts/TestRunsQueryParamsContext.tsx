@@ -15,6 +15,7 @@ import {
   Dispatch,
   SetStateAction,
   useRef,
+  useCallback,
 } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
@@ -51,6 +52,7 @@ interface TestRunsQueryParamsContextType {
   setColumnsOrder: Dispatch<SetStateAction<ColumnDefinition[]>>;
   queryName: string;
   setQueryName: Dispatch<SetStateAction<string>>;
+  updateQueryInUrl: (urlParams: URLSearchParams) => void;
   isInitialized: boolean;
   searchParams: URLSearchParams;
 }
@@ -183,6 +185,18 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     };
   };
 
+  // Function to update query name in URL synchronously
+  const updateQueryInUrl = useCallback(
+    (urlParams: URLSearchParams) => {
+      if (pathname === '/test-runs') {
+        const encodedQuery = encodeStateToUrlParam(urlParams.toString());
+        const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
+        window.history.replaceState(null, '', newUrl);
+      }
+    },
+    [pathname]
+  );
+
   // Effect to synchronize state with URL parameters
   useEffect(() => {
     isUrlUpdateInProgress.current = true;
@@ -293,21 +307,17 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
       }
     });
 
-    if (pathname === '/test-runs') {
-      const encodedQuery = encodeStateToUrlParam(params.toString());
-      const newUrl = encodedQuery ? `${pathname}?q=${encodedQuery}` : pathname;
-      window.history.replaceState(null, '', newUrl);
-    }
+    updateQueryInUrl(params);
   }, [
     selectedVisibleColumns,
     columnsOrder,
     sortOrder,
     isInitialized,
-    pathname,
     selectedTabIndex,
     timeframeValues,
     searchCriteria,
     queryName,
+    updateQueryInUrl,
   ]);
 
   // The value to be passed to the context consumers
@@ -326,6 +336,7 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     setColumnsOrder,
     queryName,
     setQueryName,
+    updateQueryInUrl,
     searchParams,
     isInitialized,
   };
