@@ -7,7 +7,7 @@
 
 import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/Artifacts.module.css';
 import {
   CarbonIconType,
@@ -35,12 +35,16 @@ export function ArtifactsTab({
   artifacts,
   runId,
   runName,
+  isLoadingArtifacts = false,
+  artifactsError = null,
   setZos3270TerminalFolderExists,
   setZos3270TerminalData,
 }: {
   artifacts: ArtifactIndexEntry[];
   runId: string;
   runName: string;
+  isLoadingArtifacts?: boolean;
+  artifactsError?: string | null;
   setZos3270TerminalFolderExists: (exists: boolean) => void;
   setZos3270TerminalData: (zos3270TerminalData: TreeNodeData[]) => void;
 }) {
@@ -119,9 +123,9 @@ export function ArtifactsTab({
         base64Data: result.base64,
         contentType: result.contentType,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || 'Unknown error');
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -161,6 +165,12 @@ export function ArtifactsTab({
   }
 
   useEffect(() => {
+    // Only build tree if we have artifacts
+    if (artifacts.length === 0) {
+      setTreeData({ name: '', isFile: false, children: {} });
+      return;
+    }
+
     // Build the root node, which holds top-level folders and files
     const root: FolderNode = { name: '', isFile: false, children: {} };
 
@@ -308,54 +318,79 @@ export function ArtifactsTab({
         <h3>{translations('title')}</h3>
         <p>{translations('description')}</p>
       </div>
-      <div className={styles.artifact}>
-        <TreeView className={styles.tree} onSelect={() => {}}>
-          {Object.values(treeData.children).map((child) => renderNode(child, child.name))}
-        </TreeView>
 
-        <div className={styles.artifactView}>
-          {loading && (
-            <InlineLoading
-              description={translations('downloading')}
-              iconDescription={translations('downloading')}
-            />
-          )}
-          {error && (
-            <InlineNotification
-              title={translations('error_title')}
-              subtitle={translations('error_subtitle', { runName })}
-            />
-          )}
-
-          {!loading && !error && (
-            <div>
-              <div>
-                {artifactDetails.artifactFile !== '' && (
-                  <Tile className={styles.toolbar}>
-                    <div>
-                      <h5>{artifactDetails.fileName}</h5>
-                      <p className={styles.fileSize}>{artifactDetails.fileSize}</p>
-                    </div>
-                    <div className={styles.toolbarOptions}>
-                      <Button
-                        kind="ghost"
-                        renderIcon={CloudDownload}
-                        hasIconOnly
-                        iconDescription={translations('download_button')}
-                        onClick={handleDownloadClick}
-                      />
-                    </div>
-                  </Tile>
-                )}
-              </div>
-
-              <pre className={styles.fileRenderer}>
-                {renderArtifactContent(artifactDetails.artifactFile, artifactDetails.contentType)}
-              </pre>
-            </div>
-          )}
+      {isLoadingArtifacts && (
+        <div className={styles.artifact}>
+          <InlineLoading
+            description={translations('loading_artifacts')}
+            iconDescription={translations('loading_artifacts')}
+          />
         </div>
-      </div>
+      )}
+
+      {artifactsError && (
+        <InlineNotification
+          kind="error"
+          title={translations('error_title')}
+          subtitle={artifactsError}
+          hideCloseButton={false}
+        />
+      )}
+
+      {!isLoadingArtifacts && !artifactsError && artifacts.length === 0 && (
+        <p>{translations('no_artifacts')}</p>
+      )}
+
+      {!isLoadingArtifacts && !artifactsError && artifacts.length > 0 && (
+        <div className={styles.artifact}>
+          <TreeView className={styles.tree} onSelect={() => {}}>
+            {Object.values(treeData.children).map((child) => renderNode(child, child.name))}
+          </TreeView>
+
+          <div className={styles.artifactView}>
+            {loading && (
+              <InlineLoading
+                description={translations('downloading')}
+                iconDescription={translations('downloading')}
+              />
+            )}
+            {error && (
+              <InlineNotification
+                title={translations('error_title')}
+                subtitle={translations('error_subtitle', { runName })}
+              />
+            )}
+
+            {!loading && !error && (
+              <div>
+                <div>
+                  {artifactDetails.artifactFile !== '' && (
+                    <Tile className={styles.toolbar}>
+                      <div>
+                        <h5>{artifactDetails.fileName}</h5>
+                        <p className={styles.fileSize}>{artifactDetails.fileSize}</p>
+                      </div>
+                      <div className={styles.toolbarOptions}>
+                        <Button
+                          kind="ghost"
+                          renderIcon={CloudDownload}
+                          hasIconOnly
+                          iconDescription={translations('download_button')}
+                          onClick={handleDownloadClick}
+                        />
+                      </div>
+                    </Tile>
+                  )}
+                </div>
+
+                <pre className={styles.fileRenderer}>
+                  {renderArtifactContent(artifactDetails.artifactFile, artifactDetails.contentType)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

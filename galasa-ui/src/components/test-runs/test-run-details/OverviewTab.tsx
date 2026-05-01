@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 'use client';
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import styles from '@/styles/test-runs/test-run-details/OverviewTab.module.css';
 import InlineText from './InlineText';
 import { RunMetadata } from '@/utils/interfaces';
@@ -53,7 +53,7 @@ const OverviewTab = ({
 
   useEffect(() => {
     const validateTime = () => {
-      const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt!);
+      const validatedTime = getAWeekBeforeSubmittedTime(metadata?.rawSubmittedAt);
       if (validatedTime !== null) {
         setWeekBefore(validatedTime);
       }
@@ -142,12 +142,13 @@ const OverviewTab = ({
       setTimeout(() => {
         handleModalClose();
       }, TIME_TO_WAIT_BEFORE_CLOSING_TAG_EDIT_MODAL_MS);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update tags:', error);
       setNotification({
         kind: 'error',
         title: translations('updateError'),
-        subtitle: error.message || translations('updateErrorMessage'),
+        subtitle:
+          (error instanceof Error ? error.message : '') || translations('updateErrorMessage'),
       });
     } finally {
       setIsSaving(false);

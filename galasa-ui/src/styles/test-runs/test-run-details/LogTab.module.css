@@ -55,17 +55,34 @@
 
 .logEntry {
   line-height: 1;
-  margin-bottom: 0.25rem;
+
+  /* Fixed height - needed for virtual scrolling */
+  height: 24px;
+
   display: flex;
   align-items: center;
+  contain: style paint;
+
+  /* Hint to browser for optimization */
+  will-change: transform;
+
+  /* Virtual scrolling positioning */
+  position: absolute;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+}
+
+.virtualScrollContainer {
+  position: relative;
+  min-width: 100%;
+  width: max-content;
 }
 
 .lineNumberCol {
-  display: grid;
-  grid-template-columns: 50px 1fr;
-  gap: 10px;
-  margin-bottom: 8px;
-  align-items: baseline;
+  flex-shrink: 0;
+  min-width: 60px;
+  margin-right: 10px;
 }
 
 .tabContent {

@@ -7,11 +7,7 @@ import TestRunDetails from '@/components/test-runs/test-run-details/TestRunDetai
 import NotFound from '@/components/common/NotFound';
 import ErrorPage from '@/app/error/page';
 import { getTranslations } from 'next-intl/server';
-import {
-  fetchRunDetailLogs,
-  fetchRunDetailsFromApiServer,
-  fetchTestArtifacts,
-} from '@/utils/testRuns';
+import { fetchRunDetailsFromApiServer } from '@/utils/testRuns';
 
 // Define an interface for the component's props
 interface TestRunProps {
@@ -43,12 +39,5 @@ export default async function TestRunPage(props: TestRunProps) {
     }
   }
 
-  return (
-    <TestRunDetails
-      runId={slug}
-      runDetailsPromise={fetchRunDetailsFromApiServer(slug)}
-      runArtifactsPromise={fetchTestArtifacts(slug)}
-      runLogPromise={fetchRunDetailLogs(slug)}
-    />
-  );
+  return <TestRunDetails runId={slug} runDetailsPromise={fetchRunDetailsFromApiServer(slug)} />;
 }

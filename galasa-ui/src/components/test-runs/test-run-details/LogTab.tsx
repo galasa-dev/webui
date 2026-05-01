@@ -5,7 +5,7 @@
  */
 'use client';
 
-import React, { useEffect, useState, useRef, useMemo, useCallback, JSX } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Search, OverflowMenu, Button, InlineNotification } from '@carbon/react';
 import styles from '@/styles/test-runs/test-run-details/LogTab.module.css';
 import { Checkbox } from '@carbon/react';
@@ -26,6 +26,7 @@ import { useTranslations } from 'next-intl';
 import { fetchRunLog } from '@/actions/runsAction';
 import { NotificationType } from '@/utils/types/common';
 import { NOTIFICATION_VISIBLE_MILLISECS } from '@/utils/constants/common';
+import { InlineLoading } from '@carbon/react';
 
 interface LogLine {
   content: string;
@@ -50,6 +51,8 @@ interface LogTabProps {
   logs: string;
   initialLine?: number;
   runId: string;
+  isLoadingLogs?: boolean;
+  logsError?: string | null;
 }
 
 interface selectedRange {
@@ -62,7 +65,19 @@ interface selectedRange {
 const SELECTION_CHANGE_EVENT = 'selectionchange';
 const HASH_CHANGE_EVENT = 'hashchange';
 
-export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
+const LINE_HEIGHT_PIXELS = 24;
+const MIN_VISIBLE_LINES = 100;
+
+// Number of lines to render above/below viewport
+const VIEWPORT_LINE_BUFFER_SIZE = 50;
+
+export default function LogTab({
+  logs,
+  initialLine,
+  runId,
+  isLoadingLogs,
+  logsError,
+}: LogTabProps) {
   const translations = useTranslations('LogTab');
 
   const [logContent, setLogContent] = useState<string>('');
@@ -85,8 +100,14 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const [isAtTop, setIsAtTop] = useState<boolean>(true);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
 
+  // Virtual scrolling state
+  const [visibleRange, setVisibleRange] = useState({ start: 0, end: MIN_VISIBLE_LINES });
+
   // Cache for search results to avoid recomputation
   const [searchCache, setSearchCache] = useState<Map<string, MatchInfo[]>>(new Map());
+
+  // Cache for highlight results
+  const highlightCache = useRef<Map<string, React.ReactNode>>(new Map());
 
   // State to track the URL hash, initialized to the value of the first render
   const [currentHash, setCurrentHash] = useState<string>(
@@ -96,6 +117,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const logContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [notification, setNotification] = useState<NotificationType | null>(null);
 
@@ -104,7 +126,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     ? 'instant'
     : 'smooth';
 
-  const handleSearchChange = (e: any) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target?.value || '';
     setSearchTerm(value);
 
@@ -155,15 +177,17 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
   const toggleMatchCase = () => {
     setMatchCase(!matchCase);
 
-    // Clear cache when search options change
+    // Clear caches when search options change
     setSearchCache(new Map());
+    highlightCache.current.clear();
   };
 
   const toggleMatchWholeWord = () => {
     setMatchWholeWord(!matchWholeWord);
 
-    // Clear cache when search options change
+    // Clear caches when search options change
     setSearchCache(new Map());
+    highlightCache.current.clear();
   };
 
   const goToNextMatch = () => {
@@ -186,12 +210,14 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       const newRunLog = await fetchRunLog(runId);
 
       setLogContent(newRunLog);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error refreshing logs:', error);
       setNotification?.({
         kind: 'error',
         title: translations('errorTitle'),
-        subtitle: translations('errorFailedMessage', { errorMessage: error.message }),
+        subtitle: translations('errorFailedMessage', {
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        }),
       });
       setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
 
@@ -201,6 +227,21 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
       setIsRefreshing(false);
     }
   };
+
+  // Calculate which lines should be visible based on scroll position
+  const calculateVisibleRange = useCallback(
+    (scrollTop: number, containerHeight: number, totalLines: number) => {
+      const startLine = Math.floor(scrollTop / LINE_HEIGHT_PIXELS);
+      const endLine = Math.ceil((scrollTop + containerHeight) / LINE_HEIGHT_PIXELS);
+
+      // Add buffer above and below
+      const start = Math.max(0, startLine - VIEWPORT_LINE_BUFFER_SIZE);
+      const end = Math.min(totalLines, endLine + VIEWPORT_LINE_BUFFER_SIZE);
+
+      return { start, end };
+    },
+    []
+  );
 
   const checkScrollPosition = useCallback(() => {
     if (scrollContainerRef.current) {
@@ -214,18 +255,42 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
 
   const scrollToTop = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: 0,
-        behavior: ANIMATION_BEHAVIOUR,
+      // First update the visible range to include top lines
+      setVisibleRange({ start: 0, end: Math.min(MIN_VISIBLE_LINES, visibleLines.length) });
+
+      // Wait for React to render the new range, then scroll
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: 0,
+            behavior: ANIMATION_BEHAVIOUR,
+          });
+        }
       });
     }
   };
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: scrollContainerRef.current.scrollHeight,
-        behavior: ANIMATION_BEHAVIOUR,
+      const maxScroll = visibleLines.length * LINE_HEIGHT_PIXELS;
+      const container = scrollContainerRef.current;
+
+      // First calculate and set the visible range for bottom lines
+      const newRange = calculateVisibleRange(
+        maxScroll,
+        container.clientHeight,
+        visibleLines.length
+      );
+      setVisibleRange(newRange);
+
+      // Wait for React to render the new range, then scroll
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: maxScroll,
+            behavior: ANIMATION_BEHAVIOUR,
+          });
+        }
       });
     }
   };
@@ -343,8 +408,20 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     return computeSearchMatches(processedLines, searchRegex);
   }, [processedLines, searchRegex, computeSearchMatches]);
 
+  // Clear highlight cache when search changes
+  useEffect(() => {
+    highlightCache.current.clear();
+  }, [debouncedSearchTerm, matchCase, matchWholeWord]);
+
   const highlightText = useCallback(
     (text: string, lineIndex: number): React.ReactNode => {
+      // Check cache first
+      const cacheKey = `${lineIndex}-${text}-${currentMatchIndex}`;
+
+      if (highlightCache.current.has(cacheKey)) {
+        return highlightCache.current.get(cacheKey);
+      }
+
       let result: React.ReactNode = text;
 
       if (searchRegex && debouncedSearchTerm.trim()) {
@@ -386,6 +463,8 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
         }
       }
 
+      // Cache the result
+      highlightCache.current.set(cacheKey, result);
       return result;
     },
     [searchRegex, debouncedSearchTerm, searchMatches, currentMatchIndex]
@@ -395,36 +474,87 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     return processedLines.filter((line) => line.isVisible);
   }, [processedLines]);
 
-  const renderLogContent = () => {
-    let result: JSX.Element[] | null = null;
+  // Handle scroll events with throttling for virtual scrolling
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const SCROLL_TIMEOUT_DELAY = 16;
+      const SCROLL_RANGE_DIFFERENCE_LIMIT = 10;
 
-    if (visibleLines.length === 0) {
-      result = null;
-    } else {
-      result = visibleLines.map((logLine) => {
-        const levelClass = logLine.level.toLowerCase();
-        const colorClass = styles[levelClass as keyof typeof styles] || '';
+      const target = e.currentTarget;
+      const newScrollTop = target.scrollTop;
 
-        // Add a background highlight to all lines in the selected range
-        const isLineSelected =
-          selectedRange &&
-          logLine.lineNumber >= selectedRange.startLine &&
-          logLine.lineNumber <= selectedRange.endLine;
+      // Throttle range updates
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
 
-        return (
-          <div
-            key={logLine.lineNumber}
-            id={`log-line-${logLine.lineNumber}`}
-            className={`${colorClass} ${styles.logEntry} ${isLineSelected ? styles.lineSelected : ''}`}
-          >
-            <span className={styles.lineNumberCol}>{logLine.lineNumber}.</span>
-            <pre>{highlightText(logLine.content, processedLines.indexOf(logLine))}</pre>
-          </div>
+      scrollTimeoutRef.current = setTimeout(() => {
+        const newRange = calculateVisibleRange(
+          newScrollTop,
+          target.clientHeight,
+          visibleLines.length
         );
-      });
-    }
 
-    return result;
+        // Only update if range changed significantly (avoid excessive re-renders)
+        if (
+          Math.abs(newRange.start - visibleRange.start) > SCROLL_RANGE_DIFFERENCE_LIMIT ||
+          Math.abs(newRange.end - visibleRange.end) > SCROLL_RANGE_DIFFERENCE_LIMIT
+        ) {
+          setVisibleRange(newRange);
+        }
+      }, SCROLL_TIMEOUT_DELAY);
+
+      checkScrollPosition();
+    },
+    [calculateVisibleRange, visibleRange, checkScrollPosition, visibleLines.length]
+  );
+
+  const renderLogContent = () => {
+    if (visibleLines.length === 0) return null;
+
+    // Calculate total height of virtual container
+    const totalHeight = visibleLines.length * LINE_HEIGHT_PIXELS;
+
+    // Get only the lines that should be rendered (visible range)
+    const linesToRender = visibleLines.slice(visibleRange.start, visibleRange.end);
+
+    return (
+      <div
+        className={styles.virtualScrollContainer}
+        style={{
+          height: `${totalHeight}px`,
+        }}
+      >
+        {linesToRender.map((logLine, index) => {
+          const actualIndex = visibleRange.start + index;
+          const levelClass = logLine.level.toLowerCase();
+          const colorClass = styles[levelClass as keyof typeof styles] || '';
+
+          const isLineSelected =
+            selectedRange &&
+            logLine.lineNumber >= selectedRange.startLine &&
+            logLine.lineNumber <= selectedRange.endLine;
+
+          // Calculate absolute position for this line
+          const topPosition = actualIndex * LINE_HEIGHT_PIXELS;
+
+          return (
+            <div
+              key={logLine.lineNumber}
+              id={`log-line-${logLine.lineNumber}`}
+              className={`${colorClass} ${styles.logEntry} ${isLineSelected ? styles.lineSelected : ''}`}
+              style={{
+                top: `${topPosition}px`,
+                height: `${LINE_HEIGHT_PIXELS}px`,
+              }}
+            >
+              <span className={styles.lineNumberCol}>{logLine.lineNumber}.</span>
+              <pre>{highlightText(logLine.content, processedLines.indexOf(logLine))}</pre>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   // Effect to select/deselect lines based on user selection
@@ -528,28 +658,74 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     }
   }, [processedLines, currentHash]);
 
-  // Effect to scroll to the initial line
+  // Initialize visible range when component loads
   useEffect(() => {
-    if (initialLine && processedLines.length > 0) {
-      const lineElement = document.getElementById(`log-line-${initialLine - 1}`);
-      if (lineElement) {
-        lineElement.scrollIntoView({ behavior: ANIMATION_BEHAVIOUR, block: 'start' });
-      }
+    if (scrollContainerRef.current && visibleLines.length > 0) {
+      const containerHeight = scrollContainerRef.current.clientHeight;
+      const initialRange = calculateVisibleRange(0, containerHeight, visibleLines.length);
+      setVisibleRange(initialRange);
     }
-  }, [ANIMATION_BEHAVIOUR, initialLine, processedLines]);
+  }, [visibleLines.length, calculateVisibleRange]);
 
-  // Scroll to current match
+  // Effect to scroll to the initial line with virtual scrolling
   useEffect(() => {
-    if (currentMatchIndex >= 0) {
-      const currentMatchElement = document.getElementById('current-match');
-      if (currentMatchElement) {
-        currentMatchElement.scrollIntoView({
+    if (initialLine && processedLines.length > 0 && scrollContainerRef.current) {
+      const lineIndex = visibleLines.findIndex((line) => line.lineNumber === initialLine - 1);
+
+      if (lineIndex !== -1) {
+        const targetScrollTop = lineIndex * LINE_HEIGHT_PIXELS;
+
+        scrollContainerRef.current.scrollTo({
+          top: targetScrollTop,
           behavior: ANIMATION_BEHAVIOUR,
-          block: 'center',
         });
+
+        // Update visible range
+        const newRange = calculateVisibleRange(
+          targetScrollTop,
+          scrollContainerRef.current.clientHeight,
+          visibleLines.length
+        );
+        setVisibleRange(newRange);
       }
     }
-  }, [ANIMATION_BEHAVIOUR, currentMatchIndex]);
+  }, [ANIMATION_BEHAVIOUR, initialLine, processedLines, visibleLines, calculateVisibleRange]);
+
+  // Scroll to current match with virtual scrolling
+  useEffect(() => {
+    if (currentMatchIndex >= 0 && searchMatches.length > 0 && scrollContainerRef.current) {
+      const match = searchMatches[currentMatchIndex];
+      const matchLineIndex = visibleLines.findIndex(
+        (line) => processedLines.indexOf(line) === match.lineIndex
+      );
+
+      if (matchLineIndex !== -1) {
+        // Calculate scroll position to center the match
+        const targetScrollTop =
+          matchLineIndex * LINE_HEIGHT_PIXELS - scrollContainerRef.current.clientHeight / 2;
+
+        scrollContainerRef.current.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          behavior: ANIMATION_BEHAVIOUR,
+        });
+
+        // Update visible range immediately
+        const newRange = calculateVisibleRange(
+          Math.max(0, targetScrollTop),
+          scrollContainerRef.current.clientHeight,
+          visibleLines.length
+        );
+        setVisibleRange(newRange);
+      }
+    }
+  }, [
+    ANIMATION_BEHAVIOUR,
+    currentMatchIndex,
+    searchMatches,
+    visibleLines,
+    processedLines,
+    calculateVisibleRange,
+  ]);
 
   useEffect(() => {
     const matchCount = searchMatches.length;
@@ -564,56 +740,65 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     }
   }, [searchMatches, currentMatchIndex, debouncedSearchTerm]);
 
-  // Process log content and apply filters
+  // Process log content progressively and apply filters
   useEffect(() => {
-    const processLogLines = (content: string) => {
-      const lines = content.split('\n');
+    if (!logContent) return;
+
+    const processLogsProgressively = () => {
+      const lines = logContent.split('\n');
+      let currentIndex = 0;
       const processed: LogLine[] = [];
       let currentLevel = 'INFO'; // Default level
 
-      lines.forEach((line, index) => {
-        const detectedLevel = getLogLevel(line);
+      const MAX_IDLE_TIME_MS = 50;
+      const processChunk = (deadline: IdleDeadline) => {
+        // Process as many lines as we can in this idle period
+        const startTime = performance.now();
 
-        // If we find a new level, update current level
-        if (detectedLevel) {
-          currentLevel = detectedLevel;
+        while (
+          currentIndex < lines.length &&
+          (deadline.timeRemaining() > 0 || performance.now() - startTime < MAX_IDLE_TIME_MS)
+        ) {
+          const line = lines[currentIndex];
+          const detectedLevel = getLogLevel(line);
+
+          if (detectedLevel) {
+            currentLevel = detectedLevel;
+          }
+
+          processed.push({
+            content: line,
+            level: currentLevel,
+            lineNumber: currentIndex + 1,
+            isVisible: true,
+          });
+
+          currentIndex++;
         }
 
-        // All lines get assigned to the current level (either explicit or inherited)
-        processed.push({
-          content: line,
-          level: currentLevel,
-          lineNumber: index + 1,
-          isVisible: true,
-        });
-      });
+        if (currentIndex < lines.length) {
+          // More work to do, schedule next chunk
+          requestIdleCallback(processChunk, { timeout: 1000 });
+        } else {
+          // Processing complete, apply filters
+          const hasActiveFilters = Object.values(filters).some((filter) => filter === true);
 
-      return processed;
+          const filtered = hasActiveFilters
+            ? processed.map((line) => ({
+                ...line,
+                isVisible: !!filters[line.level as keyof typeof filters],
+              }))
+            : processed.map((line) => ({ ...line, isVisible: false }));
+
+          setProcessedLines(filtered);
+        }
+      };
+
+      // Start processing
+      requestIdleCallback(processChunk, { timeout: 1000 });
     };
 
-    const applyFilters = (lines: LogLine[]) => {
-      let filteredLines = [];
-      const hasActiveFilters = Object.values(filters).some((filter) => filter === true);
-
-      if (!hasActiveFilters) {
-        // If no filters are active, hide all lines
-        filteredLines = lines.map((line) => ({ ...line, isVisible: false }));
-      } else {
-        // Only show lines whose level is checked in the filters
-        filteredLines = lines.map((line) => ({
-          ...line,
-          isVisible: !!filters[line.level as keyof typeof filters],
-        }));
-      }
-
-      return filteredLines;
-    };
-
-    if (logContent) {
-      const processed = processLogLines(logContent);
-      const filtered = applyFilters(processed);
-      setProcessedLines(filtered);
-    }
+    processLogsProgressively();
   }, [logContent, filters]);
 
   // Clear cache when filters change
@@ -663,6 +848,17 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
     <div>
       <h3>{translations('title')}</h3>
       <p>{translations('description')}</p>
+
+      {logsError && (
+        <InlineNotification
+          kind="error"
+          title={translations('errorTitle')}
+          subtitle={logsError}
+          hideCloseButton={false}
+          onClose={() => {}}
+          className={styles.notification}
+        />
+      )}
       <div className={styles.logContainer}>
         <div className={styles.searchContainer}>
           <Search
@@ -784,6 +980,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
         />
       </div>
       <div className={styles.runLogWrapper}>
+        {isLoadingLogs && <InlineLoading description={translations('loading_logs')} />}
         {!isAtTop && (
           <div className={styles.jumpToTopContainer}>
             <Button
@@ -795,7 +992,7 @@ export default function LogTab({ logs, initialLine, runId }: LogTabProps) {
             />
           </div>
         )}
-        <div className={styles.runLog} ref={scrollContainerRef}>
+        <div className={styles.runLog} ref={scrollContainerRef} onScroll={handleScroll}>
           <div className={styles.runLogContent} ref={logContainerRef}>
             {renderLogContent()}
           </div>

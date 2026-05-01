@@ -210,7 +210,9 @@
     "error_title": "Fehler",
     "error_subtitle": "Fehler beim Herunterladen. Versuchen Sie es erneut oder verwenden Sie das CLI-Tool:\ngalasactl runs download --name {runName}",
     "select_file": "Datei auswählen, um Inhalt anzuzeigen",
-    "binary_file_message": "Dies ist eine Binärdatei ({contentType}), bitte laden Sie sie herunter, um den Inhalt zu sehen."
+    "binary_file_message": "Dies ist eine Binärdatei ({contentType}), bitte laden Sie sie herunter, um den Inhalt zu sehen.",
+    "loading_artifacts": "Artefakte werden geladen...",
+    "no_artifacts": "Keine Artefakte für diesen Testlauf gefunden."
   },
   "LogTab": {
     "title": "Ablaufprotokoll",
@@ -235,7 +237,8 @@
     "jumpToTop": "Zum Anfang springen",
     "jumpToBottom": "Zum Ende springen",
     "errorTitle": "Fehler beim Aktualisieren des Ausführungsprotokolls",
-    "errorFailedMessage": "Fehler beim Aktualisieren des Ausführungsprotokolls, Fehlermeldung: {errorMessage}"
+    "errorFailedMessage": "Fehler beim Aktualisieren des Ausführungsprotokolls, Fehlermeldung: {errorMessage}",
+    "loading_logs": "Lade Ausführungsprotokoll..."
   },
   "MethodsTab": {
     "title": "Methoden",

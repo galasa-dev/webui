@@ -40,6 +40,7 @@ import {
   SINGLE_RUN_QUERY_PARAMS,
   TEST_RUN_PAGE_TABS,
   NOTIFICATION_VISIBLE_MILLISECS,
+  TEST_RUN_TAB_NAMES,
 } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
 import { TreeNodeData } from '@/utils/functions/artifacts';
@@ -50,17 +51,10 @@ import { getExistingTagObjects } from '@/actions/runsAction';
 interface TestRunDetailsProps {
   runId: string;
   runDetailsPromise: Promise<Run>;
-  runLogPromise: Promise<string>;
-  runArtifactsPromise: Promise<ArtifactIndexEntry[]>;
 }
 
 // Type the props directly on the function's parameter
-const TestRunDetails = ({
-  runId,
-  runDetailsPromise,
-  runLogPromise,
-  runArtifactsPromise,
-}: TestRunDetailsProps) => {
+const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
   const translations = useTranslations('TestRunDetails');
   const { breadCrumbItems, pushBreadCrumb } = useHistoryBreadCrumbs();
   const searchParams = useSearchParams();
@@ -69,7 +63,13 @@ const TestRunDetails = ({
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactIndexEntry[]>([]);
+  const [artifactsLoaded, setArtifactsLoaded] = useState(false);
+  const [artifactsLoading, setArtifactsLoading] = useState(false);
+  const [artifactsError, setArtifactsError] = useState<string | null>(null);
   const [logs, setLogs] = useState<string>('');
+  const [logsLoaded, setLogsLoaded] = useState(false);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsError, setLogsError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -123,27 +123,27 @@ const TestRunDetails = ({
       // Build run metadata object
       const runMetadata: RunMetadata = {
         runId: runId,
-        result: runDetails.testStructure?.result!,
-        status: runDetails.testStructure?.status!,
-        runName: runDetails.testStructure?.runName!,
-        testShortName: runDetails.testStructure?.testShortName!,
-        testName: runDetails.testStructure?.testName!,
-        bundle: runDetails.testStructure?.bundle!,
-        submissionId: runDetails.testStructure?.submissionId!,
-        group: runDetails.testStructure?.group!,
+        result: runDetails.testStructure?.result || '',
+        status: runDetails.testStructure?.status || '',
+        runName: runDetails.testStructure?.runName || '',
+        testShortName: runDetails.testStructure?.testShortName || '',
+        testName: runDetails.testStructure?.testName || '',
+        bundle: runDetails.testStructure?.bundle || '',
+        submissionId: runDetails.testStructure?.submissionId || '',
+        group: runDetails.testStructure?.group || '',
         package:
           runDetails.testStructure?.testName?.substring(
             0,
             runDetails.testStructure?.testName.lastIndexOf('.')
           ) || 'N/A',
-        requestor: runDetails.testStructure?.requestor!,
-        user: runDetails.testStructure?.user!,
+        requestor: runDetails.testStructure?.requestor || '',
+        user: runDetails.testStructure?.user || '',
         rawSubmittedAt: runDetails.testStructure?.queued,
         submitted: runDetails.testStructure?.queued
-          ? formatDate(new Date(runDetails.testStructure?.queued!))
+          ? formatDate(new Date(runDetails.testStructure.queued))
           : '-',
         startedAt: runDetails.testStructure?.startTime
-          ? formatDate(new Date(runDetails.testStructure?.startTime!))
+          ? formatDate(new Date(runDetails.testStructure.startTime))
           : '-',
         finishedAt: runDetails.testStructure?.endTime
           ? formatDate(new Date(runDetails.testStructure?.endTime))
@@ -155,12 +155,58 @@ const TestRunDetails = ({
                 runDetails.testStructure?.endTime
               )
             : '-',
-        tags: runDetails.testStructure?.tags!,
+        tags: runDetails.testStructure?.tags || [],
       };
       setRun(runMetadata);
     },
     [runId, formatDate]
   );
+
+  const loadArtifacts = useCallback(async () => {
+    // Don't reload if already loaded, currently loading, or has an error
+    if (artifactsLoaded || artifactsLoading || artifactsError) return;
+
+    setArtifactsLoading(true);
+    setArtifactsError(null);
+
+    try {
+      const response = await fetch(`/internal-api/test-runs/${runId}/artifacts`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch artifacts: ${response.statusText}`);
+      }
+      const runArtifacts = await response.json();
+      setArtifacts(runArtifacts);
+      setArtifactsLoaded(true);
+    } catch (err: unknown) {
+      console.error('Error loading artifacts:', err);
+      setArtifactsError(err instanceof Error ? err.message : 'Failed to load artifacts');
+    } finally {
+      setArtifactsLoading(false);
+    }
+  }, [runId, artifactsLoaded, artifactsLoading, artifactsError]);
+
+  const loadLogs = useCallback(async () => {
+    // Don't reload if already loaded, currently loading, or has an error
+    if (logsLoaded || logsLoading || logsError) return;
+
+    setLogsLoading(true);
+    setLogsError(null);
+
+    try {
+      const response = await fetch(`/internal-api/test-runs/${runId}/log`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch log: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setLogs(data.log);
+      setLogsLoaded(true);
+    } catch (err: unknown) {
+      console.error('Error loading log:', err);
+      setLogsError(err instanceof Error ? err.message : 'Failed to load log');
+    } finally {
+      setLogsLoading(false);
+    }
+  }, [runId, logsLoaded, logsLoading, logsError]);
 
   useEffect(() => {
     // If run details are already loaded, skip fetching
@@ -170,15 +216,11 @@ const TestRunDetails = ({
 
       try {
         const runDetails = await runDetailsPromise;
-        const runArtifacts = await runArtifactsPromise;
-        const runLog = await runLogPromise;
 
         if (runDetails) {
           extractRunDetails(runDetails);
-          setArtifacts(runArtifacts);
-          setLogs(runLog);
         }
-      } catch (err) {
+      } catch {
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -186,7 +228,23 @@ const TestRunDetails = ({
     };
 
     loadRunDetails();
-  }, [run, runDetailsPromise, runArtifactsPromise, runLogPromise, extractRunDetails]);
+  }, [run, runDetailsPromise, extractRunDetails]);
+
+  // If artifacts tab is selected in URL on initial load, fetch artifacts
+  useEffect(() => {
+    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.ARTIFACTS);
+    if (selectedTabIndex === artifactsTabIndex && !artifactsLoaded && !artifactsLoading && run) {
+      loadArtifacts();
+    }
+  }, [selectedTabIndex, artifactsLoaded, artifactsLoading, run, loadArtifacts]);
+
+  // If log tab is selected in URL on initial load, fetch logs
+  useEffect(() => {
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
+    if (selectedTabIndex === logTabIndex && !logsLoaded && !logsLoading && run) {
+      loadLogs();
+    }
+  }, [selectedTabIndex, logsLoaded, logsLoading, run, loadLogs]);
 
   // Fetch existing tags once on component mount (persists across tab changes)
   useEffect(() => {
@@ -294,14 +352,26 @@ const TestRunDetails = ({
     const newIndex = event.selectedIndex;
     setSelectedTabIndex(newIndex);
 
+    // Lazy load artifacts when Artifacts tab is selected
+    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.ARTIFACTS);
+    if (newIndex === artifactsTabIndex && !artifactsLoaded && !artifactsLoading) {
+      loadArtifacts();
+    }
+
+    // Lazy load logs when Run Log tab is selected
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
+    if (newIndex === logTabIndex && !logsLoaded && !logsLoading) {
+      loadLogs();
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     params.set(SINGLE_RUN_QUERY_PARAMS.TAB, TEST_RUN_PAGE_TABS[newIndex]);
     // When switching away from the log tab, remove the line parameter
-    if (TEST_RUN_PAGE_TABS[newIndex] !== 'runLog') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== TEST_RUN_TAB_NAMES.RUN_LOG) {
       params.delete(SINGLE_RUN_QUERY_PARAMS.LOG_LINE);
     }
     // When switching away from the 3270 tab, remove the terminalScreen parameter
-    if (TEST_RUN_PAGE_TABS[newIndex] !== '3270') {
+    if (TEST_RUN_PAGE_TABS[newIndex] !== TEST_RUN_TAB_NAMES.ZOS3270) {
       params.delete(SINGLE_RUN_QUERY_PARAMS.TERMINAL_SCREEN);
     }
 
@@ -310,7 +380,7 @@ const TestRunDetails = ({
 
   // Handle method click to navigate to the log tab with the correct line number
   const handleNavigateToLog = (method: MethodDetails) => {
-    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf('runLog');
+    const logTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.RUN_LOG);
     setSelectedTabIndex(logTabIndex);
 
     const params = new URLSearchParams(searchParams.toString());
@@ -386,7 +456,7 @@ const TestRunDetails = ({
                 {translations('status')}: {run?.status}
               </span>
               <span className={styles.summaryStatus}>
-                {translations('result')}: <StatusIndicator status={run?.result!} />
+                {translations('result')}: <StatusIndicator status={run?.result || ''} />
               </span>
             </div>
             <span className={styles.summaryStatus}>
@@ -421,13 +491,21 @@ const TestRunDetails = ({
                 <MethodsTab methods={methods} onMethodClick={handleNavigateToLog} />
               </TabPanel>
               <TabPanel>
-                <LogTab logs={logs} initialLine={initialLine} runId={runId} />
+                <LogTab
+                  logs={logs}
+                  initialLine={initialLine}
+                  runId={runId}
+                  isLoadingLogs={logsLoading}
+                  logsError={logsError}
+                />
               </TabPanel>
               <TabPanel>
                 <ArtifactsTab
                   artifacts={artifacts}
                   runId={runId}
-                  runName={run?.runName!}
+                  runName={run?.runName || ''}
+                  isLoadingArtifacts={artifactsLoading}
+                  artifactsError={artifactsError}
                   setZos3270TerminalFolderExists={handleZos3270TerminalFolderCheck}
                   setZos3270TerminalData={handleSetZos3270TerminalData}
                 />

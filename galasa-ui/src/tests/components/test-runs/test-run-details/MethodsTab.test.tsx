@@ -32,7 +32,7 @@ jest.mock('next-intl', () => ({
 
 // Mock the utility function
 jest.mock('@/utils/timeOperations', () => ({
-  getIsoTimeDifference: jest.fn((startTime: string, endTime: string) => {
+  getIsoTimeDifference: jest.fn(() => {
     // Mock implementation - return a simple duration string
     return '00:05:30';
   }),
@@ -45,13 +45,22 @@ jest.mock('@/styles/MethodsTab.module.css', () => ({
 
 // Mock Carbon React DataTable components
 jest.mock('@carbon/react', () => ({
-  DataTable: ({ children, rows, headers, isSortable }: any) => {
+  DataTable: ({
+    children,
+    rows,
+    headers,
+  }: {
+    children: (props: Record<string, unknown>) => React.ReactNode;
+    rows: Array<Record<string, unknown>>;
+    headers: Array<Record<string, unknown>>;
+    isSortable?: boolean;
+  }) => {
     const mockProps = {
-      rows: rows.map((row: any, index: number) => ({
+      rows: rows.map((row: Record<string, unknown>) => ({
         id: row.id,
-        cells: headers.map((header: any) => ({
+        cells: headers.map((header: Record<string, unknown>) => ({
           id: `${row.id}-${header.key}`,
-          value: row[header.key],
+          value: row[header.key as string],
         })),
       })),
       headers: headers,
@@ -62,36 +71,51 @@ jest.mock('@carbon/react', () => ({
     };
     return <div data-testid="data-table">{children(mockProps)}</div>;
   },
-  TableContainer: ({ children }: any) => <div data-testid="table-container">{children}</div>,
-  Table: ({ children, size, ...props }: any) => (
-    <table data-testid="table" size={size} {...props}>
+  TableContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="table-container">{children}</div>
+  ),
+  Table: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+  } & React.HTMLAttributes<HTMLTableElement>) => (
+    <table data-testid="table" {...props}>
       {children}
     </table>
   ),
-  TableCell: ({ children }: any) => <td data-testid="table-cell">{children}</td>,
-  TableHeader: ({ children }: any) => <th data-testid="table-header">{children}</th>,
-  TableToolbarContent: ({ children }: any) => (
+  TableCell: ({ children }: { children: React.ReactNode }) => (
+    <td data-testid="table-cell">{children}</td>
+  ),
+  TableHeader: ({ children }: { children: React.ReactNode }) => (
+    <th data-testid="table-header">{children}</th>
+  ),
+  TableToolbarContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="table-toolbar-content">{children}</div>
   ),
-  TableToolbarSearch: ({ placeholder, onChange }: any) => (
-    <input data-testid="table-search" placeholder={placeholder} onChange={onChange} />
-  ),
+  TableToolbarSearch: ({
+    placeholder,
+    onChange,
+  }: {
+    placeholder?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  }) => <input data-testid="table-search" placeholder={placeholder} onChange={onChange} />,
 }));
 
 jest.mock('@carbon/react/lib/components/DataTable/TableBody', () => {
-  return function MockTableBody({ children }: any) {
+  return function MockTableBody({ children }: { children: React.ReactNode }) {
     return <tbody data-testid="table-body">{children}</tbody>;
   };
 });
 
 jest.mock('@carbon/react/lib/components/DataTable/TableHead', () => {
-  return function MockTableHead({ children }: any) {
+  return function MockTableHead({ children }: { children: React.ReactNode }) {
     return <thead data-testid="table-head">{children}</thead>;
   };
 });
 
 jest.mock('@carbon/react/lib/components/DataTable/TableRow', () => {
-  return function MockTableRow({ children }: any) {
+  return function MockTableRow({ children }: { children: React.ReactNode }) {
     return <tr data-testid="table-row">{children}</tr>;
   };
 });
@@ -249,20 +273,20 @@ describe('MethodsTab Component', () => {
   });
 
   describe('Duration Calculation', () => {
-    it('calls getIsoTimeDifference with correct parameters', () => {
-      const { getIsoTimeDifference } = require('@/utils/timeOperations');
+    it('calls getIsoTimeDifference with correct parameters', async () => {
+      const timeOperations = await import('@/utils/timeOperations');
 
       render(<MethodsTab methods={mockMethods} />);
 
-      expect(getIsoTimeDifference).toHaveBeenCalledWith(
+      expect(timeOperations.getIsoTimeDifference).toHaveBeenCalledWith(
         '2024-01-01T10:00:00Z',
         '2024-01-01T10:05:30Z'
       );
-      expect(getIsoTimeDifference).toHaveBeenCalledWith(
+      expect(timeOperations.getIsoTimeDifference).toHaveBeenCalledWith(
         '2024-01-01T10:05:30Z',
         '2024-01-01T10:08:00Z'
       );
-      expect(getIsoTimeDifference).toHaveBeenCalledWith(
+      expect(timeOperations.getIsoTimeDifference).toHaveBeenCalledWith(
         '2024-01-01T10:08:00Z',
         '2024-01-01T10:10:15Z'
       );
@@ -312,15 +336,15 @@ describe('MethodsTab Component', () => {
 
   describe('Edge Cases', () => {
     it('handles methods with null/undefined values', () => {
-      const methodsWithNulls: TestMethod[] = [
+      const methodsWithNulls = [
         {
-          methodName: null as any,
-          startTime: null as any,
-          endTime: null as any,
-          status: null as any,
-          result: null as any,
+          methodName: null,
+          startTime: null,
+          endTime: null,
+          status: null,
+          result: null,
         },
-      ];
+      ] as unknown as TestMethod[];
 
       expect(() => {
         render(<MethodsTab methods={methodsWithNulls} />);
