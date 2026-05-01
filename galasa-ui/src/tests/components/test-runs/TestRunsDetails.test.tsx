@@ -114,8 +114,7 @@ jest.mock('next-intl', () => ({
       warningTitle: 'Warning',
       successTitle: 'Success',
       copyFailedMessage: 'Failed to copy URL.',
-      copyWarningMessage:
-        'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
+      copyWarningMessage: 'Clipboard API is not available',
       editQueryName: 'Edit query name',
       nameExistsError: `Query with name "${vars?.name}" already exists.`,
       newQuerySavedMessage: `Query "${vars?.name}" has been saved.`,
@@ -320,9 +319,7 @@ describe('TestRunsDetails', () => {
       const notification = await screen.findByTestId('notification');
       expect(notification).toHaveClass('notification-warning');
       expect(notification).toHaveTextContent('Warning');
-      expect(notification).toHaveTextContent(
-        'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.'
-      );
+      expect(notification).toHaveTextContent('Clipboard API is not available');
     });
   });
 

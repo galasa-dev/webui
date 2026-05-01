@@ -10,7 +10,7 @@ import styles from '@/styles/test-runs/TestRunsPage.module.css';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import useHistoryBreadCrumbs from '@/hooks/useHistoryBreadCrumbs';
 import { useTranslations } from 'next-intl';
-import { NotificationType } from '@/utils/types/common';
+import { NotificationType, SavedQueryType } from '@/utils/types/common';
 import { Button, InlineNotification } from '@carbon/react';
 import { Share } from '@carbon/icons-react';
 import PageTile from '../PageTile';
@@ -77,28 +77,17 @@ export default function TestRunsDetails({
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setNotification({
-        kind: 'success',
-        title: translations('copiedTitle'),
-        subtitle: translations('copiedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+      showNotification('success', translations('copiedTitle'), translations('copiedMessage'));
     } catch (err) {
       if (window.location.protocol === 'http:') {
-        setNotification({
-          kind: 'warning',
-          title: translations('warningTitle'),
-          subtitle:
-            'Clipboard API is not available. Please use HTTPS or copy the URL manually from the address bar.',
-        });
-        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+        showNotification(
+          'warning',
+          translations('warningTitle'),
+          translations('copyWarningMessage')
+        );
       } else {
         console.error('Failed to copy:', err);
-        setNotification({
-          kind: 'error',
-          title: translations('errorTitle'),
-          subtitle: translations('copyFailedMessage'),
-        });
+        showNotification('error', translations('errorTitle'), translations('copyFailedMessage'));
       }
     }
   };
@@ -112,108 +101,96 @@ export default function TestRunsDetails({
     setIsEditingName(false);
   };
 
-  // Save new query or update an existing one
-  const handleSaveQuery = () => {
-    const nameToSave = (isEditingName ? editedName : queryName || '').trim();
+  const showNotification = (kind: NotificationType['kind'], title: string, subtitle: string) => {
+    setNotification({ kind, title, subtitle });
+    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
+  };
 
-    if (!nameToSave) return;
-
-    // If we're editing and the name changed, validate it
-    if (isEditingName && editedName.trim() !== queryName) {
-      const newName = editedName.trim();
-
-      // Prevent renaming to a name that already exists
-      if (isQuerySaved(newName)) {
-        setNotification({
-          kind: 'error',
-          title: translations('errorTitle'),
-          subtitle: translations('nameExistsError', { name: newName }),
-        });
-        setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-        return;
-      }
+  const validateQueryName = (newName: string): boolean => {
+    if (isEditingName && newName !== queryName && isQuerySaved(newName)) {
+      showNotification(
+        'error',
+        translations('errorTitle'),
+        translations('nameExistsError', { name: newName })
+      );
+      return false;
     }
+    return true;
+  };
 
-    const currentUrlParams = new URLSearchParams(searchParams);
+  const prepareQueryUrlParams = (nameToSave: string): URLSearchParams => {
+    const params = new URLSearchParams(searchParams);
+    params.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
+    params.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
+    return params;
+  };
 
-    // Change the tab to be the results tab when saving a query
-    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.TAB, TABS_IDS[3]);
-    currentUrlParams.set(TEST_RUNS_QUERY_PARAMS.QUERY_NAME, nameToSave);
+  const handleRenameQuery = (
+    queryToUpdate: SavedQueryType,
+    nameToSave: string,
+    urlParams: URLSearchParams
+  ) => {
+    updateQueryInUrl(urlParams);
+    updateQuery(queryToUpdate.createdAt, {
+      ...queryToUpdate,
+      title: nameToSave,
+      url: encodeStateToUrlParam(urlParams.toString()),
+    });
+    showNotification('success', translations('successTitle'), translations('queryUpdatedMessage'));
+  };
 
-    // Check if this is a rename scenario: the name to save differs from the current query name
-    const queryToUpdate = getQueryByName(queryName);
+  const handleUpdateExistingQuery = (existingQuery: SavedQueryType, urlParams: URLSearchParams) => {
+    updateQuery(existingQuery.createdAt, {
+      ...existingQuery,
+      url: encodeStateToUrlParam(urlParams.toString()),
+    });
+    showNotification('success', translations('successTitle'), translations('queryUpdatedMessage'));
+  };
 
-    if (queryToUpdate && queryToUpdate.title !== nameToSave) {
-      // Update the browser URL first to ensure the context picks up the new name
-      updateQueryInUrl(currentUrlParams);
-
-      // Then update the query in storage with the new title
-      updateQuery(queryToUpdate.createdAt, {
-        ...queryToUpdate,
-        title: nameToSave,
-        url: encodeStateToUrlParam(currentUrlParams.toString()),
-      });
-
-      // Exit editing mode
-      if (isEditingName) {
-        setIsEditingName(false);
-      }
-
-      setNotification({
-        kind: 'success',
-        title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      return;
-    }
-
-    const existingQuery = getQueryByName(nameToSave);
-
-    // If the query already exists, update it
-    if (existingQuery) {
-      updateQuery(existingQuery.createdAt, {
-        ...existingQuery,
-        url: encodeStateToUrlParam(currentUrlParams.toString()),
-      });
-
-      // Exit editing mode
-      if (isEditingName) {
-        setIsEditingName(false);
-      }
-
-      setNotification({
-        kind: 'success',
-        title: translations('successTitle'),
-        subtitle: translations('queryUpdatedMessage'),
-      });
-      setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
-      return;
-    }
-
-    // If the query doesn't exist, create a new one with a unique name
+  const handleCreateNewQuery = (nameToSave: string, urlParams: URLSearchParams) => {
     const finalQueryTitle = generateUniqueQueryName(nameToSave, isQuerySaved);
-
     const newQuery = {
       title: finalQueryTitle,
-      url: encodeStateToUrlParam(currentUrlParams.toString()),
+      url: encodeStateToUrlParam(urlParams.toString()),
       createdAt: new Date().toISOString(),
     };
-
-    // Save the new query to the localStorage
     saveQuery(newQuery);
+    showNotification(
+      'success',
+      translations('successTitle'),
+      translations('newQuerySavedMessage', { name: finalQueryTitle })
+    );
+  };
 
-    // Exit editing mode
-    if (isEditingName) {
-      setIsEditingName(false);
+  // Save new query or update an existing one
+  const handleSaveQuery = () => {
+    try {
+      const nameToSave = (isEditingName ? editedName : queryName || '').trim();
+
+      if (!nameToSave) return;
+
+      if (!validateQueryName(nameToSave)) return;
+
+      const urlParams = prepareQueryUrlParams(nameToSave);
+      const queryToUpdate = getQueryByName(queryName);
+
+      if (queryToUpdate && queryToUpdate.title !== nameToSave) {
+        handleRenameQuery(queryToUpdate, nameToSave, urlParams);
+        return;
+      }
+
+      const existingQuery = getQueryByName(nameToSave);
+      if (existingQuery) {
+        handleUpdateExistingQuery(existingQuery, urlParams);
+        return;
+      }
+
+      handleCreateNewQuery(nameToSave, urlParams);
+    } finally {
+      if (isEditingName) {
+        setIsEditingName(false);
+      }
     }
-
-    setNotification({
-      kind: 'success',
-      title: translations('successTitle'),
-      subtitle: translations('newQuerySavedMessage', { name: finalQueryTitle }),
-    });
-    setTimeout(() => setNotification(null), NOTIFICATION_VISIBLE_MILLISECS);
   };
 
   const isSaveQueryDisabled = useMemo(() => {
