@@ -15,6 +15,7 @@ export const dynamic = 'force-dynamic';
 
 interface TokenDetails {
   tokenDescription: string;
+  tokenLifespanDays: number;
 }
 
 // POST request handler for requests to /auth/tokens
@@ -33,9 +34,12 @@ export async function POST(request: NextRequest) {
     // Store the client ID to be displayed to the user later
     cookiesStore.set(AuthCookies.CLIENT_ID, clientId, { httpOnly: true });
 
-    // Store the token description to be passed to the API server on the callback
+    // Store the token description and lifespan to be passed to the API server on the callback
     const requestBody: TokenDetails = await request.json();
     cookiesStore.set(AuthCookies.TOKEN_DESCRIPTION, requestBody.tokenDescription, {
+      httpOnly: true,
+    });
+    cookiesStore.set(AuthCookies.TOKEN_LIFESPAN_DAYS, String(requestBody.tokenLifespanDays), {
       httpOnly: true,
     });
 

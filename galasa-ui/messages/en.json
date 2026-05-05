@@ -62,7 +62,9 @@
     "descriptionline1": "An access token is a unique secret key held by a client program so it has permission to use the Galasa service.",
     "descriptionline2": "A token has the same access rights as the user who allocated it.",
     "deleteButtontext": "Delete {count} selected access token",
-    "error": "Failed to fetch tokens from the Galasa API server"
+    "error": "Failed to fetch tokens from the Galasa API server",
+    "warningDaysMaximumTitle": "Token expiry warning days limit applied",
+    "warningDaysMaximumSubtitle": "The maximum value for service.tokens.lifespan.nearly.expired.warning.days is 30 days."
   },
   "ResultsTablePageSizingSetting": {
     "title": "Test Run Query Results",
@@ -117,11 +119,20 @@
     "token_name": "Token name",
     "token_name_helper_text": "Use this to distinguish between your tokens in the future.",
     "token_name_placeholder": "e.g. galasactl access for my Windows machine",
+    "token_lifespan": "Token lifespan",
+    "select_lifespan": "Select token lifespan",
+    "custom_lifespan": "Custom",
+    "custom_expiry_date": "Custom expiry date",
+    "custom_expiry_date_helper_text": "Select a date between 1 and 365 days from today",
+    "custom_expiry_date_invalid": "Expiry date must be between 1 and 365 days from today",
     "error_requesting_token": "Error requesting access token"
   },
   "TokenCard": {
     "createdAt": "Created at:",
-    "owner": "Owner"
+    "expires": "Expires:",
+    "expired": "Expired:",
+    "owner": "Owner",
+    "nearlyExpiredWarning": "Your personal access token will expire soon. Once it expires, you will no longer be able to use it to contact this Galasa service."
   },
   "TokenDeleteModal": {
     "modalHeading": "Delete Access Tokens",

@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loading, Button } from '@carbon/react';
+import { Loading, Button, InlineNotification } from '@carbon/react';
 import styles from '@/styles/mysettings/MySettings.module.css';
 import TokenCard from '@/components/tokens/TokenCard';
 import ErrorPage from '@/app/error/page';
@@ -18,11 +18,15 @@ import { useTranslations } from 'next-intl';
 interface AccessTokensSectionProps {
   accessTokensPromise: Promise<AuthTokens | undefined>;
   isAddBtnVisible: boolean;
+  tokenExpiryWarningDays: number;
+  showMaxWarningDaysNotice: boolean;
 }
 
 export default function AccessTokensSection({
   accessTokensPromise,
   isAddBtnVisible,
+  tokenExpiryWarningDays,
+  showMaxWarningDaysNotice,
 }: AccessTokensSectionProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -72,13 +76,27 @@ export default function AccessTokensSection({
 
       try {
         const accessTokens = await accessTokensPromise;
+
         if (accessTokens && accessTokens.tokens) {
           setTokens(new Set(accessTokens.tokens));
         } else {
           throw new Error(translations('error'));
         }
       } catch (err) {
-        setIsError(true);
+        if (err instanceof Error && err.message === translations('error')) {
+          setIsError(true);
+        } else {
+          try {
+            const accessTokens = await accessTokensPromise;
+            if (accessTokens && accessTokens.tokens) {
+              setTokens(new Set(accessTokens.tokens));
+            } else {
+              throw new Error(translations('error'));
+            }
+          } catch (accessTokenError) {
+            setIsError(true);
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -107,6 +125,17 @@ export default function AccessTokensSection({
               </div>
             </div>
 
+            {showMaxWarningDaysNotice && (
+              <InlineNotification
+                kind="warning"
+                lowContrast
+                hideCloseButton
+                title={translations('warningDaysMaximumTitle')}
+                subtitle={translations('warningDaysMaximumSubtitle')}
+                className={styles.warningNotification}
+              />
+            )}
+
             <div className={styles.btnContainer}>
               {/* // Only the user who is logged in can create a new token
             // Admins can only delete users' tokens.  */}
@@ -128,6 +157,7 @@ export default function AccessTokensSection({
                   key={token.tokenId}
                   token={token}
                   selectTokenForDeletion={selectTokenForDeletion}
+                  expiryWarningDays={tokenExpiryWarningDays}
                 />
               ))}
             </div>

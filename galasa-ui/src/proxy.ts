@@ -180,8 +180,16 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
     const tokenDescription = request.cookies.get(AuthCookies.TOKEN_DESCRIPTION)?.value;
     response.cookies.delete(AuthCookies.TOKEN_DESCRIPTION);
 
+    const tokenLifespanDays = request.cookies.get(AuthCookies.TOKEN_LIFESPAN_DAYS)?.value;
+    response.cookies.delete(AuthCookies.TOKEN_LIFESPAN_DAYS);
+
     // Build the request body
-    const authProperties = buildAuthProperties(clientId, code, tokenDescription);
+    const authProperties = buildAuthProperties(
+      clientId,
+      code,
+      tokenDescription,
+      tokenLifespanDays ? parseInt(tokenLifespanDays, 10) : undefined
+    );
 
     // Send a POST request to the API server's /auth endpoint to exchange the authorization code with a JWT
     const tokenResponse = await authApiClient.createToken(authProperties);
@@ -199,12 +207,18 @@ const handleCallback = async (request: NextRequest, response: NextResponse) => {
   return response;
 };
 
-const buildAuthProperties = (clientId: string, code: string, tokenDescription?: string) => {
+const buildAuthProperties = (
+  clientId: string,
+  code: string,
+  tokenDescription?: string,
+  tokenLifespanDays?: number
+) => {
   const authProperties = new AuthProperties();
 
   authProperties.clientId = clientId;
   authProperties.code = code;
   authProperties.description = tokenDescription;
+  authProperties.tokenLifespanDays = tokenLifespanDays;
 
   return authProperties;
 };

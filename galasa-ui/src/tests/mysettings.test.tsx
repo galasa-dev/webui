@@ -24,6 +24,11 @@ jest.mock('next/headers', () => ({
 jest.mock('@/generated/galasaapi', () => {
   return {
     UsersAPIApi: jest.fn(),
+    ConfigurationPropertyStoreAPIApi: jest.fn().mockImplementation(() => ({
+      getCpsProperty: jest.fn().mockResolvedValue([
+        { data: { value: '14' } },
+      ]),
+    })),
   };
 });
 

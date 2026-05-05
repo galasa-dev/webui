@@ -8,7 +8,7 @@ import { cookies } from 'next/headers';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import TokenResponseModal from '@/components/tokens/TokenResponseModal';
 import PageTile from '@/components/PageTile';
-import { UsersAPIApi } from '@/generated/galasaapi';
+import { ConfigurationPropertyStoreAPIApi, UsersAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import * as Constants from '@/utils/constants/common';
 import BreadCrumb from '@/components/common/BreadCrumb';
@@ -20,6 +20,8 @@ import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import ProfileRole from '@/components/users/UserRole';
 import DateTimeSettings from '@/components/mysettings/DateTimeSettings';
 import ResultsTablePageSizeSetting from '@/components/mysettings/ResultsTablePageSizeSetting';
+import { fetchTokenExpiryWarningConfiguration } from '@/utils/tokenExpiryWarning';
+
 export default async function MySettings() {
   const apiConfig = createAuthenticatedApiConfiguration();
 
@@ -55,6 +57,9 @@ export default async function MySettings() {
     return <ErrorPage />;
   }
 
+  const cpsApiClient = new ConfigurationPropertyStoreAPIApi(apiConfig);
+  const tokenExpiryWarningConfiguration = await fetchTokenExpiryWarningConfiguration(cpsApiClient);
+
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME]} />
@@ -63,6 +68,8 @@ export default async function MySettings() {
       <AccessTokensSection
         accessTokensPromise={fetchAccessTokens(userLoginId)}
         isAddBtnVisible={true}
+        tokenExpiryWarningDays={tokenExpiryWarningConfiguration.warningDays}
+        showMaxWarningDaysNotice={tokenExpiryWarningConfiguration.exceededMaximum}
       />
       <TokenResponseModal refreshToken={refreshToken} clientId={clientId} onLoad={deleteCookies} />
       <DateTimeSettings />

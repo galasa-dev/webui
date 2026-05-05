@@ -5,24 +5,88 @@
  */
 'use client';
 
-import { Button, Modal } from '@carbon/react';
+import { Button, Modal, Dropdown, DatePicker, DatePickerInput } from '@carbon/react';
 import { useRef, useState } from 'react';
 import { TextInput } from '@carbon/react';
 import { InlineNotification } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useTranslations } from 'next-intl';
+import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
+import styles from '@/styles/tokens/TokenRequestModal.module.css';
+import {
+  TOKEN_PRESET_LIFESPANS,
+  TOKEN_CUSTOM_VALUE_ID,
+  TOKEN_CUSTOM_DEFAULT_LIFESPAN,
+  TOKEN_MIN_LIFESPAN,
+  TOKEN_MAX_LIFESPAN,
+  LOCALE_TO_FLATPICKR_FORMAT_MAP,
+  SUPPORTED_LOCALES,
+} from '@/utils/constants/common';
 
 export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean }) {
   const translations = useTranslations('TokenRequestModal');
+  const { formatDate, preferences } = useDateTimeFormat();
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [selectedLifespan, setSelectedLifespan] = useState<string>(String(TOKEN_PRESET_LIFESPANS[0]));
+  const [customLifespan, setCustomLifespan] = useState<number>(TOKEN_CUSTOM_DEFAULT_LIFESPAN);
+  const [customExpiryDate, setCustomExpiryDate] = useState<Date | null>(null);
   const tokenNameInputRef = useRef<HTMLInputElement>(undefined);
+
+  // Helper function to get the effective locale based on dateTimeFormatType
+  const getEffectiveLocale = (): string => {
+    if (preferences.dateTimeFormatType === 'browser') {
+      // Get browser's locale
+      const browserLocale = navigator.language || 'en-GB';
+      // Check if it's a supported locale, otherwise default to en-GB
+      const supportedLocale = SUPPORTED_LOCALES.find(loc => loc.code === browserLocale);
+      return supportedLocale ? browserLocale : 'en-GB';
+    }
+    return preferences.locale;
+  };
+
+  const getExpiryDate = (days: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return formatDate(date);
+  };
+
+  const getLifespanOptions = () => {
+    const options = TOKEN_PRESET_LIFESPANS.map((days) => ({
+      id: String(days),
+      label: `${days} days (${getExpiryDate(days)})`,
+    }));
+    options.push({
+      id: TOKEN_CUSTOM_VALUE_ID,
+      label: translations('custom_lifespan'),
+    });
+    return options;
+  };
+
+  const getEffectiveLifespan = (): number => {
+    if (selectedLifespan === TOKEN_CUSTOM_VALUE_ID) {
+      if (customExpiryDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const expiry = new Date(customExpiryDate);
+        expiry.setHours(0, 0, 0, 0);
+        const diffTime = expiry.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+      }
+      return customLifespan;
+    }
+    return parseInt(selectedLifespan, 10);
+  };
 
   const onChangeInputValidation = () => {
     const tokenName = tokenNameInputRef.current?.value.trim() ?? '';
-    setSubmitDisabled(!tokenName);
+    const lifespan = getEffectiveLifespan();
+    const isLifespanValid =
+      Number.isInteger(lifespan) && lifespan >= TOKEN_MIN_LIFESPAN && lifespan <= TOKEN_MAX_LIFESPAN;
+    setSubmitDisabled(!tokenName || !isLifespanValid);
   };
 
   const submitTokenRequest = async () => {
@@ -31,6 +95,7 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
         method: 'POST',
         body: JSON.stringify({
           tokenDescription: tokenNameInputRef.current?.value.trim(),
+          tokenLifespanDays: getEffectiveLifespan(),
         }),
       });
 
@@ -72,9 +137,13 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
         secondaryButtonText={translations('cancel')}
         shouldSubmitOnEnter={true}
         open={open}
+        className={styles.modalContent}
         onRequestClose={() => {
           setOpen(false);
           setError('');
+          setSelectedLifespan(String(TOKEN_PRESET_LIFESPANS[0]));
+          setCustomLifespan(TOKEN_CUSTOM_DEFAULT_LIFESPAN);
+          setCustomExpiryDate(null);
         }}
         onRequestSubmit={async () => {
           if (!submitDisabled) {
@@ -99,6 +168,62 @@ export default function TokenRequestModal({ isDisabled }: { isDisabled: boolean 
           placeholder={translations('token_name_placeholder')}
           onChange={onChangeInputValidation}
         />
+
+        <br />
+
+        <Dropdown
+          id="lifespan-dropdown"
+          titleText={translations('token_lifespan')}
+          label={translations('select_lifespan')}
+          items={getLifespanOptions()}
+          itemToString={(item: { id: string; label: string } | null) => (item ? item.label : '')}
+          selectedItem={getLifespanOptions().find((opt) => opt.id === selectedLifespan)}
+          onChange={({ selectedItem }: { selectedItem?: { id: string; label: string } }) => {
+            if (selectedItem) {
+              setSelectedLifespan(selectedItem.id);
+              onChangeInputValidation();
+            }
+          }}
+        />
+
+        {selectedLifespan === TOKEN_CUSTOM_VALUE_ID && (
+          <>
+            <br />
+            <DatePicker
+              datePickerType="single"
+              locale={getEffectiveLocale()?.split('-')[0] || 'en'}
+              dateFormat={LOCALE_TO_FLATPICKR_FORMAT_MAP[getEffectiveLocale()]}
+              minDate={new Date().setDate(new Date().getDate() + TOKEN_MIN_LIFESPAN)}
+              maxDate={new Date().setDate(new Date().getDate() + TOKEN_MAX_LIFESPAN)}
+              onChange={(dates: Date[]) => {
+                if (dates && dates.length > 0) {
+                  setCustomExpiryDate(dates[0]);
+                  onChangeInputValidation();
+                }
+              }}
+            >
+              <DatePickerInput
+                id="custom-expiry-date-input"
+                placeholder={(() => {
+                  const dateFormat = LOCALE_TO_FLATPICKR_FORMAT_MAP[getEffectiveLocale()];
+                  return dateFormat
+                    .replace(/Y/g, 'yyyy')
+                    .replace(/m/g, 'mm')
+                    .replace(/d/g, 'dd');
+                })()}
+                labelText={translations('custom_expiry_date')}
+                helperText={translations('custom_expiry_date_helper_text')}
+                invalid={(() => {
+                  if (!customExpiryDate) return false;
+                  const days = getEffectiveLifespan();
+                  return days < TOKEN_MIN_LIFESPAN || days > TOKEN_MAX_LIFESPAN;
+                })()}
+                invalidText={translations('custom_expiry_date_invalid')}
+              />
+            </DatePicker>
+          </>
+        )}
+
         {error && (
           <InlineNotification
             className="margin-top-1"

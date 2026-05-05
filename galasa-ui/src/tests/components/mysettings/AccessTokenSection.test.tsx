@@ -15,6 +15,12 @@ jest.mock('@carbon/react', () => ({
       {children}
     </button>
   ),
+  InlineNotification: ({ title, subtitle, kind }: any) => (
+    <div data-testid="inline-notification" data-kind={kind}>
+      <div>{title}</div>
+      <div>{subtitle}</div>
+    </div>
+  ),
 }));
 
 jest.mock('next-intl', () => ({
@@ -44,9 +50,10 @@ jest.mock('next-intl', () => ({
 
 // Mock TokenCard to render a button that calls the passed callback
 jest.mock('@/components/tokens/TokenCard', () => {
-  const MockTokenCard = ({ token, selectTokenForDeletion }: any) => (
+  const MockTokenCard = ({ token, selectTokenForDeletion, expiryWarningDays }: any) => (
     <button
       data-testid={`token-card-${token.tokenId}`}
+      data-expiry-warning-days={expiryWarningDays}
       onClick={() => selectTokenForDeletion(token.tokenId)}
     >
       TokenCard {token.tokenId}
@@ -81,7 +88,14 @@ jest.mock('@/components/tokens/TokenDeleteModal', () => {
 describe('AccessTokensSection', () => {
   test('displays loading indicator while fetching tokens', () => {
     const pendingPromise = new Promise<AuthTokens | undefined>(() => {});
-    render(<AccessTokensSection accessTokensPromise={pendingPromise} isAddBtnVisible={true} />);
+    render(
+      <AccessTokensSection
+        accessTokensPromise={pendingPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
@@ -91,7 +105,14 @@ describe('AccessTokensSection', () => {
       tokens: [{ tokenId: 'token-1' }, { tokenId: 'token-2' }],
     };
     const resolvedPromise = Promise.resolve(authTokens);
-    render(<AccessTokensSection accessTokensPromise={resolvedPromise} isAddBtnVisible={true} />);
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
 
     // Wait for the heading (which only renders after loading is finished)
     await waitFor(() => expect(screen.getByText('Access Tokens')).toBeInTheDocument());
@@ -115,7 +136,14 @@ describe('AccessTokensSection', () => {
 
   test('renders error page when fetching tokens fails', async () => {
     const rejectedPromise = Promise.reject(new Error('Fetch error'));
-    render(<AccessTokensSection accessTokensPromise={rejectedPromise} isAddBtnVisible={false} />);
+    render(
+      <AccessTokensSection
+        accessTokensPromise={rejectedPromise}
+        isAddBtnVisible={false}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
 
     // Wait for the error page to be rendered.
     await waitFor(() => expect(screen.getByText('Something went wrong!')).toBeInTheDocument());
@@ -126,7 +154,14 @@ describe('AccessTokensSection', () => {
       tokens: [{ tokenId: 'token-1' }],
     };
     const resolvedPromise = Promise.resolve(authTokens);
-    render(<AccessTokensSection accessTokensPromise={resolvedPromise} isAddBtnVisible={true} />);
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
 
     // Wait for the token to render.
     await waitFor(() => expect(screen.getByTestId('token-card-token-1')).toBeInTheDocument());
@@ -159,7 +194,14 @@ describe('AccessTokensSection', () => {
       tokens: [{ tokenId: 'token-1' }],
     };
     const resolvedPromise = Promise.resolve(authTokens);
-    render(<AccessTokensSection accessTokensPromise={resolvedPromise} isAddBtnVisible={true} />);
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
 
     // Wait for the token to appear.
     await waitFor(() => expect(screen.getByTestId('token-card-token-1')).toBeInTheDocument());
@@ -174,5 +216,72 @@ describe('AccessTokensSection', () => {
     await waitFor(() =>
       expect(screen.getByTestId('token-request-modal')).toHaveTextContent('Disabled')
     );
+  });
+
+  test('passes tokenExpiryWarningDays prop to TokenCard components', async () => {
+    const authTokens: AuthTokens = {
+      tokens: [{ tokenId: 'token-1' }, { tokenId: 'token-2' }],
+    };
+    const resolvedPromise = Promise.resolve(authTokens);
+    const warningDays = 21;
+
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={warningDays}
+        showMaxWarningDaysNotice={false}
+      />
+    );
+
+    await waitFor(() => expect(screen.getByTestId('token-card-token-1')).toBeInTheDocument());
+
+    const tokenCard1 = screen.getByTestId('token-card-token-1');
+    const tokenCard2 = screen.getByTestId('token-card-token-2');
+
+    expect(tokenCard1).toHaveAttribute('data-expiry-warning-days', String(warningDays));
+    expect(tokenCard2).toHaveAttribute('data-expiry-warning-days', String(warningDays));
+  });
+
+  test('displays warning notification when showMaxWarningDaysNotice is true', async () => {
+    const authTokens: AuthTokens = {
+      tokens: [{ tokenId: 'token-1' }],
+    };
+    const resolvedPromise = Promise.resolve(authTokens);
+
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={30}
+        showMaxWarningDaysNotice={true}
+      />
+    );
+
+    await waitFor(() => expect(screen.getByText('Access Tokens')).toBeInTheDocument());
+
+    const notification = screen.getByTestId('inline-notification');
+    expect(notification).toBeInTheDocument();
+    expect(notification).toHaveAttribute('data-kind', 'warning');
+  });
+
+  test('does not display warning notification when showMaxWarningDaysNotice is false', async () => {
+    const authTokens: AuthTokens = {
+      tokens: [{ tokenId: 'token-1' }],
+    };
+    const resolvedPromise = Promise.resolve(authTokens);
+
+    render(
+      <AccessTokensSection
+        accessTokensPromise={resolvedPromise}
+        isAddBtnVisible={true}
+        tokenExpiryWarningDays={14}
+        showMaxWarningDaysNotice={false}
+      />
+    );
+
+    await waitFor(() => expect(screen.getByText('Access Tokens')).toBeInTheDocument());
+
+    expect(screen.queryByTestId('inline-notification')).not.toBeInTheDocument();
   });
 });
