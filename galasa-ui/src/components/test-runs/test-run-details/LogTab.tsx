@@ -255,10 +255,19 @@ export default function LogTab({
 
   const scrollToTop = () => {
     if (scrollContainerRef.current) {
-      // First update the visible range to include top lines
-      setVisibleRange({ start: 0, end: Math.min(MIN_VISIBLE_LINES, visibleLines.length) });
+      const container = scrollContainerRef.current;
+      const visibleLinesEndRange = Math.min(MIN_VISIBLE_LINES, visibleLines.length);
 
-      // Wait for React to render the new range, then scroll
+      // Scroll close to the top with instant behavior
+      container.scrollTo({
+        top: visibleLinesEndRange,
+        behavior: 'instant',
+      });
+
+      // Update the visible range to include top lines
+      setVisibleRange({ start: 0, end: visibleLinesEndRange });
+
+      // After state update, scroll again with smooth behavior if preferred
       requestAnimationFrame(() => {
         if (scrollContainerRef.current) {
           scrollContainerRef.current.scrollTo({
@@ -272,10 +281,17 @@ export default function LogTab({
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
-      const maxScroll = visibleLines.length * LINE_HEIGHT_PIXELS;
       const container = scrollContainerRef.current;
+      const totalHeight = visibleLines.length * LINE_HEIGHT_PIXELS;
+      const maxScroll = totalHeight - container.clientHeight;
 
-      // First calculate and set the visible range for bottom lines
+      // Scroll immediately to bottom with instant behavior
+      container.scrollTo({
+        top: maxScroll,
+        behavior: 'instant',
+      });
+
+      // Calculate and set the visible range for bottom lines
       const newRange = calculateVisibleRange(
         maxScroll,
         container.clientHeight,
@@ -283,11 +299,13 @@ export default function LogTab({
       );
       setVisibleRange(newRange);
 
-      // Wait for React to render the new range, then scroll
+      // After state update, scroll again with smooth behavior if preferred
       requestAnimationFrame(() => {
         if (scrollContainerRef.current) {
+          const updatedMaxScroll =
+            scrollContainerRef.current.scrollHeight - scrollContainerRef.current.clientHeight;
           scrollContainerRef.current.scrollTo({
-            top: maxScroll,
+            top: updatedMaxScroll,
             behavior: ANIMATION_BEHAVIOUR,
           });
         }
