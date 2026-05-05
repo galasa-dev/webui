@@ -122,9 +122,9 @@
     "token_lifespan": "Token lifespan",
     "select_lifespan": "Select token lifespan",
     "custom_lifespan": "Custom",
-    "custom_lifespan_days": "Custom lifespan (days)",
-    "custom_lifespan_helper_text": "Enter a value between 1 and 365 days",
-    "custom_lifespan_invalid": "Lifespan must be between 1 and 365 days",
+    "custom_expiry_date": "Custom expiry date",
+    "custom_expiry_date_helper_text": "Select a date between 1 and 365 days from today",
+    "custom_expiry_date_invalid": "Expiry date must be between 1 and 365 days from today",
     "error_requesting_token": "Error requesting access token"
   },
   "TokenCard": {

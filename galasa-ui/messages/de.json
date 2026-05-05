@@ -122,9 +122,9 @@
     "token_lifespan": "Token-Lebensdauer",
     "select_lifespan": "Token-Lebensdauer auswählen",
     "custom_lifespan": "Benutzerdefiniert",
-    "custom_lifespan_days": "Benutzerdefinierte Lebensdauer (Tage)",
-    "custom_lifespan_helper_text": "Geben Sie einen Wert zwischen 1 und 365 Tagen ein",
-    "custom_lifespan_invalid": "Die Lebensdauer muss zwischen 1 und 365 Tagen liegen",
+    "custom_expiry_date": "Benutzerdefiniertes Ablaufdatum",
+    "custom_expiry_date_helper_text": "Wählen Sie ein Datum zwischen 1 und 365 Tagen ab heute",
+    "custom_expiry_date_invalid": "Das Ablaufdatum muss zwischen 1 und 365 Tagen ab heute liegen",
     "error_requesting_token": "Fehler beim Anfordern des Tokens"
   },
   "TokenCard": {
