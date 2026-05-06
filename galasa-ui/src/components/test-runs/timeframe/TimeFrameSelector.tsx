@@ -8,7 +8,7 @@
 import styles from '@/styles/test-runs/timeframe/TimeFrameSelector.module.css';
 import { TimeFrameValues } from '@/utils/interfaces';
 import { useState, useCallback } from 'react';
-import { dateTimeLocal2UTC, dateTimeUTC2Local } from '@/utils/timeOperations';
+import { calculateSynchronizedState, dateTimeLocal2UTC } from '@/utils/timeOperations';
 import { InlineNotification, RadioButton, FormGroup } from '@carbon/react';
 import { DAY_MS, HOUR_MS, MINUTE_MS } from '@/utils/constants/common';
 import { useTranslations } from 'next-intl';
@@ -28,38 +28,6 @@ interface TimeFrameSelectorProps {
   values: TimeFrameValues;
   setValues: React.Dispatch<React.SetStateAction<TimeFrameValues>>;
 }
-
-/**
- * Calculates the synchronized state from two valid dates.
- */
-export const calculateSynchronizedState = (
-  fromDate: Date,
-  toDate: Date,
-  timezone: string
-): Omit<TimeFrameValues, 'isRelativeToNow' | 'fromSelectionType' | 'toSelectionType'> => {
-  const fromUiParts = dateTimeUTC2Local(fromDate, timezone);
-  const toUiParts = dateTimeUTC2Local(toDate, timezone);
-  let difference = toDate.getTime() - fromDate.getTime();
-  if (difference < 0) difference = 0;
-
-  const durationDays = Math.floor(difference / DAY_MS);
-  difference %= DAY_MS;
-  const durationHours = Math.floor(difference / HOUR_MS);
-  difference %= HOUR_MS;
-  const durationMinutes = Math.floor(difference / MINUTE_MS);
-
-  return {
-    fromDate,
-    fromTime: fromUiParts.time,
-    fromAmPm: fromUiParts.amPm,
-    toDate,
-    toTime: toUiParts.time,
-    toAmPm: toUiParts.amPm,
-    durationDays,
-    durationHours,
-    durationMinutes,
-  };
-};
 
 /**
  * Derives the radio button selection types from the TimeFrameValues.
@@ -86,7 +54,7 @@ const deriveSelectionTypes = (
 /**
  * Validates timeframe and returns corrected dates with optional notification.
  */
-export function validateTimeFrame(
+const validateTimeFrame = (
   fromDate: Date,
   toDate: Date,
   toType: ToSelectionType,
@@ -95,7 +63,7 @@ export function validateTimeFrame(
   correctedFrom: Date;
   correctedTo: Date;
   notification: Notification | null;
-} {
+} => {
   // Check if from is after to
   if (fromDate > toDate) {
     return {
@@ -112,7 +80,69 @@ export function validateTimeFrame(
   }
 
   return { correctedFrom: fromDate, correctedTo: toDate, notification: null };
-}
+};
+
+const calculateDurationMs = (values: TimeFrameValues): number => {
+  return (
+    values.durationDays * DAY_MS +
+    values.durationHours * HOUR_MS +
+    values.durationMinutes * MINUTE_MS
+  );
+};
+
+const getToDate = (toType: ToSelectionType, values: TimeFrameValues, timezone: string): Date => {
+  return toType === 'now'
+    ? new Date()
+    : dateTimeLocal2UTC(values.toDate, values.toTime, values.toAmPm, timezone);
+};
+
+const getFromDate = (
+  fromType: FromSelectionType,
+  toDate: Date,
+  values: TimeFrameValues,
+  timezone: string
+): Date => {
+  if (fromType === 'duration') {
+    const durationInMs = calculateDurationMs(values);
+    return new Date(toDate.getTime() - durationInMs);
+  } else {
+    return dateTimeLocal2UTC(values.fromDate, values.fromTime, values.fromAmPm, timezone);
+  }
+};
+
+/**
+ * Validates timeframe and updates state if valid
+ * Returns the notification to display (if any)
+ */
+const validateAndUpdateState = (
+  fromDate: Date,
+  toDate: Date,
+  fromType: FromSelectionType,
+  toType: ToSelectionType,
+  timezone: string,
+  translations: ReturnType<typeof useTranslations>,
+  setNotification: (notification: Notification | null) => void,
+  setValues: React.Dispatch<React.SetStateAction<TimeFrameValues>>
+): void => {
+  const {
+    correctedFrom,
+    correctedTo,
+    notification: validationNotification,
+  } = validateTimeFrame(fromDate, toDate, toType, translations);
+
+  setNotification(validationNotification);
+
+  if (validationNotification?.kind !== 'error') {
+    const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
+    setValues((prevValues) => ({
+      ...prevValues,
+      ...finalState,
+      fromSelectionType: fromType,
+      toSelectionType: toType,
+      isRelativeToNow: toType === 'now',
+    }));
+  }
+};
 
 export default function TimeFrameSelector({ values, setValues }: TimeFrameSelectorProps) {
   const translations = useTranslations('TimeFrame');
@@ -190,45 +220,19 @@ export default function TimeFrameSelector({ values, setValues }: TimeFrameSelect
   const handleFromTypeChange = useCallback(
     (newFromType: FromSelectionType) => {
       const timezone = getResolvedTimeZone();
+      const toDate = getToDate(toType, values, timezone);
+      const fromDate = getFromDate(newFromType, toDate, values, timezone);
 
-      let toDate: Date;
-      if (toType === 'now') {
-        toDate = new Date();
-      } else {
-        toDate = dateTimeLocal2UTC(values.toDate, values.toTime, values.toAmPm, timezone);
-      }
-
-      let fromDate: Date;
-      if (newFromType === 'duration') {
-        // Switching to duration: calculate from based on current duration
-        const durationInMs =
-          values.durationDays * DAY_MS +
-          values.durationHours * HOUR_MS +
-          values.durationMinutes * MINUTE_MS;
-        fromDate = new Date(toDate.getTime() - durationInMs);
-      } else {
-        // Switching to specific time: use current from values
-        fromDate = dateTimeLocal2UTC(values.fromDate, values.fromTime, values.fromAmPm, timezone);
-      }
-
-      const {
-        correctedFrom,
-        correctedTo,
-        notification: validationNotification,
-      } = validateTimeFrame(fromDate, toDate, toType, translations);
-
-      setNotification(validationNotification);
-
-      if (validationNotification?.kind !== 'error') {
-        const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
-        setValues((prevValues) => ({
-          ...prevValues,
-          ...finalState,
-          fromSelectionType: newFromType,
-          toSelectionType: toType,
-          isRelativeToNow: toType === 'now',
-        }));
-      }
+      validateAndUpdateState(
+        fromDate,
+        toDate,
+        newFromType,
+        toType,
+        timezone,
+        translations,
+        setNotification,
+        setValues
+      );
     },
     [values, toType, getResolvedTimeZone, translations, setValues]
   );
@@ -236,45 +240,19 @@ export default function TimeFrameSelector({ values, setValues }: TimeFrameSelect
   const handleToTypeChange = useCallback(
     (newToType: ToSelectionType) => {
       const timezone = getResolvedTimeZone();
+      const toDate = getToDate(newToType, values, timezone);
+      const fromDate = getFromDate(fromType, toDate, values, timezone);
 
-      let toDate: Date;
-      if (newToType === 'now') {
-        toDate = new Date();
-      } else {
-        toDate = dateTimeLocal2UTC(values.toDate, values.toTime, values.toAmPm, timezone);
-      }
-
-      let fromDate: Date;
-      if (fromType === 'duration') {
-        // From is duration-based: recalculate from based on new to
-        const durationInMs =
-          values.durationDays * DAY_MS +
-          values.durationHours * HOUR_MS +
-          values.durationMinutes * MINUTE_MS;
-        fromDate = new Date(toDate.getTime() - durationInMs);
-      } else {
-        // From is specific time: use current from values
-        fromDate = dateTimeLocal2UTC(values.fromDate, values.fromTime, values.fromAmPm, timezone);
-      }
-
-      const {
-        correctedFrom,
-        correctedTo,
-        notification: validationNotification,
-      } = validateTimeFrame(fromDate, toDate, newToType, translations);
-
-      setNotification(validationNotification);
-
-      if (validationNotification?.kind !== 'error') {
-        const finalState = calculateSynchronizedState(correctedFrom, correctedTo, timezone);
-        setValues((prevValues) => ({
-          ...prevValues,
-          ...finalState,
-          fromSelectionType: fromType,
-          toSelectionType: newToType,
-          isRelativeToNow: newToType === 'now',
-        }));
-      }
+      validateAndUpdateState(
+        fromDate,
+        toDate,
+        fromType,
+        newToType,
+        timezone,
+        translations,
+        setNotification,
+        setValues
+      );
     },
     [values, fromType, getResolvedTimeZone, translations, setValues]
   );

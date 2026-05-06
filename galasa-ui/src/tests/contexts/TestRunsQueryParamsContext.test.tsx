@@ -14,9 +14,9 @@ import {
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
+import { calculateSynchronizedState } from '@/utils/timeOperations';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameSelector';
 
 // Mock next/navigation
 let mockSearchParams = new URLSearchParams();

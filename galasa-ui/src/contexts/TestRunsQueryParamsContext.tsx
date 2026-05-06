@@ -33,9 +33,9 @@ import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameSelector';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { valueMap } from '@/utils/encoding/urlStateMappers';
+import { calculateSynchronizedState } from '@/utils/timeOperations';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;
