@@ -6,12 +6,10 @@
 
 'use client';
 
-import React, { useTransition } from 'react';
-import styles from '@/styles/headers/Selector.module.css';
+import { useTransition } from 'react';
 import { ThemeType, useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon, Laptop } from '@carbon/icons-react';
-import { Tooltip } from '@carbon/react';
-import { Theme } from '@carbon/react';
+import { HeaderGlobalAction } from '@carbon/react';
 
 const themeOptions: { id: ThemeType; label: string; icon: React.ReactNode; tooltip: string }[] = [
   { id: 'light', label: 'Light', icon: <Sun size={20} />, tooltip: 'Switch to light mode' },
@@ -26,42 +24,26 @@ const themeOptions: { id: ThemeType; label: string; icon: React.ReactNode; toolt
 
 export default function ThemeSelector() {
   const { theme, setTheme } = useTheme();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const idx = themeOptions.findIndex((o) => o.id === theme);
   const currentTheme = themeOptions[idx] || themeOptions[0];
   const next = themeOptions[(idx + 1) % themeOptions.length];
 
   const cycleTheme = () => {
     startTransition(() => {
-      setTheme(next.id as ThemeType);
+      setTheme(next.id);
     });
   };
-  let current: 'g10' | 'g90';
-
-  if (theme === 'light') {
-    current = 'g10';
-  } else if (theme === 'dark') {
-    current = 'g90';
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    current = 'g90';
-  } else {
-    current = 'g10';
-  }
 
   return (
-    <div className={styles.themeSwitcher}>
-      <Theme theme={current} className={styles.themeContainer}>
-        <Tooltip label={next.tooltip} align="bottom">
-          <button
-            onClick={cycleTheme}
-            className={styles.iconButton + (currentTheme.id === theme ? ` ${styles.active}` : '')}
-            disabled={isPending}
-            aria-label={currentTheme.label}
-          >
-            {currentTheme.icon}
-          </button>
-        </Tooltip>
-      </Theme>
-    </div>
+    <HeaderGlobalAction
+      data-floating-menu-container
+      aria-label={next.tooltip}
+      tooltipAlignment="center"
+      tooltipPosition="bottom"
+      onClick={cycleTheme}
+    >
+      {currentTheme.icon}
+    </HeaderGlobalAction>
   );
 }

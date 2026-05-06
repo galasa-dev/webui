@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { setUserLocale } from '@/utils/locale';
 import { useLocale, useTranslations } from 'next-intl';
@@ -26,7 +26,7 @@ export default function LanguageSelector() {
     languages.find((lang) => lang.value === locale) || languages[0]
   );
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const router = useRouter();
   const translations = useTranslations('LanguageSelector');
 
@@ -46,36 +46,34 @@ export default function LanguageSelector() {
   };
 
   return (
-    <div data-floating-menu-container>
-      <OverflowMenu
-        data-floating-menu-container
-        className={styles.overflowMenu}
-        focusTrap={true}
-        align="bottom"
-        flipped
-        renderIcon={() => <Wikis className={styles.renderIcon} />}
-        size="lg"
-        iconDescription={`${translations('tooltip')}: ${selectedLanguage.text}`}
-        aria-label="Filter menu"
-        tooltipAlignment="center"
-        tooltipPosition="bottom"
-      >
-        {languages.map((language) => (
-          <OverflowMenuItem
-            key={language.id}
-            className={styles.overflowMenuItem}
-            itemText={
-              <div className={styles.overflowMenuItemText}>
-                <span className={styles.languageText}>{language.text}</span>
-                {selectedLanguage.id === language.id && (
-                  <Checkmark size={16} className={styles.checkmark} />
-                )}
-              </div>
-            }
-            onClick={() => handleLanguageChange({ selectedItem: language })}
-          />
-        ))}
-      </OverflowMenu>
-    </div>
+    <OverflowMenu
+      data-floating-menu-container
+      className={styles.overflowMenu}
+      focusTrap={true}
+      align="bottom"
+      flipped
+      renderIcon={() => <Wikis className={styles.renderIcon} />}
+      size="lg"
+      iconDescription={`${translations('tooltip')}: ${selectedLanguage.text}`}
+      aria-label="Filter menu"
+      tooltipAlignment="center"
+      tooltipPosition="bottom"
+    >
+      {languages.map((language) => (
+        <OverflowMenuItem
+          key={language.id}
+          className={styles.overflowMenuItem}
+          itemText={
+            <div className={styles.overflowMenuItemText}>
+              <span className={styles.languageText}>{language.text}</span>
+              {selectedLanguage.id === language.id && (
+                <Checkmark size={16} className={styles.checkmark} />
+              )}
+            </div>
+          }
+          onClick={() => handleLanguageChange({ selectedItem: language })}
+        />
+      ))}
+    </OverflowMenu>
   );
 }

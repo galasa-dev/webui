@@ -38,7 +38,7 @@ describe('ThemeSelector', () => {
     renderWithTheme(<ThemeSelector />);
     const btn = screen.getByRole('button');
     // Mode is "System"
-    expect(btn).toHaveAttribute('aria-label', 'System');
+    expect(btn).toHaveAttribute('aria-label', 'Switch to light mode');
     // Effective applied theme is dark
     expect(document.documentElement).toHaveAttribute('data-carbon-theme', 'dark');
   });
@@ -49,7 +49,7 @@ describe('ThemeSelector', () => {
 
     fireEvent.click(btn);
 
-    expect(btn).toHaveAttribute('aria-label', 'Light');
+    expect(btn).toHaveAttribute('aria-label', 'Switch to dark mode');
     expect(localStorage.getItem('preferred-theme')).toBe('light');
     expect(document.documentElement).toHaveAttribute('data-carbon-theme', 'light');
   });
@@ -63,7 +63,7 @@ describe('ThemeSelector', () => {
     // 2nd click → Dark
     fireEvent.click(btn);
 
-    expect(btn).toHaveAttribute('aria-label', 'Dark');
+    expect(btn).toHaveAttribute('aria-label', 'Switch to system preference');
     expect(localStorage.getItem('preferred-theme')).toBe('dark');
     expect(document.documentElement).toHaveAttribute('data-carbon-theme', 'dark');
   });
@@ -76,7 +76,7 @@ describe('ThemeSelector', () => {
     fireEvent.click(btn);
     fireEvent.click(btn);
 
-    expect(btn).toHaveAttribute('aria-label', 'System');
+    expect(btn).toHaveAttribute('aria-label', 'Switch to light mode');
     expect(localStorage.getItem('preferred-theme')).toBeNull();
     expect(document.documentElement).toHaveAttribute('data-carbon-theme', 'dark'); // OS still dark
   });
