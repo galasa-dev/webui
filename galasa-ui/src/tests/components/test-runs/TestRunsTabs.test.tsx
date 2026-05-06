@@ -28,7 +28,7 @@ jest.mock('@/components/test-runs/results/TestRunsTable', () => ({
   default: (props: any) => TestRunsTableMock(props),
 }));
 
-jest.mock('@/components/test-runs/timeframe/TimeFrameContent', () => ({
+jest.mock('@/components/test-runs/timeframe/TimeFrameSelector', () => ({
   __esModule: true,
   default: () => <div>Mocked Timeframe Content</div>,
   calculateSynchronizedState: jest.fn((fromDate, toDate) => {

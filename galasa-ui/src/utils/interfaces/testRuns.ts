@@ -42,6 +42,8 @@ export interface TimeFrameValues {
   durationHours: number;
   durationMinutes: number;
   isRelativeToNow?: boolean;
+  fromSelectionType?: 'duration' | 'specificTime';
+  toSelectionType?: 'now' | 'specificTime';
 }
 
 export interface RunLog {
