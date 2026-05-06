@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+import { DAY_MS, HOUR_MS, MINUTE_MS } from './constants/common';
+import { TimeFrameValues } from './interfaces';
 import { AmPm } from './types/common';
 import moment from 'moment-timezone';
 
@@ -259,4 +261,36 @@ export const parseAndValidateTime = (timeString: string) => {
   }
 
   return parsedTime;
+};
+
+/**
+ * Calculates the synchronized state from two valid dates.
+ */
+export const calculateSynchronizedState = (
+  fromDate: Date,
+  toDate: Date,
+  timezone: string
+): Omit<TimeFrameValues, 'isRelativeToNow' | 'fromSelectionType' | 'toSelectionType'> => {
+  const fromUiParts = dateTimeUTC2Local(fromDate, timezone);
+  const toUiParts = dateTimeUTC2Local(toDate, timezone);
+  let difference = toDate.getTime() - fromDate.getTime();
+  if (difference < 0) difference = 0;
+
+  const durationDays = Math.floor(difference / DAY_MS);
+  difference %= DAY_MS;
+  const durationHours = Math.floor(difference / HOUR_MS);
+  difference %= HOUR_MS;
+  const durationMinutes = Math.floor(difference / MINUTE_MS);
+
+  return {
+    fromDate,
+    fromTime: fromUiParts.time,
+    fromAmPm: fromUiParts.amPm,
+    toDate,
+    toTime: toUiParts.time,
+    toAmPm: toUiParts.amPm,
+    durationDays,
+    durationHours,
+    durationMinutes,
+  };
 };

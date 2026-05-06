@@ -6,7 +6,7 @@
 'use client';
 
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
+import styles from '@/styles/test-runs/timeframe/TimeFrameSelector.module.css';
 import { LOCALE_TO_FLATPICKR_FORMAT_MAP } from '@/utils/constants/common';
 import { parseAndValidateTime } from '@/utils/timeOperations';
 import {
@@ -29,6 +29,7 @@ interface DateTimePickerProps {
   onAmPmChange: (amPm: string) => void;
   disabled?: boolean;
   prefixId: string;
+  maxDate?: Date; // Optional: Maximum selectable date to disable selecting future dates
 }
 
 /**
@@ -43,6 +44,7 @@ export default function DateTimePicker({
   onAmPmChange,
   disabled = false,
   prefixId,
+  maxDate,
 }: DateTimePickerProps) {
   const [localTime, setLocalTime] = useState(time || '');
   const [localAmPm, setLocalAmPm] = useState(amPm || 'AM');
@@ -91,6 +93,7 @@ export default function DateTimePicker({
         dateFormat={datePickerFormat}
         datePickerType="single"
         value={date}
+        maxDate={maxDate}
         onChange={(dates: Date[]) => onDateChange(dates?.[0] || null)}
       >
         <DatePickerInput

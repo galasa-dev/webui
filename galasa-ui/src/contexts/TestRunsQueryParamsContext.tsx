@@ -33,9 +33,9 @@ import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding
 import { TimeFrameValues, ColumnDefinition } from '@/utils/interfaces';
 import { sortOrderType } from '@/utils/types/common';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
-import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 import { useSavedQueries } from '@/contexts/SavedQueriesContext';
 import { valueMap } from '@/utils/encoding/urlStateMappers';
+import { calculateSynchronizedState } from '@/utils/timeOperations';
 
 interface TestRunsQueryParamsContextType {
   selectedTabIndex: number;
@@ -133,18 +133,53 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
 
     let toDate: Date,
       fromDate: Date,
-      isRelativeToNow = false;
+      isRelativeToNow = false,
+      fromSelectionType: 'duration' | 'specificTime',
+      toSelectionType: 'now' | 'specificTime';
+
+    // Derive selection types and dates based on URL parameters
     if (durationParam) {
+      // Duration parameter exists
+      fromSelectionType = 'duration';
       const [days, hours, minutes] = durationParam.split(',').map(Number);
-      toDate = new Date();
-      fromDate = new Date(
-        toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
-      );
-      isRelativeToNow = true;
-    } else if (fromParam && toParam) {
-      toDate = new Date(toParam);
+
+      if (toParam) {
+        // duration + to = Duration from, Specific to
+        toSelectionType = 'specificTime';
+        toDate = new Date(toParam);
+        fromDate = new Date(
+          toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
+        );
+        isRelativeToNow = false;
+      } else {
+        // duration only = Duration from, Now to
+        toSelectionType = 'now';
+        toDate = new Date();
+        fromDate = new Date(
+          toDate.getTime() - (days * DAY_MS + hours * HOUR_MS + minutes * MINUTE_MS)
+        );
+        isRelativeToNow = true;
+      }
+    } else if (fromParam) {
+      // From parameter exists (no duration)
+      fromSelectionType = 'specificTime';
       fromDate = new Date(fromParam);
+
+      if (toParam) {
+        // from + to = Specific from, Specific to
+        toSelectionType = 'specificTime';
+        toDate = new Date(toParam);
+        isRelativeToNow = false;
+      } else {
+        // from only = Specific from, Now to
+        toSelectionType = 'now';
+        toDate = new Date();
+        isRelativeToNow = true;
+      }
     } else {
+      // No parameters: default to Duration + Now
+      fromSelectionType = 'duration';
+      toSelectionType = 'now';
       toDate = new Date();
       fromDate = new Date(toDate.getTime() - DAY_MS);
       isRelativeToNow = true;
@@ -155,6 +190,8 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
     const timeframe = {
       ...calculateSynchronizedState(fromDate, toDate, timezone),
       isRelativeToNow,
+      fromSelectionType,
+      toSelectionType,
     };
 
     // Search Criteria
@@ -289,15 +326,31 @@ export function TestRunsQueryParamsProvider({ children }: TestRunsQueryParamsPro
         .join(',')
     );
 
-    // Timeframe
-    if (timeframeValues.isRelativeToNow) {
+    // Timeframe - encode based on selection types
+    const fromType = timeframeValues.fromSelectionType || 'duration';
+    const toType = timeframeValues.toSelectionType || 'now';
+
+    if (fromType === 'duration') {
+      // Encode duration
       params.set(
         TEST_RUNS_QUERY_PARAMS.DURATION,
         `${timeframeValues.durationDays},${timeframeValues.durationHours},${timeframeValues.durationMinutes}`
       );
-    } else if (timeframeValues.fromDate) {
+
+      if (toType === 'specificTime' && timeframeValues.toDate) {
+        // Duration + Specific To
+        params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+      }
+      // Duration + Now: no 'to' param needed
+    } else if (fromType === 'specificTime' && timeframeValues.fromDate) {
+      // Encode from
       params.set(TEST_RUNS_QUERY_PARAMS.FROM, timeframeValues.fromDate.toISOString());
-      params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+
+      if (toType === 'specificTime' && timeframeValues.toDate) {
+        // Specific From + Specific To
+        params.set(TEST_RUNS_QUERY_PARAMS.TO, timeframeValues.toDate.toISOString());
+      }
+      // Specific From + Now: no 'to' param needed
     }
 
     // Search Criteria
