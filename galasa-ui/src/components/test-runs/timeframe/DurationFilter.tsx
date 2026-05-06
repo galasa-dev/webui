@@ -8,7 +8,7 @@
 import { TimeFrameValues } from '@/utils/interfaces';
 import { FormGroup, NumberInput } from '@carbon/react';
 import { useTranslations } from 'next-intl';
-import styles from '@/styles/test-runs/timeframe/TimeFrameContent.module.css';
+import styles from '@/styles/test-runs/timeframe/TimeFrameSelector.module.css';
 
 const MAX_HOURS = 23;
 const MAX_MINUTES = 59;

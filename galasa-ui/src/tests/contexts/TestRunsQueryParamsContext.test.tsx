@@ -14,9 +14,9 @@ import {
   TEST_RUNS_QUERY_PARAMS,
 } from '@/utils/constants/common';
 import { decodeStateFromUrlParam, encodeStateToUrlParam } from '@/utils/encoding/urlEncoder';
+import { calculateSynchronizedState } from '@/utils/timeOperations';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { calculateSynchronizedState } from '@/components/test-runs/timeframe/TimeFrameContent';
 
 // Mock next/navigation
 let mockSearchParams = new URLSearchParams();
@@ -106,6 +106,8 @@ const TestComponent = () => {
             fromDate,
             toDate,
             isRelativeToNow: false,
+            fromSelectionType: 'specificTime',
+            toSelectionType: 'specificTime',
           });
         }}
       >
@@ -261,9 +263,57 @@ describe('TestRunsQueryParamsContext', () => {
       expect(screen.getByText('TimeframeIsRelative: false')).toBeInTheDocument();
       expect(
         screen.getByText(
-          'TimeframeValues: {"fromDate":"2023-10-01T00:00:00.000Z","fromTime":"12:00","fromAmPm":"AM","toDate":"2023-10-02T00:00:00.000Z","toTime":"12:00","toAmPm":"AM","durationDays":1,"durationHours":0,"durationMinutes":0,"isRelativeToNow":false}'
+          'TimeframeValues: {"fromDate":"2023-10-01T00:00:00.000Z","fromTime":"12:00","fromAmPm":"AM","toDate":"2023-10-02T00:00:00.000Z","toTime":"12:00","toAmPm":"AM","durationDays":1,"durationHours":0,"durationMinutes":0,"isRelativeToNow":false,"fromSelectionType":"specificTime","toSelectionType":"specificTime"}'
         )
       ).toBeInTheDocument();
+    });
+
+    test('initializes timeframe with duration and specific to time', () => {
+      mockSearchParams = new URLSearchParams({
+        [TEST_RUNS_QUERY_PARAMS.DURATION]: '1,2,30',
+        [TEST_RUNS_QUERY_PARAMS.TO]: '2023-10-02T00:00:00.000Z',
+      });
+
+      render(
+        <TestRunsQueryParamsProvider>
+          <TestComponent />
+        </TestRunsQueryParamsProvider>
+      );
+
+      const timeframeText = screen.getByText(/TimeframeValues:/);
+      const timeframeData = JSON.parse(
+        timeframeText.textContent?.replace('TimeframeValues: ', '') || '{}'
+      );
+
+      expect(timeframeData.fromSelectionType).toBe('duration');
+      expect(timeframeData.toSelectionType).toBe('specificTime');
+      expect(timeframeData.isRelativeToNow).toBe(false);
+      expect(timeframeData.durationDays).toBe(1);
+      expect(timeframeData.durationHours).toBe(2);
+      expect(timeframeData.durationMinutes).toBe(30);
+      expect(timeframeData.toDate).toBe('2023-10-02T00:00:00.000Z');
+    });
+
+    test('initializes timeframe with specific from and now', () => {
+      mockSearchParams = new URLSearchParams({
+        [TEST_RUNS_QUERY_PARAMS.FROM]: '2023-10-01T00:00:00.000Z',
+      });
+
+      render(
+        <TestRunsQueryParamsProvider>
+          <TestComponent />
+        </TestRunsQueryParamsProvider>
+      );
+
+      const timeframeText = screen.getByText(/TimeframeValues:/);
+      const timeframeData = JSON.parse(
+        timeframeText.textContent?.replace('TimeframeValues: ', '') || '{}'
+      );
+
+      expect(timeframeData.fromSelectionType).toBe('specificTime');
+      expect(timeframeData.toSelectionType).toBe('now');
+      expect(timeframeData.isRelativeToNow).toBe(true);
+      expect(timeframeData.fromDate).toBe('2023-10-01T00:00:00.000Z');
     });
   });
 
@@ -392,6 +442,119 @@ describe('TestRunsQueryParamsContext', () => {
           RESULTS_TABLE_COLUMNS[0].id,
         ].join(',')
       );
+    });
+
+    test('encodes URL correctly for duration with specific to time', async () => {
+      // Create a button to set Duration + Specific To state
+      const TestComponentWithButton = () => {
+        const { setTimeframeValues } = useTestRunsQueryParams();
+        return (
+          <button
+            onClick={() => {
+              const toDate = new Date('2023-01-02T00:00:00.000Z');
+              const fromDate = new Date('2023-01-01T00:00:00.000Z'); // 1 day before
+              const newTimeframeState = calculateSynchronizedState(fromDate, toDate, 'UTC');
+              setTimeframeValues({
+                ...newTimeframeState,
+                fromDate,
+                toDate,
+                isRelativeToNow: false,
+                fromSelectionType: 'duration',
+                toSelectionType: 'specificTime',
+              });
+            }}
+          >
+            Set Duration + Specific To
+          </button>
+        );
+      };
+
+      render(
+        <TestRunsQueryParamsProvider>
+          <TestComponentWithButton />
+        </TestRunsQueryParamsProvider>
+      );
+
+      await waitForInitialization();
+
+      const setButton = screen.getByRole('button', { name: 'Set Duration + Specific To' });
+      fireEvent.click(setButton);
+
+      await waitFor(() => {
+        const lastCallIndex = mockReplaceState.mock.calls.length - 1;
+        expect(lastCallIndex).toBeGreaterThanOrEqual(0);
+      });
+
+      // Get the last URL update
+      const lastCallIndex = mockReplaceState.mock.calls.length - 1;
+      const url = mockReplaceState.mock.calls[lastCallIndex][2];
+      const decodedQuery = getDecodedParams(url);
+
+      // When fromSelectionType is 'duration' and toSelectionType is 'specificTime',
+      // we should have 'duration' and 'to' params (no 'from')
+      expect(decodedQuery.has(TEST_RUNS_QUERY_PARAMS.FROM)).toBe(false);
+      expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.TO)).toBe('2023-01-02T00:00:00.000Z');
+      expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.DURATION)).toBe('1,0,0'); // 1 day, 0 hours, 0 minutes
+    });
+
+    test('encodes URL correctly for specific from with now', async () => {
+      render(
+        <TestRunsQueryParamsProvider>
+          <TestComponent />
+        </TestRunsQueryParamsProvider>
+      );
+      await waitForInitialization();
+
+      // Create a button to set Specific From + Now state
+      const TestComponentWithButton = () => {
+        const { setTimeframeValues } = useTestRunsQueryParams();
+        return (
+          <button
+            onClick={() => {
+              const fromDate = new Date('2023-01-01T00:00:00.000Z');
+              const toDate = new Date(); // Now
+              const newTimeframeState = calculateSynchronizedState(fromDate, toDate, 'UTC');
+              setTimeframeValues({
+                ...newTimeframeState,
+                fromDate,
+                toDate,
+                isRelativeToNow: true,
+                fromSelectionType: 'specificTime',
+                toSelectionType: 'now',
+              });
+            }}
+          >
+            Set Specific From + Now
+          </button>
+        );
+      };
+
+      render(
+        <TestRunsQueryParamsProvider>
+          <TestComponentWithButton />
+        </TestRunsQueryParamsProvider>
+      );
+
+      await waitForInitialization();
+
+      const setButton = screen.getByRole('button', { name: 'Set Specific From + Now' });
+      fireEvent.click(setButton);
+
+      await waitFor(() => {
+        const lastCallIndex = mockReplaceState.mock.calls.length - 1;
+        expect(lastCallIndex).toBeGreaterThanOrEqual(0);
+      });
+
+      // Get the last URL update
+      const lastCallIndex = mockReplaceState.mock.calls.length - 1;
+      const url = mockReplaceState.mock.calls[lastCallIndex][2];
+      const decodedQuery = getDecodedParams(url);
+
+      // When fromSelectionType is 'specificTime' and toSelectionType is 'now',
+      // we should have 'from' param only (no 'to', no 'duration')
+      expect(decodedQuery.get(TEST_RUNS_QUERY_PARAMS.FROM)).toBe('2023-01-01T00:00:00.000Z');
+      expect(decodedQuery.has(TEST_RUNS_QUERY_PARAMS.TO)).toBe(false);
+      expect(decodedQuery.has(TEST_RUNS_QUERY_PARAMS.DURATION)).toBe(false);
     });
   });
 });
