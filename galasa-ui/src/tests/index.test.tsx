@@ -50,13 +50,6 @@ jest.mock('next/headers', () => ({
   })),
 }));
 
-beforeAll(() => {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation((query) => ({})),
-  });
-});
-
 test('renders Galasa header', () => {
   render(
     <FeatureFlagProvider>

@@ -35,13 +35,6 @@ jest.mock('next-intl', () => ({
   useLocale: () => 'en',
   NextIntlClientProvider: ({ children }: any) => <>{children}</>,
 }));
-// Mock matchMedia
-beforeAll(() => {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: jest.fn().mockImplementation((query) => ({})),
-  });
-});
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -78,6 +71,6 @@ test('renders the "Test runs" link when the feature flag is enabled via prop', (
     </FeatureFlagProvider>
   );
 
-  const testRunsLink = screen.getByText('Test runs');
-  expect(testRunsLink).toBeInTheDocument();
+  const testRunsLinks = screen.getAllByText('Test runs');
+  expect(testRunsLinks.length).toBe(2);
 });

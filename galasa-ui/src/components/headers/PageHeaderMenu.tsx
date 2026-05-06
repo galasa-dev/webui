@@ -12,6 +12,7 @@ import { handleDeleteCookieApiOperation } from '@/utils/logout';
 import LanguageSelector from './LanguageSelector';
 import { useTranslations } from 'next-intl';
 import ThemeSelector from './ThemeSelector';
+import styles from '@/styles/headers/PageHeader.module.css';
 
 function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
   const translations = useTranslations('PageHeaderMenu');
@@ -30,7 +31,9 @@ function PageHeaderMenu({ galasaServiceName }: { galasaServiceName: string }) {
     <HeaderGlobalBar data-testid="header-menu">
       <LanguageSelector />
       <ThemeSelector />
-      <HeaderName prefix="">{galasaServiceName}</HeaderName>
+      <HeaderName id={styles.serviceName} prefix="">
+        {galasaServiceName}
+      </HeaderName>
       <OverflowMenu
         data-floating-menu-container
         selectorPrimaryFocus={'.optionOne'}
