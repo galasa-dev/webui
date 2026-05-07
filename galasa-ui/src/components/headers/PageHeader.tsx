@@ -5,30 +5,19 @@
  */
 'use client';
 
-import {
-  Header,
-  HeaderName,
-  SkipToContent,
-  Theme,
-  HeaderNavigation,
-  HeaderMenuItem,
-} from '@carbon/react';
+import { Header, HeaderName, SkipToContent, Theme, HeaderNavigation } from '@carbon/react';
 import PageHeaderMenu from './PageHeaderMenu';
 import Image from 'next/image';
 import galasaLogo from '@/assets/images/galasaLogo.png';
-import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
-import { useTranslations } from 'next-intl';
 import { SideNav } from '@carbon/react';
 import { SideNavItems } from '@carbon/react';
 import { HeaderSideNavItems } from '@carbon/react';
 import { HeaderMenuButton } from '@carbon/react';
 import { useState } from 'react';
 import styles from '@/styles/headers/PageHeader.module.css';
+import GalasaMenuItems from './GalasaMenuItems';
 
 export default function PageHeader({ galasaServiceName }: { galasaServiceName: string }) {
-  const { isFeatureEnabled } = useFeatureFlags();
-  const translations = useTranslations('PageHeader');
   const [isSideNavExpanded, setIsSideNavExpanded] = useState(false);
 
   const onClickSideNavExpand = () => {
@@ -53,10 +42,7 @@ export default function PageHeader({ galasaServiceName }: { galasaServiceName: s
         </HeaderName>
 
         <HeaderNavigation aria-label="Galasa menu bar navigation">
-          <HeaderMenuItem href="/users">{translations('users')}</HeaderMenuItem>
-          {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS) && (
-            <HeaderMenuItem href="/test-runs">{translations('testRuns')}</HeaderMenuItem>
-          )}
+          <GalasaMenuItems />
         </HeaderNavigation>
 
         <SideNav
@@ -67,10 +53,7 @@ export default function PageHeader({ galasaServiceName }: { galasaServiceName: s
         >
           <SideNavItems>
             <HeaderSideNavItems>
-              <HeaderMenuItem href="/users">{translations('users')}</HeaderMenuItem>
-              {isFeatureEnabled(FEATURE_FLAGS.TEST_RUNS) && (
-                <HeaderMenuItem href="/test-runs">{translations('testRuns')}</HeaderMenuItem>
-              )}
+              <GalasaMenuItems />
             </HeaderSideNavItems>
           </SideNavItems>
         </SideNav>
