@@ -146,8 +146,6 @@ exports[`Layout renders the web UI layout 1`] = `
                     aria-labelledby="tooltip-_r_1_"
                     class="overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                     data-floating-menu-container="true"
-                    tooltipalignment="center"
-                    tooltipposition="bottom"
                     type="button"
                   >
                     <svg
@@ -465,8 +463,6 @@ exports[`Layout renders the web UI layout 1`] = `
                   aria-labelledby="tooltip-_r_1_"
                   class="overflowMenu cds--overflow-menu cds--overflow-menu--lg cds--btn cds--btn--lg cds--layout--size-lg cds--btn--ghost cds--btn--icon-only"
                   data-floating-menu-container="true"
-                  tooltipalignment="center"
-                  tooltipposition="bottom"
                   type="button"
                 >
                   <svg

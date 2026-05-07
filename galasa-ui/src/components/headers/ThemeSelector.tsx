@@ -40,7 +40,6 @@ export default function ThemeSelector() {
       data-floating-menu-container
       aria-label={next.tooltip}
       tooltipAlignment="center"
-      tooltipPosition="bottom"
       onClick={cycleTheme}
     >
       {currentTheme.icon}
