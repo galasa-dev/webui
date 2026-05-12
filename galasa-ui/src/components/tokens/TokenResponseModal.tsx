@@ -7,6 +7,7 @@ import { InlineNotification } from '@carbon/react';
 import { Modal, CodeSnippet } from '@carbon/react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import styles from '@/styles/tokens/TokenResponseModal.module.css';
 
 interface TokenResponseModalProps {
   refreshToken: string;
@@ -37,9 +38,7 @@ export default function TokenResponseModal({
 
   return (
     <Modal
-      size="lg"
-      className="padding-x-13"
-      id="token-passiveModal"
+      className={styles.modal}
       open={isOpen}
       passiveModal
       modalHeading={translations('modalHeading')}
@@ -48,20 +47,23 @@ export default function TokenResponseModal({
         setOpen(false);
       }}
     >
-      <p>{translations('description1')}</p>
-      <CodeSnippet type="multi" wrapText>{`GALASA_TOKEN=${token}:${clientIdState}`}</CodeSnippet>
+      <p id={styles.description}>{translations('description1')}</p>
+      <CodeSnippet className={styles.codeSnippet} type="multi" wrapText>
+        {`GALASA_TOKEN=${token}:${clientIdState}`}
+      </CodeSnippet>
       <InlineNotification
+        className={styles.notification}
         title={translations('warningTitle')}
         subtitle={translations('warningSubtitle')}
         kind="warning"
         lowContrast
         hideCloseButton
       />
-      <p className="margin-top-1">{translations('description2')}</p>
-      <CodeSnippet className="margin-y-1" type="multi" align="right">
+      <p id={styles.commandDescription}>{translations('description2')}</p>
+      <CodeSnippet className={styles.commandExample} type="multi" align="right">
         {translations('commandExample')}
       </CodeSnippet>
-      <p>
+      <p className={styles.docsLink}>
         {translations('seeDocsIntro')}{' '}
         <a
           href="https://galasa.dev/docs/initialising-home-folder"
