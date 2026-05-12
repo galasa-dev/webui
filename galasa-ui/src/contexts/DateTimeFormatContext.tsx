@@ -13,7 +13,7 @@ import {
   TimeZone,
   TimeZoneFormats,
 } from '@/utils/types/dateTimeSettings';
-import { useCallback, useState, createContext, useContext } from 'react';
+import { useCallback, useState, createContext, useContext, useRef } from 'react';
 
 const LOCAL_STORAGE_KEY = 'dateTimeFormatSettings';
 
@@ -67,6 +67,9 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
     return currentPreferences;
   });
 
+  // Cache for Intl.DateTimeFormat instances to avoid expensive re-creation
+  const formattersCache = useRef<Map<string, Intl.DateTimeFormat>>(new Map());
+
   const updatePreferences = (newPreferences: Partial<typeof preferences>) => {
     const updatedPreferences = { ...preferences, ...newPreferences };
 
@@ -82,6 +85,9 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
       updatedPreferences[PREFERENCE_KEYS.TIME_ZONE] = defaultPreferences[PREFERENCE_KEYS.TIME_ZONE];
     }
 
+    // Clear formatters cache when preferences change
+    formattersCache.current.clear();
+
     setPreferences(updatedPreferences);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedPreferences));
   };
@@ -96,6 +102,20 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
 
     return specifiedTimeZone;
   }, [preferences.timeZoneType, preferences.timeZone]);
+
+  // Helper function to get or create a cached formatter
+  const getOrCreateFormatter = useCallback(
+    (locale: string | undefined, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat => {
+      const cacheKey = JSON.stringify({ locale, options });
+
+      if (!formattersCache.current.has(cacheKey)) {
+        formattersCache.current.set(cacheKey, new Intl.DateTimeFormat(locale, options));
+      }
+
+      return formattersCache.current.get(cacheKey)!;
+    },
+    []
+  );
 
   const formatDate = useCallback(
     (date: Date): string => {
@@ -120,24 +140,19 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
           timeZone: resolvedTimeZone,
         };
 
-        // Define options specifically to extract the timezone name
-        const timeZoneNameOptions: Intl.DateTimeFormatOptions = {
-          timeZone: resolvedTimeZone,
-          timeZoneName: 'short', // e.g., PST, EDT, EEST
-        };
-
         // Determine the locale to use
         const effectiveLocale = dateTimeFormatType === 'browser' ? undefined : locale;
 
-        // Format the two parts separately
-        const mainPart = new Intl.DateTimeFormat(effectiveLocale, dateTimeOptions).format(date);
+        const mainFormatter = getOrCreateFormatter(effectiveLocale, dateTimeOptions);
+        const mainPart = mainFormatter.format(date);
 
-        // Get the full string with timezone
-        const fullStringWithTz = new Intl.DateTimeFormat(effectiveLocale, {
-          ...dateTimeOptions,
-          ...timeZoneNameOptions,
-        }).format(date);
-        const timeZonePart = fullStringWithTz.split(' ').pop() || '';
+        const timeZoneOptions: Intl.DateTimeFormatOptions = {
+          timeZone: resolvedTimeZone,
+          timeZoneName: 'short',
+        };
+        const timeZoneFormatter = getOrCreateFormatter(effectiveLocale, timeZoneOptions);
+        const parts = timeZoneFormatter.formatToParts(date);
+        const timeZonePart = parts.find((part) => part.type === 'timeZoneName')?.value || '';
 
         // Combine them into the desired final format (e.g., "MM/DD/YYYY, HH:mm:ss (GMT+X)")
         formattedDate = `${mainPart} (${timeZonePart})`;
@@ -147,7 +162,7 @@ export function DateTimeFormatProvider({ children }: { children: React.ReactNode
 
       return formattedDate;
     },
-    [preferences, getResolvedTimeZone]
+    [preferences, getResolvedTimeZone, getOrCreateFormatter]
   );
 
   const value = { preferences, updatePreferences, formatDate, getResolvedTimeZone };

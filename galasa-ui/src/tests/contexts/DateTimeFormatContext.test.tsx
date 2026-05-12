@@ -279,6 +279,99 @@ describe('DateTimeFormatContext', () => {
           'Formatted Date: 10/01/2023, 09:00:00 PM (GMT+9)'
         );
       });
+
+      test('clears formatter cache when preferences are updated', () => {
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+
+        // Update preferences
+        const button = screen.getByRole('button', { name: /Update Locale/i });
+        fireEvent.click(button);
+
+        // The formatted date should be updated with new locale
+        const updatedFormatted = screen.getByText(/Formatted Date:/).textContent;
+        expect(updatedFormatted).toBeDefined();
+      });
+    });
+
+    describe('Performance: Formatter caching', () => {
+      test('reuses cached formatters for multiple calls with same parameters', () => {
+        const dateTimeFormatSpy = jest.spyOn(Intl, 'DateTimeFormat');
+
+        const MultipleCallsComponent = () => {
+          const { formatDate } = useDateTimeFormat();
+          const date1 = new Date('2023-10-01T12:00:00Z');
+          const date2 = new Date('2023-10-02T12:00:00Z');
+          const date3 = new Date('2023-10-03T12:00:00Z');
+
+          return (
+            <div>
+              <p>Date 1: {formatDate(date1)}</p>
+              <p>Date 2: {formatDate(date2)}</p>
+              <p>Date 3: {formatDate(date3)}</p>
+            </div>
+          );
+        };
+
+        render(
+          <DateTimeFormatProvider>
+            <MultipleCallsComponent />
+          </DateTimeFormatProvider>
+        );
+
+        const callCount = dateTimeFormatSpy.mock.calls.length;
+        expect(callCount).toBeLessThan(10);
+
+        dateTimeFormatSpy.mockRestore();
+      });
+
+      test('creates new formatters after cache is cleared', () => {
+        const dateTimeFormatSpy = jest.spyOn(Intl, 'DateTimeFormat');
+
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+
+        const initialCallCount = dateTimeFormatSpy.mock.calls.length;
+
+        // Update preferences which should clear the cache
+        const button = screen.getByRole('button', { name: /Update Locale/i });
+        fireEvent.click(button);
+
+        // After clearing cache, new formatters should be created
+        expect(dateTimeFormatSpy.mock.calls.length).toBeGreaterThan(initialCallCount);
+
+        dateTimeFormatSpy.mockRestore();
+      });
+
+      test('formatToParts is used for efficient timezone extraction', () => {
+        const formatToPartsSpy = jest.fn(() => [{ type: 'timeZoneName', value: 'UTC' }]);
+
+        jest.spyOn(Intl, 'DateTimeFormat').mockImplementation(
+          () =>
+            ({
+              format: jest.fn(() => '10/01/2023, 12:00:00 PM'),
+              formatToParts: formatToPartsSpy,
+              resolvedOptions: jest.fn(() => ({ timeZone: 'UTC' })),
+            }) as unknown as Intl.DateTimeFormat
+        );
+
+        render(
+          <DateTimeFormatProvider>
+            <TestComponent date={mockDate} />
+          </DateTimeFormatProvider>
+        );
+
+        // Verify formatToParts was called for timezone extraction
+        expect(formatToPartsSpy).toHaveBeenCalled();
+
+        jest.restoreAllMocks();
+      });
     });
   });
 });

@@ -93,6 +93,19 @@ export default function TestRunsTable({
 
   const currentVisibleColumns = visibleColumns.join(',');
 
+  // Memoize formatted dates for all runs to avoid repeated formatting
+  const formattedDatesCache = useMemo(() => {
+    const cache = new Map<string, string>();
+    if (runsList && runsList.length > 0) {
+      runsList.forEach((row) => {
+        if (row.submittedAt && !cache.has(row.submittedAt)) {
+          cache.set(row.submittedAt, formatDate(new Date(row.submittedAt)));
+        }
+      });
+    }
+    return cache;
+  }, [runsList, formatDate]);
+
   // Filter rows in the current paginatedRows if the text in the
   // persistent toolbar search box changes and matches any table info.
   const filteredRows = useMemo(() => {
@@ -110,14 +123,10 @@ export default function TestRunsTable({
           return false;
         }
         let value = '';
-        // Reimplement in future - formatDate causes performance issues...
-        // if (field === 'submittedAt') {
-        //   value =
-        //     row.submittedAt?.trim() !== ''
-        //       ? formatDate(new Date(row.submittedAt.toLowerCase()))
-        //       : '';
-        // }
-        if (field === 'tags') {
+        if (field === 'submittedAt') {
+          value =
+            row.submittedAt?.trim() !== '' ? formattedDatesCache.get(row.submittedAt) || '' : '';
+        } else if (field === 'tags') {
           value = row.tags?.trim() !== '' ? row.tags.toLowerCase() : 'n/a';
         } else {
           value = row[field]?.toLowerCase() ?? '';
@@ -125,7 +134,7 @@ export default function TestRunsTable({
         return value.includes(searchLowerCase);
       });
     });
-  }, [currentVisibleColumns, runsList, search]);
+  }, [currentVisibleColumns, runsList, search, formattedDatesCache]);
 
   // Calculate the paginated rows based on the current page and page size,
   // and currently filtered rows (if there is a filter in the toolbar)
@@ -219,7 +228,7 @@ export default function TestRunsTable({
   };
 
   // Navigate to the test run details page using the runId
-  const handleRowClick = (runId: string, runName: string) => {
+  const handleRowClick = (runId: string) => {
     // Navigate to the test run details page
     router.push(`/test-runs/${runId}`);
   };
@@ -262,10 +271,10 @@ export default function TestRunsTable({
         </TableCell>
       );
     } else if (header === 'submittedAt') {
-      // Format the date using the context's formatDate function
+      const formattedDateValue = formattedDatesCache.get(value) || formatDate(new Date(value));
       cellComponent = (
         <TableCell className={styles.linkCell}>
-          {formatDate(new Date(value))}
+          {formattedDateValue}
           <Link href={href} prefetch={false} className={styles.linkOverlay} />
         </TableCell>
       );
@@ -356,13 +365,7 @@ export default function TestRunsTable({
                       <TableRow
                         key={key}
                         {...rowProps}
-                        onClick={() =>
-                          handleRowClick(
-                            row.id,
-                            row.cells.find((cell) => cell.info.header === 'testRunName')
-                              ?.value as string
-                          )
-                        }
+                        onClick={() => handleRowClick(row.id)}
                         id={styles.clickableRow}
                       >
                         {row.cells.map((cell) => (
