@@ -41,11 +41,6 @@ export default async function HomePage() {
           };
         }
       }
-
-      // If no content was found in CPS, throw an error to trigger fallback
-      if (!content.markdownContent) {
-        throw new Error('No markdown content found in CPS property');
-      }
     } catch (error: any) {
       console.warn('Failed to fetch custom markdown content from CPS', error);
 

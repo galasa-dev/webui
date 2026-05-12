@@ -5,18 +5,13 @@
  */
 import PageTile from '@/components/PageTile';
 import UserRoleSection from '@/components/users/UserRoleSection';
-import {
-  ConfigurationPropertyStoreAPIApi,
-  RBACRole,
-  RoleBasedAccessControlAPIApi,
-} from '@/generated/galasaapi';
+import { RBACRole, RoleBasedAccessControlAPIApi } from '@/generated/galasaapi';
 import { createAuthenticatedApiConfiguration } from '@/utils/api';
 import AccessTokensSection from '@/components/mysettings/AccessTokensSection';
 import { fetchAccessTokens } from '@/actions/getUserAccessTokens';
 import { fetchUserFromApiServer } from '@/actions/userServerActions';
 import BreadCrumb from '@/components/common/BreadCrumb';
 import { EDIT_USER, HOME } from '@/utils/constants/breadcrumb';
-import { fetchTokenExpiryWarningConfiguration } from '@/utils/tokenExpiryWarning';
 
 // In order to extract query param on server-side
 type UsersPageProps = {
@@ -42,10 +37,6 @@ export default async function EditUserPage(props: UsersPageProps) {
 
     return roles;
   };
-
-  const cpsApiClient = new ConfigurationPropertyStoreAPIApi(apiConfig);
-  const tokenExpiryWarningConfiguration = await fetchTokenExpiryWarningConfiguration(cpsApiClient);
-
   return (
     <main id="content">
       <BreadCrumb breadCrumbItems={[HOME, EDIT_USER]} />
@@ -57,8 +48,6 @@ export default async function EditUserPage(props: UsersPageProps) {
       <AccessTokensSection
         accessTokensPromise={fetchAccessTokens(loginIdFromQueryParam)}
         isAddBtnVisible={false}
-        tokenExpiryWarningDays={tokenExpiryWarningConfiguration.warningDays}
-        showMaxWarningDaysNotice={tokenExpiryWarningConfiguration.exceededMaximum}
       />
     </main>
   );

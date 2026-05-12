@@ -67,11 +67,6 @@ jest.mock('@/generated/galasaapi', () => ({
       { id: '2', name: 'User', description: 'Regular user role' },
     ]),
   })),
-  ConfigurationPropertyStoreAPIApi: jest.fn().mockImplementation(() => ({
-    getCpsProperty: jest.fn().mockResolvedValue([
-      { data: { value: '14' } },
-    ]),
-  })),
   RBACRole: {},
 }));
 

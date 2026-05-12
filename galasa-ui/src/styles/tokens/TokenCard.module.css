@@ -9,36 +9,10 @@
   width: 500px;
 }
 
-.cardContainerExpired {
-  opacity: 0.6;
-  border-left: 4px solid var(--cds-support-error);
-}
-
 .infoContainer {
-  flex: 1;
-  min-width: 0;
-}
-
-.expiredLabel {
-  color: var(--cds-support-error);
-  font-weight: 600;
-}
-
-.iconWarningContainer {
-  margin-top: 1rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  flex: 0 0 180px;
-}
-
-.expiryWarning {
-  color: var(--cds-support-warning);
-  font-size: 0.8rem;
-  line-height: 1.25;
-  margin: 0;
+  margin: 1rem 0;
 }
 
 .icon {
-  flex-shrink: 0;
+  margin-top: 1rem;
 }

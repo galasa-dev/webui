@@ -12,71 +12,39 @@ import { AuthToken } from '@/generated/galasaapi';
 import { useTranslations } from 'next-intl';
 import { useDateTimeFormat } from '@/contexts/DateTimeFormatContext';
 import { useMemo } from 'react';
-import { DAY_MS } from '@/utils/constants/common';
 
 function TokenCard({
   token,
   selectTokenForDeletion,
-  expiryWarningDays,
 }: {
   token: AuthToken;
   selectTokenForDeletion: Function;
-  expiryWarningDays: number;
 }) {
   const translations = useTranslations('TokenCard');
   const { formatDate } = useDateTimeFormat();
-  const formattedCreationDate = useMemo(() => {
+  const formattedDate = useMemo(() => {
     return formatDate(new Date(token.creationTime!));
   }, [token.creationTime, formatDate]);
-  const formattedExpiryDate = useMemo(() => {
-    return token.expiryTime ? formatDate(new Date(token.expiryTime)) : null;
-  }, [token.expiryTime, formatDate]);
-
-  // Check if token is expired
-  const isExpired = useMemo(() => {
-    if (!token.expiryTime) return false;
-    return new Date(token.expiryTime) < new Date();
-  }, [token.expiryTime]);
-
-  const isNearlyExpired = useMemo(() => {
-    if (!token.expiryTime || isExpired) return false;
-
-    const expiryTime = new Date(token.expiryTime).getTime();
-    const currentTime = Date.now();
-    const warningWindowInMilliseconds = expiryWarningDays * DAY_MS;
-
-    return expiryTime - currentTime <= warningWindowInMilliseconds;
-  }, [token.expiryTime, isExpired, expiryWarningDays]);
 
   return (
     <SelectableTile
       onClick={() => selectTokenForDeletion(token.tokenId)}
       value={true}
       key={token.tokenId}
-      className={`${styles.cardContainer} ${isExpired ? styles.cardContainerExpired : ''}`}
+      className={styles.cardContainer}
     >
       <h5>{token.description}</h5>
 
       <div className={styles.infoContainer}>
         <h6>
-          {translations('createdAt')} {formattedCreationDate}
+          {translations('createdAt')} {formattedDate}
         </h6>
-        {formattedExpiryDate && (
-          <h6 className={isExpired ? styles.expiredLabel : ''}>
-            {isExpired ? translations('expired') : translations('expires')} {formattedExpiryDate}
-          </h6>
-        )}
         <h6>
           {translations('owner')} {token.owner?.loginId}
         </h6>
       </div>
 
-      <div className={styles.iconWarningContainer}>
-        <Password className={styles.icon} size={40} />
-        {isNearlyExpired && (
-          <p className={styles.expiryWarning}>{translations('nearlyExpiredWarning')}</p>
-        )}
-      </div>
+      <Password className={styles.icon} size={40} />
     </SelectableTile>
   );
 }
