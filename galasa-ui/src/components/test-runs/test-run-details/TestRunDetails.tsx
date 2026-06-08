@@ -47,7 +47,7 @@ import { TreeNodeData, FolderNode } from '@/utils/functions/artifacts';
 import TestRunsSearch from '../TestRunsSearch';
 import { getExistingTagObjects } from '@/actions/runsAction';
 import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270FolderStructure';
-import { cleanArtifactPath } from '@/utils/artifacts';
+import { buildArtifactsTree } from '@/utils/3270/buildArtifactsTree';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -186,55 +186,7 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
 
       // Build tree structure to check for 3270 terminal folder
       if (runArtifacts.length > 0) {
-        const root: FolderNode = { name: '', isFile: false, children: {} };
-
-        runArtifacts.forEach((artifact: ArtifactIndexEntry) => {
-          const rawPath = artifact.path ?? '';
-          const cleanedPath = cleanArtifactPath(rawPath);
-          let segments = cleanedPath.split('/').filter((seg) => seg !== '');
-
-          const segmentValue = segments[0]?.toLocaleLowerCase();
-          if (segmentValue === 'artifact' || segmentValue === 'artifacts') {
-            segments = segments.slice(1);
-          }
-
-          if (segments.length > 0) {
-            let currentNode: FolderNode = root;
-            segments.forEach((segment, idx) => {
-              const isLast = idx === segments.length - 1;
-
-              if (isLast) {
-                currentNode.children[segment] = {
-                  name: segment,
-                  runId: artifact.runId ?? '',
-                  url: artifact.path ?? '',
-                  isFile: true,
-                  children: {},
-                };
-              } else {
-                const existing = currentNode.children[segment];
-
-                if (!existing) {
-                  currentNode.children[segment] = {
-                    name: segment,
-                    isFile: false,
-                    children: {},
-                  };
-                  currentNode = currentNode.children[segment] as FolderNode;
-                } else if (existing.isFile) {
-                  currentNode.children[segment] = {
-                    name: segment,
-                    isFile: false,
-                    children: {},
-                  };
-                  currentNode = currentNode.children[segment] as FolderNode;
-                } else {
-                  currentNode = existing as FolderNode;
-                }
-              }
-            });
-          }
-        });
+        const root = buildArtifactsTree(runArtifacts);
 
         // Store the built tree for use in ArtifactsTab
         setArtifactsTreeData(root);
