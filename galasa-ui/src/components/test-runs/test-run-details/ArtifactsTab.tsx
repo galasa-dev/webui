@@ -7,7 +7,7 @@
 
 import { ArtifactIndexEntry } from '@/generated/galasaapi';
 import { TreeView, TreeNode, InlineLoading, InlineNotification } from '@carbon/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from '@/styles/test-runs/test-run-details/Artifacts.module.css';
 import {
   CarbonIconType,
@@ -20,7 +20,7 @@ import {
 } from '@carbon/icons-react';
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { Tile } from '@carbon/react';
-import { cleanArtifactPath, handleDownload } from '@/utils/artifacts';
+import { handleDownload } from '@/utils/artifacts';
 import { useTranslations } from 'next-intl';
 import { Button } from '@carbon/react';
 import {
@@ -29,10 +29,10 @@ import {
   TreeNodeData,
   DownloadResult,
 } from '@/utils/functions/artifacts';
-import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270FolderStructure';
 
 export function ArtifactsTab({
   artifacts,
+  artifactsTreeData,
   runId,
   runName,
   isLoadingArtifacts = false,
@@ -41,6 +41,7 @@ export function ArtifactsTab({
   setZos3270TerminalData,
 }: {
   artifacts: ArtifactIndexEntry[];
+  artifactsTreeData: FolderNode;
   runId: string;
   runName: string;
   isLoadingArtifacts?: boolean;
@@ -49,11 +50,6 @@ export function ArtifactsTab({
   setZos3270TerminalData: (zos3270TerminalData: TreeNodeData[]) => void;
 }) {
   const translations = useTranslations('Artifacts');
-  const [treeData, setTreeData] = useState<FolderNode>({
-    name: '',
-    isFile: false,
-    children: {},
-  });
 
   const [artifactDetails, setArtifactDetails] = useState<ArtifactDetails>({
     artifactFile: '',
@@ -164,98 +160,6 @@ export function ArtifactsTab({
     return result;
   }
 
-  useEffect(() => {
-    // Only build tree if we have artifacts
-    if (artifacts.length === 0) {
-      setTreeData({ name: '', isFile: false, children: {} });
-      return;
-    }
-
-    // Build the root node, which holds top-level folders and files
-    const root: FolderNode = { name: '', isFile: false, children: {} };
-
-    artifacts.forEach((artifact) => {
-      // 1) Get the raw path string, default to empty if undefined
-      const rawPath = artifact.path ?? '';
-
-      // 2) Remove a leading "/" or "./" if present
-      const cleanedPath = cleanArtifactPath(rawPath);
-
-      // 3) Split into segments and drop any empty strings
-      let segments = cleanedPath.split('/').filter((seg) => seg !== '');
-
-      // 4) If the first segment is "artifact" or "artifacts", drop it so that
-      //    "artifact/framework" becomes ["framework", ...]
-      const segmentValue = segments[0]?.toLocaleLowerCase();
-
-      if (segmentValue === 'artifact' || segmentValue === 'artifacts') {
-        segments = segments.slice(1);
-      }
-
-      if (segments.length > 0) {
-        const currentNode: FolderNode = root;
-        createFolderSegments(segments, currentNode, artifact);
-      }
-    });
-
-    setTreeData(root);
-
-    // This checks for the terminal structure, and sets the zosTerminalData hook in TestRunDetails for later use in get3270Screenshots.ts.
-    checkForZosTerminalFolderStructure(
-      root,
-      setZos3270TerminalFolderExists,
-      setZos3270TerminalData
-    );
-
-    // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
-    // eslint-disable-next-line
-  }, [artifacts, checkForZosTerminalFolderStructure]);
-
-  const createFolderSegments = (
-    segments: string[],
-    currentNode: FolderNode,
-    artifact: ArtifactIndexEntry
-  ) => {
-    return segments.forEach((segment, idx) => {
-      const isLast = idx === segments.length - 1;
-
-      if (isLast) {
-        // It’s a file: insert a FileNode under currentNode.children
-        currentNode.children[segment] = {
-          name: segment,
-          runId: artifact.runId ?? '',
-          url: artifact.path ?? '',
-          isFile: true,
-          children: {},
-        };
-      } else {
-        // It’s a folder: create or reuse a FolderNode
-        const existing = currentNode.children[segment];
-
-        if (!existing) {
-          // Create new folder if it doesn’t exist
-          currentNode.children[segment] = {
-            name: segment,
-            isFile: false,
-            children: {},
-          };
-          currentNode = currentNode.children[segment] as FolderNode;
-        } else if (existing.isFile) {
-          // Conflict: a file was created here before. Replace it with a folder.
-          currentNode.children[segment] = {
-            name: segment,
-            isFile: false,
-            children: {},
-          };
-          currentNode = currentNode.children[segment] as FolderNode;
-        } else {
-          // Descend into existing folder
-          currentNode = existing as FolderNode;
-        }
-      }
-    });
-  };
-
   const renderFileIcon = (path: string) => {
     const pathSplit = path.split('.');
     const extension = pathSplit[pathSplit.length - 1]; // get the last split e.g some.file.ts -> we need the extension (ts)
@@ -343,8 +247,8 @@ export function ArtifactsTab({
 
       {!isLoadingArtifacts && !artifactsError && artifacts.length > 0 && (
         <div className={styles.artifact}>
-          <TreeView className={styles.tree} onSelect={() => {}}>
-            {Object.values(treeData.children).map((child) => renderNode(child, child.name))}
+          <TreeView className={styles.tree} onSelect={() => { }}>
+            {Object.values(artifactsTreeData.children).map((child) => renderNode(child, child.name))}
           </TreeView>
 
           <div className={styles.artifactView}>
