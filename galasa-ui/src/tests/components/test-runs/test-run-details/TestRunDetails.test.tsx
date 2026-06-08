@@ -658,10 +658,7 @@ describe('TestRunDetails', () => {
 
       // Verify the correct API endpoints were called (artifacts + zip)
       expect(global.fetch).toHaveBeenCalledTimes(2);
-      expect(global.fetch).toHaveBeenNthCalledWith(
-        1,
-        `/internal-api/test-runs/${runId}/artifacts`
-      );
+      expect(global.fetch).toHaveBeenNthCalledWith(1, `/internal-api/test-runs/${runId}/artifacts`);
       expect(global.fetch).toHaveBeenNthCalledWith(
         2,
         `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`

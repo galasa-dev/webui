@@ -11,7 +11,7 @@ import { cleanArtifactPath } from '@/utils/artifacts';
 /**
  * Builds a tree structure from a list of artifacts.
  * This function processes artifact paths and creates a hierarchical folder/file structure.
- * 
+ *
  * @param artifacts - Array of artifact entries to process
  * @returns A FolderNode representing the root of the tree structure
  */
