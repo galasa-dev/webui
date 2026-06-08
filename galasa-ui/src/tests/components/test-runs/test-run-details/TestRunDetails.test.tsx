@@ -600,7 +600,13 @@ describe('TestRunDetails', () => {
       const runDetailsDeferred = setup<{ testStructure: Record<string, unknown> }>();
       const runLogDeferred = setup<string>();
 
-      // Mock the successful fetch response
+      // Mock the artifacts fetch response (called automatically on mount)
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue([]),
+      });
+
+      // Mock the successful zip fetch response
       const mockBlob = new Blob(['mock-zip-content'], { type: 'application/zip' });
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
@@ -650,9 +656,14 @@ describe('TestRunDetails', () => {
         { timeout: 500 }
       );
 
-      // Verify the correct API endpoint was called
-      expect(global.fetch).toHaveBeenCalledTimes(1);
-      expect(global.fetch).toHaveBeenCalledWith(
+      // Verify the correct API endpoints were called (artifacts + zip)
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        1,
+        `/internal-api/test-runs/${runId}/artifacts`
+      );
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
         `http://localhost/internal-api/test-runs/${runId}/zip?runName=TestRun`
       );
 
