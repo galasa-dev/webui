@@ -157,9 +157,9 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
         duration:
           runDetails.testStructure?.startTime && runDetails.testStructure?.endTime
             ? getIsoTimeDifference(
-              runDetails.testStructure?.startTime,
-              runDetails.testStructure?.endTime
-            )
+                runDetails.testStructure?.startTime,
+                runDetails.testStructure?.endTime
+              )
             : '-',
         tags: runDetails.testStructure?.tags || [],
       };
@@ -282,7 +282,6 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     };
     fetchExistingTags();
   }, []);
-
 
   const handleShare = async () => {
     try {

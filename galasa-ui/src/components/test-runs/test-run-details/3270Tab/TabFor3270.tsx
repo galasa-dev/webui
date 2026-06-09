@@ -69,6 +69,7 @@ export default function TabFor3270({
           setHighlightedRowInDisplayedData={setHighlightedRowInDisplayedData}
           highlightedRowId={highlightedRowId}
           setHighlightedRowId={setHighlightedRowId}
+          is3270CurrentlySelected={is3270CurrentlySelected}
         />
       </div>
 
