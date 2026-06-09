@@ -9,6 +9,7 @@ import { ArtifactsTab } from '@/components/test-runs/test-run-details/ArtifactsT
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { handleDownload } from '@/utils/artifacts';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+import { buildArtifactsTree } from '@/utils/3270/buildArtifactsTree';
 
 // Mock dependencies
 jest.mock('@/actions/runsAction');
@@ -179,6 +180,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={[]}
+            artifactsTreeData={buildArtifactsTree([])}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -196,6 +198,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={[]}
+            artifactsTreeData={buildArtifactsTree([])}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -213,6 +216,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -231,6 +235,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -261,6 +266,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={artifactsWithVariousPaths}
+            artifactsTreeData={buildArtifactsTree(artifactsWithVariousPaths)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -284,6 +290,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={artifactsWithPrefix}
+            artifactsTreeData={buildArtifactsTree(artifactsWithPrefix)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -303,6 +310,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -344,6 +352,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -386,6 +395,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -419,6 +429,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -447,6 +458,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -472,6 +484,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -508,6 +521,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -541,6 +555,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -576,6 +591,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -618,6 +634,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={artifactsWithUndefinedPaths}
+            artifactsTreeData={buildArtifactsTree(artifactsWithUndefinedPaths)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -637,6 +654,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={artifactsWithEmptyRunId}
+            artifactsTreeData={buildArtifactsTree(artifactsWithEmptyRunId)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}
@@ -662,6 +680,7 @@ describe('ArtifactsTab', () => {
         <FeatureFlagProvider>
           <ArtifactsTab
             artifacts={mockArtifacts}
+            artifactsTreeData={buildArtifactsTree(mockArtifacts)}
             runId="test-run"
             runName="Test Run"
             setZos3270TerminalFolderExists={mockSetZos3270TerminalFolderExists}

@@ -48,6 +48,7 @@ const defaultProps = {
   setCannotSwitchToNextImage: jest.fn(),
   highlightedRowInDisplayedData: true,
   setHighlightedRowInDisplayedData: jest.fn(),
+  is3270CurrentlySelected: true,
 };
 
 jest.mock('@/utils/3270/get3270Screenshots', () => {
@@ -62,6 +63,10 @@ const mockGet3270Screenshots = get3270Screenshots as jest.Mock;
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
+});
+
+beforeEach(() => {
+  mockGet3270Screenshots.mockClear();
 });
 
 type MockData = {
@@ -232,5 +237,71 @@ describe('TableOfScreenshots', () => {
     // Assert
     const dropdown = screen.getByRole('combobox') as HTMLSelectElement;
     expect(dropdown).toBeInTheDocument();
+  });
+
+  test('does not fetch screenshots when tab is not selected', async () => {
+    // Arrange
+    mockGet3270Screenshots.mockResolvedValue(emptyMockData);
+
+    // Act
+    await act(async () => {
+      render(
+        <TableOfScreenshots
+          isLoading={true}
+          setIsLoading={jest.fn()}
+          setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
+          {...defaultProps}
+          is3270CurrentlySelected={false}
+        />
+      );
+    });
+
+    // Assert
+    expect(mockGet3270Screenshots).not.toHaveBeenCalled();
+  });
+
+  test('fetches screenshots when tab becomes selected', async () => {
+    // Arrange
+    const setIsLoading = jest.fn();
+    mockGet3270Screenshots.mockResolvedValue(someMockData);
+
+    // Act
+    const { rerender } = await act(async () => {
+      return render(
+        <TableOfScreenshots
+          isLoading={true}
+          setIsLoading={setIsLoading}
+          setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
+          {...defaultProps}
+          is3270CurrentlySelected={false}
+        />
+      );
+    });
+
+    // Assert - should not fetch when not selected
+    expect(mockGet3270Screenshots).not.toHaveBeenCalled();
+
+    // Act - change to selected
+    await act(async () => {
+      rerender(
+        <TableOfScreenshots
+          isLoading={true}
+          setIsLoading={setIsLoading}
+          setImageData={jest.fn()}
+          highlightedRowId={''}
+          setHighlightedRowId={jest.fn()}
+          {...defaultProps}
+          is3270CurrentlySelected={true}
+        />
+      );
+    });
+
+    // Assert - should fetch when selected
+    expect(mockGet3270Screenshots).toHaveBeenCalledWith([], 'testRunId');
+    expect(setIsLoading).toHaveBeenCalledWith(false);
   });
 });

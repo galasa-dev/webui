@@ -42,6 +42,7 @@ export default function TableOfScreenshots({
   setHighlightedRowInDisplayedData,
   highlightedRowId,
   setHighlightedRowId,
+  is3270CurrentlySelected,
 }: {
   runId: string;
   zos3270TerminalData: TreeNodeData[];
@@ -57,6 +58,7 @@ export default function TableOfScreenshots({
   setHighlightedRowInDisplayedData: React.Dispatch<React.SetStateAction<boolean>>;
   highlightedRowId: string;
   setHighlightedRowId: React.Dispatch<React.SetStateAction<string>>;
+  is3270CurrentlySelected: boolean;
 }) {
   const translations = useTranslations('3270Tab');
   const headers = [
@@ -145,8 +147,12 @@ export default function TableOfScreenshots({
   }, [filteredRows, highlightedRowId]);
 
   useEffect(() => {
-    // Ensure screenshots are only collected once.
-    if (!screenshotsCollected.current?.valueOf() && flattenedZos3270TerminalData.length === 0) {
+    // Only fetch screenshots when the 3270 tab is selected
+    if (
+      is3270CurrentlySelected &&
+      !screenshotsCollected.current?.valueOf() &&
+      flattenedZos3270TerminalData.length === 0
+    ) {
       screenshotsCollected.current = true;
       const fetchData = async () => {
         try {
@@ -171,7 +177,7 @@ export default function TableOfScreenshots({
 
     // If you're adding extra state to this hook, make sure to review the dependency array due to the warning suppression:
     // eslint-disable-next-line
-  }, []);
+  }, [is3270CurrentlySelected]);
 
   // When highlighted image changes, update image data.
   useEffect(() => {

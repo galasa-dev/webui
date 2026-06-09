@@ -43,9 +43,11 @@ import {
   TEST_RUN_TAB_NAMES,
 } from '@/utils/constants/common';
 import { NotificationType } from '@/utils/types/common';
-import { TreeNodeData } from '@/utils/functions/artifacts';
+import { TreeNodeData, FolderNode } from '@/utils/functions/artifacts';
 import TestRunsSearch from '../TestRunsSearch';
 import { getExistingTagObjects } from '@/actions/runsAction';
+import { checkForZosTerminalFolderStructure } from '@/utils/3270/checkFor3270FolderStructure';
+import { buildArtifactsTree } from '@/utils/3270/buildArtifactsTree';
 
 interface TestRunDetailsProps {
   runId: string;
@@ -62,6 +64,11 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
   const [run, setRun] = useState<RunMetadata>();
   const [methods, setMethods] = useState<TestMethod[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactIndexEntry[]>([]);
+  const [artifactsTreeData, setArtifactsTreeData] = useState<FolderNode>({
+    name: '',
+    isFile: false,
+    children: {},
+  });
   const [artifactsLoaded, setArtifactsLoaded] = useState(false);
   const [artifactsLoading, setArtifactsLoading] = useState(false);
   const [artifactsError, setArtifactsError] = useState<string | null>(null);
@@ -176,6 +183,21 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
       const runArtifacts = await response.json();
       setArtifacts(runArtifacts);
       setArtifactsLoaded(true);
+
+      // Build tree structure to check for 3270 terminal folder
+      if (runArtifacts.length > 0) {
+        const root = buildArtifactsTree(runArtifacts);
+
+        // Store the built tree for use in ArtifactsTab
+        setArtifactsTreeData(root);
+
+        // Check for 3270 terminal folder structure
+        checkForZosTerminalFolderStructure(
+          root,
+          setZos3270TerminalFolderExists,
+          setZos3270TerminalData
+        );
+      }
     } catch (err: unknown) {
       console.error('Error loading artifacts:', err);
       setArtifactsError(err instanceof Error ? err.message : 'Failed to load artifacts');
@@ -229,13 +251,12 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     loadRunDetails();
   }, [run, runDetailsPromise, extractRunDetails]);
 
-  // If artifacts tab is selected in URL on initial load, fetch artifacts
+  // Load artifacts immediately when run details are loaded to check for 3270 terminal folder
   useEffect(() => {
-    const artifactsTabIndex = TEST_RUN_PAGE_TABS.indexOf(TEST_RUN_TAB_NAMES.ARTIFACTS);
-    if (selectedTabIndex === artifactsTabIndex && !artifactsLoaded && !artifactsLoading && run) {
+    if (run && !artifactsLoaded && !artifactsLoading && !artifactsError) {
       loadArtifacts();
     }
-  }, [selectedTabIndex, artifactsLoaded, artifactsLoading, run, loadArtifacts]);
+  }, [run, artifactsLoaded, artifactsLoading, artifactsError, loadArtifacts]);
 
   // If log tab is selected in URL on initial load, fetch logs
   useEffect(() => {
@@ -261,7 +282,6 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
     };
     fetchExistingTags();
   }, []);
-
 
   const handleShare = async () => {
     try {
@@ -492,6 +512,7 @@ const TestRunDetails = ({ runId, runDetailsPromise }: TestRunDetailsProps) => {
               <TabPanel>
                 <ArtifactsTab
                   artifacts={artifacts}
+                  artifactsTreeData={artifactsTreeData}
                   runId={runId}
                   runName={run?.runName || ''}
                   isLoadingArtifacts={artifactsLoading}
