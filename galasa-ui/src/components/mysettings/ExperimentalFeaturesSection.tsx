@@ -17,10 +17,6 @@ export default function ExperimentalFeaturesSection() {
   // Feature configuration for easier management and display
   const featureConfig = [
     {
-      key: FEATURE_FLAGS.TEST_RUNS,
-      label: translations(`features.testRunSearch`),
-    },
-    {
       key: FEATURE_FLAGS.GRAPH,
       label: translations('features.graph'),
     },
