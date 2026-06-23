@@ -7,7 +7,6 @@ import { render, screen } from '@testing-library/react';
 import PageHeader from '@/components/headers/PageHeader';
 import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
 import { useRouter } from 'next/navigation';
-import { FEATURE_FLAGS } from '@/utils/featureFlags';
 
 const mockRouter = {
   push: jest.fn(() => useRouter().push),
@@ -51,26 +50,27 @@ test('renders the header containing the header menu', () => {
   expect(headerMenu).toBeInTheDocument();
 });
 
-test('does NOT render the "Test runs" link by default', () => {
+test('renders the "Test runs" link by default', () => {
   render(
     <FeatureFlagProvider>
       <PageHeader galasaServiceName="Galasa Service" />
     </FeatureFlagProvider>
   );
 
-  const testRunsLink = screen.queryByText('Test runs');
-  expect(testRunsLink).not.toBeInTheDocument();
-});
+  // Verify "Test runs" link appears in both desktop header nav and mobile side nav
+  const testRunsLinks = screen.getAllByRole('link', { name: 'Test runs' });
+  expect(testRunsLinks).toHaveLength(2);
 
-test('renders the "Test runs" link when the feature flag is enabled via prop', () => {
-  const initialFlags = JSON.stringify({ [FEATURE_FLAGS.TEST_RUNS]: true });
+  // Both links should point to the correct href
+  testRunsLinks.forEach((link) => {
+    expect(link).toHaveAttribute('href', '/test-runs');
+  });
 
-  render(
-    <FeatureFlagProvider initialFlags={initialFlags}>
-      <PageHeader galasaServiceName="Galasa Service" />
-    </FeatureFlagProvider>
-  );
+  // Verify one is in the header navigation (desktop)
+  const headerNav = screen.getByRole('navigation', { name: 'Galasa menu bar navigation' });
+  expect(headerNav).toContainElement(testRunsLinks[0]);
 
-  const testRunsLinks = screen.getAllByText('Test runs');
-  expect(testRunsLinks.length).toBe(2);
+  // Verify one is in the side navigation (mobile)
+  const sideNav = screen.getByRole('navigation', { name: 'Side navigation' });
+  expect(sideNav).toContainElement(testRunsLinks[1]);
 });
