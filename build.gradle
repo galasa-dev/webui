@@ -9,7 +9,7 @@ plugins {
 }
 
 // Right now, the REST interface spec is always the same version as the galasa framework bundles.
-def galasaFrameworkVersion = "1.0.0"
+def galasaFrameworkVersion = "1.0.1"
 def galasaOpenApiYamlVersion = galasaFrameworkVersion
 
 repositories {
