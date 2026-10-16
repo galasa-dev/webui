@@ -102,7 +102,7 @@ jobs:
 
       - name: Build Webui image for testing
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: dockerfiles/dockerfile.webui
