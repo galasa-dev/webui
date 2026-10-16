@@ -105,7 +105,7 @@ jobs:
           npm run build
 
       - name: Login to Github Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ vars.WRITE_GITHUB_PACKAGES_USERNAME }}
