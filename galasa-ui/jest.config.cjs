@@ -21,13 +21,22 @@ const config = {
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
   },
-  transformIgnorePatterns: [
-    '/node_modules/(?!(next-intl|@carbon)/)',
-    '^.+\\.module\\.(css|sass|scss)$',
-  ],
 
   // Required for testing the image renderer
   setupFiles: ['jest-canvas-mock'],
 };
 
-module.exports = createJestConfig(config);
+// next/jest always prepends its own "ignore everything in node_modules" pattern and only allows
+// custom patterns to be appended, so a custom allowlist set in the config above has no effect.
+// Override the patterns after next/jest has resolved the config so that ES module dependencies
+// (e.g. temporal-polyfill and its dependencies, used by @carbon/utilities) are transformed to CommonJS.
+module.exports = async () => {
+  const jestConfig = await createJestConfig(config)();
+
+  jestConfig.transformIgnorePatterns = [
+    '/node_modules/(?!(next-intl|@carbon|temporal-polyfill|temporal-utils|temporal-spec)/)',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ];
+
+  return jestConfig;
+};

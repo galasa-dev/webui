@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import DurationFilter from '@/components/test-runs/timeframe/DurationFilter';
 import { TimeFrameValues } from '@/utils/interfaces';
@@ -73,7 +74,21 @@ describe('DurationFilter', () => {
   test('should call handleValueChange when a NumberInput is changed', async () => {
     // Arrange
     const user = userEvent.setup();
-    render(<DurationFilter values={mockValues} handleValueChange={mockHandleValueChange} />);
+
+    // The NumberInput is controlled, so the parent must feed the updated value back in
+    const StatefulDurationFilter = () => {
+      const [values, setValues] = useState<TimeFrameValues>(mockValues);
+      return (
+        <DurationFilter
+          values={values}
+          handleValueChange={(field, value) => {
+            mockHandleValueChange(field, value);
+            setValues((prev) => ({ ...prev, [field]: value }));
+          }}
+        />
+      );
+    };
+    render(<StatefulDurationFilter />);
 
     const minutesInput = screen.getByLabelText('minutes');
 
