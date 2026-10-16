@@ -184,8 +184,8 @@ describe('TokenCard', () => {
   });
 
   it('shows warning for token expiring exactly at warning threshold', () => {
-    const exactThresholdDate = new Date();
-    exactThresholdDate.setDate(exactThresholdDate.getDate() + 14); // Exactly 14 days
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const exactThresholdDate = new Date(Date.now() + 14 * DAY_MS); // Exactly 14 days in ms
 
     const token: AuthToken = {
       ...baseToken,
