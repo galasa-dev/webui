@@ -34,7 +34,7 @@
     "react-dom": "19.2.4",
     "react-is": "19.2.4",
     "sharp": "^0.35.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.3"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "16.1.6",
