@@ -37,7 +37,7 @@
     "typescript": "5.9.3"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "16.1.6",
+    "@next/eslint-plugin-next": "16.4.2",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "^14.6.1",
@@ -46,7 +46,7 @@
     "@types/markdown-it": "^14.1.2",
     "@types/pako": "^2.0.3",
     "eslint": "^9.17.0",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.4.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-react": "^7.37.5",
