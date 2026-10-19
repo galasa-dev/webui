@@ -7,7 +7,7 @@
 import { downloadArtifactFromServer } from '@/actions/runsAction';
 import { FileNode, TreeNodeData } from '@/utils/functions/artifacts';
 import { CellFor3270, TerminalImage, TerminalImageField } from '@/utils/interfaces/3270Terminal';
-import pako from 'pako';
+import { inflate } from 'pako';
 
 export const newFlattenedZos3270TerminalData: CellFor3270[] = [];
 export const newAllImageData: TerminalImage[] = [];
@@ -49,7 +49,7 @@ function unzipBase64(artifactData: {
   }
 
   // 2. Decompress the Uint8Array using pako.
-  const decompressedUint8Array = pako.inflate(gzippedUint8Array);
+  const decompressedUint8Array = inflate(gzippedUint8Array);
 
   // 3. Convert the decompressed Uint8Array back to a string.
   return JSON.parse(new TextDecoder().decode(decompressedUint8Array));
