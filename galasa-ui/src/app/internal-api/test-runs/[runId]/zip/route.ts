@@ -65,7 +65,7 @@ async function createZipResponse(zip: JSZip, runName: string | null): Promise<Re
   headers.set('Content-Disposition', `attachment; filename="${filename}"`);
   headers.set('Content-Length', String(content.length));
 
-  return new Response(content, {
+  return new Response(new Uint8Array(content), {
     status: 200,
     headers: headers,
   });
