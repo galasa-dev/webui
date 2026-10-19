@@ -90,6 +90,15 @@ jest.mock('@carbon/react', () => ({
   TableHeader: ({ children }: { children: React.ReactNode }) => (
     <th data-testid="table-header">{children}</th>
   ),
+  TableHead: ({ children }: { children: React.ReactNode }) => (
+    <thead data-testid="table-head">{children}</thead>
+  ),
+  TableBody: ({ children }: { children: React.ReactNode }) => (
+    <tbody data-testid="table-body">{children}</tbody>
+  ),
+  TableRow: ({ children, ...props }: { children: React.ReactNode } & React.HTMLAttributes<HTMLTableRowElement>) => (
+    <tr data-testid="table-row" {...props}>{children}</tr>
+  ),
   TableToolbarContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="table-toolbar-content">{children}</div>
   ),
@@ -101,24 +110,6 @@ jest.mock('@carbon/react', () => ({
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
   }) => <input data-testid="table-search" placeholder={placeholder} onChange={onChange} />,
 }));
-
-jest.mock('@carbon/react/lib/components/DataTable/TableBody', () => {
-  return function MockTableBody({ children }: { children: React.ReactNode }) {
-    return <tbody data-testid="table-body">{children}</tbody>;
-  };
-});
-
-jest.mock('@carbon/react/lib/components/DataTable/TableHead', () => {
-  return function MockTableHead({ children }: { children: React.ReactNode }) {
-    return <thead data-testid="table-head">{children}</thead>;
-  };
-});
-
-jest.mock('@carbon/react/lib/components/DataTable/TableRow', () => {
-  return function MockTableRow({ children }: { children: React.ReactNode }) {
-    return <tr data-testid="table-row">{children}</tr>;
-  };
-});
 
 describe('MethodsTab Component', () => {
   const mockMethods: TestMethod[] = [

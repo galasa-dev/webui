@@ -7,10 +7,17 @@
 import { TestMethod } from '@/generated/galasaapi';
 import { getIsoTimeDifference } from '@/utils/timeOperations';
 import { DataTableHeader, DataTableRow } from '@/utils/interfaces';
-import { DataTable, TableContainer, Table, TableCell, TableHeader } from '@carbon/react';
-import TableBody, { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
-import TableHead from '@carbon/react/lib/components/DataTable/TableHead';
-import TableRow from '@carbon/react/lib/components/DataTable/TableRow';
+import {
+  DataTable,
+  TableContainer,
+  Table,
+  TableCell,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+} from '@carbon/react';
+import type { TableBodyProps } from '@carbon/react/lib/components/DataTable/TableBody';
 import React, { useMemo } from 'react';
 import { TableToolbarContent } from '@carbon/react';
 import { TableToolbarSearch } from '@carbon/react';
