@@ -18,7 +18,7 @@ jest.mock('@/utils/auth', () => ({
 // Mock the jwtDecode method
 jest.mock('jwt-decode', () => ({
   __esModule: true,
-  default: jest.fn(() => ({
+  jwtDecode: jest.fn(() => ({
     exp: 50, // JWT expiry in seconds
   })),
 }));
