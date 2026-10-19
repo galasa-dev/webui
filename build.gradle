@@ -26,7 +26,7 @@ configurations {
 }
 
 dependencies {
-    download group: "dev.galasa", name: "dev.galasa.framework.api.openapi", version: "$galasaOpenApiYamlVersion", ext: "yaml"
+    download "dev.galasa:dev.galasa.framework.api.openapi:${galasaOpenApiYamlVersion}@yaml"
 }
 
 task downloadRawDependencies(type: Copy) {
@@ -48,8 +48,8 @@ task downloadDependencies(type: Copy) {
 task generateTypeScriptClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     // Generate a TypeScript client using our openapi.yaml file
     generatorName.set("typescript")
-    inputSpec.set("$rootDir/build/dependencies/openapi.yaml")
-    outputDir.set("$rootDir/galasa-ui/src/generated/galasaapi")
+    inputSpec.set(layout.projectDirectory.file("build/dependencies/openapi.yaml"))
+    outputDir.set(layout.projectDirectory.dir("galasa-ui/src/generated/galasaapi"))
     globalProperties.set([
         apiTests: "false"
     ])
