@@ -5,7 +5,7 @@
 //   which is generated from a yaml definition file.
 //   So we need to get hold of a generator tool so we can generate the client.
 plugins {
-  id "org.openapi.generator" version "6.6.0"
+  id "org.openapi.generator" version "7.26.0"
 }
 
 // Right now, the REST interface spec is always the same version as the galasa framework bundles.
