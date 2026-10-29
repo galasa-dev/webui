@@ -16,7 +16,7 @@ The Galasa Web UI is the browser front end for [Galasa](https://galasa.dev). It 
 - SCSS / CSS Modules for styling (no Tailwind)
 - Jest + React Testing Library for tests
 - ESLint + Prettier for lint and format
-- Node 24 (CI/Docker), Java 17 + Gradle (OpenAPI generation only)
+- Node 24.22.1 (CI/Docker/Dev Container), Java 17 + Gradle (OpenAPI generation only)
 
 Check [`galasa-ui/package.json`](galasa-ui/package.json) for exact versions.
 

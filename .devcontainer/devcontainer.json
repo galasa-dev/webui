@@ -6,11 +6,15 @@
 
 {
   "name": "Node.js & TypeScript",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:5-22-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:5-24-bookworm",
 
   "initializeCommand": "mkdir -p ${localEnv:HOME}/.m2",
 
   "features": {
+    // The base image bundles a Node 24 release which may lag behind. Pin the exact version used by CI and the Docker image.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24.22.1"
+    },
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.15",
       "installZsh": "true",
