@@ -12,7 +12,7 @@
 
   "features": {
     // The base image bundles a Node 24 release which may lag behind. Pin the exact version used by CI and the Docker image.
-    "ghcr.io/devcontainers/features/node:1": {
+    "ghcr.io/devcontainers/features/node:2": {
       "version": "24.22.1"
     },
     "ghcr.io/devcontainers/features/python:1": {
